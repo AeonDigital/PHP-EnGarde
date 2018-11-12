@@ -1,0 +1,54 @@
+{
+    "name": "aeondigital/phpengarde",
+    "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
+    "type": "library",
+    "minimum-stability": "stable",
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": ">=7.1.14",
+        "psr/http-message": "dev-master",
+        "aeondigital/phpcoreextension": "dev-master",
+        "aeondigital/phptraits": "dev-master",
+        "aeondigital/phpstream": "dev-master",
+        "aeondigital/phpcollection": "dev-master",
+        "aeondigital/phphttpdata": "dev-master",
+        "aeondigital/phphttpuri": "dev-master",
+        "aeondigital/phphttpmessage": "dev-master",
+        "aeondigital/phphttptools": "dev-master"
+    },
+    "require-dev": {
+        "php": ">=7.1.14",
+        "psr/http-message": "dev-master",
+        "aeondigital/phpcoreextension": "dev-master",
+        "aeondigital/phptraits": "dev-master",
+        "aeondigital/phpstream": "dev-master",
+        "aeondigital/phpcollection": "dev-master",
+        "aeondigital/phphttpdata": "dev-master",
+        "aeondigital/phphttpuri": "dev-master",
+        "aeondigital/phphttpmessage": "dev-master",
+        "aeondigital/phphttptools": "dev-master"
+    },
+    "authors": [
+        {
+            "name": "Rianna Cantarelli",
+            "email": "rianna.aeon@gmail.com",
+            "homepage": "http://aeondigital.com.br",
+            "role": "developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AeonDigital\\EnGarde\\": "/src",
+            "AeonDigital\\EnGarde\\Config\\": "/src/Config",
+            "AeonDigital\\EnGarde\\Interfaces\\": "/src/Interfaces"
+        }
+    },
+    "keywords": [
+        "engarde",
+        "domain",
+        "server",
+        "application",
+        "router",
+        "framework"
+    ]
+}
