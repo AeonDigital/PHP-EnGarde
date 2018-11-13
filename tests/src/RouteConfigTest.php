@@ -556,6 +556,17 @@ class RouteConfigTest extends TestCase
     }
 
 
+    public function test_method_getset_runmethodname()
+    {
+        $nMock = new RouteConfig();
+        $this->assertSame("run", $nMock->getRunMethodName());
+
+        $nMock->setRunMethodName("anotherName");
+        $this->assertSame("anotherName", $nMock->getRunMethodName());
+    }
+
+
+
     public function test_method_getset_custom_properties()
     {
         $nMock = new RouteConfig();
@@ -756,6 +767,7 @@ class RouteConfigTest extends TestCase
             "metaData" => ["author" => "Aeon Digital"],
             "responseHeaders" => [],
 
+            "runMethodName" => "anotherRunMethod",
             "customProperties" => ["prop1" => "val1", "prop2" => "val2"]
         ];
 
@@ -813,6 +825,7 @@ class RouteConfigTest extends TestCase
             "localeDictionary" => "path/to/pt-br.php",
             "metaData" => ["author" => "Aeon Digital"],
             "responseHeaders" => [],
+            "runMethodName" => "run",
             "customProperties" => ["prop1" => "val1", "prop2" => "val2"]
         ];
 

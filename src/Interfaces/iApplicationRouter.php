@@ -104,18 +104,14 @@ interface iApplicationRouter
 
 
     /**
-     * Identifica se o método e rota passados correspondem a alguma rota que 
+     * Identifica se a rota passada correspondem a alguma rota que 
      * tenha sido previamente registrada no "AppRoutes".
      * Uma vez identificada a rota alvo, retorna todas suas configurações.
      * 
      * Em caso de falha na identificação da rota será retornado "null". 
      *
-     * @param       string $targetMethod
-     *              Indica o método HTTP que está sendo executado
-     *              pela rota atual.
-     * 
      * @param       string $targetRoute
-     *              Porção "path" da URI que está sendo executada.
+     *              Porção relativa da URI que está sendo executada.
      *              É necessário constar na rota, como sua primeira
      *              parte, o nome da aplicação que está sendo executada.
      *              Não deve constar quaisquer parametros "querystring"
@@ -123,5 +119,5 @@ interface iApplicationRouter
      *
      * @return      ?array
      */
-    function selectTargetRawRoute(string $targetMethod, string $targetRoute) : ?array;
+    function selectTargetRawRoute(string $targetRoute) : ?array;
 }

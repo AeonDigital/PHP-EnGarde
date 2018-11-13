@@ -1459,6 +1459,42 @@ final class RouteConfig implements iRouteConfig
 
 
     /**
+     * Nome do método a ser executado para resolver o processamento
+     * da rota.
+     *
+     * @var         string
+     */
+    private $runMethodName = "run";
+    /**
+     * Retorna o nome do método que deve ser executado na classe
+     * da Aplicação para resolver a rota.
+     * Se não for definido deve retornar "run" como valor padrão.
+     *
+     * @return      string
+     */
+    public function getRunMethodName() : string
+    {
+        return $this->runMethodName;
+    }
+    /*
+     * Permite definir o nome de um metodo alternativo para resolver
+     * o resultado do processamento da rota.
+     *
+     * @param       string $runMethodName
+     *              Nome do método a ser executado.
+     * 
+     * @return      void
+     */
+    public function setRunMethodName(string $runMethodName) : void
+    {
+        $this->runMethodName = $runMethodName;
+    }
+
+
+
+
+
+    /**
      * Coleção de propriedades customizadas da rota.
      *
      * @var         ?array
@@ -1779,6 +1815,10 @@ final class RouteConfig implements iRouteConfig
                     $this->setResponseHeaders($value);
                     break;
 
+                case "runmethodname":
+                    $this->setRunMethodName($value);
+                    break;
+
                 case "customproperties":
                     $this->setCustomProperties($value);
                     break;
@@ -1835,6 +1875,7 @@ final class RouteConfig implements iRouteConfig
 
             "metaData" => $this->getMetaData(),
             "responseHeaders" => $this->getResponseHeaders(),
+            "runMethodName" => $this->getRunMethodName(),
             "customProperties" => $this->getCustomProperties()
         ];
     }

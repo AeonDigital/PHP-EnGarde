@@ -22,8 +22,12 @@ require_once $srcDir . "/Interfaces/iRouteConfig.php";
 require_once $srcDir . "/Config/RouteConfig.php";
 
 require_once $srcDir . "/Interfaces/iApplication.php";
+require_once $srcDir . "/Traits/CommomProperties.php";
 require_once $srcDir . "/DomainApplication.php";
 require_once $conDir . "/AppConfig.php";
 
 require_once $srcDir . "/ErrorListening.php";
 require_once $srcDir . "/DomainManager.php";
+
+require_once $srcDir . "/Interfaces/iResponseHandler.php";
+require_once $srcDir . "/Handlers/ResponseHandler.php";

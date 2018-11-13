@@ -93,7 +93,7 @@ class ErrorListeningTest extends TestCase
         } catch (\Exception $ex) {
             $fail = true;
             $r = ErrorListening::onException($ex);
-            //file_put_contents("onexception.php", "<?php return " . var_export($r, true) . ";");
+            //file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
 
             $rStr           = var_export($r, true);
             $expectedStr    = var_export($expected, true);
@@ -120,7 +120,7 @@ class ErrorListeningTest extends TestCase
                 $ex->getFile(),
                 (int)$ex->getLine()
             );
-            //file_put_contents("onerror.php", "<?php return " . var_export($r, true) . ";");
+            //file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
 
             $rStr           = var_export($r, true);
             $expectedStr    = var_export($expected, true);
@@ -137,7 +137,7 @@ class ErrorListeningTest extends TestCase
         $expected           = include($tgtPathToExpected);
 
         $r = ErrorListening::throwHTTPError(501, "custom reason phrase");
-        //file_put_contents("throwhttperror.php", "<?php return " . var_export($r, true) . ";");
+        //file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
         $rStr           = var_export($r, true);
         $expectedStr    = var_export($expected, true);
         $this->assertSame($expectedStr, $rStr);
@@ -159,7 +159,7 @@ class ErrorListeningTest extends TestCase
             $r = ErrorListening::onException($ex);
 
             $rStr = json_encode($r);
-            //file_put_contents("testview.json", json_encode($r));
+            //file_put_contents($tgtPathToExpected, json_encode($r));
             $this->assertSame($expected, $rStr);
         }
         $this->assertTrue($fail, "Test must fail");
@@ -180,7 +180,7 @@ class ErrorListeningTest extends TestCase
             $fail = true;
             $r = ErrorListening::onException($ex);
 
-            //file_put_contents("nonstyled.html", $r);
+            //file_put_contents($tgtPathToExpected, $r);
             $this->assertSame($expected, $r);
         }
         $this->assertTrue($fail, "Test must fail");
@@ -202,7 +202,7 @@ class ErrorListeningTest extends TestCase
             $fail = true;
             $r = ErrorListening::onException($ex);
 
-            //file_put_contents("custom.html", $r);
+            //file_put_contents($tgtPathToExpected, $r);
             $this->assertSame($expected, $r);
         }
         $this->assertTrue($fail, "Test must fail");

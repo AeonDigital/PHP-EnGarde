@@ -719,7 +719,7 @@ interface iRouteConfig
      *
      * @return      ?string
      */
-    function getLocaleDictionary() : ? string;
+    function getLocaleDictionary() : ?string;
     /*
      * Define o caminho relativo (a partir de "appRootPath") até o 
      * arquivo de legendas do locale que será usado para responder a requisição.
@@ -734,7 +734,7 @@ interface iRouteConfig
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    function setLocaleDictionary(? string $localeDictionary) : void;
+    function setLocaleDictionary(?string $localeDictionary) : void;
 
 
 
@@ -812,6 +812,29 @@ interface iRouteConfig
      * @return      void
      */
     function addResponseHeaders(array $responseHeaders) : void;
+
+
+
+
+
+    /**
+     * Retorna o nome do método que deve ser executado na classe
+     * da Aplicação para resolver a rota.
+     * Se não for definido deve retornar "run" como valor padrão.
+     *
+     * @return      string
+     */
+    function getRunMethodName() : string;
+    /*
+     * Permite definir o nome de um metodo alternativo para resolver
+     * o resultado do processamento da rota.
+     *
+     * @param       string $runMethodName
+     *              Nome do método a ser executado.
+     * 
+     * @return      void
+     */
+    function setRunMethodName(string $runMethodName) : void;
 
 
 

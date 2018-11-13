@@ -22,7 +22,7 @@ class DomainManagerTest extends TestCase
 
 
     protected $rootPath = null;
-
+    protected $domainConfigFileName = "domain-config-local.php";
 
 
     /**
@@ -48,7 +48,7 @@ class DomainManagerTest extends TestCase
         $nMock->setServerVariables(null);
         
         $this->rootPath = to_system_path(__DIR__ . DIRECTORY_SEPARATOR . "apps");
-        require_once $this->rootPath . DIRECTORY_SEPARATOR . "domain-config.php";
+        require_once $this->rootPath . DIRECTORY_SEPARATOR . $this->domainConfigFileName;
         require_once $this->rootPath . DIRECTORY_SEPARATOR . "site/AppStart.php";
         require_once $this->rootPath . DIRECTORY_SEPARATOR . "site/controllers/Home.php";
 
@@ -92,6 +92,11 @@ class DomainManagerTest extends TestCase
         }
 
         return $nMock;
+    }
+
+    protected function executeRequest($serverMethod = "GET", $serverURI = "/") : ServerConfig
+    {
+        return $this->retrieveServerConfigToTest(true, "200.200.100.50", "test.server.com.br", 80, $serverMethod, $serverURI);
     }
 
 
@@ -158,4 +163,93 @@ class DomainManagerTest extends TestCase
         $errorContext = ErrorListening::getContext();
         $this->assertSame($expected, $errorContext);
     }
+
+
+
+    public function test_check_response_to_error_404()
+    {
+        $this->domainConfigFileName = "domain-config-testview.php";
+        $serverConfig   = $this->executeRequest("GET", "/non-exist-route/for/this");
+        $enGarde        = new DomainManager($serverConfig);
+        $this->assertTrue(is_a($enGarde, DomainManager::class));
+        
+        $enGarde->run();
+        $output = $enGarde->getTestViewDebug();
+
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/error404.html";
+        $expected           = file_get_contents($tgtPathToExpected);
+
+        //file_put_contents($tgtPathToExpected, $output);
+        $this->assertSame($expected, $output);
+    }
+
+
+
+    public function test_check_response_to_error_501()
+    {
+        $this->domainConfigFileName = "domain-config-testview.php";
+        $serverConfig   = $this->executeRequest("PUT", "/");
+        $enGarde        = new DomainManager($serverConfig);
+        $this->assertTrue(is_a($enGarde, DomainManager::class));
+        
+        $enGarde->run();
+        $output = $enGarde->getTestViewDebug();
+
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/error501.html";
+        $expected           = file_get_contents($tgtPathToExpected);
+
+        //file_put_contents($tgtPathToExpected, $output);
+        $this->assertSame($expected, $output);
+    }
+
+
+
+    public function test_check_response_to_OPTIONS()
+    {
+        $this->domainConfigFileName = "domain-config-testview.php";
+        $serverConfig   = $this->executeRequest("OPTIONS", "/");
+        $enGarde        = new DomainManager($serverConfig);
+        $this->assertTrue(is_a($enGarde, DomainManager::class));
+        
+        $enGarde->run();
+        $output = $enGarde->getTestViewDebug();
+
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseOPTIONS.json";
+        $expected           = file_get_contents($tgtPathToExpected);
+
+        $objExpected    = json_decode($expected);
+        $objOutput      = json_decode((string)$output->getBody());
+
+        $objExpected->Date = $objOutput->Date;
+
+        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
+        $this->assertEquals($objExpected, $objOutput);
+    }
+
+
+
+    public function test_check_response_to_TRACE()
+    {
+        $this->domainConfigFileName = "domain-config-testview.php";
+        $serverConfig   = $this->executeRequest("TRACE", "/");
+        $enGarde        = new DomainManager($serverConfig);
+        $this->assertTrue(is_a($enGarde, DomainManager::class));
+        
+        $enGarde->run();
+        $output = $enGarde->getTestViewDebug();
+
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseTRACE.json";
+        $expected           = file_get_contents($tgtPathToExpected);
+
+        $objExpected    = json_decode($expected);
+        $objOutput      = json_decode((string)$output->getBody());
+
+        $objExpected->Date = $objOutput->Date;
+
+        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
+        $this->assertEquals($objExpected, $objOutput);
+    }
+
+
+
 }

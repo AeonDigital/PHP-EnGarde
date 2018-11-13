@@ -37,17 +37,17 @@ final class DomainManager
 
 
     /**
-     * Configuração do Servidor.
-     *
-     * @var         iServerConfig
-     */
-    private $serverConfig = null;
-    /**
      * Instância de configuração do Domínio
      *
      * @var         iDomainConfig
      */
     private $domainConfig = null;
+    /**
+     * Configuração do Servidor.
+     *
+     * @var         iServerConfig
+     */
+    private $serverConfig = null;
     /**
      * Instância de configuração da Aplicação alvo.
      *
@@ -62,17 +62,17 @@ final class DomainManager
      */
     private $applicationRouter = null;
     /**
-     * Instância da Aplicação a ser executada.
-     *
-     * @var         iApplication
-     */
-    private $targetApplication = null;
-    /**
      * Instância que representa a requisição feita pelo UA.
      *
      * @var         iServerRequest
      */
     private $serverRequest = null;
+    /**
+     * Instância da Aplicação a ser executada.
+     *
+     * @var         iApplication
+     */
+    private $targetApplication = null;
 
 
 
@@ -192,45 +192,6 @@ final class DomainManager
         );
     }
     /**
-     * Define e retorna uma instância da Aplicação que a requisição
-     * deseja executar.
-     *
-     * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
-     * 
-     * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
-     * 
-     * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
-     * 
-     * @param       ?iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
-     * 
-     * @param       ?array $rawRouteConfig
-     *              Configuração bruta da rota selecionada.
-     * 
-     * @return      void
-     */
-    private function defineTargetApplication(
-        iServerConfig $serverConfig,
-        iDomainConfig $domainConfig,
-        iApplicationConfig $applicationConfig,
-        ?iRouteConfig $routeConfig,
-        ?array $rawRouteConfig
-    ) : iApplication {
-        $applicationNS      = $domainConfig->retrieveApplicationNS();
-        $targetApplication  = new $applicationNS();
-        
-        $targetApplication->setServerConfig($serverConfig);
-        $targetApplication->setDomainConfig($domainConfig);
-        $targetApplication->setApplicationConfig($applicationConfig);
-        $targetApplication->setRouteConfig($routeConfig);
-        $targetApplication->setRawRouteConfig($rawRouteConfig);
-
-        return $targetApplication;
-    }
-    /**
      * Define e retorna uma instância que representa a requisição
      * que o UA está fazendo ao servidor.
      *
@@ -254,6 +215,50 @@ final class DomainManager
             $this->serverConfig->getHttpTools()->createCollection(),
             $this->serverConfig->getHttpTools()->createCollection()
         );
+    }
+    /**
+     * Define e retorna uma instância da Aplicação que a requisição
+     * deseja executar.
+     * 
+     * @param       iDomainConfig $domainConfig
+     *              Instância "iDomainConfig".
+     *
+     * @param       iServerConfig $serverConfig
+     *              Instância "iServerConfig".
+     *
+     * @param       iServerRequest $serverRequest
+     *              Instância "iServerRequest".
+     * 
+     * @param       iApplicationConfig $applicationConfig
+     *              Instância "iApplicationConfig".
+     * 
+     * @param       ?iRouteConfig $routeConfig
+     *              Instância "iRouteConfig".
+     * 
+     * @param       ?array $rawRouteConfig
+     *              Configuração bruta da rota selecionada.
+     * 
+     * @return      void
+     */
+    private function defineTargetApplication(
+        iDomainConfig $domainConfig,
+        iServerConfig $serverConfig,
+        iServerRequest $serverRequest,
+        iApplicationConfig $applicationConfig,
+        ?iRouteConfig $routeConfig,
+        ?array $rawRouteConfig
+    ) : iApplication {
+        $applicationNS      = $domainConfig->retrieveApplicationNS();
+        $targetApplication  = new $applicationNS();
+        
+        $targetApplication->setDomainConfig($domainConfig);
+        $targetApplication->setServerConfig($serverConfig);
+        $targetApplication->setServerRequest($serverRequest);
+        $targetApplication->setApplicationConfig($applicationConfig);
+        $targetApplication->setRouteConfig($routeConfig);
+        $targetApplication->setRawRouteConfig($rawRouteConfig);
+
+        return $targetApplication;
     }
 
 
@@ -308,19 +313,6 @@ final class DomainManager
      * @var         iRouteConfig
      */
     private $routeConfig = null;
-    /**
-     * Código HTTP para quando houver erro na execução 
-     * do método "selectTargetRoute".
-     *
-     * @var     ?int
-     */
-    private $httpErrorCode = null;
-    /**
-     * Mensagem de erro correspondente ao código de erro HTTP.
-     *
-     * @var     ?string
-     */
-    private $httpErrorMessage = null;
 
 
 
@@ -362,11 +354,11 @@ final class DomainManager
      * @param       string $applicationName
      *              Nome da Aplicação alvo.
      * 
-     * @param       string $requestURIPath
-     *              Parte relativa da URL que está sendo executada.
-     * 
      * @param       string $requestMethod
      *              Método HTTP que está sendo usado.
+     * 
+     * @param       string $requestURIPath
+     *              Parte relativa da URL que está sendo executada.
      * 
      * @param       iApplicationRouter $applicationRouter
      *              Roteador da aplicação.
@@ -375,8 +367,8 @@ final class DomainManager
      */
     private function selectTargetRawRouteConfig(
         string $applicationName,
-        string $requestURIPath,
         string $requestMethod,
+        string $requestURIPath,
         iApplicationRouter $applicationRouter
     ) : ?array  {
         // Se o nome da aplicação não foi definido no caminho 
@@ -387,7 +379,7 @@ final class DomainManager
         }
 
         // Seleciona os dados da rota que deve ser executada.
-        return $applicationRouter->selectTargetRawRoute($requestMethod, $executePath);
+        return $applicationRouter->selectTargetRawRoute($executePath);
     }
     /** 
      * A partir dos dados brutos definidos como configuração de uma rota,
@@ -418,10 +410,11 @@ final class DomainManager
             // a rota que deve ser acionada.
             $this->rawRouteConfig = $this->selectTargetRawRouteConfig(
                 $this->applicationConfig->getName(),
-                $this->serverRequest->getUri()->getPath(),
                 $this->serverRequest->getMethod(),
+                $this->serverRequest->getUri()->getPath(),
                 $this->applicationRouter
             );
+
 
             // Identificando exatamente a configuração da rota alvo
             $targetMethod = strtoupper($this->serverRequest->getMethod());
@@ -444,58 +437,54 @@ final class DomainManager
     public function run() : void
     {
         if ($this->isRun === false) {
-            $this->isRun = true;
             $this->prepareRouteBeforeRun();
+            $this->isRun = true;
 
 
-            
             // Inicia a aplicação e define para ela
             // as configurações do servidor e do domínio.
             $this->targetApplication = $this->defineTargetApplication(
-                $this->serverConfig,
                 $this->domainConfig,
+                $this->serverConfig,
+                $this->serverRequest,
                 $this->applicationConfig,
                 $this->routeConfig,
                 $this->rawRouteConfig
             );
 
 
-/*
-        PROSSEGUIR DAQUI!
-        // Se nenhuma rota for identificada como compatível.
-        if ($this->rawRouteConfig === null) {
-            $this->httpErrorCode = 404;
-            $this->httpErrorMessage = "Not Found";
-        } else {
-            $targetMethod = strtoupper($this->serverRequest->getMethod());
+            // Seta para a Aplicação iniciada as 
+            // suas próprias configurações
+            $this->targetApplication->configureApplication();
 
-            // Se o método requisitado não está configurado
-            // para a rota encontrada
-            if (isset($this->rawRouteConfig[$targetMethod]) === false) {
-                $this->httpErrorCode = 501;
-                $this->httpErrorMessage = "Method \"$targetMethod\" is not implemented in this route.";
-            } else {
-                $this->routeConfig = $this->createRouteConfig($this->rawRouteConfig[$targetMethod]);
+
+            // Se a Aplicação iniciada tem uma página própria para
+            // amostragem de erros, registra-a no manipulador de erros.
+            $fullPathToErrorView = $this->applicationConfig->getFullPathToErrorView();
+            if ($fullPathToErrorView !== null) {
+                ErrorListening::setPathToErrorView($fullPathToErrorView);
             }
+
+
+            // Inicia a resolução da rota selecionada
+            // pela própria Aplicação
+            $this->targetApplication->run();
         }
-*/
-
-            /*
-                // Seta para a aplicação iniciada as 
-                // suas próprias configurações
-                $this->targetApplication->configureApplication();
+    }
 
 
-                // Se a aplicação iniciada tem uma página própria para
-                // amostragem de erros, registra-a no manipulador de erros.
-                $fullPathToErrorView = $this->applicationConfig->getFullPathToErrorView();
-                if ($fullPathToErrorView !== null) {
-                    ErrorListening::setPathToErrorView($fullPathToErrorView);
-                }
 
-                // Inicia a aplicação em si.
-                $this->targetApplication->run();
-            */
-        }
+
+
+    /**
+     * Usado para testes em desenvolvimento.
+     * Retorna um valor interno que poderá ser aferido
+     * em ambiente de testes.
+     *
+     * @return      mixed
+     */
+    public function getTestViewDebug()
+    {
+        return $this->targetApplication->getTestViewDebug();
     }
 }

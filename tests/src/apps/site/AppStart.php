@@ -15,6 +15,9 @@ use AeonDigital\EnGarde\DomainApplication as DomainApplication;
  */
 class AppStart extends DomainApplication
 {
+
+
+
     public function configureApplication() : void
     {
         $this->applicationConfig->setLocales(["pt-BR", "en-US"]);
@@ -22,4 +25,5 @@ class AppStart extends DomainApplication
         $this->applicationConfig->setIsUseLabels(true);
         $this->applicationConfig->setPathToErrorView("/views/_shared/errorView.phtml");
     }
+
 }

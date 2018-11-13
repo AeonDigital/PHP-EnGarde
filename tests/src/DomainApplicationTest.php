@@ -22,6 +22,26 @@ class DomainApplicationTest extends TestCase
         return new \AeonDigital\Http\Tools\ServerConfig($_SERVER);
     }
 
+    private function retrieveServerRequest()
+    {
+        $serverConfig = new \AeonDigital\Http\Tools\ServerConfig(null, true);
+        $serverConfig->setHttpTools(new \AeonDigital\Http\Tools\Tools());
+
+        return $serverConfig->getHttpTools()->createServerRequest(
+            $serverConfig->getRequestMethod(),
+            $serverConfig->getCurrentURI(),
+            $serverConfig->getRequestHTTPVersion(),
+            $serverConfig->getHttpTools()->createHeaderCollection($serverConfig->getRequestHeaders()),
+            $serverConfig->getHttpTools()->createStreamFromBodyRequest(),
+            $serverConfig->getHttpTools()->createCookieCollection($serverConfig->getRequestCookies()),
+            $serverConfig->getHttpTools()->createQueryStringCollection($serverConfig->getRequestQueryStrings()),
+            $serverConfig->getHttpTools()->createFileCollection($serverConfig->getRequestFiles()),
+            $serverConfig->getServerVariables(),
+            $serverConfig->getHttpTools()->createCollection(),
+            $serverConfig->getHttpTools()->createCollection()
+        );
+    }
+
     private function retrieveDomainConfig()
     {
         $domainConfig = new \AeonDigital\EnGarde\Config\DomainConfig();
@@ -75,58 +95,32 @@ class DomainApplicationTest extends TestCase
     }
 
 
-    public function test_method_getset_server_config()
+    public function test_method_set_commom_properties()
     {
         $nMock = new AppConfig();
-        $serverConfig = $this->retrieveServerConfig();
-        $nMock->setServerConfig($serverConfig);
-
-        $this->assertSame($serverConfig, $nMock->getServerConfig());
-    }
-
-
-    public function test_method_getset_domain_config()
-    {
-        $nMock = new AppConfig();
+        
         $domainConfig = $this->retrieveDomainConfig();
         $nMock->setDomainConfig($domainConfig);
 
-        $this->assertSame($domainConfig, $nMock->getDomainConfig());
-    }
+        $serverConfig = $this->retrieveServerConfig();
+        $nMock->setServerConfig($serverConfig);
 
+        $serverRequest = $this->retrieveServerRequest();
+        $nMock->setServerRequest($serverRequest);
 
-    public function test_method_getset_application_config()
-    {
-        $nMock = new AppConfig();
-        $domainConfig       = $this->retrieveDomainConfig();
         $applicationConfig  = $this->retrieveApplicationConfig(
                                 $domainConfig->getApplicationName(),
                                 $domainConfig->getRootPath());
-
         $nMock->setApplicationConfig($applicationConfig);
 
-        $this->assertSame($applicationConfig, $nMock->getApplicationConfig());
-    }
 
-
-    public function test_method_getset_route_config()
-    {
-        $nMock = new AppConfig();
         $routeConfig = $this->retrieveRouteConfig();
-        
         $nMock->setRouteConfig($routeConfig);
-        $this->assertSame($routeConfig, $nMock->getRouteConfig());
-    }
 
 
-    public function test_method_getset_raw_route_config()
-    {
-        $nMock = new AppConfig();
         $val = ["prop1" => "val1", "prop2" => "val2"];
-        
         $nMock->setRawRouteConfig($val);
-        $this->assertSame($val, $nMock->getRawRouteConfig());
+
+        $this->assertTrue(true);
     }
-
-
 }

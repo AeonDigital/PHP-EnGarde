@@ -64,7 +64,6 @@ class Home
 
         "isDownload" => false,
         "downloadFileName" => "bem_vindo",
-
         "middlewares" => ["route_mid_01", "route_mid_02", "route_mid_03"]
     ];
     public function default()
