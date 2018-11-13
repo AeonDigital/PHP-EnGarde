@@ -9,10 +9,8 @@ use AeonDigital\EnGarde\DomainManager as DomainManager;
 require_once __DIR__ . "/../phpunit.php";
 
 
-
-
-
-
+// Ajustar os testes daqui para funcionarem quando executados em lote.
+// Prosseguir com o processamento da rota em si
 
 class DomainManagerTest extends TestCase
 {
@@ -37,6 +35,7 @@ class DomainManagerTest extends TestCase
         $serverPort = 80,
         $serverMethod = "GET",
         $serverURI = "/",
+        $serverURIQS = null,
         $serverScript = "/index.php",
         $userAgend = "Mozilla\/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko\/20100101 Firefox\/56.0",
         $accept = "text\/html, application\/xhtml+xml, application\/xml;q=0.9, *\/*;q=0.8",
@@ -67,7 +66,7 @@ class DomainManagerTest extends TestCase
                 "REQUEST_URI" => $serverURI,
                 "SCRIPT_NAME" => $serverScript,
                 "SCRIPT_FILENAME" => $this->rootPath . $serverScript,
-                "QUERY_STRING" => "qskey1=valor 1&qskey2=valor 2",
+                "QUERY_STRING" => $serverURIQS,
                 "PHP_SELF" => $serverScript,
                 "HTTP_HOST" => $serverDomain,
                 "HTTP_COOKIE" => "first=primeiro+valor%3A+rianna%40gmail.com; second=segundo+valor%3A+http%3A%2F%2Faeondigital.com.br",
@@ -94,9 +93,12 @@ class DomainManagerTest extends TestCase
         return $nMock;
     }
 
-    protected function executeRequest($serverMethod = "GET", $serverURI = "/") : ServerConfig
-    {
-        return $this->retrieveServerConfigToTest(true, "200.200.100.50", "test.server.com.br", 80, $serverMethod, $serverURI);
+    protected function executeRequest(
+        $serverMethod = "GET", 
+        $serverURI = "/", 
+        $querystring = null
+    ) : ServerConfig {
+        return $this->retrieveServerConfigToTest(true, "200.200.100.50", "test.server.com.br", 80, $serverMethod, $serverURI, $querystring);
     }
 
 
@@ -231,7 +233,7 @@ class DomainManagerTest extends TestCase
     public function test_check_response_to_TRACE()
     {
         $this->domainConfigFileName = "domain-config-testview.php";
-        $serverConfig   = $this->executeRequest("TRACE", "/");
+        $serverConfig   = $this->executeRequest("TRACE", "/home?q1=p1&q2=v2#tothis");
         $enGarde        = new DomainManager($serverConfig);
         $this->assertTrue(is_a($enGarde, DomainManager::class));
         
@@ -244,12 +246,7 @@ class DomainManagerTest extends TestCase
         $objExpected    = json_decode($expected);
         $objOutput      = json_decode((string)$output->getBody());
 
-        $objExpected->Date = $objOutput->Date;
-
         //file_put_contents($tgtPathToExpected, (string)$output->getBody());
-        $this->assertEquals($objExpected, $objOutput);
+        $this->assertEquals($objExpected->requestData, $objOutput->requestData);
     }
-
-
-
 }

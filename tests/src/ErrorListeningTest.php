@@ -8,7 +8,7 @@ require_once __DIR__ . "/../phpunit.php";
 
 
 
-
+// Ajustar os testes daqui para funcionarem quando executados em lote.
 
 
 

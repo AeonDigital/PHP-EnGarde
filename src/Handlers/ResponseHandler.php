@@ -37,6 +37,12 @@ class ResponseHandler implements iResponseHandler
 
 
     /**
+     * Data e Hora da criação desta instância.
+     *
+     * @var         DateTime
+     */
+    private $now = null;
+    /**
      * Método HTTP que está sendo usado para efetuar
      * a requisição atual.
      *
@@ -170,6 +176,7 @@ class ResponseHandler implements iResponseHandler
         $this->setRawRouteConfig($rawRouteConfig);
         $this->setResponse($response);
 
+        $this->now = new \DateTime();
         $this->useMethod = $serverRequest->getMethod();
     }
 
@@ -330,13 +337,12 @@ class ResponseHandler implements iResponseHandler
     private function prepareResponseHeaders() : void
     {
         // Prepara os headers que serão enviados.
-        $now = new \DateTime();
         $this->useHeaders = [
             "Framework"             => "EnGarde!; version=" . $this->domainConfig->getVersion(),
             "Application"           => $this->applicationConfig->getName(),
             "Content-Type"          => $this->useMimeType . "; charset=utf-8",
             "Content-Language"      => $this->useLocale,
-            "Date"                  => $now->format("D, d M Y H:i:s")
+            "Date"                  => $this->now->format("D, d M Y H:i:s")
         ];
 
         if ($this->isDownload === true) {
@@ -417,54 +423,41 @@ class ResponseHandler implements iResponseHandler
         $this->response = $this->response->withHeaders($this->useHeaders, true);
 
 
+
         // Prepara o Body a ser enviado
+        $uFiles = $this->serverRequest->getUploadedFiles();
+        $postedFiles = [];
+        foreach ($uFiles as $file) {
+            $postedFiles[] = $file->getClientFilename();
+        }
+        if ($postedFiles === []) { $postedFiles = null; }
+
+
         $useBody = [
-            "Date" => new DateTime(),
-            "URI" => [
-
+            "date"          => $this->now->format("D, d M Y H:i:s"),
+            "requestIP"     => $this->serverConfig->getClientIP(),
+            "requestURI"       => [
+                "protocol"          => $this->serverRequest->getUri()->getScheme(),
+                "version"           => $this->serverConfig->getRequestHTTPVersion(),
+                "port"              => $this->serverConfig->getRequestPort(),
+                "method"            => $this->serverConfig->getRequestMethod(),
+                "domain"            => $this->serverRequest->getUri()->getHost(),
+                "path"              => $this->serverRequest->getUri()->getPath(),
+                "query"             => $this->serverRequest->getUri()->getQuery(),
+                "fragment"          => $this->serverRequest->getUri()->getFragment()
             ],
-            "Request" => [
-
-            ],
-            "SendData" => [
-
-            ],
-            "protocol"  => $this->serverRequest->getUri()->getScheme(),
-            "protocol-version" => $this->serverRequest->getProtocolVersion(),
-            "protocol-port" => "",
-            "http-method" => ""
+            "headers"       => $this->serverConfig->getRequestHeaders(),
+            "requestData" => [
+                "queryString"       => $this->serverRequest->getQueryParams(),
+                "cookies"           => $this->serverRequest->getCookieParams(),
+                "postedData"        => $this->serverRequest->getParsedBody(),
+                "postedFiles"       => $postedFiles
+            ]
         ];
-        /*$useBody        = $this->useHeaders;
-        $showAllValues  = ($this->domainConfig->getIsDebugMode() === true && $this->domainConfig->getEnvironmentType() !== "production");
-        $allowedValues  = [
-            "routes", "acceptMimes", "relationedRoutes", "description", "devDescription", "metaData"
-        ];
-
-        foreach ($this->rawRouteConfig as $method => $config) {
-            $cfg = [];
-
-            foreach ($config as $k => $v) {
-                if (in_array($k, $allowedValues) === true || $showAllValues === true) {
-                    $cfg[$k] = $v;
-                }
-            }
-
-            $useBody[$method] = $cfg;
-        }*/
 
         $body = $this->response->getBody();
         $body->write(json_encode($useBody));
         $this->response->withBody($body);
-        
-        /*
-          Método para desenvolvedores.  
-Retorna o mesmo conteúdo que foi enviado originalmente pelo UA.  
-Ajuda na verificação do que está sendo enviado e do que o server está recebendo.  
-         */
-        
-        // Prosseguir daqui... ver o que é que será montado para enviar ao UA
-        // caso ocorra um TRACE.
-        // Verificar dados que existem em "serverRequest" e montar um retorno
     }
 
 
