@@ -27,12 +27,9 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
         ),
         'relationedRoutes' => NULL,
         'description' => 'Descrição genérica no controller.',
@@ -98,15 +95,12 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
         ),
         'relationedRoutes' => 
         array (
@@ -172,15 +166,12 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
         ),
         'relationedRoutes' => 
         array (
@@ -249,15 +240,12 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
         ),
         'relationedRoutes' => 
         array (
@@ -323,15 +311,12 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
         ),
         'relationedRoutes' => 
         array (
@@ -395,12 +380,9 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
         ),
         'relationedRoutes' => NULL,
         'description' => 'Evoca a view de lista.',
@@ -459,12 +441,9 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
         ),
         'relationedRoutes' => NULL,
         'description' => 'Evoca a view para o formulário de contato.',
@@ -521,12 +500,9 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
         ),
         'relationedRoutes' => NULL,
         'description' => 'Recebe os dados submetidos pelo formulário de contato, processa-os e retorna o resultado.',
@@ -590,12 +566,9 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
         ),
         'relationedRoutes' => NULL,
         'description' => 'Evoca a view de lista.',
@@ -656,12 +629,9 @@
         'isUseXHTML' => true,
         'middlewares' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
         ),
         'relationedRoutes' => NULL,
         'description' => 'Evoca a view de lista.',

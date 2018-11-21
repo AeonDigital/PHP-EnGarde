@@ -5,14 +5,14 @@
   'http' => 
   array (
     'code' => 501,
-    'message' => 'Not Implemented',
+    'message' => 'custom reason phrase',
     'protocol' => 'http',
     'method' => 'GET',
   ),
   'debugLog' => 
   array (
     'code' => 501,
-    'message' => 'Not Implemented',
+    'message' => 'custom reason phrase',
     'file' => '',
     'line' => 0,
     'traceLog' => 

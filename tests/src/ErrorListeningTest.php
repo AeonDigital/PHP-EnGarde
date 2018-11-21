@@ -8,7 +8,7 @@ require_once __DIR__ . "/../phpunit.php";
 
 
 
-// Ajustar os testes daqui para funcionarem quando executados em lote.
+
 
 
 
@@ -17,12 +17,16 @@ class ErrorListeningTest extends TestCase
 
 
 
-    private function provider_setConfigurationToTest($env = "test", $method = "get", $pathToErrorView = null)
-    {
+    private function provider_setConfigurationToTest(
+        $debugMode = false,
+        $env = "test", 
+        $method = "get", 
+        $pathToErrorView = null
+    ) {
         ErrorListening::setContext(
             __DIR__,
             $env,
-            false,
+            $debugMode,
             "http",
             $method,
             $pathToErrorView
@@ -64,6 +68,27 @@ class ErrorListeningTest extends TestCase
             "pathToErrorView"   => null
         ];
         $this->assertSame($val, ErrorListening::getContext());
+
+
+        $val = [
+            "rootPath"          => "\\",
+            "environmentType"   => "testview",
+            "isDebugMode"       => true,
+            "protocol"          => "http",
+            "method"            => "GET",
+            "pathToErrorView"   => ""
+        ];
+
+        ErrorListening::setContext(
+            $val["rootPath"],
+            $val["environmentType"],
+            $val["isDebugMode"],
+            $val["protocol"],
+            $val["method"],
+            $val["pathToErrorView"]
+        );
+        $this->assertSame($val, ErrorListening::getContext());
+
     }
 
 
@@ -77,9 +102,6 @@ class ErrorListeningTest extends TestCase
         $this->assertSame($val, ErrorListening::getContext()["pathToErrorView"]);
     }
 
-    /*
-        ESTES TESTES ESTÃO COMENTADOS POIS CAUSAM ERRO
-        NA VERIFICAÇÃO DE COBERTURA.
 
     public function test_method_onexception() 
     {
@@ -95,9 +117,10 @@ class ErrorListeningTest extends TestCase
             $r = ErrorListening::onException($ex);
             //file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
 
-            $rStr           = var_export($r, true);
-            $expectedStr    = var_export($expected, true);
-            $this->assertSame($expectedStr, $rStr);
+            $this->assertSame($expected["rootPath"], $r["rootPath"]);
+            $this->assertSame($expected["environmentType"], $r["environmentType"]);
+            $this->assertSame($expected["isDebugMode"], $r["isDebugMode"]);
+            $this->assertSame($expected["http"], $r["http"]);
         }
         $this->assertTrue($fail, "Test must fail");
     }
@@ -122,18 +145,19 @@ class ErrorListeningTest extends TestCase
             );
             //file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
 
-            $rStr           = var_export($r, true);
-            $expectedStr    = var_export($expected, true);
-            $this->assertSame($expectedStr, $rStr);
+            $this->assertSame($expected["rootPath"], $r["rootPath"]);
+            $this->assertSame($expected["environmentType"], $r["environmentType"]);
+            $this->assertSame($expected["isDebugMode"], $r["isDebugMode"]);
+            $this->assertSame($expected["http"], $r["http"]);
         }
         $this->assertTrue($fail, "Test must fail");
     }
 
-
+    
     public function test_method_throwhttperror() 
     {
         $this->provider_setConfigurationToTest();
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/throwhttperror.php";
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/throwhttperror-custom.php";
         $expected           = include($tgtPathToExpected);
 
         $r = ErrorListening::throwHTTPError(501, "custom reason phrase");
@@ -141,12 +165,23 @@ class ErrorListeningTest extends TestCase
         $rStr           = var_export($r, true);
         $expectedStr    = var_export($expected, true);
         $this->assertSame($expectedStr, $rStr);
+
+
+
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/throwhttperror.php";
+        $expected           = include($tgtPathToExpected);
+
+        $r = ErrorListening::throwHTTPError(501);
+        //file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
+        $rStr           = var_export($r, true);
+        $expectedStr    = var_export($expected, true);
+        $this->assertSame($expectedStr, $rStr);
     }
 
-
-    public function test_method_testview_json() 
+    
+    public function test_method_testview_json_fail() 
     {
-        $this->provider_setConfigurationToTest("testview", "POST");
+        $this->provider_setConfigurationToTest(false, "testview", "POST");
         $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/testview.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
@@ -166,9 +201,35 @@ class ErrorListeningTest extends TestCase
     }
 
 
+    public function test_method_testview_json_debug() 
+    {
+        $this->provider_setConfigurationToTest(true, "testview", "POST");
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/testview-debug.json";
+        $expected           = file_get_contents($tgtPathToExpected);
+
+        
+        $fail = false;
+        try {
+            $val = 1 / 0;
+        } catch (\Exception $ex) {
+            $fail = true;
+            $r = ErrorListening::onException($ex);
+
+            $rJSON          = json_decode($r);
+            $expectedJSON   = json_decode($expected);
+            
+            //file_put_contents($tgtPathToExpected, $r);
+            $this->assertSame($expectedJSON->code,      $rJSON->code);
+            $this->assertSame($expectedJSON->message,   $rJSON->message);
+            $this->assertSame($expectedJSON->file,      $rJSON->file);
+        }
+        $this->assertTrue($fail, "Test must fail");
+    }
+
+    
     public function test_method_return_testview_nonstyled() 
     {
-        $this->provider_setConfigurationToTest("testview", "GET");
+        $this->provider_setConfigurationToTest(false, "testview", "GET");
         $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/nonstyled.html";
         $expected           = file_get_contents($tgtPathToExpected);
 
@@ -190,7 +251,7 @@ class ErrorListeningTest extends TestCase
     public function test_method_return_testview_custom() 
     {
         $tgtCustomTemplate = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/customErrorView.phtml";
-        $this->provider_setConfigurationToTest("testview", "GET", $tgtCustomTemplate);
+        $this->provider_setConfigurationToTest(false, "testview", "GET", $tgtCustomTemplate);
         $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "errorlistening/custom.html";
         $expected           = file_get_contents($tgtPathToExpected);
 
@@ -207,6 +268,4 @@ class ErrorListeningTest extends TestCase
         }
         $this->assertTrue($fail, "Test must fail");
     }
-    */
-
 }

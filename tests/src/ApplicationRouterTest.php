@@ -236,7 +236,7 @@ class ApplicationRouterTest extends TestCase
         $this->assertTrue(file_exists($appRoutes));
 
 
-        $r = $nMock->selectTargetRawRoute("/site/list/nameasc");
+        $r = $nMock->selectTargetRawRoute("/site/list/nameasc/10");
         $this->assertNotNull($r);
         $this->assertTrue(is_array($r));
     }

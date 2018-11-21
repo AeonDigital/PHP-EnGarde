@@ -118,7 +118,8 @@ final class DomainManager
     private function defineServerConfig(?iServerConfig $serverConfig = null) : iServerConfig
     {
         if ($serverConfig === null) {
-            $serverConfig = new \AeonDigital\Http\Tools\ServerConfig($_SERVER, (ENVIRONMENT === "test"));
+            $isTestEnv = (ENVIRONMENT === "test" || ENVIRONMENT === "testview" || ENVIRONMENT === "localtest");
+            $serverConfig = new \AeonDigital\Http\Tools\ServerConfig($_SERVER, $isTestEnv);
             $serverConfig->setHttpTools(new \AeonDigital\Http\Tools\Tools());
         }
         return $serverConfig;
@@ -128,32 +129,41 @@ final class DomainManager
      * 
      * @param       iServerConfig $serverConfig
      *              Instância "iServerConfig".
+     * 
+     * @param       ?iDomainConfig $domainConfig
+     *              Instância "iDomainConfig" para ser usado pelo domínio.
+     *              Se nenhuma for definida então uma nova será instanciada usando
+     *              os valores encontrados nas constantes globais.
      *
      * @return      iDomainConfig
      */
-    private function defineDomainConfig(iServerConfig $serverConfig) : iDomainConfig
-    {
-        $domainConfig = new \AeonDigital\EnGarde\Config\DomainConfig();
-        $domainConfig->setVersion("0.9.0 [alpha]");
+    private function defineDomainConfig(
+        iServerConfig $serverConfig, 
+        ?iDomainConfig $domainConfig = null
+    ) : iDomainConfig {
+
+        if ($domainConfig === null) {
+            $domainConfig = new \AeonDigital\EnGarde\Config\DomainConfig();
+            $domainConfig->setVersion("0.9.0 [alpha]");
 
 
-        $domainConfig->setEnvironmentType(ENVIRONMENT);
-        $domainConfig->setIsDebugMode(DEBUG_MODE);
-        $domainConfig->setIsUpdateRoutes(UPDATE_ROUTES);
-        $domainConfig->setRootPath($serverConfig->getRootPath());
-        $domainConfig->setHostedApps(HOSTED_APPS);
-        $domainConfig->setDefaultApp(DEFAULT_APP);
-        $domainConfig->setDateTimeLocal(DATETIME_LOCAL);
-        $domainConfig->setTimeOut(REQUEST_TIMEOUT);
-        $domainConfig->setMaxFileSize(REQUEST_MAX_FILESIZE);
-        $domainConfig->setMaxPostSize(REQUEST_MAX_POSTSIZE);
-        $domainConfig->setApplicationClassName(APPLICATION_CLASSNAME);
-        $domainConfig->setPathToErrorView(DEFAULT_ERROR_VIEW);
+            $domainConfig->setEnvironmentType(ENVIRONMENT);
+            $domainConfig->setIsDebugMode(DEBUG_MODE);
+            $domainConfig->setIsUpdateRoutes(UPDATE_ROUTES);
+            $domainConfig->setRootPath($serverConfig->getRootPath());
+            $domainConfig->setHostedApps(HOSTED_APPS);
+            $domainConfig->setDefaultApp(DEFAULT_APP);
+            $domainConfig->setDateTimeLocal(DATETIME_LOCAL);
+            $domainConfig->setTimeOut(REQUEST_TIMEOUT);
+            $domainConfig->setMaxFileSize(REQUEST_MAX_FILESIZE);
+            $domainConfig->setMaxPostSize(REQUEST_MAX_POSTSIZE);
+            $domainConfig->setApplicationClassName(APPLICATION_CLASSNAME);
+            $domainConfig->setPathToErrorView(DEFAULT_ERROR_VIEW);
 
 
-        $domainConfig->setPHPDomainConfiguration();
-        $domainConfig->defineTargetApplication($serverConfig->getRequestPath());
-
+            $domainConfig->setPHPDomainConfiguration();
+            $domainConfig->defineTargetApplication($serverConfig->getRequestPath());
+        }
 
         return $domainConfig;
     }
@@ -277,11 +287,18 @@ final class DomainManager
      *              Instância "iServerConfig" para ser usada pelo domínio. 
      *              Se nenhuma for definida então uma nova será instanciada usando
      *              os valores encontrados nas variáveis globais.
+     * 
+     * @param       ?iDomainConfig $domainConfig
+     *              Instância "iDomainConfig" para ser usado pelo domínio.
+     *              Se nenhuma for definida então uma nova será instanciada usando
+     *              os valores encontrados nas constantes globais.
      */
-    function __construct(?iServerConfig $serverConfig = null)
-    {
+    function __construct(
+        ?iServerConfig $serverConfig = null,
+        ?iDomainConfig $domainConfig = null
+    ) {
         $this->serverConfig         = $this->defineServerConfig($serverConfig);
-        $this->domainConfig         = $this->defineDomainConfig($this->serverConfig);
+        $this->domainConfig         = $this->defineDomainConfig($this->serverConfig, $domainConfig);
         $this->registerErrorListening();
 
         $this->applicationConfig    = $this->defineApplicationConfig($this->domainConfig);
@@ -333,12 +350,12 @@ final class DomainManager
         // E
         // Estando com o debug mode ligado...
         // E
-        // Estando em um ambiente definido como "local"
+        // Estando em um ambiente definido como "local" ou "localtest"
         //
         // força o update de rotas em toda requisição
         if ($this->domainConfig->getIsUpdateRoutes() === true &&
             $this->domainConfig->getIsDebugMode() === true &&
-            $this->domainConfig->getEnvironmentType() === "local") 
+            ($this->domainConfig->getEnvironmentType() === "local" || $this->domainConfig->getEnvironmentType() === "localtest")) 
         {
             $this->applicationRouter->forceUpdateRoutes();
         }

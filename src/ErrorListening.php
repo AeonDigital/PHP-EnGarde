@@ -15,8 +15,6 @@ namespace AeonDigital\EnGarde;
 /**
  * Efetua o tratamento de erros ocorridos em runtime.
  * 
- * @codeCoverageIgnore
- * 
  * @package     AeonDigital\EnGarde
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
@@ -184,7 +182,12 @@ final class ErrorListening
         string $method,
         ?string $pathToErrorView = null
     ) : void {
-        if (self::$environmentType === null || self::$environmentType === "test" || self::$environmentType === "testview") 
+        $isTestEnv = (  self::$environmentType === null ||
+                        self::$environmentType === "test" || 
+                        self::$environmentType === "testview" || 
+                        self::$environmentType === "localtest");
+
+        if ($isTestEnv === true) 
         {
             self::$rootPath         = to_system_path($rootPath) . DIRECTORY_SEPARATOR;
             self::$environmentType  = $environmentType;
@@ -222,7 +225,12 @@ final class ErrorListening
      */
     static public function clearContext() : void
     {
-        if (self::$environmentType === null || self::$environmentType === "test" || self::$environmentType === "testview") 
+        $isTestEnv = (  self::$environmentType === null ||
+                        self::$environmentType === "test" || 
+                        self::$environmentType === "testview" || 
+                        self::$environmentType === "localtest");
+
+        if ($isTestEnv === true) 
         {
             self::$rootPath         = null;
             self::$environmentType  = null;
@@ -321,7 +329,9 @@ final class ErrorListening
         $code       = $viewData["http"]["code"];
         $message    = $viewData["http"]["message"];
         if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "production") {
+            // @codeCoverageIgnoreStart  
             $message = $viewData["debugLog"]["message"];
+            // @codeCoverageIgnoreEnd
         }
 
 
@@ -339,7 +349,9 @@ final class ErrorListening
         }
 
         if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "production") {
+            // @codeCoverageIgnoreStart  
             $str .= '        <pre>' . PHP_EOL . print_r($viewData["debugLog"], true) . '</pre>' . PHP_EOL;
+            // @codeCoverageIgnoreEnd
         }
 
         $str .= '    </body>' . PHP_EOL;
@@ -425,7 +437,9 @@ final class ErrorListening
             return $viewData;
         } 
         else {
+            // @codeCoverageIgnoreStart  
             return self::sendToUA($viewData);
+            // @codeCoverageIgnoreEnd
         }
     }
     /**
@@ -510,7 +524,9 @@ final class ErrorListening
             return $viewData;
         } 
         else {
+            // @codeCoverageIgnoreStart  
             return self::sendToUA($viewData);
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -569,7 +585,9 @@ final class ErrorListening
             return $viewData;
         } 
         else {
+            // @codeCoverageIgnoreStart  
             return self::sendToUA($viewData);
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -593,9 +611,10 @@ final class ErrorListening
         $http = $viewData["http"];
         $str = (($http["method"] === "GET") ? self::prepareXHTML($viewData) : self::prepareJSON($viewData));
 
-        if ($viewData["environmentType"] === "testview") {
+        if ($viewData["environmentType"] === "testview" || $viewData["environmentType"] === "localtest") {
             return $str;
         } else {
+            // @codeCoverageIgnoreStart  
             $strHeader = $http["protocol"] . " " . $http["code"] . " " . $http["message"];
             header("Cache-Control: no-cache, must-revalidate");
             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -604,6 +623,7 @@ final class ErrorListening
 
             echo $str;
             exit();
+            // @codeCoverageIgnoreEnd
         }
     }
 }

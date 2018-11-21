@@ -326,7 +326,11 @@ final class ApplicationRouter implements iApplicationRouter
                         $allowedMethods = null;
 
                         if (isset($baseRouteConfig["method"]) === false) {
-                            $useRouteConfig[] = $baseRouteConfig;
+                            // @codeCoverageIgnoreStart  
+                            // $useRouteConfig[] = $baseRouteConfig;
+                            $err = "Invalid Route Register. Method HTTP is not defined.";
+                            throw new \RuntimeException($err);
+                            // @codeCoverageIgnoreEnd  
                         } else {
                             if (is_string($baseRouteConfig["method"]) === true) {
                                 $allowedMethods = [$baseRouteConfig["method"]];

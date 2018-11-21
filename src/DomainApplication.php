@@ -49,8 +49,10 @@ abstract class DomainApplication implements iApplication
         // Se este não for o método a ser executado para 
         // resolver esta rota, evoca o método alvo.
         if ($this->runMethodName !== "run") {
+            // @codeCoverageIgnoreStart  
             $exec = $this->runMethodName;
             $this->$exec();
+            // @codeCoverageIgnoreEnd  
         } 
         else {
             $targetMethod       = strtoupper($this->serverRequest->getMethod());

@@ -32,7 +32,13 @@ const DEFAULT_APP = "NewApplication";
  * Esta constante só causa algum efeito perceptível se for devidamente
  * implementada pelas soluções instaladas no domínio.
  *
- * Valores comuns : "production", "development, "local", "test"
+ * Valores comuns: 
+ *  - "production"  :   Indica que trata-se de um ambiente de produção.
+ *  - "development" :   Indica um ambiente de desenvolvimento e homologação.
+ *  - "local"       :   Trata-se de um ambiente local; Máquina local de um programador.
+ *  - "test"        :   Quando estiver efetuando testes unitários.
+ *  - "testview"    :   Para testes unitários que efetuam validação de retorno de Views.
+ *  - "localtest"   :   Deve funcionar tal qual "local" mas indica uma configuração para testes unitários.
  *
  * @var     ENVIRONMENT
  */

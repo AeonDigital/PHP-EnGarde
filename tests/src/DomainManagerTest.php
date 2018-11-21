@@ -5,12 +5,13 @@ use PHPUnit\Framework\TestCase;
 use AeonDigital\Http\Tools\ServerConfig as ServerConfig;
 use AeonDigital\EnGarde\ErrorListening as ErrorListening;
 use AeonDigital\EnGarde\DomainManager as DomainManager;
+use AeonDigital\EnGarde\Config\DomainConfig as DomainConfig;
 
 require_once __DIR__ . "/../phpunit.php";
 
 
-// Ajustar os testes daqui para funcionarem quando executados em lote.
-// Prosseguir com o processamento da rota em si
+
+
 
 class DomainManagerTest extends TestCase
 {
@@ -20,7 +21,6 @@ class DomainManagerTest extends TestCase
 
 
     protected $rootPath = null;
-    protected $domainConfigFileName = "domain-config-local.php";
 
 
     /**
@@ -28,7 +28,7 @@ class DomainManagerTest extends TestCase
      *
      * @return      ServerConfig
      */
-    protected function retrieveServerConfigToTest(
+    protected function provider_ServerConfig(
         $autoSet = true,
         $serverIP = "200.200.100.50",
         $serverDomain = "test.server.com.br",
@@ -47,7 +47,6 @@ class DomainManagerTest extends TestCase
         $nMock->setServerVariables(null);
         
         $this->rootPath = to_system_path(__DIR__ . DIRECTORY_SEPARATOR . "apps");
-        require_once $this->rootPath . DIRECTORY_SEPARATOR . $this->domainConfigFileName;
         require_once $this->rootPath . DIRECTORY_SEPARATOR . "site/AppStart.php";
         require_once $this->rootPath . DIRECTORY_SEPARATOR . "site/controllers/Home.php";
 
@@ -93,12 +92,57 @@ class DomainManagerTest extends TestCase
         return $nMock;
     }
 
-    protected function executeRequest(
+    protected function provider_ServerConfig_With_Request(
         $serverMethod = "GET", 
         $serverURI = "/", 
         $querystring = null
     ) : ServerConfig {
-        return $this->retrieveServerConfigToTest(true, "200.200.100.50", "test.server.com.br", 80, $serverMethod, $serverURI, $querystring);
+        return $this->provider_ServerConfig(
+            true, 
+            "200.200.100.50", 
+            "test.server.com.br", 
+            80, 
+            $serverMethod, 
+            $serverURI, 
+            $querystring
+        );
+    }
+
+    protected function provider_DomainConfig($env, $serverConfig) 
+    {
+        $domainConfig = new \AeonDigital\EnGarde\Config\DomainConfig();
+        $domainConfig->setVersion("0.9.0 [alpha]");
+
+
+        $domainConfig->setEnvironmentType($env);
+        $domainConfig->setIsDebugMode(true);
+        $domainConfig->setIsUpdateRoutes(true);
+        $domainConfig->setRootPath($serverConfig->getRootPath());
+        $domainConfig->setHostedApps(["site", "blog"]);
+        $domainConfig->setDefaultApp("site");
+        $domainConfig->setDateTimeLocal("America/Sao_Paulo");
+        $domainConfig->setTimeOut(1200);
+        $domainConfig->setMaxFileSize(100);
+        $domainConfig->setMaxPostSize(100);
+        $domainConfig->setApplicationClassName("AppStart");
+        $domainConfig->setPathToErrorView("errorView.phtml");
+
+
+        $domainConfig->setPHPDomainConfiguration();
+        $domainConfig->defineTargetApplication($serverConfig->getRequestPath());
+
+        return $domainConfig;
+    }
+
+    protected function provider_DomainManager($env, $serverConfig = null) : DomainManager
+    {
+        if ($serverConfig === null) { $serverConfig = $this->provider_ServerConfig(true); }
+        $domainConfig = $this->provider_DomainConfig($env, $serverConfig);
+        
+        $obj = new DomainManager($serverConfig, $domainConfig);
+        $this->assertTrue(is_a($obj, DomainManager::class));
+
+        return $obj;
     }
 
 
@@ -107,14 +151,11 @@ class DomainManagerTest extends TestCase
 
     public function test_constructor_register_errorlistening()
     {
-        $serverConfig = $this->retrieveServerConfigToTest(true);
-        $enGarde = new DomainManager($serverConfig);
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
-
+        $enGarde = $this->provider_DomainManager("localtest");
 
         $expected = [
             "rootPath"          => $this->rootPath . DS,
-            "environmentType"   => "local",
+            "environmentType"   => "localtest",
             "isDebugMode"       => true,
             "protocol"          => "http",
             "method"            => "GET",
@@ -125,37 +166,27 @@ class DomainManagerTest extends TestCase
         $this->assertSame($expected, $errorContext);
     }
 
-
-
     public function test_constructor_register_routes()
     {
-        $serverConfig = $this->retrieveServerConfigToTest(true);
+        $enGarde = $this->provider_DomainManager("localtest");
 
         $pathToAppRoutes = $this->rootPath . DS . "site/AppRoutes.php";
         if (file_exists($pathToAppRoutes) === true) {
             unlink($pathToAppRoutes);
         }
 
-        $enGarde = new DomainManager($serverConfig);
         $enGarde->prepareRouteBeforeRun();
-        
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
         $this->assertTrue(file_exists($pathToAppRoutes));
     }
 
-
-
     public function test_method_run()
     {
-        $serverConfig = $this->retrieveServerConfigToTest(true);
-        $enGarde = new DomainManager($serverConfig);
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
-
+        $enGarde = $this->provider_DomainManager("localtest");
         $enGarde->run();
 
         $expected = [
             "rootPath"          => to_system_path($this->rootPath) . DS,
-            "environmentType"   => "local",
+            "environmentType"   => "localtest",
             "isDebugMode"       => true,
             "protocol"          => "http",
             "method"            => "GET",
@@ -168,12 +199,12 @@ class DomainManagerTest extends TestCase
 
 
 
+
+
     public function test_check_response_to_error_404()
     {
-        $this->domainConfigFileName = "domain-config-testview.php";
-        $serverConfig   = $this->executeRequest("GET", "/non-exist-route/for/this");
-        $enGarde        = new DomainManager($serverConfig);
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
+        $serverConfig   = $this->provider_ServerConfig_With_Request("GET", "/non-exist-route/for/this");
+        $enGarde        = $this->provider_DomainManager("testview", $serverConfig);
         
         $enGarde->run();
         $output = $enGarde->getTestViewDebug();
@@ -186,14 +217,11 @@ class DomainManagerTest extends TestCase
     }
 
 
-
     public function test_check_response_to_error_501()
     {
-        $this->domainConfigFileName = "domain-config-testview.php";
-        $serverConfig   = $this->executeRequest("PUT", "/");
-        $enGarde        = new DomainManager($serverConfig);
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
-        
+        $serverConfig   = $this->provider_ServerConfig_With_Request("PUT", "/");
+        $enGarde        = $this->provider_DomainManager("testview", $serverConfig);
+
         $enGarde->run();
         $output = $enGarde->getTestViewDebug();
 
@@ -205,14 +233,11 @@ class DomainManagerTest extends TestCase
     }
 
 
-
     public function test_check_response_to_OPTIONS()
     {
-        $this->domainConfigFileName = "domain-config-testview.php";
-        $serverConfig   = $this->executeRequest("OPTIONS", "/");
-        $enGarde        = new DomainManager($serverConfig);
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
-        
+        $serverConfig   = $this->provider_ServerConfig_With_Request("OPTIONS", "/");
+        $enGarde        = $this->provider_DomainManager("testview", $serverConfig);
+
         $enGarde->run();
         $output = $enGarde->getTestViewDebug();
 
@@ -229,14 +254,11 @@ class DomainManagerTest extends TestCase
     }
 
 
-
     public function test_check_response_to_TRACE()
     {
-        $this->domainConfigFileName = "domain-config-testview.php";
-        $serverConfig   = $this->executeRequest("TRACE", "/home?q1=p1&q2=v2#tothis");
-        $enGarde        = new DomainManager($serverConfig);
-        $this->assertTrue(is_a($enGarde, DomainManager::class));
-        
+        $serverConfig   = $this->provider_ServerConfig_With_Request("TRACE", "/home?q1=p1&q2=v2#tothis");
+        $enGarde        = $this->provider_DomainManager("testview", $serverConfig);
+
         $enGarde->run();
         $output = $enGarde->getTestViewDebug();
 

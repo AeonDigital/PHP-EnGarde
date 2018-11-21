@@ -480,8 +480,11 @@ class ResponseHandler implements iResponseHandler
     {
         // Apenas se não estiver em um ambiente
         // de testes.
-        if ($this->domainConfig->getEnvironmentType() !== "test" &&
-            $this->domainConfig->getEnvironmentType() !== "testview") 
+        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" || 
+                        $this->domainConfig->getEnvironmentType() === "testview" || 
+                        $this->domainConfig->getEnvironmentType() === "localtest");
+
+        if ($isTestEnv === false) 
         {
             // Envia os Headers para o UA
             $useHeaders = $this->response->getHeaders();

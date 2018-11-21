@@ -61,7 +61,14 @@ interface iDomainConfig
 
     /**
      * Retorna o tipo de ambiente que o domínio está rodando no momento.
-     * Valores comuns são: "production", "development", "local", "test"
+     *
+     * Valores comuns: 
+     *  - "production"  :   Indica que trata-se de um ambiente de produção.
+     *  - "development" :   Indica um ambiente de desenvolvimento e homologação.
+     *  - "local"       :   Trata-se de um ambiente local; Máquina local de um programador.
+     *  - "test"        :   Quando estiver efetuando testes unitários.
+     *  - "testview"    :   Para testes unitários que efetuam validação de retorno de Views.
+     *  - "localtest"   :   Deve funcionar tal qual "local" mas indica uma configuração para testes unitários.
      *
      * @return      string
      */
