@@ -271,4 +271,25 @@ class DomainManagerTest extends TestCase
         //file_put_contents($tgtPathToExpected, (string)$output->getBody());
         $this->assertEquals($objExpected->requestData, $objOutput->requestData);
     }
+
+
+    public function test_check_response_to_GET()
+    {
+        $serverConfig   = $this->provider_ServerConfig_With_Request("GET", "/home");
+        $enGarde        = $this->provider_DomainManager("testview", $serverConfig);
+
+        $enGarde->run();
+        $output = $enGarde->getTestViewDebug();
+
+        echo $output;
+
+        //$tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseTRACE.json";
+        //$expected           = file_get_contents($tgtPathToExpected);
+
+        //$objExpected    = json_decode($expected);
+        //$objOutput      = json_decode((string)$output->getBody());
+
+        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
+        //$this->assertEquals($objExpected->requestData, $objOutput->requestData);
+    }
 }

@@ -6,8 +6,8 @@ namespace AeonDigital\EnGarde;
 use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
 use AeonDigital\EnGarde\ErrorListening as ErrorListening;
 use AeonDigital\EnGarde\Handlers\ResponseHandler as ResponseHandler;
-
-
+use AeonDigital\EnGarde\Handlers\MainHandler as MainHandler;
+use AeonDigital\EnGarde\Handlers\RouteHandler as RouteHandler;
 
 
 
@@ -85,7 +85,7 @@ abstract class DomainApplication implements iApplication
                 else {
 
                     // Conforme o método definido
-                    switch($targetMethod) {
+                    switch ($targetMethod) {
                         case "OPTIONS":
                         case "TRACE":
 
@@ -113,6 +113,11 @@ abstract class DomainApplication implements iApplication
                             break;
 
                         default:
+                            // Inicia o manipulador principal para os middlewares e 
+                            // para a rota selecionada.
+                            //$mainHandler = new MainHandler(new RouteHandler($this));
+
+                            $this->testViewDebug = "aqui!";
                             break;
                     }
                 }

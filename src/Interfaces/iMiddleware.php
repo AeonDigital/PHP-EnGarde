@@ -1,10 +1,10 @@
 <?php
 declare (strict_types = 1);
 
-namespace AeonDigital\AeonDigital\EnGarde\Interfaces;
+namespace AeonDigital\EnGarde\Interfaces;
 
-use AeonDigital\AeonDigital\EnGarde\Interfaces\iRequestHandler as iRequestHandler;
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
+use AeonDigital\Http\Message\Interfaces\iRequestHandler as iRequestHandler;
 use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 
 
@@ -16,7 +16,7 @@ use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
  * Define um processo a ser executado para resolver requisições e 
  * produzir uma resposta para o UA.
  * 
- * @package     AeonDigital\AeonDigital\EnGarde
+ * @package     AeonDigital\EnGarde
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
@@ -26,17 +26,13 @@ interface iMiddleware
 
     /**
      * Esta interface é uma especialização da interface
-     * "Psr\Http\Server\RequestHandlerInterface" que utiliza as respectivas
-     * implementações *AeonDigital* para executar as mesmas tarefas mas com 
-     * o ganho de suas funções extras.
+     * "Psr\Http\Server\MiddlewareInterface" mas que utiliza as 
+     * classes derivadas das interfaces dos projetos *AeonDigital* para 
+     * executar as mesmas tarefas mas com o ganho de algumas funções extras.
      * 
      * Uma vez que todas as classes definidas aqui implementam
-     * também as interfaces PSR originais é esperado que tais aplicações
-     * possam usar Middlewares PSR.
-     * 
-     * Já os Middlewares que usarem esta interface poderão receber os 
-     * respectivos objetos *AeonDigital* e assim usufruir das facilidades
-     * extra adicionadas nos mesmos.
+     * também as interfaces PSR originais é garantido a compatibilidade entre
+     * estes projetos e outros que utilizem Middlewares PSR.
      */
 
 
@@ -57,5 +53,5 @@ interface iMiddleware
      * 
      * @return      iResponse
      */
-    public function process(iServerRequest $request, iRequestHandler $handler) : iResponse;
+    function process(iServerRequest $request, iRequestHandler $handler) : iResponse;
 }

@@ -31,3 +31,11 @@ require_once $srcDir . "/DomainManager.php";
 
 require_once $srcDir . "/Interfaces/iResponseHandler.php";
 require_once $srcDir . "/Handlers/ResponseHandler.php";
+
+require_once $srcDir . "/Interfaces/iController.php";
+require_once $srcDir . "/DomainController.php";
+require_once $conDir . "/AppController.php";
+
+require_once $srcDir . "/Interfaces/iRequestHandler.php";
+require_once $srcDir . "/Interfaces/iMiddleware.php";
+require_once $srcDir . "/Handlers/MainHandler.php";

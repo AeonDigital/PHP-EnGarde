@@ -12,7 +12,7 @@
     -->
 
     <testsuites>
-        <testsuite name="AeonDigital-EnGarde">
+        <testsuite name="AeonDigital-PHP-EnGarde">
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
@@ -22,6 +22,7 @@
             <file>src/RouteConfigTest.php</file>
             <file>src/ApplicationRouterTest.php</file>
             <file>src/DomainApplicationTest.php</file>
+            <file>src/DomainControllerTest.php</file>
             <file>src/DomainManagerTest.php</file>
         </testsuite>
     </testsuites>

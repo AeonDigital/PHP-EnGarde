@@ -65,7 +65,7 @@ interface iResponseHandler
     /**
      * Define a configuração para a Aplicação corrente.
      *
-     * @param       iDomainConfig $applicationConfig
+     * @param       iApplicationConfig $applicationConfig
      *              Configuração da Aplicação.
      * 
      * @return      void

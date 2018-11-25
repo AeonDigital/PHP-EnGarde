@@ -3,9 +3,9 @@ declare (strict_types = 1);
 
 namespace AeonDigital\EnGarde\Traits;
 
+use AeonDigital\EnGarde\Interfaces\iDomainConfig as iDomainConfig;
 use AeonDigital\Http\Tools\Interfaces\iServerConfig as iServerConfig;
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\EnGarde\Interfaces\iDomainConfig as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\iApplicationConfig as iApplicationConfig;
 use AeonDigital\EnGarde\Interfaces\iRouteConfig as iRouteConfig;
 

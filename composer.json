@@ -7,6 +7,7 @@
     "require": {
         "php": ">=7.1.14",
         "psr/http-message": "dev-master",
+        "psr/http-server-middleware": "dev-master",
         "aeondigital/phpcoreextension": "dev-master",
         "aeondigital/phptraits": "dev-master",
         "aeondigital/phpstream": "dev-master",
@@ -14,11 +15,14 @@
         "aeondigital/phphttpdata": "dev-master",
         "aeondigital/phphttpuri": "dev-master",
         "aeondigital/phphttpmessage": "dev-master",
-        "aeondigital/phphttptools": "dev-master"
+        "aeondigital/phphttptools": "dev-master",
+        "aeondigital/phpengardeconfig": "dev-master",
+        "aeondigital/phpengarderequestmanager": "dev-master"
     },
     "require-dev": {
         "php": ">=7.1.14",
         "psr/http-message": "dev-master",
+        "psr/http-server-middleware": "dev-master",
         "aeondigital/phpcoreextension": "dev-master",
         "aeondigital/phptraits": "dev-master",
         "aeondigital/phpstream": "dev-master",
@@ -26,7 +30,9 @@
         "aeondigital/phphttpdata": "dev-master",
         "aeondigital/phphttpuri": "dev-master",
         "aeondigital/phphttpmessage": "dev-master",
-        "aeondigital/phphttptools": "dev-master"
+        "aeondigital/phphttptools": "dev-master",
+        "aeondigital/phpengardeconfig": "dev-master",
+        "aeondigital/phpengarderequestmanager": "dev-master"
     },
     "authors": [
         {
