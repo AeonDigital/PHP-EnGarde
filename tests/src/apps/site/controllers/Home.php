@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace site\controllers;
 
-
+use AeonDigital\EnGarde\DomainController as DomainController;
 
 
 
@@ -14,7 +14,7 @@ namespace site\controllers;
 /**
  * Test Controller
  */
-class Home
+class Home extends DomainController
 {
 
     const defaultRouteConfig = [
@@ -62,12 +62,13 @@ class Home
         "isUseCache" => false,
         "cacheTimeout" => (2 * 60),
 
-        "isDownload" => false,
-        "downloadFileName" => "bem_vindo",
+        "responseIsDownload" => false,
+        "responseDownloadFileName" => "bem_vindo",
         "middlewares" => ["route_mid_01", "route_mid_02", "route_mid_03"]
     ];
     public function default()
     {
+        $this->routeConfig->setMetaData(["meta01" => "val01"]);
     }
 
 

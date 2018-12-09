@@ -37,10 +37,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'cacheFileName' => 'test-test',
-        'isDownload' => false,
-        'downloadFileName' => 'test-test',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -55,9 +61,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -111,10 +114,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
-        'cacheFileName' => 'default',
-        'isDownload' => false,
-        'downloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => 'bem_vindo',
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -129,9 +138,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -182,10 +188,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
-        'cacheFileName' => 'default',
-        'isDownload' => false,
-        'downloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => 'bem_vindo',
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -200,9 +212,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -256,10 +265,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
-        'cacheFileName' => 'default',
-        'isDownload' => false,
-        'downloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => 'bem_vindo',
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -274,9 +289,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -327,10 +339,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
-        'cacheFileName' => 'default',
-        'isDownload' => false,
-        'downloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => 'bem_vindo',
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -345,9 +363,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -390,10 +405,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'cacheFileName' => 'list-list',
-        'isDownload' => false,
-        'downloadFileName' => 'list-list',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -408,9 +429,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -451,10 +469,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'cacheFileName' => 'contact-contact',
-        'isDownload' => false,
-        'downloadFileName' => 'contact-contact',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -469,9 +493,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -510,10 +531,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'cacheFileName' => 'contact-contact',
-        'isDownload' => false,
-        'downloadFileName' => 'contact-contact',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -528,9 +555,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -576,10 +600,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'cacheFileName' => 'list-list',
-        'isDownload' => false,
-        'downloadFileName' => 'list-list',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -594,9 +624,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,
@@ -639,10 +666,16 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'cacheFileName' => 'list-list',
-        'isDownload' => false,
-        'downloadFileName' => 'list-list',
-        'masterPage' => NULL,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
         'view' => NULL,
         'form' => NULL,
         'styleSheets' => 
@@ -657,9 +690,6 @@
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
-        ),
-        'responseHeaders' => 
-        array (
         ),
         'runMethodName' => 'run',
         'customProperties' => NULL,

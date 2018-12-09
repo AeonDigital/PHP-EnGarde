@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace AeonDigital\EnGarde;
 
+use AeonDigital\EnGarde\RequestManager\Interfaces\iRequestHandler as iRequestHandler;
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
 use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 use AeonDigital\EnGarde\Config\Interfaces\iServerConfig as iServerConfig;
@@ -16,17 +17,15 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
 
 
 
-
 /**
- * Classe abstrata que deve ser herdada pelos controllers
- * das aplicações.
+ * Manipulador padrão para resolução das rotas.
  * 
  * @package     AeonDigital\EnGarde
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  */
-abstract class DomainController implements iController
+class RouteResolver implements iRequestHandler
 {
 
 
@@ -69,25 +68,6 @@ abstract class DomainController implements iController
      * @var         iRouteConfig
      */
     protected $routeConfig = null;
-    /**
-     * Objeto "iResponse".
-     *
-     * @var         iResponse
-     */
-    protected $response = null;
-    /**
-     * Objeto "StdClass".
-     * Deve ser preenchido durante a execução da Action 
-     * e poderá ser acessado nas views.
-     *
-     * @var         \StdClass
-     */
-    protected $viewData = null;
-
-
-
-
-
 
 
 
@@ -111,11 +91,8 @@ abstract class DomainController implements iController
      * @param       array $rawRouteConfig
      *              Instância "iServerConfig".
      * 
-     * @param       iRouteConfig $routeConfig
+     * @param       ?iRouteConfig $routeConfig
      *              Instância "iRouteConfig".
-     * 
-     * @param       iResponse $response
-     *              Instância "iResponse".
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -123,8 +100,7 @@ abstract class DomainController implements iController
         iApplicationConfig $applicationConfig,
         iServerRequest $serverRequest,
         array $rawRouteConfig,
-        iRouteConfig $routeConfig,
-        iResponse $response
+        ?iRouteConfig $routeConfig
     ) {
         $this->serverConfig         = $serverConfig;
         $this->domainConfig         = $domainConfig;
@@ -132,9 +108,6 @@ abstract class DomainController implements iController
         $this->serverRequest        = $serverRequest;
         $this->rawRouteConfig       = $rawRouteConfig;
         $this->routeConfig          = $routeConfig;
-        $this->response             = $response;
-
-        $this->viewData = new \StdClass();
     }
 
 
@@ -142,18 +115,66 @@ abstract class DomainController implements iController
 
 
     /**
-     * Retorna a instância "iResponse".
-     * Aplica no objeto "iResponse" as propriedades 
-     * "viewData" (obtido do resultado da execução da action) e 
-     * "viewConfig" (obtido com a manipulação das propriedades variáveis do objeto "routeConfig")
+     * A partir das configurações da rota atualmente selecionada, 
+     * gera uma instância do controller alvo e retorna-o.
+     * 
+     * @param       iResponse $response
+     *              Objeto "iResponse" a ser passado para o controller.
+     *
+     * @return      iController
+     */
+    private function createController(iResponse $response) : iController
+    {
+        $ctrl = $this->routeConfig->getNamespace() . "\\" . $this->routeConfig->getController();
+        return new $ctrl(
+            $this->serverConfig,
+            $this->domainConfig,
+            $this->applicationConfig,
+            $this->serverRequest,
+            $this->rawRouteConfig,
+            $this->routeConfig,
+            $response
+        );
+    }
+
+
+
+
+
+    /**
+     * Processa a requisição e produz uma resposta.
+     *
+     * @param       iServerRequest $request
+     *              Requisição que está sendo executada.
      * 
      * @return      iResponse
      */
-    public function getResponse() : iResponse
+    public function handle(iServerRequest $request) : iResponse
     {
-        return $this->response->withActionProperties(
-            $this->viewData, 
-            (object)$this->routeConfig->getActionAttributes()
-        );
+        $response = $this->serverConfig->getHttpFactory()->createResponse();
+        
+
+        // Se a requisição está executando um método HTTP
+        // do tipo TRACE ou OPTIONS
+        if ($request->getMethod() === "TRACE" || $request->getMethod() === "OPTIONS") {
+            return $response;
+        } 
+        // Se está executando um método comum
+        else {
+            // Bloqueia qualquer alteração das propriedades protegidas
+            // de configuração da rota.
+            $this->routeConfig->lockProperties();
+
+            // Inicia uma nova instância do controller alvo
+            $tgtController = $this->createController($response);
+            
+            // Executa a action alvo
+            $action = $this->routeConfig->getAction();
+            $tgtController->{$action}();
+
+            // Retorna o objeto "iResponse" modificado pela 
+            // execução da action.
+            return $tgtController->getResponse();
+        }
     }
 }

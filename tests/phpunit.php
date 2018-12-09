@@ -5,37 +5,29 @@
  */
 $rootDir = realpath(__DIR__ . "/..");
 $srcDir = $rootDir . "/src";
-$conDir = $rootDir . "/tests/src/concrete";
+$appDir = $rootDir . "/tests/src/apps/site";
 
 require_once $rootDir . "/vendor/autoload.php";
+require_once $rootDir . "/vendor/aeondigital/phpstream/tests/src/__provider.php";
+require_once $rootDir . "/vendor/aeondigital/phphttpuri/tests/src/__provider.php";
+require_once $rootDir . "/vendor/aeondigital/phphttpdata/tests/src/__provider.php";
+require_once $rootDir . "/vendor/aeondigital/phphttpmessage/tests/src/__provider.php";
+require_once $rootDir . "/vendor/aeondigital/phpengardeconfig/tests/src/__provider.php";
+require_once $rootDir . "/vendor/aeondigital/phpengarderequestmanager/tests/src/__provider.php";
+require_once $rootDir . "/tests/src/__provider.php";
 
-require_once $srcDir . "/Interfaces/iDomainConfig.php";
-require_once $srcDir . "/Config/DomainConfig.php";
-
-require_once $srcDir . "/Interfaces/iApplicationConfig.php";
-require_once $srcDir . "/Config/ApplicationConfig.php";
-
-require_once $srcDir . "/Interfaces/iApplicationRouter.php";
-require_once $srcDir . "/ApplicationRouter.php";
-
-require_once $srcDir . "/Interfaces/iRouteConfig.php";
-require_once $srcDir . "/Config/RouteConfig.php";
-
-require_once $srcDir . "/Interfaces/iApplication.php";
-require_once $srcDir . "/Traits/CommomProperties.php";
-require_once $srcDir . "/DomainApplication.php";
-require_once $conDir . "/AppConfig.php";
-
-require_once $srcDir . "/ErrorListening.php";
 require_once $srcDir . "/DomainManager.php";
 
+require_once $srcDir . "/RouteResolver.php";
+
+require_once $srcDir . "/Interfaces/iApplication.php";
+require_once $srcDir . "/DomainApplication.php";
+require_once $appDir . "/AppStart.php";
+
 require_once $srcDir . "/Interfaces/iResponseHandler.php";
-require_once $srcDir . "/Handlers/ResponseHandler.php";
+require_once $srcDir . "/ResponseHandler.php";
 
 require_once $srcDir . "/Interfaces/iController.php";
 require_once $srcDir . "/DomainController.php";
-require_once $conDir . "/AppController.php";
-
-require_once $srcDir . "/Interfaces/iRequestHandler.php";
-require_once $srcDir . "/Interfaces/iMiddleware.php";
-require_once $srcDir . "/Handlers/MainHandler.php";
+require_once $appDir . "/controllers/Home.php";
+require_once $appDir . "/middlewares/TestMiddleware.php";
