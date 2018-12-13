@@ -68,7 +68,27 @@ class Home extends DomainController
     ];
     public function default()
     {
-        $this->routeConfig->setMetaData(["meta01" => "val01"]);
+        $this->routeConfig->setMasterPage("masterPage.phtml");
+        $this->routeConfig->setView("home/index.phtml");
+
+
+        $this->routeConfig->setMetaData([
+            "meta01" => "val01"
+        ]);
+
+        $this->routeConfig->setJavaScripts([
+            "javascript01.js",
+            "javascript02.js"
+        ]);
+
+        $this->routeConfig->setStyleSheets([
+            "cssfile01.css",
+            "cssfile02.css"
+        ]);
+
+
+        $this->viewData->appTitle = "Application Title";
+        $this->viewData->viewTitle = "View Title";
     }
 
 

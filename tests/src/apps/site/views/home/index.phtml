@@ -1,0 +1,8 @@
+<h1><?php echo $viewData->viewTitle; ?></h1>
+<p>Wellcome to homepage.</p>
+
+<ul>
+<?php foreach ($viewData as $prop => $value) { ?>
+    <li><?php echo $prop; ?> = <?php echo $value; ?></li>
+<?php } ?>
+</ul>

@@ -198,7 +198,9 @@ class DomainManagerTest extends TestCase
             "EndExecute_route_mid_01" => "middleware",
             "EndExecute_ctrl_mid_03" => "middleware",
             "EndExecute_ctrl_mid_02" => "middleware",
-            "EndExecute_ctrl_mid_01" => "middleware"
+            "EndExecute_ctrl_mid_01" => "middleware",
+            "appTitle" => "Application Title",
+            "viewTitle" => "View Title"
         ];
 
         // Verifica se os middlewares foram executados.
@@ -212,17 +214,24 @@ class DomainManagerTest extends TestCase
         $this->assertEquals($expectedMetaData, $output->getViewConfig()->metaData);
         
 
-        // FAzer/Testar criação da view!!
+        // Verifica o set dos modelos de  master page e view.
+        $this->assertEquals("masterPage.phtml", $output->getViewConfig()->masterPage);
+        $this->assertEquals("home/index.phtml", $output->getViewConfig()->view);
+        
+        
 
-        /*        
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseTRACE.json";
-        $expected           = file_get_contents($tgtPathToExpected);
+        // É preciso verificar todas as configurações de todos os objetos de
+        // configuração para identificar quais já estão implementados,
+        // quais restam implementar e os que os devs das aplicações podem vir a implementar.
 
-        $objExpected    = json_decode($expected);
-        $objOutput      = json_decode((string)$output->getBody());
+        // Verifica a criação da view
+        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGET.html";
+        //$expected           = file_get_contents($tgtPathToExpected);
 
-        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
-        $this->assertEquals($objExpected->requestData, $objOutput->requestData);
-        */
+        //$objExpected    = json_decode($expected);
+        $objOutput      = (string)$output->getBody();
+
+        file_put_contents($tgtPathToExpected, (string)$output->getBody());
+        //$this->assertEquals($objExpected->requestData, $objOutput->requestData);
     }
 }

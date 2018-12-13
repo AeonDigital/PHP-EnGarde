@@ -440,6 +440,10 @@ abstract class DomainApplication implements iApplication
                 $resultResponse = $requestManager->handle($this->serverRequest);
 
 
+                // Caso necessário, esvazia o buffer e encerra-o
+                if ($hideAllOutputs === true) { ob_end_clean(); }
+
+
                 // A partir do objeto "iResponse" obtido, 
                 // gera a view a ser enviada para o UA.
                 $responseHandler = new \AeonDigital\EnGarde\ResponseHandler(
@@ -452,9 +456,6 @@ abstract class DomainApplication implements iApplication
                     $resultResponse
                 );
 
-
-                // Caso necessário, esvazia o buffer e encerra-o
-                if ($hideAllOutputs === true) { ob_end_clean(); }
 
                 $this->testViewDebug = $responseHandler->sendResponse();
             }

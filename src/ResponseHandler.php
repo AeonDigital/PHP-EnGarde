@@ -72,16 +72,6 @@ class ResponseHandler implements iResponseHandler
      */
     private $response = null;
     /**
-     * Objeto de configurações para a montagem de uma view
-     * 
-     * @var         
-     */ 
-
-
-
-
-
-    /**
      * Coleção de headers que devem ser enviados para o UA.
      *
      * @var         array
@@ -150,9 +140,9 @@ class ResponseHandler implements iResponseHandler
     /**
      * Efetua o envio dos dados para o UA.
      *
-     * @return      void
+     * @return      iResponse
      */
-    public function sendResponse()
+    public function sendResponse() : iResponse
     {
         // Identifica se está em um ambiente de testes.
         $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" || 
@@ -171,37 +161,39 @@ class ResponseHandler implements iResponseHandler
         // Sendo uma requisição que utiliza um método HTTP 
         // que pode ser controlado pelos controllers das aplicações.
         else {
-            // Efetua a negociação de conteúdo identificando se forma
-            // exigida pela requisição é possível de ser entregue ao UA.
-            //
-            // A execução desta etapa pode ocasionar em falhas
-            //$this->executeContentNegotiation();
+            // Efetua a criação do corpo do documento a ser entregue.
+            $this->createResponseBody();
 
 
-            // Após a negociação de conteúdo, efetua a criação
-            // do corpo do documento a ser entregue.
-            //$this->createResponseBody();
-
-
-            //$this->prepareResponseHeaders();
-            //$now = new \DateTime();
-            //$this->useHeaders["ResponseDate"]       = $now->format("D, d M Y H:i:s");
+            // Prepara os Headers para o envio
+            $this->prepareResponseHeaders(
+                $this->routeConfig->getResponseMimeType(),
+                $this->routeConfig->getResponseLocale(),
+                $this->response->getHeaders(),
+                $this->routeConfig->getResponseIsDownload(),
+                $this->routeConfig->getResponseDownloadFileName()
+            );
         }
 
-        // Em um ambiente de testes retorna o "iResponse" resultante.
-        if ($isTestEnv === true) {
-            return $this->response;
-        } 
+
+
+        // Quando não se trata de um ambiente de testes,
+        // efetua o envio dos dados processados para o UA.
+        if ($isTestEnv === false) {
+            // Envia os Headers para o UA
+            foreach ($this->useHeaders as $name => $value) {
+                header($name . ": " . implode(", ", $values));
+            }
+            
+            return null;
+        }
+
+        return $this->response;
         //
         /*
 
         if ($isTestEnv === false) 
         {
-            // Envia os Headers para o UA
-            $useHeaders = $this->response->getHeaders();
-            foreach ($useHeaders as $key => $values) {
-                header($key . ": " . implode(", ", $values));
-            }
 
             //print_html($useHeaders);
             
@@ -225,27 +217,59 @@ class ResponseHandler implements iResponseHandler
 
 
 
+
     /**
      * Ajusta os headers do objeto Response antes do mesmo
      * ser enviado ao UA.
      *
+     * @param       string $useMimeType
+     *              Mimetype que deve ser usado.
+     * 
+     * @param       string $useLocale
+     *              Locale usado para a resposta.
+     * 
+     * @param       array $useHeaders
+     *              Coleção de headers a serem incorporados.
+     * 
+     * @param       bool $isDownload
+     *              Indica se é para realizar um download.
+     * 
+     * @param       string $downloadFileName
+     *              Nome do arquivo para download.
+     * 
      * @return      void
      */
-    private function prepareResponseHeaders() : void
-    {
+    private function prepareResponseHeaders(
+        string $useMimeType,
+        string $useLocale,
+        array $useHeaders,
+        bool $isDownload = false,
+        string $downloadFileName = null
+    ) : void {
+        $now = new \DateTime();
+
         // Prepara os headers que serão enviados.
         $this->useHeaders = [
             "Framework"             => "EnGarde!; version=" . $this->domainConfig->getVersion(),
             "Application"           => $this->applicationConfig->getName(),
-            "Content-Type"          => $this->useMimeType . "; charset=utf-8",
-            "Content-Language"      => $this->useLocale,
+            "Content-Type"          => $useMimeType . "; charset=utf-8",
+            "Content-Language"      => $useLocale,
             "RequestDate"           => $this->serverRequest->getNow()->format("D, d M Y H:i:s"),
-            "ResponseDate"          => null
+            "ResponseDate"          => $now->format("D, d M Y H:i:s")
         ];
 
-        if ($this->isDownload === true) {
-            $documentName = $this->routeConfig->getDownloadFileName();
-            $this->useHeaders["Content-Disposition"] = "inline; filename=\"$documentName\"";
+        
+        // Adiciona os headers definidos na action mas não substitui
+        // os aqui definidos.
+        foreach ($useHeaders as $key => $value) {
+            if (isset($this->useHeaders[$key]) === false) {
+                $this->useHeaders[$key] = implode(", ", $value);
+            }
+        }
+
+        // Tratando-se de um download...
+        if ($isDownload === true) {
+            $this->useHeaders["Content-Disposition"] = "inline; filename=\"$downloadFileName\"";
         }
     }
 
@@ -262,17 +286,15 @@ class ResponseHandler implements iResponseHandler
     private function prepareResponseToOPTIONS() : void
     {
         // Prepara os Headers a serem utilizados
-        $this->useMime      = "json";
-        $this->useMimeType  = $this->responseMimeTypes[$this->useMime];
-        $this->useLocale    = $this->applicationConfig->getDefaultLocale();
-
-        $this->prepareResponseHeaders();
         $now = new \DateTime();
-        $this->useHeaders["ResponseDate"]       = $now->format("D, d M Y H:i:s");
-        $this->useHeaders["Allow"]              = array_merge(array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]);
-        $this->useHeaders["Allow-Languages"]    = $this->applicationConfig->getLocales();
-
-        $this->response = $this->response->withHeaders($this->useHeaders, true);
+        $this->prepareResponseHeaders(
+            $this->responseMimeTypes["json"],
+            $this->applicationConfig->getDefaultLocale(),
+            [
+                "Allow"             => array_merge(array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
+                "Allow-Languages"   => $this->applicationConfig->getLocales()
+            ]
+        );
 
 
         // Prepara o Body a ser enviado
@@ -307,18 +329,15 @@ class ResponseHandler implements iResponseHandler
     private function prepareResponseToTRACE() : void
     {
         // Prepara os Headers a serem utilizados
-        $this->useMime      = "json";
-        $this->useMimeType  = $this->responseMimeTypes[$this->useMime];
-        $this->useLocale    = $this->applicationConfig->getDefaultLocale();
-
-        $this->prepareResponseHeaders();
         $now = new \DateTime();
-        $this->useHeaders["ResponseDate"]       = $now->format("D, d M Y H:i:s");
-        $this->useHeaders["Allow"]              = array_merge(array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]);
-        $this->useHeaders["Allow-Languages"]    = $this->applicationConfig->getLocales();
-
-        $this->response = $this->response->withHeaders($this->useHeaders, true);
-
+        $this->prepareResponseHeaders(
+            $this->responseMimeTypes["json"],
+            $this->applicationConfig->getDefaultLocale(),
+            [
+                "Allow"             => array_merge(array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
+                "Allow-Languages"   => $this->applicationConfig->getLocales()
+            ]
+        );
 
 
         // Prepara o Body a ser enviado
@@ -357,16 +376,6 @@ class ResponseHandler implements iResponseHandler
         $body->write(json_encode($useBody));
         $this->response->withBody($body);
     }
-
-
-
-
-
-
-
-
-
-
     /**
      * Cria o body a ser entregue para o UA.
      *
@@ -374,7 +383,76 @@ class ResponseHandler implements iResponseHandler
      */
     private function createResponseBody() : void
     {
-        $viewConfig = $this->response->getViewConfig();
-        //var_dump($viewConfig);
+        $viewContent    = "";
+        $masterContent  = "<view />";
+        $viewData       = $this->response->getViewData();
+        $viewConfig     = $this->response->getViewConfig();
+
+
+        // Processa a view definida e resgata o resultado
+        // de seu processamento.
+        if ($this->routeConfig->getView() !== null) {
+            $viewPath = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView());
+		    ob_start("mb_output_handler");
+            require_once $viewPath;
+
+	    	$viewContent = "\n" . ob_get_contents();
+            ob_end_clean();
+        }
+
+
+
+        // Se há uma masterPage definido efetua
+        // seu processamento e armazena seu resultado.
+        if ($this->routeConfig->getMasterPage() !== null) {
+            $viewMaster = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
+            ob_start("mb_output_handler");
+            require_once $viewMaster;
+
+            $masterContent = ob_get_contents();
+            ob_end_clean();
+        }
+
+
+        // Gera o código para as metatags do HTML
+        $allMetas = $this->routeConfig->getMetaData();
+        $strMetas = [];
+        foreach ($allMetas as $key => $value) {
+            $strMetas[] = "<meta name=\"$key\" content=\"". htmlspecialchars($value) ."\" />";
+        }
+        $strMetas = ((count($strMetas) > 0) ? "\n" . implode("\n", $strMetas) : "");
+
+
+        // Gera o código para os recursos de CSS e JS
+        $allCSSs = $this->routeConfig->getStyleSheets();
+        $strCSSs = [];
+        foreach ($allCSSs as $css) {
+            $cssPath = to_system_path($this->applicationConfig->getPathToViewsResources() . "/" . $css);
+            $strCSSs[] = "<link rel=\"stylesheet\" href=\"$cssPath\" />";
+        }
+        $strCSSs = ((count($strCSSs) > 0) ? "\n" . implode("\n", $strCSSs) : "");
+
+
+        $allJSs = $this->routeConfig->getJavaScripts();
+        $strJSs = [];
+        foreach ($allJSs as $js) {
+            $jsPath = to_system_path($this->applicationConfig->getPathToViewsResources() . "/" . $js);
+            $strJSs[] = "<script src=\"$jsPath\"></script>";
+        }
+        $strJSs = ((count($strJSs) > 0) ? "\n" . implode("\n", $strJSs) : "");
+
+
+
+        // Mescla a view com a master page e arquivos CSS e JS
+        $useBody = str_replace("<view />",          $viewContent, $masterContent);
+        $useBody = str_replace("<metatags />",      $strMetas, $useBody);
+        $useBody = str_replace("<stylesheets />",   $strCSSs, $useBody);
+        $useBody = str_replace("<javascripts />",   $strJSs, $useBody);
+
+
+        // Define o novo corpo para o objeto Response
+        $body = $this->response->getBody();
+        $body->write($useBody);
+        $this->response->withBody($body);
     }
 }

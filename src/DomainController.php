@@ -144,8 +144,9 @@ abstract class DomainController implements iController
     /**
      * Retorna a instância "iResponse".
      * Aplica no objeto "iResponse" as propriedades 
-     * "viewData" (obtido do resultado da execução da action) e 
-     * "viewConfig" (obtido com a manipulação das propriedades variáveis do objeto "routeConfig")
+     * "viewData" (obtido do resultado da execução da action);
+     * "viewConfig" (obtido com a manipulação das propriedades variáveis do objeto "routeConfig");
+     * "headers" (padrões + os definidos pela action)
      * 
      * @return      iResponse
      */
@@ -153,7 +154,8 @@ abstract class DomainController implements iController
     {
         return $this->response->withActionProperties(
             $this->viewData, 
-            (object)$this->routeConfig->getActionAttributes()
+            (object)$this->routeConfig->getActionAttributes(),
+            $this->routeConfig->getResponseHeaders()
         );
     }
 }
