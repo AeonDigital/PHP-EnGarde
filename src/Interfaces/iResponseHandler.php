@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace AeonDigital\EnGarde\Interfaces;
 
-
+use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 
 
 
@@ -30,9 +30,20 @@ interface iResponseHandler
 
 
     /**
-     * Efetua o envio dos dados para o UA.
+     * Prepara o objeto "iResponse" com os "headers" e 
+     * com o "body" que deve ser usado para responder
+     * ao UA.
+     *
+     * @return      iResponse
+     */
+    function prepareResponse() : iResponse;
+
+
+
+    /**
+     * Efetivamente envia os dados para o UA.
      *
      * @return      void
      */
-    function sendResponse();
+    function sendResponse() : void;
 }

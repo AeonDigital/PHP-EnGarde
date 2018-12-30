@@ -223,6 +223,7 @@ class DomainManagerTest extends TestCase
         // É preciso verificar todas as configurações de todos os objetos de
         // configuração para identificar quais já estão implementados,
         // quais restam implementar e os que os devs das aplicações podem vir a implementar.
+        // Há métodos em "iApplicationConfig" e em "iRouteConfig" que precisam ser implementados.
 
         // Verifica a criação da view
         $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGET.html";
@@ -231,7 +232,7 @@ class DomainManagerTest extends TestCase
         //$objExpected    = json_decode($expected);
         $objOutput      = (string)$output->getBody();
 
-        file_put_contents($tgtPathToExpected, (string)$output->getBody());
-        //$this->assertEquals($objExpected->requestData, $objOutput->requestData);
+        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
+        $this->assertEquals($objExpected->requestData, $objOutput->requestData);
     }
 }

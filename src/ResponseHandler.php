@@ -138,18 +138,14 @@ class ResponseHandler implements iResponseHandler
 
 
     /**
-     * Efetua o envio dos dados para o UA.
+     * Prepara o objeto "iResponse" com os "headers" e 
+     * com o "body" que deve ser usado para responder
+     * ao UA.
      *
      * @return      iResponse
      */
-    public function sendResponse() : iResponse
+    public function prepareResponse() : iResponse
     {
-        // Identifica se está em um ambiente de testes.
-        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" || 
-                        $this->domainConfig->getEnvironmentType() === "testview" || 
-                        $this->domainConfig->getEnvironmentType() === "localtest");
-
-
         // Sendo uma requisição que utiliza o método HTTP OPTIONS
         if ($this->serverRequest->getMethod() === "OPTIONS") {
             $this->prepareResponseToOPTIONS();
@@ -163,54 +159,64 @@ class ResponseHandler implements iResponseHandler
         else {
             // Efetua a criação do corpo do documento a ser entregue.
             $this->createResponseBody();
-
-
-            // Prepara os Headers para o envio
-            $this->prepareResponseHeaders(
-                $this->routeConfig->getResponseMimeType(),
-                $this->routeConfig->getResponseLocale(),
-                $this->response->getHeaders(),
-                $this->routeConfig->getResponseIsDownload(),
-                $this->routeConfig->getResponseDownloadFileName()
-            );
-        }
-
-
-
-        // Quando não se trata de um ambiente de testes,
-        // efetua o envio dos dados processados para o UA.
-        if ($isTestEnv === false) {
-            // Envia os Headers para o UA
-            foreach ($this->useHeaders as $name => $value) {
-                header($name . ": " . implode(", ", $values));
-            }
-            
-            return null;
         }
 
         return $this->response;
-        //
-        /*
+    }
 
-        if ($isTestEnv === false) 
-        {
 
-            //print_html($useHeaders);
-            
-            
-            
-            echo $this->useMime . "<br />";
-            echo $this->useLocale . "<br />";
-            echo (string)$this->isPrettyPrint . "<br />";
-            echo (string)$this->isDownload . "<br />";
-            echo "Prosseguir com a geração do Response<br />";
-            echo "- Observar métodos TRACE e OPTIONS<br />";
-            //echo print_html($this->response->getViewData());
-            echo print_html($this->response->getRouteConfig()->toArray());
 
-            echo "- Aqui, entregue o conteúdo para o usuário.";       
-            //echo (string)$this->response->getBody();
-        }*/
+
+
+    /**
+     * Efetivamente envia os dados para o UA.
+     *
+     * @return      void
+     */
+    public function sendResponse() : void
+    {
+        // Identifica se está em um ambiente de testes.
+        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" || 
+                        $this->domainConfig->getEnvironmentType() === "testview" || 
+                        $this->domainConfig->getEnvironmentType() === "localtest");
+
+
+        // Quando NÃO se trata de um ambiente de testes,
+        // efetua o envio dos dados processados para o UA.
+        if ($isTestEnv === false) {
+
+            $http = "HTTP/" . 
+                    $this->response->getProtocolVersion() . " " . 
+                    $this->response->getStatusCode() . " " . 
+                    $this->response->getReasonPhrase();
+            header($http);
+
+
+            // Envia os Headers para o UA
+            foreach ($this->response->getHeaders as $name => $value) {
+                header($name . ": " . implode(", ", $values));
+            }
+
+
+            // Prepara o corpo da resposta para ser enviado.
+            $streamBody = $this->response->getBody();
+            if ($streamBody->isSeekable() === true) {
+                $streamBody->rewind();
+            }
+            
+
+            // Separa o envio do corpo do documento em partes
+            // para entrega-lo ao UA.
+            $partLength     = 1024;
+            $totalLength    = $streamBody->getSize();
+            $haveToSend     = $totalLength;
+            while ($haveToSend > 0 && $streamBody->eof() !== true) {
+                $strPart = $streamBody->read(min($partLength, $haveToSend));
+                echo $strPart;
+
+                $haveToSend -= $partLength;
+            }
+        }
     }
 
 
@@ -248,6 +254,7 @@ class ResponseHandler implements iResponseHandler
     ) : void {
         $now = new \DateTime();
 
+
         // Prepara os headers que serão enviados.
         $this->useHeaders = [
             "Framework"             => "EnGarde!; version=" . $this->domainConfig->getVersion(),
@@ -267,10 +274,15 @@ class ResponseHandler implements iResponseHandler
             }
         }
 
+
         // Tratando-se de um download...
         if ($isDownload === true) {
             $this->useHeaders["Content-Disposition"] = "inline; filename=\"$downloadFileName\"";
         }
+
+
+        // Aplica os headers no objeto response.
+        $this->response = $this->response->withHeaders($this->useHeaders, false);
     }
 
 
@@ -318,7 +330,7 @@ class ResponseHandler implements iResponseHandler
 
         $body = $this->response->getBody();
         $body->write(json_encode($useBody));
-        $this->response->withBody($body);
+        $this->response = $this->response->withBody($body);
     }
     /**
      * Prepara o objeto "response" para responder a uma
@@ -374,7 +386,7 @@ class ResponseHandler implements iResponseHandler
 
         $body = $this->response->getBody();
         $body->write(json_encode($useBody));
-        $this->response->withBody($body);
+        $this->response = $this->response->withBody($body);
     }
     /**
      * Cria o body a ser entregue para o UA.
@@ -453,6 +465,16 @@ class ResponseHandler implements iResponseHandler
         // Define o novo corpo para o objeto Response
         $body = $this->response->getBody();
         $body->write($useBody);
-        $this->response->withBody($body);
+        $this->response = $this->response->withBody($body);
+
+
+        // Prepara os Headers para o envio
+        $this->prepareResponseHeaders(
+            $this->routeConfig->getResponseMimeType(),
+            $this->routeConfig->getResponseLocale(),
+            $this->response->getHeaders(),
+            $this->routeConfig->getResponseIsDownload(),
+            $this->routeConfig->getResponseDownloadFileName()
+        );
     }
 }

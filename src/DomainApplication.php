@@ -23,7 +23,6 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  */
 abstract class DomainApplication implements iApplication
 {
-    use \AeonDigital\Traits\MimeTypeData;
 
 
 
@@ -312,7 +311,13 @@ abstract class DomainApplication implements iApplication
         // negar o download de uma rota cuja configuração seja naturalmente a obtenção
         // de um documento.
         $this->routeConfig->setResponseIsDownload(
-            ($isDownload_param === true || (($isDownload_param === null || $isDownload_param === true) && $isDownload_route === true))
+            (
+                $isDownload_param === true || 
+                (
+                    ($isDownload_param === null || $isDownload_param === true) && 
+                    $isDownload_route === true
+                )
+            )
         );
 
 
@@ -334,7 +339,7 @@ abstract class DomainApplication implements iApplication
      */
     private function initiCacheResponse() : void
     {
-        // Aguardar para implementar via Middleware
+        // ----> Aguardar para implementar via Middleware
         if ($this->routeConfig->getIsUseCache() === true) {
             // P1 - Identifica o nome do arquivo que deve responder
             //      a esta requisição.
@@ -433,10 +438,7 @@ abstract class DomainApplication implements iApplication
 
                 // Executa os middlewares e action alvo retornando 
                 // um objeto "iResponse" contendo as informações 
-                // "viewData" e "routeConfig" devidamente processadas 
-                //
-                // A partir deste objeto e dos dados retornados a view
-                // será produzida e entregue ao UA.
+                // necessárias para a resposta ao UA.
                 $resultResponse = $requestManager->handle($this->serverRequest);
 
 
@@ -457,7 +459,9 @@ abstract class DomainApplication implements iApplication
                 );
 
 
-                $this->testViewDebug = $responseHandler->sendResponse();
+                // Prepara e envia os dados para o UA
+                $this->testViewDebug = $responseHandler->prepareResponse();
+                $responseHandler->sendResponse();
             }
         }
     }
