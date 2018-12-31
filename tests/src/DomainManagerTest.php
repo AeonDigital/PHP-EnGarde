@@ -3,11 +3,10 @@ declare (strict_types = 1);
 
 use PHPUnit\Framework\TestCase;
 use AeonDigital\EnGarde\DomainManager as DomainManager;
-//use AeonDigital\Http\Tools\ServerConfig as ServerConfig;
-//use AeonDigital\EnGarde\ErrorListening as ErrorListening;
-//use AeonDigital\EnGarde\Config\DomainConfig as DomainConfig;
 
 require_once __DIR__ . "/../phpunit.php";
+
+
 
 
 
@@ -144,42 +143,6 @@ class DomainManagerTest extends TestCase
     }
 
 
-    public function test_check_response_to_OPTIONS()
-    {
-        $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("testview", "OPTIONS", "/");
-        $domainManager->run();
-        $output = $domainManager->getTestViewDebug();
-
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseOPTIONS.json";
-        $expected           = file_get_contents($tgtPathToExpected);
-
-        $objExpected    = json_decode($expected);
-        $objOutput      = json_decode((string)$output->getBody());
-
-        $objExpected->RequestDate   = $objOutput->RequestDate;
-        $objExpected->ResponseDate  = $objOutput->ResponseDate;
-
-        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
-        $this->assertEquals($objExpected, $objOutput);
-    }
-
-
-    public function test_check_response_to_TRACE()
-    {
-        $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("testview", "TRACE", "/home?q1=p1&q2=v2#tothis");
-        $domainManager->run();
-        $output = $domainManager->getTestViewDebug();
-
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseTRACE.json";
-        $expected           = file_get_contents($tgtPathToExpected);
-
-        $objExpected    = json_decode($expected);
-        $objOutput      = json_decode((string)$output->getBody());
-
-        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
-        $this->assertEquals($objExpected->requestData, $objOutput->requestData);
-    }
-
 
 
 
@@ -224,6 +187,17 @@ class DomainManagerTest extends TestCase
         // configuração para identificar quais já estão implementados,
         // quais restam implementar e os que os devs das aplicações podem vir a implementar.
         // Há métodos em "iApplicationConfig" e em "iRouteConfig" que precisam ser implementados.
+        //
+        // iApplication->setPathToLocales()
+        // iApplication->setPathToCacheFiles()
+        // iApplication->setIsUseLabels()
+        // iRouteConfig->setIsSecure()
+        // iRouteConfig->setIsUseCache()
+        // iRouteConfig->setCacheTimeout()
+        // iRouteConfig->setResponseIsPrettyPrint()
+        // iRouteConfig->setForm()
+        // iRouteConfig->setLocaleDictionary()
+        // 
 
         // Verifica a criação da view
         $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGET.html";

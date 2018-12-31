@@ -185,16 +185,10 @@ class ResponseHandler implements iResponseHandler
         // efetua o envio dos dados processados para o UA.
         if ($isTestEnv === false) {
 
-            $http = "HTTP/" . 
-                    $this->response->getProtocolVersion() . " " . 
-                    $this->response->getStatusCode() . " " . 
-                    $this->response->getReasonPhrase();
-            header($http);
-
-
             // Envia os Headers para o UA
             foreach ($this->response->getHeaders as $name => $value) {
-                header($name . ": " . implode(", ", $values));
+                if ($value === "") { header($name); } 
+                else { header($name . ": " . implode(", ", $values)); }
             }
 
 
@@ -254,9 +248,14 @@ class ResponseHandler implements iResponseHandler
     ) : void {
         $now = new \DateTime();
 
+        $http = "HTTP/" . 
+                $this->response->getProtocolVersion() . " " . 
+                $this->response->getStatusCode() . " " . 
+                $this->response->getReasonPhrase();
 
-        // Prepara os headers que serão enviados.
+                // Prepara os headers que serão enviados.
         $this->useHeaders = [
+            "$http"                 => "",
             "Framework"             => "EnGarde!; version=" . $this->domainConfig->getVersion(),
             "Application"           => $this->applicationConfig->getName(),
             "Content-Type"          => $useMimeType . "; charset=utf-8",
@@ -400,7 +399,7 @@ class ResponseHandler implements iResponseHandler
         $viewData       = $this->response->getViewData();
         $viewConfig     = $this->response->getViewConfig();
 
-
+        
         // Processa a view definida e resgata o resultado
         // de seu processamento.
         if ($this->routeConfig->getView() !== null) {
@@ -408,12 +407,12 @@ class ResponseHandler implements iResponseHandler
 		    ob_start("mb_output_handler");
             require_once $viewPath;
 
-	    	$viewContent = "\n" . ob_get_contents();
-            ob_end_clean();
+            $viewContent = "\n" . ob_get_contents();
+            @ob_end_clean();
         }
 
 
-
+        
         // Se há uma masterPage definido efetua
         // seu processamento e armazena seu resultado.
         if ($this->routeConfig->getMasterPage() !== null) {
@@ -422,7 +421,7 @@ class ResponseHandler implements iResponseHandler
             require_once $viewMaster;
 
             $masterContent = ob_get_contents();
-            ob_end_clean();
+            @ob_end_clean();
         }
 
 
