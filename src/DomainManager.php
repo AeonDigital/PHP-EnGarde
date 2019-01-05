@@ -34,6 +34,12 @@ class DomainManager
      */
     private $serverConfig = null;
     /**
+     * Objeto de configuração da Requisição atual.
+     *
+     * @var         iServerRequest
+     */
+    protected $serverRequest = null;
+    /**
      * Configurações do Domínio
      *
      * @var         iDomainConfig
@@ -109,6 +115,27 @@ class DomainManager
         $domainConfig->defineTargetApplication($this->serverConfig->getRequestPath());
         $this->domainConfig = $domainConfig;
     }
+    /**
+     * Define o objeto "iServerRequest" para esta instância.
+     *
+     * @return      void
+     */
+    private function defineServerRequest() : void
+    {
+        $this->serverRequest = $this->serverConfig->getHttpFactory()->createServerRequest(
+            $this->serverConfig->getRequestMethod(),
+            $this->serverConfig->getCurrentURI(),
+            $this->serverConfig->getRequestHTTPVersion(),
+            $this->serverConfig->getHttpFactory()->createHeaderCollection($this->serverConfig->getRequestHeaders()),
+            $this->serverConfig->getHttpFactory()->createStreamFromBodyRequest(),
+            $this->serverConfig->getHttpFactory()->createCookieCollection($this->serverConfig->getRequestCookies()),
+            $this->serverConfig->getHttpFactory()->createQueryStringCollection($this->serverConfig->getRequestQueryStrings()),
+            $this->serverConfig->getHttpFactory()->createFileCollection($this->serverConfig->getRequestFiles()),
+            $this->serverConfig->getServerVariables(),
+            $this->serverConfig->getHttpFactory()->createCollection(),
+            $this->serverConfig->getHttpFactory()->createCollection()
+        );
+    }
 
 
 
@@ -127,7 +154,7 @@ class DomainManager
             $this->domainConfig->getEnvironmentType(),
             $this->domainConfig->getIsDebugMode(),
             $this->serverConfig->getRequestProtocol(),
-            $this->serverConfig->getRequestMethod(),
+            $this->serverRequest->getMethod(),
             $this->domainConfig->getFullPathToErrorView()
         );
         
@@ -164,6 +191,7 @@ class DomainManager
     ) {
         $this->defineServerConfig($serverConfig);
         $this->defineDomainConfig($domainConfig);
+        $this->defineServerRequest();
         
         $this->registerErrorListening();
     }
@@ -221,7 +249,8 @@ class DomainManager
         $applicationNS = $this->domainConfig->retrieveApplicationNS();
         return new $applicationNS(
             $this->serverConfig,
-            $this->domainConfig
+            $this->domainConfig,
+            $this->serverRequest
         );
     }
 

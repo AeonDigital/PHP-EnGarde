@@ -5,8 +5,8 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\EnGarde\Config\Interfaces\iServerConfig as iServerConfig;
 use AeonDigital\EnGarde\Config\Interfaces\iDomainConfig as iDomainConfig;
+use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
 use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
-
 
 
 
@@ -89,27 +89,6 @@ abstract class DomainApplication implements iApplication
 
 
 
-    /**
-     * Define o objeto "iServerRequest" para esta instância.
-     *
-     * @return      void
-     */
-    private function defineServerRequest() : void
-    {
-        $this->serverRequest = $this->serverConfig->getHttpFactory()->createServerRequest(
-            $this->serverConfig->getRequestMethod(),
-            $this->serverConfig->getCurrentURI(),
-            $this->serverConfig->getRequestHTTPVersion(),
-            $this->serverConfig->getHttpFactory()->createHeaderCollection($this->serverConfig->getRequestHeaders()),
-            $this->serverConfig->getHttpFactory()->createStreamFromBodyRequest(),
-            $this->serverConfig->getHttpFactory()->createCookieCollection($this->serverConfig->getRequestCookies()),
-            $this->serverConfig->getHttpFactory()->createQueryStringCollection($this->serverConfig->getRequestQueryStrings()),
-            $this->serverConfig->getHttpFactory()->createFileCollection($this->serverConfig->getRequestFiles()),
-            $this->serverConfig->getServerVariables(),
-            $this->serverConfig->getHttpFactory()->createCollection(),
-            $this->serverConfig->getHttpFactory()->createCollection()
-        );
-    }
     /**
      * Define o objeto "iApplicationConfig" para esta instância.
      * 
@@ -231,15 +210,19 @@ abstract class DomainApplication implements iApplication
      * 
      * @param       iDomainConfig $domainConfig
      *              Instância "iDomainConfig".
+     * 
+     * @param       iServerRequest $serverRequest
+     *              Instância "iServerRequest".
      */
     function __construct(
         iServerConfig $serverConfig,
-        iDomainConfig $domainConfig
+        iDomainConfig $domainConfig,
+        iServerRequest $serverRequest
     ) {
-        $this->serverConfig = $serverConfig;
-        $this->domainConfig = $domainConfig;
+        $this->serverConfig     = $serverConfig;
+        $this->domainConfig     = $domainConfig;
+        $this->serverRequest    = $serverRequest;
 
-        $this->defineServerRequest();
         $this->defineApplicationConfig();
         $this->defineApplicationRouter();
         $this->selectTargetRouteConfig();
