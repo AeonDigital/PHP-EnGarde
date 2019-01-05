@@ -158,16 +158,12 @@ class RouteResolver implements iRequestHandler
      */
     public function handle(iServerRequest $request) : iResponse
     {
-        $response = $this->serverConfig->getHttpFactory()->createResponse();
+        $resultResponse = $this->serverConfig->getHttpFactory()->createResponse();
         
 
-        // Se a requisição está executando um método HTTP
-        // do tipo TRACE ou OPTIONS
-        if ($request->getMethod() === "TRACE" || $request->getMethod() === "OPTIONS") {
-            return $response;
-        } 
-        // Se está executando um método comum
-        else {
+        // NÃO sendo uma requisição que use um método
+        // do tipo "TRACE" ou "OPTIONS"
+        if ($request->getMethod() !== "TRACE" && $request->getMethod() !== "OPTIONS") {
             // Bloqueia qualquer alteração das propriedades protegidas
             // de configuração da rota.
             $this->routeConfig->lockProperties();
@@ -182,21 +178,22 @@ class RouteResolver implements iRequestHandler
             // Retorna o objeto "iResponse" modificado pela 
             // execução da action.
             $resultResponse = $tgtController->getResponse();
-
-            // A partir do objeto "iResponse" obtido, 
-            // gera a view a ser enviada para o UA.
-            $this->responseHandler = new \AeonDigital\EnGarde\ResponseHandler(
-                $this->serverConfig,
-                $this->domainConfig,
-                $this->applicationConfig,
-                $this->serverRequest,
-                $this->rawRouteConfig,
-                $this->routeConfig,
-                $resultResponse
-            );
-
-            // Prepara os headers e body do objeto "iResponse"
-            return $this->responseHandler->prepareResponse();
         }
+
+
+        // A partir do objeto "iResponse" obtido, 
+        // gera a view a ser enviada para o UA.
+        $this->responseHandler = new \AeonDigital\EnGarde\ResponseHandler(
+            $this->serverConfig,
+            $this->domainConfig,
+            $this->applicationConfig,
+            $this->serverRequest,
+            $this->rawRouteConfig,
+            $this->routeConfig,
+            $resultResponse
+        );
+
+        // Prepara os headers e body do objeto "iResponse"
+        return $this->responseHandler->prepareResponse();
     }
 }
