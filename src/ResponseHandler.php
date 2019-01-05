@@ -391,7 +391,7 @@ class ResponseHandler implements iResponseHandler
                             );
 
 
-                            // Gera o código para os recursos de CSS e JS
+        // Gera o código para os recursos de CSS e JS
         $allCSSs = $this->routeConfig->getStyleSheets();
         $strCSSs = [];
         foreach ($allCSSs as $css) {
