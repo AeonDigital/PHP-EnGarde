@@ -550,7 +550,7 @@ abstract class DomainApplication implements iApplication
             $partLength     = 1024;
             $totalLength    = $streamBody->getSize();
             $haveToSend     = $totalLength;
-            while ($haveToSend > 0 && $streamBody->eof() !== true) {
+            while ($haveToSend > 0 && $streamBody->eof() === false) {
                 $strPart = $streamBody->read(min($partLength, $haveToSend));
                 echo $strPart;
 
