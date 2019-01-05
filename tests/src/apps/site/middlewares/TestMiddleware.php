@@ -3,10 +3,10 @@ declare (strict_types = 1);
 
 namespace site\middlewares;
 
-use AeonDigital\EnGarde\RequestManager\Interfaces\iMiddleware as iMiddleware;
+use AeonDigital\EnGarde\Interfaces\iMiddleware as iMiddleware;
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
 use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\EnGarde\RequestManager\Interfaces\iRequestHandler as iRequestHandler;
+use AeonDigital\EnGarde\Interfaces\iRequestHandler as iRequestHandler;
 
 
 

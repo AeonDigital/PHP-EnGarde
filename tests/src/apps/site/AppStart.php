@@ -4,7 +4,7 @@ declare (strict_types = 1);
 namespace site;
 
 use AeonDigital\EnGarde\DomainApplication as DomainApplication;
-use AeonDigital\EnGarde\RequestManager\Interfaces\iMiddleware as iMiddleware;
+use AeonDigital\EnGarde\Interfaces\iMiddleware as iMiddleware;
 
 
 
