@@ -411,12 +411,24 @@ class ResponseHandler implements iResponseHandler
 
 
 
-
         // Mescla a view com a master page e arquivos CSS e JS
         $useBody = str_replace("<view />",          $viewContent, $masterContent);
         $useBody = str_replace("<metatags />",      $strMetas, $useBody);
         $useBody = str_replace("<stylesheets />",   $strCSSs, $useBody);
         $useBody = str_replace("<javascripts />",   $strJSs, $useBody);
+
+
+        $htmlProp = "";
+        // Conforme estiver servindo HTML ou XHTML
+        if ($this->routeConfig->getResponseMime() === "html") {
+            $htmlProp = "lang=\"".$this->routeConfig->getResponseLocale()."\"";
+        } 
+        elseif ($this->routeConfig->getResponseMime() === "xhtml") {
+            $useBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $useBody;
+            $htmlProp = "xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"".$this->routeConfig->getResponseLocale()."\"";
+        }
+        $useBody = str_replace("data-eg-html-prop=\"\"", $htmlProp, $useBody);
+        
 
 
         // Define o novo corpo para o objeto Response
