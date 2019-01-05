@@ -395,7 +395,7 @@ class ResponseHandler implements iResponseHandler
         $allCSSs = $this->routeConfig->getStyleSheets();
         $strCSSs = [];
         foreach ($allCSSs as $css) {
-            $cssPath = $basePath . $css;
+            $cssPath = $resourcesBasePath . $css;
             $strCSSs[] = "<link rel=\"stylesheet\" href=\"$cssPath\" />";
         }
         $strCSSs = ((count($strCSSs) > 0) ? "\n" . implode("\n", $strCSSs) : "");
