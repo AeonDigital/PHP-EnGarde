@@ -169,7 +169,7 @@ class RouteResolver implements iRequestHandler
             $this->routeConfig->lockProperties();
 
             // Inicia uma nova instância do controller alvo
-            $tgtController = $this->createController($response);
+            $tgtController = $this->createController($resultResponse);
             
             // Executa a action alvo
             $action = $this->routeConfig->getAction();
