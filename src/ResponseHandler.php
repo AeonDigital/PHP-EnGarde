@@ -383,11 +383,19 @@ class ResponseHandler implements iResponseHandler
         $strMetas = ((count($strMetas) > 0) ? "\n" . implode("\n", $strMetas) : "");
 
 
-        // Gera o código para os recursos de CSS e JS
+
+        $resourcesBasePath = str_replace(
+                                [$this->domainConfig->getRootPath(), "\\"], 
+                                ["", "/"], 
+                                $this->applicationConfig->getPathToViewsResources()
+                            );
+
+
+                            // Gera o código para os recursos de CSS e JS
         $allCSSs = $this->routeConfig->getStyleSheets();
         $strCSSs = [];
         foreach ($allCSSs as $css) {
-            $cssPath = to_system_path($this->applicationConfig->getPathToViewsResources() . "/" . $css);
+            $cssPath = $basePath . $css;
             $strCSSs[] = "<link rel=\"stylesheet\" href=\"$cssPath\" />";
         }
         $strCSSs = ((count($strCSSs) > 0) ? "\n" . implode("\n", $strCSSs) : "");
@@ -396,10 +404,11 @@ class ResponseHandler implements iResponseHandler
         $allJSs = $this->routeConfig->getJavaScripts();
         $strJSs = [];
         foreach ($allJSs as $js) {
-            $jsPath = to_system_path($this->applicationConfig->getPathToViewsResources() . "/" . $js);
+            $jsPath = $resourcesBasePath . $js;
             $strJSs[] = "<script src=\"$jsPath\"></script>";
         }
         $strJSs = ((count($strJSs) > 0) ? "\n" . implode("\n", $strJSs) : "");
+
 
 
 
