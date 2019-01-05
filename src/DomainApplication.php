@@ -534,7 +534,7 @@ abstract class DomainApplication implements iApplication
             // Envia os Headers para o UA
             foreach ($this->response->getHeaders() as $name => $value) {
                 if ($value === "") { header($name); } 
-                else { header($name . ": " . implode(", ", $values)); }
+                else { header($name . ": " . implode(", ", $value)); }
             }
 
 
