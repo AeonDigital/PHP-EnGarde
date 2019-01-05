@@ -104,7 +104,6 @@ class ResponseHandlerTest extends TestCase
     }
 
 
-    // Prosseguir com GET!
     public function test_check_response_to_GET()
     {
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(

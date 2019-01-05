@@ -14,8 +14,7 @@ use AeonDigital\EnGarde\Interfaces\iResponseHandler as iResponseHandler;
 
 /**
  * Permite produzir uma view a partir das informações coletadas
- * pelo processamento da rota alvo e enviar o resultado ao UA finalizando
- * assim o ciclo de vida da requisição.
+ * pelo processamento da rota alvo.
  * 
  * @package     AeonDigital\EnGarde
  * @version     0.9.0 [alpha]
@@ -163,56 +162,6 @@ class ResponseHandler implements iResponseHandler
 
         return $this->response;
     }
-
-
-
-
-
-    /**
-     * Efetivamente envia os dados para o UA.
-     *
-     * @return      void
-     */
-    public function sendResponse() : void
-    {
-        // Identifica se está em um ambiente de testes.
-        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" || 
-                        $this->domainConfig->getEnvironmentType() === "testview" || 
-                        $this->domainConfig->getEnvironmentType() === "localtest");
-
-
-        // Quando NÃO se trata de um ambiente de testes,
-        // efetua o envio dos dados processados para o UA.
-        if ($isTestEnv === false) {
-
-            // Envia os Headers para o UA
-            foreach ($this->response->getHeaders as $name => $value) {
-                if ($value === "") { header($name); } 
-                else { header($name . ": " . implode(", ", $values)); }
-            }
-
-
-            // Prepara o corpo da resposta para ser enviado.
-            $streamBody = $this->response->getBody();
-            if ($streamBody->isSeekable() === true) {
-                $streamBody->rewind();
-            }
-            
-
-            // Separa o envio do corpo do documento em partes
-            // para entrega-lo ao UA.
-            $partLength     = 1024;
-            $totalLength    = $streamBody->getSize();
-            $haveToSend     = $totalLength;
-            while ($haveToSend > 0 && $streamBody->eof() !== true) {
-                $strPart = $streamBody->read(min($partLength, $haveToSend));
-                echo $strPart;
-
-                $haveToSend -= $partLength;
-            }
-        }
-    }
-
 
 
 

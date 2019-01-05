@@ -65,6 +65,12 @@ abstract class DomainApplication implements iApplication
      */
     protected $routeConfig = null;
     /**
+     * Objeto "iResponse".
+     *
+     * @var         iResponse
+     */
+    private $response = null;
+    /**
      * Guarda a parte relativa da URI que está sendo
      * executada no momento
      *
@@ -240,7 +246,6 @@ abstract class DomainApplication implements iApplication
 
         if ($this->routeConfig !== null) {
             $this->executeContentNegotiation();
-            $this->initiCacheResponse();
         }
     }
 
@@ -339,6 +344,7 @@ abstract class DomainApplication implements iApplication
      */
     private function initiCacheResponse() : void
     {
+        /*
         // ----> Aguardar para implementar via Middleware
         if ($this->routeConfig->getIsUseCache() === true) {
             // P1 - Identifica o nome do arquivo que deve responder
@@ -355,6 +361,7 @@ abstract class DomainApplication implements iApplication
             $cacheFileName  =   $httpMethod . "-" . $useRoute . "-" . 
                                 $useAction . $routeQuery . "-" . $this->useLocale . "." . $this->useMime;
         }
+        */
     }
 
 
@@ -386,8 +393,7 @@ abstract class DomainApplication implements iApplication
                
 
                 // Inicia uma instância "iRequestHandler" responsável
-                // por iniciar o controller alvo e executar o método correspondente
-                // a rota.
+                // por iniciar o controller alvo e executar o método correspondente a rota.
                 $resolver = new \AeonDigital\EnGarde\RouteResolver(
                     $this->serverConfig,
                     $this->domainConfig,
@@ -401,7 +407,7 @@ abstract class DomainApplication implements iApplication
                 // Inicia a instância do manipulador da requisição.
                 // e passa para ele o resolver da rota para ser executado após
                 // os middlewares
-                $requestManager = new \AeonDigital\EnGarde\RequestManager\RequestManager($resolver);
+                $requestHandler = new \AeonDigital\EnGarde\RequestHandler($resolver);
 
 
                 // Registra os middlewares caso existam
@@ -411,12 +417,12 @@ abstract class DomainApplication implements iApplication
                         
                         // Se o middleware está registrado com seu nome completo
                         if (class_exists($callMiddleware) === true) {
-                            $requestManager->add(new $callMiddleware());
+                            $requestHandler->add(new $callMiddleware());
                         } 
                         // Senão, o middleware registrado deve corresponder a um
                         // método da aplicação atual.
                         else {
-                            $requestManager->add($this->{$callMiddleware}());
+                            $requestHandler->add($this->{$callMiddleware}());
                         }
                     }
                 }
@@ -439,29 +445,15 @@ abstract class DomainApplication implements iApplication
                 // Executa os middlewares e action alvo retornando 
                 // um objeto "iResponse" contendo as informações 
                 // necessárias para a resposta ao UA.
-                $resultResponse = $requestManager->handle($this->serverRequest);
+                $this->response = $requestHandler->handle($this->serverRequest);
 
 
                 // Caso necessário, esvazia o buffer e encerra-o
                 if ($hideAllOutputs === true) { ob_end_clean(); }
 
 
-                // A partir do objeto "iResponse" obtido, 
-                // gera a view a ser enviada para o UA.
-                $responseHandler = new \AeonDigital\EnGarde\ResponseHandler(
-                    $this->serverConfig,
-                    $this->domainConfig,
-                    $this->applicationConfig,
-                    $this->serverRequest,
-                    $this->rawRouteConfig,
-                    $this->routeConfig,
-                    $resultResponse
-                );
-
-
-                // Prepara e envia os dados para o UA
-                $this->testViewDebug = $responseHandler->prepareResponse();
-                $responseHandler->sendResponse();
+                // Efetua o envio dos dados obtidos e processados para o UA.
+                $this->sendResponse();
             }
         }
     }
@@ -515,6 +507,55 @@ abstract class DomainApplication implements iApplication
             return false;
         } else {
             return true;
+        }
+    }
+
+
+
+
+
+    /**
+     * Efetivamente envia os dados para o UA.
+     *
+     * @return      void
+     */
+    private function sendResponse() : void
+    {
+        // Identifica se está em um ambiente de testes.
+        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" || 
+                        $this->domainConfig->getEnvironmentType() === "testview" || 
+                        $this->domainConfig->getEnvironmentType() === "localtest");
+
+
+        // Quando NÃO se trata de um ambiente de testes,
+        // efetua o envio dos dados processados para o UA.
+        if ($isTestEnv === false) {
+
+            // Envia os Headers para o UA
+            foreach ($this->response->getHeaders as $name => $value) {
+                if ($value === "") { header($name); } 
+                else { header($name . ": " . implode(", ", $values)); }
+            }
+
+
+            // Prepara o corpo da resposta para ser enviado.
+            $streamBody = $this->response->getBody();
+            if ($streamBody->isSeekable() === true) {
+                $streamBody->rewind();
+            }
+            
+
+            // Separa o envio do corpo do documento em partes
+            // para entrega-lo ao UA.
+            $partLength     = 1024;
+            $totalLength    = $streamBody->getSize();
+            $haveToSend     = $totalLength;
+            while ($haveToSend > 0 && $streamBody->eof() !== true) {
+                $strPart = $streamBody->read(min($partLength, $haveToSend));
+                echo $strPart;
+
+                $haveToSend -= $partLength;
+            }
         }
     }
 

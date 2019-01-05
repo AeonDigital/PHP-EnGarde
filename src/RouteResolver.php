@@ -3,7 +3,7 @@ declare (strict_types = 1);
 
 namespace AeonDigital\EnGarde;
 
-use AeonDigital\EnGarde\RequestManager\Interfaces\iRequestHandler as iRequestHandler;
+use AeonDigital\EnGarde\Interfaces\iRequestHandler as iRequestHandler;
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
 use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 use AeonDigital\EnGarde\Config\Interfaces\iServerConfig as iServerConfig;
@@ -68,6 +68,13 @@ class RouteResolver implements iRequestHandler
      * @var         iRouteConfig
      */
     protected $routeConfig = null;
+    /**
+     * Objeto responsável por preparar o "iResponse" para
+     * ser servido ao UA.
+     *
+     * @var         iResponseHandler
+     */
+    private $responseHandler = null;
 
 
 
@@ -174,7 +181,22 @@ class RouteResolver implements iRequestHandler
 
             // Retorna o objeto "iResponse" modificado pela 
             // execução da action.
-            return $tgtController->getResponse();
+            $resultResponse = $tgtController->getResponse();
+
+            // A partir do objeto "iResponse" obtido, 
+            // gera a view a ser enviada para o UA.
+            $this->responseHandler = new \AeonDigital\EnGarde\ResponseHandler(
+                $this->serverConfig,
+                $this->domainConfig,
+                $this->applicationConfig,
+                $this->serverRequest,
+                $this->rawRouteConfig,
+                $this->routeConfig,
+                $resultResponse
+            );
+
+            // Prepara os headers e body do objeto "iResponse"
+            return $this->responseHandler->prepareResponse();
         }
     }
 }

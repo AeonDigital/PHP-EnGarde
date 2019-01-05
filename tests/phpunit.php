@@ -28,12 +28,10 @@ require_once $srcDir . "/Interfaces/iResponseHandler.php";
 require_once $srcDir . "/ResponseHandler.php";
 
 
+require_once $srcDir . "/DomainManager.php";
+require_once $srcDir . "/RouteResolver.php";
 
-//require_once $srcDir . "/DomainManager.php";
 
-//require_once $srcDir . "/RouteResolver.php";
-
-/*
 require_once $srcDir . "/Interfaces/iApplication.php";
 require_once $srcDir . "/DomainApplication.php";
 require_once $appDir . "/AppStart.php";
@@ -43,4 +41,3 @@ require_once $srcDir . "/Interfaces/iController.php";
 require_once $srcDir . "/DomainController.php";
 require_once $appDir . "/controllers/Home.php";
 require_once $appDir . "/middlewares/TestMiddleware.php";
-*/

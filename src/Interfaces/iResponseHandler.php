@@ -13,9 +13,8 @@ use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 
 
 /**
- * Interface para classes que tem como função produzir uma view e 
- * enviar o resultado para o UA conforme as exigências da requisição
- * feita pelo UA em conjunto com as configurações da rota alvo.
+ * Interface para classes que tem como função produzir uma view 
+ * que pode ser enviada para o UA.
  * 
  * @package     AeonDigital\EnGarde
  * @version     0.9.0 [alpha]
@@ -37,13 +36,4 @@ interface iResponseHandler
      * @return      iResponse
      */
     function prepareResponse() : iResponse;
-
-
-
-    /**
-     * Efetivamente envia os dados para o UA.
-     *
-     * @return      void
-     */
-    function sendResponse() : void;
 }

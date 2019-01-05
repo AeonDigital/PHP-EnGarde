@@ -115,6 +115,11 @@ class DomainManagerTest extends TestCase
     }
 
 
+
+
+
+
+    
     public function test_check_response_to_error_404()
     {
         $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("localtest", "GET", "/non-exist-route/for/this");
@@ -143,11 +148,7 @@ class DomainManagerTest extends TestCase
     }
 
 
-
-
-
-
-
+    /*
     public function test_check_response_to_GET()
     {
         $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("testview", "GET", "/", null, null, "0.9.0 [alpha]", true);
@@ -209,4 +210,5 @@ class DomainManagerTest extends TestCase
         //file_put_contents($tgtPathToExpected, (string)$output->getBody());
         $this->assertEquals($objExpected->requestData, $objOutput->requestData);
     }
+    */
 }
