@@ -168,7 +168,7 @@ abstract class DomainApplication implements iApplication
             if ($this->domainConfig->isApplicationNameOmitted() === true) {
                 $executePath = "/" . $this->applicationConfig->getName() . "/" . ltrim($requestURIPath, "/");
             }
-            $this->executePath = $executePath . "/";
+            $this->executePath = $executePath;
 
 
             // Seleciona os dados da rota que deve ser executada.
