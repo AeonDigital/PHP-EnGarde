@@ -172,7 +172,7 @@ abstract class DomainApplication implements iApplication
 
 
             // Seleciona os dados da rota que deve ser executada.
-            $this->rawRouteConfig = $this->applicationRouter->selectTargetRawRoute($executePath);
+            $this->rawRouteConfig = $this->applicationRouter->selectTargetRawRoute($this->executePath);
 
 
             // P3 - Identificando exatamente a configuração da rota alvo
