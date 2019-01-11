@@ -384,10 +384,6 @@ class ResponseHandler implements iResponseHandler
 
 
 
-        $strMetas = ((count($strMetas) > 0) ? "\n" . implode("\n", $strMetas) : "");
-
-
-
         $resourcesBasePath = str_replace(
                                 [$this->domainConfig->getRootPath(), "\\"], 
                                 ["", "/"], 
