@@ -79,10 +79,24 @@ abstract class DomainController implements iController
      * Objeto "StdClass".
      * Deve ser preenchido durante a execução da Action 
      * e poderá ser acessado nas views.
+     * 
+     * Tem como finalidade agregar todas as informações que o UA
+     * está requisitando.
      *
      * @var         \StdClass
      */
     protected $viewData = null;
+    /**
+     * Objeto "StdClass".
+     * Deve ser preenchido durante a execução da Action 
+     * e poderá ser acessado nas views.
+     * 
+     * Tem como finalidade agregar informações que sirvam para
+     * a criação da view e não devem ser expostas ao UA.
+     *
+     * @var         \StdClass
+     */
+    protected $viewConfig = null;
 
 
 
@@ -135,6 +149,7 @@ abstract class DomainController implements iController
         $this->response             = $response;
 
         $this->viewData = new \StdClass();
+        $this->viewConfig = new \StdClass();
     }
 
 
@@ -152,9 +167,16 @@ abstract class DomainController implements iController
      */
     public function getResponse() : iResponse
     {
+        $useViewConfig = $this->routeConfig->getActionAttributes();
+        foreach ($this->viewConfig as $key => $value) {
+            if (isset($useViewConfig[$key]) === false) {
+                $useViewConfig[$key] = $value;
+            }
+        }
+
         return $this->response->withActionProperties(
             $this->viewData, 
-            (object)$this->routeConfig->getActionAttributes(),
+            (object)$useViewConfig,
             $this->routeConfig->getResponseHeaders()
         );
     }
