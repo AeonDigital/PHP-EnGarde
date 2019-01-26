@@ -164,11 +164,11 @@ abstract class DomainApplication implements iApplication
 
             // Se o nome da aplicação não foi definido no caminho 
             // relativo da URI que está sendo executada, adiciona-o
-            $executePath = "/" . ltrim($requestURIPath, "/");
+            $executePath = trim($requestURIPath, "/");
             if ($this->domainConfig->isApplicationNameOmitted() === true) {
-                $executePath = "/" . $this->applicationConfig->getName() . "/" . ltrim($requestURIPath, "/");
+                $executePath = $this->applicationConfig->getName() . "/" . $executePath;
             }
-            $this->executePath = $executePath;
+            $this->executePath = "/" . $executePath . "/";
 
 
             // Seleciona os dados da rota que deve ser executada.
