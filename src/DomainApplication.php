@@ -175,6 +175,13 @@ abstract class DomainApplication implements iApplication
             $this->rawRouteConfig = $this->applicationRouter->selectTargetRawRoute($this->executePath);
 
 
+            // Adiciona os parametros definidos na própria URL, identificados pelo
+            // roteador da Aplicação no objeto de requisição.
+            $this->serverRequest->setInitialAttributes($this->applicationRouter->getSelectedRouteParans());
+
+
+
+
             // P3 - Identificando exatamente a configuração da rota alvo
             $targetMethod = strtoupper($this->serverRequest->getMethod());
             if ($this->rawRouteConfig !== null && isset($this->rawRouteConfig[$targetMethod]) === true) {
