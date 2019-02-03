@@ -177,7 +177,8 @@ abstract class DomainApplication implements iApplication
 
             // Adiciona os parametros definidos na própria URL, identificados pelo
             // roteador da Aplicação no objeto de requisição.
-            $this->serverRequest->setInitialAttributes($this->applicationRouter->getSelectedRouteParans());
+            $useAttributes = $this->applicationRouter->getSelectedRouteParans() ?? [];
+            $this->serverRequest->setInitialAttributes($useAttributes);
 
 
 
