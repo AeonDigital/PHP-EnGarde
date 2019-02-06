@@ -188,6 +188,11 @@ abstract class DomainApplication implements iApplication
             if ($this->rawRouteConfig !== null && isset($this->rawRouteConfig[$targetMethod]) === true) {
                 $this->routeConfig = new \AeonDigital\EnGarde\Config\RouteConfig($this->rawRouteConfig[$targetMethod]);
             }
+
+
+
+            // P4 - Identifica se deve executar um método próprio
+            $this->runMethodName = $this->routeConfig->getRunMethodName();
         }
     }
 
