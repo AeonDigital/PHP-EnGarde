@@ -156,8 +156,19 @@ class ResponseHandler implements iResponseHandler
         // Sendo uma requisição que utiliza um método HTTP 
         // que pode ser controlado pelos controllers das aplicações.
         else {
-            // Efetua a criação do corpo do documento a ser entregue.
-            $this->createResponseBody();
+            // Efetua a criação do corpo do documento a ser entregue
+            // conforme o mime que deve ser utilizado
+            switch ($this->routeConfig->getResponseMime()) {
+                case "html":
+                case "xhtml":
+                    $this->createResponseBodyXHTML();
+                    break;
+
+                case "json":
+                    $this->createResponseBodyJSON();
+                    break;
+            }
+            
         }
 
         return $this->response;
@@ -336,12 +347,15 @@ class ResponseHandler implements iResponseHandler
         $body->write(json_encode($useBody));
         $this->response = $this->response->withBody($body);
     }
+
+
+
     /**
-     * Cria o body a ser entregue para o UA.
+     * Cria o body a ser entregue para o UA no formato X/HTML.
      *
      * @return      void
      */
-    private function createResponseBody() : void
+    private function createResponseBodyXHTML() : void
     {
         $viewContent    = "";
         $masterContent  = "<view />";
@@ -431,6 +445,41 @@ class ResponseHandler implements iResponseHandler
         }
         $useBody = str_replace("data-eg-html-prop=\"\"", $htmlProp, $useBody);
         
+
+
+        // Define o novo corpo para o objeto Response
+        $body = $this->response->getBody();
+        $body->write($useBody);
+        $this->response = $this->response->withBody($body);
+
+
+        // Prepara os Headers para o envio
+        $this->prepareResponseHeaders(
+            $this->routeConfig->getResponseMimeType(),
+            $this->routeConfig->getResponseLocale(),
+            $this->response->getHeaders(),
+            $this->routeConfig->getResponseIsDownload(),
+            $this->routeConfig->getResponseDownloadFileName()
+        );
+    }
+    /**
+     * Cria o body a ser entregue para o UA no formato JSON.
+     *
+     * @return      void
+     */
+    private function createResponseBodyJSON() : void
+    {
+        $viewData = $this->response->getViewData();
+        $isPrettyPrint = $this->routeConfig->getResponseIsPrettyPrint();
+
+
+        // Converte o valor de "viewData" em uma representação JSON
+        $jsonOptions = (JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+        if ($isPrettyPrint === true) {
+            $jsonOptions = (JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES |
+                            JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+        }
+        $useBody = json_encode($viewData, $jsonOptions);
 
 
         // Define o novo corpo para o objeto Response
