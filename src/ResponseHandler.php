@@ -167,6 +167,14 @@ class ResponseHandler implements iResponseHandler
                 case "json":
                     $this->createResponseBodyJSON();
                     break;
+
+                case "txt":
+                    $this->createResponseBodyTXT();
+                    break;
+
+                case "xml":
+                    $this->createResponseBodyXML();
+                    break;
             }
             
         }
@@ -243,6 +251,11 @@ class ResponseHandler implements iResponseHandler
         // Aplica os headers no objeto response.
         $this->response = $this->response->withHeaders($this->useHeaders, false);
     }
+
+
+
+
+
 
 
 
@@ -350,8 +363,18 @@ class ResponseHandler implements iResponseHandler
 
 
 
+
+
+
+
+
+
+
     /**
      * Cria o body a ser entregue para o UA no formato X/HTML.
+     * 
+     * - Este método permite o uso de MasterPage.
+     * - Este método permite o uso de View.
      *
      * @return      void
      */
@@ -444,7 +467,15 @@ class ResponseHandler implements iResponseHandler
             $htmlProp = "xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"".$this->routeConfig->getResponseLocale()."\"";
         }
         $useBody = str_replace("data-eg-html-prop=\"\"", $htmlProp, $useBody);
-        
+
+
+        // Aplica "prettyPrint" caso seja requisitado
+        if ($this->routeConfig->getResponseIsPrettyPrint() === true) {
+            $useBody = $this->prettyPrintXHTMLDocument(
+                $useBody,
+                $this->routeConfig->getResponseMime()
+            );
+        }
 
 
         // Define o novo corpo para o objeto Response
@@ -463,7 +494,76 @@ class ResponseHandler implements iResponseHandler
         );
     }
     /**
+     * Efetua um tratamento para facilitar leitura 
+     * de documentos X/HTML por parte de humanos.
+     *
+     * @param       string $document
+     *              String do documento X/HTML.
+     * 
+     * @param       string $mime
+     *              Mime que está sendo usado [ "html" | "xhtml" ].
+     * 
+     * @return      string
+     */
+    private function prettyPrintXHTMLDocument(
+        string $document, 
+        string $mime
+    ) : string {
+        $strTidy = $document;
+        $configOutput = [];
+
+        if ($strTidy !== "") {
+            // Configura o "tidy_parse" para obter uma saida compativel
+            // com este formato
+            //
+            // Lista completa de configurações possíveis
+            // http://tidy.sourceforge.net/docs/quickref.html
+            $configOutput = [
+                "indent"            => true,    // Indica se o código de saida deve estar identado
+                "indent-spaces"     => 4,       // Indica a quantidade de espaços usados para cada nível de identação.
+                "vertical-space"    => true,    // Irá adicionar algumas linhas em branco para facilitar a leitura.
+                "wrap"              => 200,     // Máximo de caracteres que uma linha deve ter.
+
+                "quote-ampersand"   => true,    // Converte todo & para &amp;
+                "lower-literals"    => true,    // Converte o valor de atributos pré-definidos para lowercase
+                "hide-comments"     => true,    // Remove comentários
+                "indent-cdata"      => true,    // Identa sessões CDATA
+                "fix-backslash"     => true,    // Corrige toda "\" para "/" em URLs
+                "alt-text"          => "-",     // Adiciona o atributo "alt" nas imagens que não o possuem e usa o valor indicado.
+                "break-before-br"   => true,    // Indica quando deve inserir um \n imediatamente antes de um <br />
+
+                "char-encoding"     => "utf8"   // Encoding do código de saida.
+            ];
+
+            if ($mime === "html") {
+                $configOutput["output-html"] = true;
+            } elseif ($mime === "xhtml") {
+                $configOutput["output-xhtml"] = true;
+            }
+
+
+            $tidy = tidy_parse_string($strTidy, $configOutput, "UTF8");
+            $tidy->cleanRepair();
+            $strTidy = (string)$tidy;
+        }
+
+        return $strTidy;
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
      * Cria o body a ser entregue para o UA no formato JSON.
+     * 
+     * - Este método NÃO permite o uso de MasterPage.
+     * - Este método NÃO permite o uso de View.
      *
      * @return      void
      */
@@ -497,4 +597,341 @@ class ResponseHandler implements iResponseHandler
             $this->routeConfig->getResponseDownloadFileName()
         );
     }
+
+
+
+
+
+
+
+
+    /**
+     * Cria o body a ser entregue para o UA no formato TXT.
+     * 
+     * - Este método permite o uso de MasterPage.
+     * - Este método permite o uso de View.
+     *
+     * @return void
+     */
+    private function createResponseBodyTXT() : void
+    {
+        $viewContent    = "";
+        $masterContent  = "<view />";
+        $viewData       = $this->response->getViewData();
+        $viewConfig     = $this->response->getViewConfig();
+        $hasTemplate    = false;
+
+        
+        // Processa a view definida e resgata o resultado
+        // de seu processamento.
+        if ($this->routeConfig->getView() !== null) {
+            $hasTemplate = true;
+            $viewPath = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView());
+		    ob_start("mb_output_handler");
+            require_once $viewPath;
+
+            $viewContent = "\n" . ob_get_contents();
+            @ob_end_clean();
+        }
+
+
+        
+        // Se há uma masterPage definido efetua
+        // seu processamento e armazena seu resultado.
+        if ($this->routeConfig->getMasterPage() !== null) {
+            $hasTemplate = true;
+            $viewMaster = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
+            ob_start("mb_output_handler");
+            require_once $viewMaster;
+
+            $masterContent = ob_get_contents();
+            @ob_end_clean();
+        }
+
+
+
+        // Se há um template definido para ser usado ao criar um documento TXT...
+        if ($hasTemplate === true) {
+            // Mescla a view com a master page
+            $useBody = str_replace("<view />", $viewContent, $masterContent);
+        }
+        // Caso não exista, irá converter o objeto "viewData" em um formato
+        // previamente definido.
+        else {
+            if ($viewData !== null) {
+                $useBody = $this->convertToStructuredString((array)$viewData, "  ");
+            }
+        }
+
+
+
+        // Define o novo corpo para o objeto Response
+        $body = $this->response->getBody();
+        $body->write($useBody);
+        $this->response = $this->response->withBody($body);
+
+
+        // Prepara os Headers para o envio
+        $this->prepareResponseHeaders(
+            $this->routeConfig->getResponseMimeType(),
+            $this->routeConfig->getResponseLocale(),
+            $this->response->getHeaders(),
+            $this->routeConfig->getResponseIsDownload(),
+            $this->routeConfig->getResponseDownloadFileName()
+        );
+    }
+    /**
+     * A partir de um array (associativo ou não) devolve uma string
+     * estruturada com todos os valores linha a linha e devidamente indexados.
+     *
+     * @param       mixed $oArray
+     *              Valor que será convertido para string.
+     *
+     * @param       string $indent
+     *              Caracteres que servirão para identar o valor. 
+     *              Normalmente é um conjunto de espaços vazios ou tabs.
+     *
+     * @param       string $acIndend
+     *              String de identação acumulada pelo uso de sub-níveis.
+     *
+     * @param       string $parentIndex
+     *              Index usado pelo nível superior do array que está sendo 
+     *              estruturado no momento.
+     *
+     * @return      string
+     */
+    private function convertToStructuredString(
+        array $oData,
+        string $indent = "", 
+        string $acIndend = "", 
+        string $parentIndex = ""
+    ) : string {
+        $str = "";
+        $val = [];
+
+        foreach ($oData as $i => $v) {
+            $useI = (($parentIndex === "") ? (string)$i : $parentIndex . "." . (string)$i);
+            $useTab = (($parentIndex === "") ? "" : $acIndend);
+
+            if (is_assoc($oData) === true && (is_array($oData[$i]) === true || is_a($oData[$i], "\StdClass") === true)) {
+                $val[] = $acIndend . "[" . $i . "]";
+            }
+
+            if (is_array($v)) {
+                $val[] = $this->convertToStructuredString($v, $indent, ($acIndend . $indent), $useI);
+            } elseif (is_a($v, "\StdClass")) {
+                $val[] = $this->convertToStructuredString((array)$v, $indent, ($acIndend . $indent), $useI);
+            } else {
+                $val[] = $useTab . "[" . $useI . "] : " . $this->convertValueToString($v, "\"", "\"\"");
+            }
+        }
+        
+        $str = implode("\n", $val);
+        return $str;
+    }
+    /**
+     * Converte um valor indicado para uma string devidamente tratada
+     * para ser utilizada em contexto de um documento de um determinado tipo.
+     *
+     * @param       mixed $oValue
+     *              Valor que será convertido para string.
+     *
+     * @param       string $outsideQuote
+     *              Tipo de aspas que será utilizada para envovler a string final.
+     *
+     * @param       string $insideQuote
+     *              Usado para substituir casos de "$outsideQuote" dentro das strings de valores.
+     *
+     * @return      string
+     */
+    private function convertValueToString(
+        $oValue,
+        string $outsideQuote = "",
+        string $insideQuote = ""
+    ) : string {
+        $str = "";
+
+        if (is_bool($oValue)) {
+            $str = ($oValue === true) ? "1" : "0";
+        } elseif (is_numeric($oValue)) {
+            $str = (string)$oValue;
+        } elseif (is_string($oValue)) {
+            $str = $outsideQuote . str_replace($outsideQuote, $insideQuote, $oValue) . $outsideQuote;
+        } elseif (is_a($oValue, "DateTime")) {
+            $str = $outsideQuote . $oValue->format("Y-m-d H:i:s") . $outsideQuote;
+        } elseif (is_object($oValue)) {
+            $str = "Object: " . get_class($oValue);
+        }
+
+        return $str;
+    }
+
+
+
+
+
+
+
+
+    /**
+     * Cria o body a ser entregue para o UA no formato XML.
+     * 
+     * - Este método permite o uso de MasterPage.
+     * - Este método permite o uso de View.
+     *
+     * @return void
+     */
+    private function createResponseBodyXML() : void
+    {
+        $viewContent    = "";
+        $masterContent  = "<view />";
+        $viewData       = $this->response->getViewData();
+        $viewConfig     = $this->response->getViewConfig();
+        $hasTemplate    = false;
+
+        
+        // Processa a view definida e resgata o resultado
+        // de seu processamento.
+        if ($this->routeConfig->getView() !== null) {
+            $hasTemplate = true;
+            $viewPath = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView());
+		    ob_start("mb_output_handler");
+            require_once $viewPath;
+
+            $viewContent = "\n" . ob_get_contents();
+            @ob_end_clean();
+        }
+
+
+        
+        // Se há uma masterPage definido efetua
+        // seu processamento e armazena seu resultado.
+        if ($this->routeConfig->getMasterPage() !== null) {
+            $hasTemplate = true;
+            $viewMaster = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
+            ob_start("mb_output_handler");
+            require_once $viewMaster;
+
+            $masterContent = ob_get_contents();
+            @ob_end_clean();
+        }
+
+
+
+        // Se há um template definido para ser usado ao criar um documento XML...
+        if ($hasTemplate === true) {
+            // Mescla a view com a master page
+            $useBody = str_replace("<view />", $viewContent, $masterContent);
+        }
+        // Caso não exista, irá converter o objeto "viewData" em um formato
+        // previamente definido.
+        else {
+            if ($viewData !== null) {
+                $xml = new \SimpleXMLElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><root></root>");
+                $this->convertArrayToXML((array)$viewData, $xml);
+                $useBody = $xml->asXML();
+            }
+        }
+
+
+        // Aplica "prettyPrint" caso seja requisitado
+        if ($this->routeConfig->getResponseIsPrettyPrint() === true) {
+            $useBody = $this->prettyPrintXMLDocument($useBody);
+        }
+
+
+        // Define o novo corpo para o objeto Response
+        $body = $this->response->getBody();
+        $body->write($useBody);
+        $this->response = $this->response->withBody($body);
+
+
+        // Prepara os Headers para o envio
+        $this->prepareResponseHeaders(
+            $this->routeConfig->getResponseMimeType(),
+            $this->routeConfig->getResponseLocale(),
+            $this->response->getHeaders(),
+            $this->routeConfig->getResponseIsDownload(),
+            $this->routeConfig->getResponseDownloadFileName()
+        );
+    }
+    /**
+     * Converte um array associativo em um XML.
+     *
+     * @param       array $oArray
+     *              Objeto que será convertido.
+     * 
+     * @param       SimpleXMLElement $xml
+     *              Instância do objeto XML que será gerado.
+     *
+     */
+    private function convertArrayToXML(array $oArray, \SimpleXMLElement $xml)
+    {
+        foreach ($oArray as $key => $value) {
+            $useKey = $key;
+
+            // Verifica se "key" é um valor numérico
+            if (is_numeric($key)) {
+                $useKey = "item_" . $key;
+            }
+
+            // Se o valor for um novo array, gera um subnode
+            // e preenche-o
+            if (is_array($value)) {
+                $subnode = $xml->addChild($useKey);
+                $this->convertArrayToXML($value, $subnode);
+            } elseif (is_a($value, "StdClass")) {
+                $subnode = $xml->addChild($useKey);
+                $this->convertArrayToXML((array)$value, $subnode);
+            } else {
+                $value = $this->convertValueToString($value);
+                $xml->addChild($useKey, htmlspecialchars($value));
+            }
+        }
+    }
+    /**
+     * Efetua um tratamento para facilitar leitura 
+     * de documentos X/HTML por parte de humanos.
+     *
+     * @param       string $document
+     *              String do documento X/HTML.
+     * 
+     * @return      string
+     */
+    private function prettyPrintXMLDocument(
+        string $document
+    ) : string {
+        $strTidy = $document;
+        $configOutput = [];
+
+        if ($strTidy !== "") {
+            // Configura o "tidy_parse" para obter uma saida compativel
+            // com este formato
+            //
+            // Lista completa de configurações possíveis
+            // http://tidy.sourceforge.net/docs/quickref.html
+            $configOutput = [
+                "input-xml"         => true,    // Indica que o código de entrada é um XML
+                "output-xml"        => true,    // Tenta converter a string em um documento XML
+
+                "indent"            => true,    // Indica se o código de saida deve estar identado
+                "indent-spaces"     => 4,       // Indica a quantidade de espaços usados para cada nível de identação.
+                "vertical-space"    => true,    // Irá adicionar algumas linhas em branco para facilitar a leitura.
+                "wrap"              => 200,     // Máximo de caracteres que uma linha deve ter.
+
+                "quote-ampersand"   => true,    // Converte todo & para &amp;
+                "hide-comments"     => true,    // Remove comentários
+                "indent-cdata"      => true,    // Identa sessões CDATA
+
+                "char-encoding"     => "utf8"   // Encoding do código de saida.
+            ];
+
+            $tidy = tidy_parse_string($strTidy, $configOutput, "UTF8");
+            $tidy->cleanRepair();
+            $strTidy = (string)$tidy;
+        }
+
+        return $strTidy;
+    }
+
 }
