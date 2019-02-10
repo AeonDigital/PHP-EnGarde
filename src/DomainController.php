@@ -25,6 +25,7 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
+ * @codeCoverageIgnore
  */
 abstract class DomainController implements iController
 {

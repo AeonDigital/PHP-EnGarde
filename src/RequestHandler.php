@@ -21,6 +21,7 @@ use Psr\Http\Server\MiddlewareInterface as MiddlewareInterface;
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
+ * @codeCoverageIgnore
  */
 final class RequestHandler implements iRequestHandler
 {

@@ -27,6 +27,11 @@ require_once $conDir . "/Middleware01.php";
 require_once $srcDir . "/Interfaces/iResponseHandler.php";
 require_once $srcDir . "/ResponseHandler.php";
 
+require_once $srcDir . "/Interfaces/iMimeHandler.php";
+require_once $srcDir . "/MimeHandler/aMimeHandler.php";
+require_once $srcDir . "/MimeHandler/HTML.php";
+require_once $srcDir . "/MimeHandler/XHTML.php";
+
 
 require_once $srcDir . "/DomainManager.php";
 require_once $srcDir . "/RouteResolver.php";

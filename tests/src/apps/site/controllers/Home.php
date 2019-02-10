@@ -94,6 +94,17 @@ class Home extends DomainController
 
 
 
+    public static $registerRoute_customRun = [
+        "description" => "Página home da aplicação",
+        "method" => ["GET"],
+        "routes" => ["/customrun"],
+        "action" => "-",
+        "runMethodName" => "customRun"
+    ];
+
+
+
+
 
     /**
      * [Methods]     : GET

@@ -19,6 +19,7 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
+ * @codeCoverageIgnore
  */
 class DomainManager
 {
@@ -38,7 +39,7 @@ class DomainManager
      *
      * @var         iServerRequest
      */
-    protected $serverRequest = null;
+    private $serverRequest = null;
     /**
      * Configurações do Domínio
      *
@@ -92,7 +93,6 @@ class DomainManager
      */
     private function defineDomainConfig(?iDomainConfig $domainConfig = null) : void 
     {
-
         if ($domainConfig === null) {
             $domainConfig = new \AeonDigital\EnGarde\Config\DomainConfig();
 
@@ -211,9 +211,6 @@ class DomainManager
      * @var         bool
      */
     private $isRun = false;
-
-
-
     /**
      * Efetivamente inicia o processamento da 
      * requisição HTTP identificando qual aplicação 

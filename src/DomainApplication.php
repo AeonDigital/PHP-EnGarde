@@ -20,6 +20,7 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
+ * @codeCoverageIgnore
  */
 abstract class DomainApplication implements iApplication
 {
@@ -69,7 +70,7 @@ abstract class DomainApplication implements iApplication
      *
      * @var         iResponse
      */
-    private $response = null;
+    protected $response = null;
     /**
      * Guarda a parte relativa da URI que está sendo
      * executada no momento
@@ -110,7 +111,6 @@ abstract class DomainApplication implements iApplication
         if ($fullPathToErrorView !== null) {
             \AeonDigital\EnGarde\Config\ErrorListening::setPathToErrorView($fullPathToErrorView);
         }
-
     }
     /**
      * Define o objeto "ApplicationRouter" para esta instância.
@@ -332,38 +332,6 @@ abstract class DomainApplication implements iApplication
 
 
 
-    /**
-     * Inicia as verificações para o caso de o sistema de cache
-     * estar ativado para a rota atualmente sendo executada.
-     *
-     * @return      void
-     */
-    private function initiCacheResponse() : void
-    {
-        /*
-        // ----> Aguardar para implementar via Middleware
-        if ($this->routeConfig->getIsUseCache() === true) {
-            // P1 - Identifica o nome do arquivo que deve responder
-            //      a esta requisição.
-            $httpMethod     = $this->serverRequest->getMethod();
-
-            $executePath    = str_replace("/" . $this->applicationConfig->getName(), "", $this->executePath);
-            $useRoute       = str_replace("/", "-", trim($executePath, "/"));
-            $useRoute       = (($useRoute === "") ? "home" : $useRoute);
-            $useAction      = $this->routeConfig->getAction();
-            $useQuery       = http_build_query($this->serverRequest->getQueryParams());
-            $useQuery       = (($useQuery === "") ? "" : "§$routeQuery");
-
-            $cacheFileName  =   $httpMethod . "-" . $useRoute . "-" . 
-                                $useAction . $routeQuery . "-" . $this->useLocale . "." . $this->useMime;
-        }
-        */
-    }
-
-
-
-
-
 
 
 
@@ -386,7 +354,7 @@ abstract class DomainApplication implements iApplication
             if ($this->checkRouteErrors() === true) {
                 $targetMethod = strtoupper($this->serverRequest->getMethod());
 
-               
+
 
                 // Inicia uma instância "iRequestHandler" responsável
                 // por iniciar o controller alvo e executar o método correspondente a rota.
@@ -402,7 +370,7 @@ abstract class DomainApplication implements iApplication
 
                 // Inicia a instância do manipulador da requisição.
                 // e passa para ele o resolver da rota para ser executado após
-                // os middlewares
+                // os middlewares.
                 $requestHandler = new \AeonDigital\EnGarde\RequestHandler($resolver);
 
 

@@ -31,7 +31,9 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
     $debugMode = false
 ) {
     $serverRequest = provider_PHPHTTPMessage_InstanceOf_ServerRequest_02($requestMethod, $url);
+    $serverRequest = $serverRequest->withCookieParams([]);
 
+    
     $response = null;
     $routeConfig = null;
     $tempAppRoutes = require(__DIR__ . "/concrete/AppRoutes.php");
@@ -103,6 +105,11 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
         );
         $routeConfig->setResponseMime($routeMime["mime"]);
         $routeConfig->setResponseMimeType($routeMime["mimetype"]);
+
+
+        // Identifica se é para usar "pretty print" no código fonte de retorno
+        $prettyPrint = $serverRequest->getParam("_pretty_print");
+        $routeConfig->setResponseIsPrettyPrint(($prettyPrint === "true" || $prettyPrint === "1"));
     }
 
 

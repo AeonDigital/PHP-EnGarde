@@ -1,7 +1,7 @@
 <?php return array (
   'simple' => 
   array (
-    '/^\\/site\\/test/' => 
+    '/^\\/site\\/test\\//' => 
     array (
       'GET' => 
       array (
@@ -217,7 +217,7 @@
         'customProperties' => NULL,
       ),
     ),
-    '/^\\/site\\/home/' => 
+    '/^\\/site\\/home\\//' => 
     array (
       'GET' => 
       array (
@@ -368,7 +368,72 @@
         'customProperties' => NULL,
       ),
     ),
-    '/^\\/site\\/list/' => 
+    '/^\\/site\\/customrun\\//' => 
+    array (
+      'GET' => 
+      array (
+        'application' => 'site',
+        'namespace' => '\\site\\controllers',
+        'controller' => 'Home',
+        'action' => '-',
+        'method' => 'GET',
+        'allowedMethods' => 
+        array (
+          0 => 'GET',
+        ),
+        'routes' => 
+        array (
+          0 => '/customrun',
+        ),
+        'acceptMimes' => 
+        array (
+          'xhtml' => 'application/xhtml+xml',
+          'html' => 'text/html',
+          'txt' => 'text/plain',
+        ),
+        'isUseXHTML' => true,
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
+        'relationedRoutes' => NULL,
+        'description' => 'Página home da aplicação',
+        'devDescription' => NULL,
+        'isSecure' => false,
+        'isUseCache' => false,
+        'cacheTimeout' => 0,
+        'responseHeaders' => 
+        array (
+        ),
+        'responseMime' => NULL,
+        'responseMimeType' => NULL,
+        'responseLocale' => NULL,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => NULL,
+        'masterPage' => 'masterpage.phtml',
+        'view' => NULL,
+        'form' => NULL,
+        'styleSheets' => 
+        array (
+        ),
+        'javaScripts' => 
+        array (
+        ),
+        'localeDictionary' => NULL,
+        'metaData' => 
+        array (
+          'Author' => 'Aeon Digital',
+          'CopyRight' => '20xx Aeon Digital',
+          'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
+        ),
+        'runMethodName' => 'customRun',
+        'customProperties' => NULL,
+      ),
+    ),
+    '/^\\/site\\/list\\//' => 
     array (
       'GET' => 
       array (
@@ -434,7 +499,7 @@
         'customProperties' => NULL,
       ),
     ),
-    '/^\\/site\\/contact/' => 
+    '/^\\/site\\/contact\\//' => 
     array (
       'GET' => 
       array (
@@ -563,7 +628,7 @@
   ),
   'complex' => 
   array (
-    '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)/' => 
+    '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\//' => 
     array (
       'GET' => 
       array (
@@ -629,7 +694,7 @@
         'customProperties' => NULL,
       ),
     ),
-    '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\/(?P<page>[0-9])/' => 
+    '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\/(?P<page>[0-9])\\//' => 
     array (
       'GET' => 
       array (

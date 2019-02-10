@@ -156,6 +156,39 @@ class ResponseHandler implements iResponseHandler
         // Sendo uma requisição que utiliza um método HTTP 
         // que pode ser controlado pelos controllers das aplicações.
         else {
+
+            // Inicia o manipulador do mimetype alvo
+            $useMime = strtoupper($this->routeConfig->getResponseMime());
+            $mimeNS = "\\AeonDigital\\EnGarde\\MimeHandler\\$useMime";
+
+            $mimeHandler = new $mimeNS(
+                $this->serverConfig,
+                $this->domainConfig,
+                $this->applicationConfig,
+                $this->serverRequest,
+                $this->rawRouteConfig,
+                $this->routeConfig,
+                $this->response
+            );
+
+
+            // Define o novo corpo para o objeto Response
+            $useBody = $mimeHandler->createResponseBody();
+            $body = $this->response->getBody();
+            $body->write($useBody);
+            $this->response = $this->response->withBody($body);
+
+
+            // Prepara os Headers para o envio
+            $this->prepareResponseHeaders(
+                $this->routeConfig->getResponseMimeType(),
+                $this->routeConfig->getResponseLocale(),
+                $this->response->getHeaders(),
+                $this->routeConfig->getResponseIsDownload(),
+                $this->routeConfig->getResponseDownloadFileName()
+            );
+
+            /*
             // Efetua a criação do corpo do documento a ser entregue
             // conforme o mime que deve ser utilizado
             switch ($this->routeConfig->getResponseMime()) {
@@ -175,8 +208,14 @@ class ResponseHandler implements iResponseHandler
                 case "xml":
                     $this->createResponseBodyXML();
                     break;
-            }
-            
+
+                case "csv":
+                case "xls":
+                case "xlsx":
+                    $this->createResponseBodySpreadSheeet();
+                    break;
+            }*/
+
         }
 
         return $this->response;
@@ -737,33 +776,41 @@ class ResponseHandler implements iResponseHandler
      *              Valor que será convertido para string.
      *
      * @param       string $outsideQuote
-     *              Tipo de aspas que será utilizada para envovler a string final.
+     *              Tipo de aspas que será utilizada para envolver a string final.
      *
      * @param       string $insideQuote
      *              Usado para substituir casos de "$outsideQuote" dentro das strings de valores.
+     * 
+     * @param       bool $forceQuote
+     *              Quando "true" forçará o uso de "quote" definida em "$outsideQuote".
      *
      * @return      string
      */
     private function convertValueToString(
         $oValue,
         string $outsideQuote = "",
-        string $insideQuote = ""
+        string $insideQuote = "",
+        bool $forceQuote = false
     ) : string {
         $str = "";
+        $useQuote = ($forceQuote === true);
 
         if (is_bool($oValue)) {
             $str = ($oValue === true) ? "1" : "0";
         } elseif (is_numeric($oValue)) {
             $str = (string)$oValue;
         } elseif (is_string($oValue)) {
-            $str = $outsideQuote . str_replace($outsideQuote, $insideQuote, $oValue) . $outsideQuote;
+            $str = str_replace($outsideQuote, $insideQuote, $oValue);
+            $useQuote = true;
         } elseif (is_a($oValue, "DateTime")) {
-            $str = $outsideQuote . $oValue->format("Y-m-d H:i:s") . $outsideQuote;
+            $str = $oValue->format("Y-m-d H:i:s");
+            $useQuote = true;
         } elseif (is_object($oValue)) {
             $str = "Object: " . get_class($oValue);
         }
 
-        return $str;
+        $q = (($useQuote === true) ? $outsideQuote : "");
+        return $q . $str . $q;
     }
 
 
@@ -933,5 +980,214 @@ class ResponseHandler implements iResponseHandler
 
         return $strTidy;
     }
+
+
+
+
+
+
+
+
+    /**
+     * Cria o body a ser entregue para o UA no formato CSV, XLS ou XLSX.
+     * 
+     * - Este método NÁO permite o uso de MasterPage.
+     * - Este método NÃO permite o uso de View.
+     *
+     * @return      void
+     */
+    private function createResponseBodySpreadSheeet() : void
+    {
+        $viewData       = $this->response->getViewData();
+        $finalArray     = [];
+        $totalColumns   = null;
+
+
+        $dataTable = (isset($viewData->dataTable) ? $viewData->dataTable : []);
+        $useBody = $this->convertArrayToSpreadSheet(
+            $dataTable, 
+            $this->routeConfig->getResponseMime()
+        );
+
+
+        // Define o novo corpo para o objeto Response
+        $body = $this->response->getBody();
+        $body->write($useBody);
+        $this->response = $this->response->withBody($body);
+
+
+        // Prepara os Headers para o envio
+        $this->prepareResponseHeaders(
+            $this->routeConfig->getResponseMimeType(),
+            $this->routeConfig->getResponseLocale(),
+            $this->response->getHeaders(),
+            $this->routeConfig->getResponseIsDownload(),
+            $this->routeConfig->getResponseDownloadFileName()
+        );
+    }
+    /**
+     * Varre o array passado identificando se ele é válido para criar uma planilha.
+     *
+     * @param       array $dataTable
+     *              Array de arrays onde cada membro filho representa uma linha
+     *              de dados da planilha.
+     *
+     * @param       string $outsideQuote
+     *              Tipo de aspas que será utilizada para envolver a string final.
+     *
+     * @param       string $insideQuote
+     *              Usado para substituir casos de "$outsideQuote" dentro das strings de valores.
+     * 
+     * @return      array
+     * 
+     * @throws      \Exception
+     *              Disparará uma exception caso os dados enviados não estejam bem
+     *              definidos para a criação da planilha.
+     */
+    private function prepareArrayToCreateSpreadSheet(
+        array $dataTable,
+        string $outsideQuote = "",
+        string $insideQuote = ""
+    ) : array
+    {
+        $msgError           = null;
+        $finalArray         = [];
+
+
+        if ($dataTable === []) {
+            $msgError = "Empty data table.";
+        } 
+        else {
+            $countLines = 1;
+            $expectedCountColumns = null;
+
+            // Verifica se o array está minimamente formatado.
+            foreach ($dataTable as $dataRow) {
+                if (is_a($dataRow, "\StdClass") === true) {
+                    $dataRow = (array)$dataRow;
+                }
+
+
+                if (is_array($dataRow) === false) {
+                    $msgError .= "Invalid row data [line $countLines]. Must be array object.";
+                    break;
+                } else {
+                    $finalRow = [];
+                    $countColumns = count($dataRow);
+
+                    if ($expectedCountColumns === null) {
+                        $expectedCountColumns = $countColumns;
+                    }
+
+                    if ($countColumns !== $expectedCountColumns) {
+                        $msgError .= "Invalid row data [line $countLines]. ";
+                        $msgError .= "Expected \"$expectedCountColumns\" columns but there are \"$countColumns\".";
+                        break;
+                    }
+
+                    // Verifica os valores da linha
+                    foreach ($dataRow as $value) {
+                        $finalRow[] = $this->convertValueToString($value, $outsideQuote, $insideQuote, true);
+                    }
+
+                    
+                    $finalArray[] = $finalRow;
+                    $countLines++;
+                }
+            }
+        }
+
+        // Havendo algum erro, mostra a falha.
+        if ($msgError !== null) {
+            throw new \Exception($msgError);
+        } 
+
+        return $finalArray;
+    }
+    /**
+     * Efetua a conversão de um array para uma string que representa
+     * uma planilha que pode ser CSV, XLS ou XLSX
+     *
+     * @param       array $dataTable
+     *              Array de arrays onde cada membro filho representa uma linha
+     *              de dados da planilha.
+     * 
+     * @param       string $type
+     *              Precisa ser um dos tipos de saída, "CSV", "XLS" ou "XLSX".
+     * 
+     * @return      string
+     * 
+     * @throws      \Exception
+     *              Disparará uma exception caso os dados enviados não estejam bem
+     *              definidos para a criação da planilha.
+     */
+    private function convertArrayToSpreadSheet(array $dataTable, string $type) :string 
+    {
+        $r                  = "";
+        $msgError           = null;
+        $allowedTypes       = ["csv", "xls", "xlsx"];
+        $finalArray         = [];
+        
+
+
+        if (in_array_ci($type, $allowedTypes) === false) {
+            $msgError = "Invalid type [\"$type\"].";
+            throw new \Exception($msgError);
+        } 
+        else {
+
+            switch ($type) {
+                case "csv":
+                    $finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable, "\"", "\"\"");
+
+                    $tmpData    = [];
+                    foreach ($finalArray as $dataRow) {
+                        $tmpData[] = implode(",", $dataRow);
+                    }
+                    $r = implode("\n", $tmpData);
+                    break;
+
+                case "xls":
+                case "xlsx":
+                    $finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable, "", "");
+                    // https://gist.github.com/kasparsd/ade34dd94a80b97fb9ec59391a0c620f
+                    // http://faisalman.github.io/simple-excel-php/api/0.3/
+                    // https://gist.github.com/samatsav/6637984
+
+                    $base = "<table><tbody>[[header]][[body]]</tbody></table>";
+                    $base = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Error Messages</x:Name><x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body><table border="1px"><thead>[[head]]</thead><tbody>[[body]]</tbody></table></body></html>';
+                    $base = '<?xml version="1.0"?>
+			<?mso-application progid="Excel.Sheet"?>
+			<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+				xmlns:o="urn:schemas-microsoft-com:office:office"
+				xmlns:x="urn:schemas-microsoft-com:office:excel"
+				xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+				xmlns:html="http://www.w3.org/TR/REC-html40">
+			<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+			</DocumentProperties>
+			<Worksheet ss:Name="Sheet1">
+				<Table>[[header]][[body]]</Table>
+			</Worksheet>
+			</Workbook>';
+                    $header = "";
+                    $body = "";
+                    foreach ($finalArray as $i => $dataRow) {
+                        $row = "<tr><td>" . implode("</td><td>", $dataRow) . "</td></tr>";
+                        if ($i === 0) {
+                            $header = $row;
+                        }
+                        else {
+                            $body .= $row;
+                        }
+                    }
+                    $r = str_replace(["[[header]]", "[[body]]"], [$header, $body], $base);
+                    break;
+            }
+
+        }
+
+        return $r;
+    }
+
 
 }

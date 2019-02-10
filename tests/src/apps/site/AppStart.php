@@ -25,11 +25,7 @@ class AppStart extends DomainApplication
         $this->applicationConfig->setIsUseLabels(true);
         $this->applicationConfig->setPathToErrorView("/views/_shared/errorView.phtml");
 
-        if ($this->domainConfig->getVersion() !== "0.9.0 [alpha]") {
-            $this->runMethodName = $this->domainConfig->getVersion();
-        }
 
-        
         // Define as especificações de rota válidas para toda a aplicação.
         $this->applicationConfig->setDefaultRouteConfig([
             "masterPage" => "masterpage.phtml"

@@ -107,108 +107,10 @@ class DomainManagerTest extends TestCase
     public function test_method_custom_run() 
     {
         $domainManager  = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet(
-            "localtest", "GET", "/", null, null, "customRun"
+            "localtest", "GET", "/customrun", null, null
         );
 
         $domainManager->run();
         $this->assertSame("custom run executed", $domainManager->getTestViewDebug());
     }
-
-
-
-
-
-
-    
-    public function test_check_response_to_error_404()
-    {
-        $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("localtest", "GET", "/non-exist-route/for/this");
-        $domainManager->run();
-        $output = $domainManager->getTestViewDebug();
-
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/error404.html";
-        $expected           = file_get_contents($tgtPathToExpected);
-
-        //file_put_contents($tgtPathToExpected, $output);
-        $this->assertSame($expected, $output);
-    }
-
-
-    public function test_check_response_to_error_501()
-    {
-        $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("testview", "PUT", "/");
-        $domainManager->run();
-        $output = $domainManager->getTestViewDebug();
-
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/error501.html";
-        $expected           = file_get_contents($tgtPathToExpected);
-
-        //file_put_contents($tgtPathToExpected, $output);
-        $this->assertSame($expected, $output);
-    }
-
-
-    /*
-    public function test_check_response_to_GET()
-    {
-        $domainManager = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("testview", "GET", "/", null, null, "0.9.0 [alpha]", true);
-        $domainManager->run();
-        $output = $domainManager->getTestViewDebug();
-
-        
-        $expectedViewData = (object)[
-            "EndExecute_route_mid_03" => "middleware",
-            "EndExecute_route_mid_02" => "middleware",
-            "EndExecute_route_mid_01" => "middleware",
-            "EndExecute_ctrl_mid_03" => "middleware",
-            "EndExecute_ctrl_mid_02" => "middleware",
-            "EndExecute_ctrl_mid_01" => "middleware",
-            "appTitle" => "Application Title",
-            "viewTitle" => "View Title"
-        ];
-
-        // Verifica se os middlewares foram executados.
-        // o processamento deles e encadeado portanto a finalização de cada
-        // qual ocorre do último para o primeiro.
-        $this->assertEquals($expectedViewData, $output->getViewData());
-
-        // Verifica informação definida no processamento da action
-        // capaz de modificar a configuração da construção da view.
-        $expectedMetaData = ["meta01" => "val01"];
-        $this->assertEquals($expectedMetaData, $output->getViewConfig()->metaData);
-        
-
-        // Verifica o set dos modelos de  master page e view.
-        $this->assertEquals("masterPage.phtml", $output->getViewConfig()->masterPage);
-        $this->assertEquals("home/index.phtml", $output->getViewConfig()->view);
-        
-        
-
-        // É preciso verificar todas as configurações de todos os objetos de
-        // configuração para identificar quais já estão implementados,
-        // quais restam implementar e os que os devs das aplicações podem vir a implementar.
-        // Há métodos em "iApplicationConfig" e em "iRouteConfig" que precisam ser implementados.
-        //
-        // iApplication->setPathToLocales()
-        // iApplication->setPathToCacheFiles()
-        // iApplication->setIsUseLabels()
-        // iRouteConfig->setIsSecure()
-        // iRouteConfig->setIsUseCache()
-        // iRouteConfig->setCacheTimeout()
-        // iRouteConfig->setResponseIsPrettyPrint()
-        // iRouteConfig->setForm()
-        // iRouteConfig->setLocaleDictionary()
-        // 
-
-        // Verifica a criação da view
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGET.html";
-        //$expected           = file_get_contents($tgtPathToExpected);
-
-        //$objExpected    = json_decode($expected);
-        $objOutput      = (string)$output->getBody();
-
-        //file_put_contents($tgtPathToExpected, (string)$output->getBody());
-        $this->assertEquals($objExpected->requestData, $objOutput->requestData);
-    }
-    */
 }

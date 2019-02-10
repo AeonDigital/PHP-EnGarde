@@ -24,6 +24,7 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
+ * @codeCoverageIgnore
  */
 class RouteResolver implements iRequestHandler
 {
@@ -159,7 +160,7 @@ class RouteResolver implements iRequestHandler
     public function handle(iServerRequest $request) : iResponse
     {
         $resultResponse = $this->serverConfig->getHttpFactory()->createResponse();
-        
+
 
         // NÃO sendo uma requisição que use um método
         // do tipo "TRACE" ou "OPTIONS"

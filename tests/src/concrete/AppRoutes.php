@@ -95,7 +95,7 @@
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
         ),
-        'isUseXHTML' => true,
+        'isUseXHTML' => false,
         'middlewares' => 
         array (
           0 => 'ctrl_mid_01',
@@ -169,7 +169,7 @@
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
         ),
-        'isUseXHTML' => true,
+        'isUseXHTML' => false,
         'middlewares' => 
         array (
           0 => 'ctrl_mid_01',

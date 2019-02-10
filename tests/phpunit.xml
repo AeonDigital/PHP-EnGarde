@@ -16,14 +16,10 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
-            <file>src/ErrorListeningTest.php</file>
-            <file>src/DomainConfigTest.php</file>
-            <file>src/ApplicationConfigTest.php</file>
-            <file>src/RouteConfigTest.php</file>
-            <file>src/ApplicationRouterTest.php</file>
-            <file>src/DomainApplicationTest.php</file>
-            <file>src/DomainControllerTest.php</file>
             <file>src/DomainManagerTest.php</file>
+            <file>src/DomainApplicationTest.php</file>
+            <file>src/RequestHandlerTest.php</file>
+            <file>src/ResponseHandlerTest.php</file>
         </testsuite>
     </testsuites>
     <filter>
