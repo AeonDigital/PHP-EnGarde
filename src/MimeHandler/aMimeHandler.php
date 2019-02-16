@@ -161,7 +161,7 @@ abstract class aMimeHandler implements iMimeHandler
 
             $viewPath = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView());
 		    ob_start("mb_output_handler");
-            require_once $viewPath;
+            require $viewPath;
 
             $str = "\n" . ob_get_contents();
             @ob_end_clean();
@@ -186,7 +186,7 @@ abstract class aMimeHandler implements iMimeHandler
 
             $viewMaster = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
             ob_start("mb_output_handler");
-            require_once $viewMaster;
+            require $viewMaster;
 
             $str = ob_get_contents();
             @ob_end_clean();
@@ -306,5 +306,288 @@ abstract class aMimeHandler implements iMimeHandler
         }
 
         return $strTidy;
+    }
+
+
+
+
+
+    /**
+     * Converte o valor indicado para uma string a ser usada em um contexto
+     * de um documento a ser entregue ao UA.
+     *
+     * @param       mixed $oData
+     *              Valor que será convertido para string.
+     *
+     * @param       string $quote
+     *              Quando o tipo "natural" do valor for uma string ou DateTime
+     *              o resultado será retornado envolvido por este tipo de aspas.
+     *
+     * @param       string $escapeQuote
+     *              Este valor será usado para "escapar" as aspas dentro de um valor
+     *              que possua aspas do mesmo tipo definido em "$quote".
+     * 
+     * @param       bool $forceQuote
+     *              Quando "true" forçará o uso de aspas para qualquer tipo de valor.
+     *
+     * @return      string
+     */
+    protected function convertValueToString(
+        $oData,
+        string $quote = "",
+        string $escapeQuote = "",
+        bool $forceQuote = false
+    ) : string {
+        $str = "";
+        $useQuote = ($forceQuote === true);
+
+        if (is_bool($oData)) {
+            $str = ($oData === true) ? "true" : "false";
+        } elseif (is_numeric($oData)) {
+            $str = (string)$oData;
+        } elseif (is_string($oData)) {
+            $str = str_replace($quote, $escapeQuote, $oData);
+            $useQuote = true;
+        } elseif (is_a($oData, "DateTime")) {
+            $str = $oData->format("Y-m-d H:i:s");
+            $useQuote = true;
+        } elseif (is_object($oData)) {
+            $str = "INSTANCE OF '" . get_class($oData) . "'";
+        }
+
+        $q = (($useQuote === true) ? $quote : "");
+        return $q . $str . $q;
+    }
+    /**
+     * A partir de um array (associativo ou não) devolve uma string
+     * estruturada com a informação do array de forma a facilitar a leitura por
+     * um usuário humano.
+     *
+     * @param       mixed $oData
+     *              Valor que será convertido para string.
+     *
+     * @param       string $indent
+     *              Caracteres que servirão para identar o valor. 
+     *              Normalmente é um conjunto de espaços vazios ou tabs.
+     *
+     * @param       string $acIndend
+     *              String de identação acumulada pelo uso de sub-níveis.
+     *
+     * @param       string $parentIndex
+     *              Index usado pelo nível superior do array que está sendo 
+     *              estruturado no momento.
+     *
+     * @return      string
+     */
+    protected function convertArrayToStructuredString(
+        array $oData,
+        string $indent = "", 
+        string $acIndend = "", 
+        string $parentIndex = ""
+    ) : string {
+        $str = "";
+        $val = [];
+
+        foreach ($oData as $i => $v) {
+            $useI = (($parentIndex === "") ? (string)$i : $parentIndex . "." . (string)$i);
+            $useTab = (($parentIndex === "") ? "" : $acIndend);
+
+            if (is_assoc($oData) === true && (is_array($oData[$i]) === true || is_a($oData[$i], "\StdClass") === true)) {
+                $val[] = $acIndend . "[" . $i . "]";
+            }
+
+            if (is_array($v)) {
+                $val[] = $this->convertArrayToStructuredString($v, $indent, ($acIndend . $indent), $useI);
+            } elseif (is_a($v, "\StdClass")) {
+                $val[] = $this->convertArrayToStructuredString((array)$v, $indent, ($acIndend . $indent), $useI);
+            } else {
+                $val[] = $useTab . "[" . $useI . "] : " . $this->convertValueToString($v, '"', '""');
+            }
+        }
+        
+        $str = implode("\n", $val);
+        return $str;
+    }
+
+
+
+
+
+    /**
+     * Converte um array associativo em um XML.
+     *
+     * @param       array $oData
+     *              Objeto que será convertido.
+     * 
+     * @param       SimpleXMLElement $xml
+     *              Instância do objeto XML que será gerado.
+     *
+     * @return      void
+     */
+    protected function convertArrayToXML(
+        array $oData, 
+        \SimpleXMLElement $xml
+    ) :void {
+        foreach ($oData as $key => $value) {
+            $useKey = $key;
+
+            // Verifica se "key" é um valor numérico
+            if (is_numeric($key)) {
+                $useKey = "item_" . $key;
+            }
+
+            // Se o valor for um novo array, gera um subnode
+            // e preenche-o
+            if (is_array($value)) {
+                $subnode = $xml->addChild($useKey);
+                $this->convertArrayToXML($value, $subnode);
+            } elseif (is_a($value, "\StdClass")) {
+                $subnode = $xml->addChild($useKey);
+                $this->convertArrayToXML((array)$value, $subnode);
+            } else {
+                $value = $this->convertValueToString($value);
+                $xml->addChild($useKey, htmlspecialchars($value));
+            }
+        }
+    }
+
+
+
+
+
+    /**
+     * Efetua um tratamento para facilitar leitura 
+     * de documentos X/HTML por parte de humanos.
+     *
+     * @param       string $document
+     *              String do documento X/HTML.
+     * 
+     * @return      string
+     */
+    protected function prettyPrintXMLDocument(
+        string $document
+    ) : string {
+        $strTidy = $document;
+        $configOutput = [];
+
+        if ($strTidy !== "") {
+            // Configura o "tidy_parse" para obter uma saida compativel
+            // com este formato
+            //
+            // Lista completa de configurações possíveis
+            // http://tidy.sourceforge.net/docs/quickref.html
+            $configOutput = [
+                "input-xml"         => true,    // Indica que o código de entrada é um XML
+                "output-xml"        => true,    // Tenta converter a string em um documento XML
+
+                "indent"            => true,    // Indica se o código de saida deve estar identado
+                "indent-spaces"     => 4,       // Indica a quantidade de espaços usados para cada nível de identação.
+                "vertical-space"    => true,    // Irá adicionar algumas linhas em branco para facilitar a leitura.
+                "wrap"              => 200,     // Máximo de caracteres que uma linha deve ter.
+
+                "quote-ampersand"   => true,    // Converte todo & para &amp;
+                "hide-comments"     => true,    // Remove comentários
+                "indent-cdata"      => true,    // Identa sessões CDATA
+
+                "char-encoding"     => "utf8"   // Encoding do código de saida.
+            ];
+
+            $tidy = tidy_parse_string($strTidy, $configOutput, "UTF8");
+            $tidy->cleanRepair();
+            $strTidy = (string)$tidy;
+        }
+
+        return $strTidy;
+    }
+
+
+
+
+
+    /**
+     * Varre o array passado item a item e gera como resposta
+     * um novo array contendo dados que podem ser usados para gerar
+     * planilhas "csv", "xls" ou "xlsx".
+     *
+     * @param       array $oData
+     *              Array de arrays onde cada membro filho representa uma linha
+     *              de dados da planilha.
+     *
+     * @param       string $quote
+     *              Quando o tipo "natural" do valor for uma string ou DateTime
+     *              o resultado será retornado envolvido por este tipo de aspas.
+     *
+     * @param       string $escapeQuote
+     *              Este valor será usado para "escapar" as aspas dentro de um valor
+     *              que possua aspas do mesmo tipo definido em "$quote".
+     * 
+     * @param       bool $forceQuote
+     *              Quando "true" forçará o uso de aspas para qualquer tipo de valor.
+     *
+     * @return      array
+     * 
+     * @throws      \Exception
+     *              Disparará uma exception caso os dados enviados não estejam bem
+     *              definidos para a criação da planilha.
+     */
+    protected function prepareArrayToCreateSpreadSheet(
+        array $oData,
+        string $quote = "",
+        string $escapeQuote = "",
+        bool $forceQuote = false
+    ) : array {
+        $msgError           = null;
+        $finalArray         = [];
+
+
+        if ($oData === []) {
+            $msgError = "Empty data table.";
+        } 
+        else {
+            $countLines = 1;
+            $expectedCountColumns = null;
+
+            // Verifica se o array está minimamente formatado.
+            foreach ($oData as $dataRow) {
+                if (is_a($dataRow, "\StdClass") === true) {
+                    $dataRow = (array)$dataRow;
+                }
+
+
+                if (is_array($dataRow) === false) {
+                    $msgError .= "Invalid row data [line $countLines]. Must be array object.";
+                    break;
+                } else {
+                    $finalRow = [];
+                    $countColumns = count($dataRow);
+
+                    if ($expectedCountColumns === null) {
+                        $expectedCountColumns = $countColumns;
+                    }
+
+                    if ($countColumns !== $expectedCountColumns) {
+                        $msgError .= "Invalid row data [line $countLines]. ";
+                        $msgError .= "Expected \"$expectedCountColumns\" columns but there are \"$countColumns\".";
+                        break;
+                    }
+
+                    // Verifica os valores da linha
+                    foreach ($dataRow as $value) {
+                        $finalRow[] = $this->convertValueToString($value, $quote, $escapeQuote, $forceQuote);
+                    }
+
+                    
+                    $finalArray[] = $finalRow;
+                    $countLines++;
+                }
+            }
+        }
+
+        // Havendo algum erro, mostra a falha.
+        if ($msgError !== null) {
+            throw new \Exception($msgError);
+        } 
+
+        return $finalArray;
     }
 }

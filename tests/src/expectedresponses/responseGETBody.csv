@@ -1,0 +1,5 @@
+"nome","email","categoria","cpf","number","data"
+"n1""com aspas e acentuação","email@1","cat1","cpf1","1","2001-01-01 01:01:01"
+"n2","email@2","cat2","cpf2","2","2002-02-02 02:02:02"
+"n3","email@3","cat3","cpf3","3","2003-03-03 03:03:03"
+"n4","email@4","cat4","cpf4","4","2004-04-04 04:04:04"

@@ -13,14 +13,14 @@ use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
 
 
 /**
- * Manipulador para gerar documentos HTML.
+ * Manipulador para gerar documentos TXT.
  * 
  * @package     AeonDigital\EnGarde
  * @version     0.9.0 [alpha]
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  */
-class HTML extends aMimeHandler
+class TXT extends aMimeHandler
 {
 
 
@@ -85,29 +85,22 @@ class HTML extends aMimeHandler
     public function createResponseBody() : string
     {
         $body = "";
-        $viewContent    = $this->processViewContent();
-        $masterContent  = $this->processMasterPageContent();
-        $strMetaData    = $this->processXHTMLMetaData();
-        $strStyleSheet  = $this->processXHTMLStyleSheets();
-        $strJavaScript  = $this->processXHTMLJavaScripts();
+        $hasTemplate = ($this->routeConfig->getView() !== null || $this->routeConfig->getMasterPage() !== null);
 
 
-        $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
+        if ($hasTemplate === true) {
+            $viewContent    = $this->processViewContent();
+            $masterContent  = $this->processMasterPageContent();
 
-
-        // Mescla os dados obtidos
-        $body = str_replace("<view />",          $viewContent, $masterContent);
-        $body = str_replace("<metatags />",      $strMetaData, $body);
-        $body = str_replace("<stylesheets />",   $strStyleSheet, $body);
-        $body = str_replace("<javascripts />",   $strJavaScript, $body);
-
-        $htmlProp = "lang=\"".$this->routeConfig->getResponseLocale()."\"";
-        $body = str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
-
-
-        // Aplica "prettyPrint" caso seja requisitado
-        if ($this->routeConfig->getResponseIsPrettyPrint() === true) {
-            $body = $this->prettyPrintXHTMLDocument($body, "html");
+            $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
+            // Mescla os dados obtidos
+            $body = str_replace("<view />", $viewContent, $masterContent);
+        } 
+        else {
+            $viewData = $this->response->getViewData();
+            if ($viewData !== null) {
+                $body = $this->convertArrayToStructuredString((array)$viewData, "  ");
+            }
         }
 
         return $body;

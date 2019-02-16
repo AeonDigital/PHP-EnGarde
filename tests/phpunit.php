@@ -31,6 +31,12 @@ require_once $srcDir . "/Interfaces/iMimeHandler.php";
 require_once $srcDir . "/MimeHandler/aMimeHandler.php";
 require_once $srcDir . "/MimeHandler/HTML.php";
 require_once $srcDir . "/MimeHandler/XHTML.php";
+require_once $srcDir . "/MimeHandler/JSON.php";
+require_once $srcDir . "/MimeHandler/TXT.php";
+require_once $srcDir . "/MimeHandler/XML.php";
+require_once $srcDir . "/MimeHandler/CSV.php";
+require_once $srcDir . "/MimeHandler/XLS.php";
+require_once $srcDir . "/MimeHandler/XLSX.php";
 
 
 require_once $srcDir . "/DomainManager.php";

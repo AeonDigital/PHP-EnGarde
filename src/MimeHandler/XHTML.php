@@ -92,6 +92,9 @@ class XHTML extends aMimeHandler
         $strJavaScript  = $this->processXHTMLJavaScripts();
 
 
+        $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
+
+
         // Mescla os dados obtidos
         $body = str_replace("<view />",          $viewContent, $masterContent);
         $body = str_replace("<metatags />",      $strMetaData, $body);

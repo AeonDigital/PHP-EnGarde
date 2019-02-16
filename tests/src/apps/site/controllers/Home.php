@@ -86,9 +86,8 @@ class Home extends DomainController
             "cssfile02.css"
         ]);
 
-
         $this->viewData->appTitle = "Application Title";
-        $this->viewData->viewTitle = "View Title";
+        $this->viewData->viewTitle = "View Titlee";
     }
 
 

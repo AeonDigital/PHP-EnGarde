@@ -1,0 +1,10 @@
+[appTitle] : "Application Title"
+[viewTitle] : "View Title"
+[mimeContent] : 
+[subData]
+  [subData.attr1] : "val1"
+  [subData.attr2] : "val2"
+  [subData.attr3] : "val3"
+  [subData.attr4] : 8383738
+  [subData.attr5] : "2000-01-01 00:00:00"
+  [subData.attr6] : INSTANCE OF 'AeonDigital\EnGarde\Config\RouteConfig'
