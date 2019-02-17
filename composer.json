@@ -2,7 +2,7 @@
     "name": "aeondigital/phpengarde",
     "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
     "type": "library",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": ">=7.1.14",
