@@ -15,8 +15,8 @@
         "aeondigital/phphttpuri": "dev-master",
         "aeondigital/phphttpdata": "dev-master",
         "aeondigital/phphttpmessage": "dev-master",
-        "aeondigital/phpengardeconfig": "dev-master"
-
+        "aeondigital/phpengardeconfig": "dev-master",
+        "dompdf/dompdf": "dev-master"
     },
     "require-dev": {
         "php": ">=7.1.14",
@@ -29,7 +29,8 @@
         "aeondigital/phphttpuri": "dev-master",
         "aeondigital/phphttpdata": "dev-master",
         "aeondigital/phphttpmessage": "dev-master",
-        "aeondigital/phpengardeconfig": "dev-master"
+        "aeondigital/phpengardeconfig": "dev-master",
+        "dompdf/dompdf": "dev-master"
     },
     "authors": [
         {
