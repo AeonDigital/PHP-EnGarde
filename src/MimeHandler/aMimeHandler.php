@@ -590,4 +590,78 @@ abstract class aMimeHandler implements iMimeHandler
 
         return $finalArray;
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
+     * Nome do autor do conteúdo.
+     *
+     * @var         string
+     */
+    protected $authorName = "EnGarde! Framework";
+    /**
+     * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
+     * Nome da empresa criadora do conteúdo.
+     *
+     * @var         string
+     */
+    protected $companyName = "Aeon Digital";
+    /**
+     * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
+     * Data de criação do documento.
+     *
+     * @var         \DateTime
+     */
+    protected $createdDate = null;
+    /**
+     * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
+     * Palavras chave referentes ao documento.
+     *
+     * @var         string
+     */
+    protected $keywords = null;
+    /**
+     * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
+     * Descrição do documento.
+     *
+     * @var         string
+     */
+    protected $description = null;
+    /**
+     * Verifica se o "$viewData" possui metadados a serem incorporados
+     * nos documentos finais.
+     *
+     * @return      void
+     */
+    protected function setDocumentMetaData() : void
+    {
+        $viewData = $this->response->getViewData();
+
+        // Identifica se estão definidos os metadados para serem 
+        // adicionados no documento final.
+        if (isset($viewData->metaData) === true) {
+            $strPropNames = [
+                "authorName", "companyName", "keywords", "description"
+            ];
+            foreach ($strPropNames as $propName) {
+                if (isset($viewData->metaData->{$propName}) === true && is_string($viewData->metaData->{$propName}) === true) {
+                    $this->{$propName} = $viewData->metaData->{$propName};
+                }
+            }
+
+
+            $this->createdDate = new \DateTime();
+            if (isset($viewData->metaData->createdDate) === true && is_a($viewData->metaData->createdDate, "DateTime") === true) {
+                $this->createdDate = $viewData->metaData->createdDate;
+            }
+        }
+    }
+
 }

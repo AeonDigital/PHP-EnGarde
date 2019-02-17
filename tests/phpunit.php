@@ -37,6 +37,7 @@ require_once $srcDir . "/MimeHandler/XML.php";
 require_once $srcDir . "/MimeHandler/CSV.php";
 require_once $srcDir . "/MimeHandler/XLS.php";
 require_once $srcDir . "/MimeHandler/XLSX.php";
+require_once $srcDir . "/MimeHandler/PDF.php";
 
 
 require_once $srcDir . "/DomainManager.php";

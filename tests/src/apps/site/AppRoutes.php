@@ -94,6 +94,7 @@
           'xml' => 'application/xml',
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
+          'pdf' => 'application/pdf',
         ),
         'isUseXHTML' => true,
         'middlewares' => 

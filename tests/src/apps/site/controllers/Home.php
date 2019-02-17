@@ -57,7 +57,7 @@ class Home extends DomainController
         "relationedRoutes" => ["/list"],
 
         "isSecure" => false,
-        "acceptMimes" => ["xhtml", "html", "txt", "json", "xml", "csv", "xls"],
+        "acceptMimes" => ["xhtml", "html", "txt", "json", "xml", "csv", "xls", "pdf"],
 
         "isUseCache" => false,
         "cacheTimeout" => (2 * 60),

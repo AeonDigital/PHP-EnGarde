@@ -84,16 +84,9 @@ class XLSX extends aMimeHandler
      */
     public function createResponseBody() : string
     {
+        $this->setDocumentMetaData();
+
 		$viewData = $this->response->getViewData();
-
-		$this->createdDate = new \DateTime();
-		if (isset($viewData->createdDate) === true && is_a($viewData->createdDate, "DateTime") === true) {
-			$this->createdDate = $viewData->createdDate;
-		}
-		if (isset($viewData->creatorName) === true && is_string($viewData->creatorName) === true) {
-			$this->creatorName = $viewData->creatorName;
-		}
-
         $dataTable = (isset($viewData->dataTable) ? $viewData->dataTable : []);
 		$finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
 
@@ -105,10 +98,6 @@ class XLSX extends aMimeHandler
 
 
 
-
-
-	private $creatorName = "EnGarde! Framework";
-	private $createdDate = null;
 
     private $usedStrings = [];
     private $usedStringsPositions = [];
@@ -211,7 +200,8 @@ class XLSX extends aMimeHandler
 		        $str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                         <dcterms:created xsi:type="dcterms:W3CDTF">' . $this->createdDate->format("Y-m-d\TH:i:s.00\Z") . '</dcterms:created>
-                        <dc:creator>' . $this->creatorName . '</dc:creator>
+                        <dc:creator>' . $this->companyName . " | " . $this->authorName . '</dc:creator>
+                        <dc:description>' . $this->description . '</dc:description>
                     </cp:coreProperties>';
                 break;
 

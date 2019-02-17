@@ -107,13 +107,31 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
             $routeConfig->setView(null);
         }
         elseif ($mime === "csv" || $mime === "xls" || $mime === "xlsx") {
-            $viewData->createdDate = new \DateTime("2019-02-10 10:10:10");
+            $viewData->metaData = (object)[
+                "authorName" => "Rianna Cantarelli",
+                "companyName" => "Aeon Digital",
+                "createdDate" => new \DateTime("2019-02-10 10:10:10"),
+                "keywords" => "key1, key2, key3",
+                "description" => "Teste de criação de planilhas"
+            ];
             $viewData->dataTable = [
                 ["nome", "email", "categoria", "cpf", "number", "data"],
                 ["n1\"com aspas e acentuação", "email@1", "cat1", "cpf1", 1, new \DateTime("2001-01-01 01:01:01")],
                 ["n2", "email@2", "cat2", "cpf2", 2, new \DateTime("2002-02-02 02:02:02")],
                 ["n3", "email@3", "cat3", "cpf3", 3, new \DateTime("2003-03-03 03:03:03")],
                 ["n4", "email@4", "cat4", "cpf4", 4, new \DateTime("2004-04-04 04:04:04")]
+            ];
+        }
+        elseif ($mime === "pdf") {
+            $routeConfig->setMasterPage("masterPagePDF.phtml");
+            $routeConfig->setView("home/indexPDF.phtml");
+            $viewData->mimeContent = "This is a PDF document.";
+            $viewData->metaData = (object)[
+                "authorName" => "Rianna Cantarelli",
+                "companyName" => "Aeon Digital",
+                "createdDate" => new \DateTime("2019-02-10 10:10:10"),
+                "keywords" => "key1, key2, key3",
+                "description" => "Teste de criação de planilhas"
             ];
         }
 
