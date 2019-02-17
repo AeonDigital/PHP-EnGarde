@@ -3,6 +3,7 @@
     "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
     "type": "library",
     "minimum-stability": "dev",
+    "version": "1.0.0",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": ">=7.1.14",
