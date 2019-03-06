@@ -1,37 +1,10 @@
 {
     "name": "aeondigital/phpengarde",
     "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
+    "version": "v0.2.0-alpha",
+    "time": "2019-03-05",
     "type": "library",
-    "minimum-stability": "stable",
     "license": "GPL-3.0-or-later",
-    "require": {
-        "php": ">=7.1.14",
-        "psr/http-message": "dev-master",
-        "psr/http-server-middleware": "dev-master",
-        "aeondigital/phpcoreextension": "dev-master",
-        "aeondigital/phptraits": "dev-master",
-        "aeondigital/phpcollection": "dev-master",
-        "aeondigital/phpstream": "dev-master",
-        "aeondigital/phphttpuri": "dev-master",
-        "aeondigital/phphttpdata": "dev-master",
-        "aeondigital/phphttpmessage": "dev-master",
-        "aeondigital/phpengardeconfig": "dev-master",
-        "dompdf/dompdf": "dev-master"
-    },
-    "require-dev": {
-        "php": ">=7.1.14",
-        "psr/http-message": "dev-master",
-        "psr/http-server-middleware": "dev-master",
-        "aeondigital/phpcoreextension": "dev-master",
-        "aeondigital/phptraits": "dev-master",
-        "aeondigital/phpcollection": "dev-master",
-        "aeondigital/phpstream": "dev-master",
-        "aeondigital/phphttpuri": "dev-master",
-        "aeondigital/phphttpdata": "dev-master",
-        "aeondigital/phphttpmessage": "dev-master",
-        "aeondigital/phpengardeconfig": "dev-master",
-        "dompdf/dompdf": "dev-master"
-    },
     "authors": [
         {
             "name": "Rianna Cantarelli",
@@ -40,6 +13,35 @@
             "role": "developer"
         }
     ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.1.14",
+        "psr/http-message": "v1.0.1",
+        "psr/http-server-middleware": "v1.0.1",
+        "aeondigital/phpcoreextension": ">=v0.2.0-alpha",
+        "aeondigital/phptraits": ">=v0.2.0-alpha",
+        "aeondigital/phpcollection": ">=v0.2.0-alpha",
+        "aeondigital/phpstream": ">=v0.2.0-alpha",
+        "aeondigital/phphttpuri": ">=v0.2.0-alpha",
+        "aeondigital/phphttpdata": ">=v0.2.0-alpha",
+        "aeondigital/phphttpmessage": ">=v0.2.0-alpha",
+        "aeondigital/phpengardeconfig": ">=v0.2.0-alpha",
+        "dompdf/dompdf": "dev-master"
+    },
+    "require-dev": {
+        "php": ">=7.1.14",
+        "psr/http-message": "v1.0.1",
+        "psr/http-server-middleware": "v1.0.1",
+        "aeondigital/phpcoreextension": ">=v0.2.0-alpha",
+        "aeondigital/phptraits": ">=v0.2.0-alpha",
+        "aeondigital/phpcollection": ">=v0.2.0-alpha",
+        "aeondigital/phpstream": ">=v0.2.0-alpha",
+        "aeondigital/phphttpuri": ">=v0.2.0-alpha",
+        "aeondigital/phphttpdata": ">=v0.2.0-alpha",
+        "aeondigital/phphttpmessage": ">=v0.2.0-alpha",
+        "aeondigital/phpengardeconfig": ">=v0.2.0-alpha",
+        "dompdf/dompdf": "dev-master"
+    },
     "autoload": {
         "psr-4": {
             "AeonDigital\\EnGarde\\": "/src",
