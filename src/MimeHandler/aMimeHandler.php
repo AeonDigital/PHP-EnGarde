@@ -643,6 +643,7 @@ abstract class aMimeHandler implements iMimeHandler
     protected function setDocumentMetaData() : void
     {
         $viewData = $this->response->getViewData();
+        $this->createdDate = new \DateTime();
 
         // Identifica se estão definidos os metadados para serem 
         // adicionados no documento final.
@@ -657,7 +658,6 @@ abstract class aMimeHandler implements iMimeHandler
             }
 
 
-            $this->createdDate = new \DateTime();
             if (isset($viewData->metaData->createdDate) === true && is_a($viewData->metaData->createdDate, "DateTime") === true) {
                 $this->createdDate = $viewData->metaData->createdDate;
             }
