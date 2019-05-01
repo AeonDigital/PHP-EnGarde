@@ -21,7 +21,7 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
  * Manipulador padrão para resolução das rotas.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  * @codeCoverageIgnore

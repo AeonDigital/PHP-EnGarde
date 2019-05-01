@@ -16,7 +16,7 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  * Gerenciador principal do domínio.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  * @codeCoverageIgnore

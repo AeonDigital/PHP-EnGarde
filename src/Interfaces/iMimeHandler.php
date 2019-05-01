@@ -17,7 +17,7 @@ namespace AeonDigital\EnGarde\Interfaces;
  * resposta adequada a um determinado tipo mime.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  */

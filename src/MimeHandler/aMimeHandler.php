@@ -17,7 +17,7 @@ use AeonDigital\EnGarde\Interfaces\iMimeHandler as iMimeHandler;
  * de mimetypes.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  */
@@ -341,17 +341,17 @@ abstract class aMimeHandler implements iMimeHandler
         $str = "";
         $useQuote = ($forceQuote === true);
 
-        if (is_bool($oData)) {
+        if (is_bool($oData) === true) {
             $str = ($oData === true) ? "true" : "false";
-        } elseif (is_numeric($oData)) {
+        } elseif (is_numeric($oData) === true) {
             $str = (string)$oData;
-        } elseif (is_string($oData)) {
+        } elseif (is_string($oData) === true) {
             $str = str_replace($quote, $escapeQuote, $oData);
             $useQuote = true;
-        } elseif (is_a($oData, "DateTime")) {
+        } elseif (is_a($oData, "\DateTime") === true) {
             $str = $oData->format("Y-m-d H:i:s");
             $useQuote = true;
-        } elseif (is_object($oData)) {
+        } elseif (is_object($oData) === true) {
             $str = "INSTANCE OF '" . get_class($oData) . "'";
         }
 
@@ -396,9 +396,9 @@ abstract class aMimeHandler implements iMimeHandler
                 $val[] = $acIndend . "[" . $i . "]";
             }
 
-            if (is_array($v)) {
+            if (is_array($v) === true) {
                 $val[] = $this->convertArrayToStructuredString($v, $indent, ($acIndend . $indent), $useI);
-            } elseif (is_a($v, "\StdClass")) {
+            } elseif (is_a($v, "\StdClass") === true) {
                 $val[] = $this->convertArrayToStructuredString((array)$v, $indent, ($acIndend . $indent), $useI);
             } else {
                 $val[] = $useTab . "[" . $useI . "] : " . $this->convertValueToString($v, '"', '""');
@@ -432,16 +432,16 @@ abstract class aMimeHandler implements iMimeHandler
             $useKey = $key;
 
             // Verifica se "key" é um valor numérico
-            if (is_numeric($key)) {
+            if (is_numeric($key) === true) {
                 $useKey = "item_" . $key;
             }
 
             // Se o valor for um novo array, gera um subnode
             // e preenche-o
-            if (is_array($value)) {
+            if (is_array($value) === true) {
                 $subnode = $xml->addChild($useKey);
                 $this->convertArrayToXML($value, $subnode);
-            } elseif (is_a($value, "\StdClass")) {
+            } elseif (is_a($value, "\StdClass") === true) {
                 $subnode = $xml->addChild($useKey);
                 $this->convertArrayToXML((array)$value, $subnode);
             } else {
@@ -658,7 +658,7 @@ abstract class aMimeHandler implements iMimeHandler
             }
 
 
-            if (isset($viewData->metaData->createdDate) === true && is_a($viewData->metaData->createdDate, "DateTime") === true) {
+            if (isset($viewData->metaData->createdDate) === true && is_a($viewData->metaData->createdDate, "\DateTime") === true) {
                 $this->createdDate = $viewData->metaData->createdDate;
             }
         }

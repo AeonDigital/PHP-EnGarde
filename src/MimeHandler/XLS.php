@@ -16,7 +16,7 @@ use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
  * Manipulador para gerar documentos XLS.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  */
@@ -85,7 +85,7 @@ class XLS extends aMimeHandler
     public function createResponseBody() : string
     {
         $viewData = $this->response->getViewData();
-        $dataTable = (isset($viewData->dataTable) ? $viewData->dataTable : []);
+        $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
         $finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
         return $this->createXLSBody($finalArray);
     }

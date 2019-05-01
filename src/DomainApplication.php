@@ -17,7 +17,7 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  * concretas em cada Aplicações *EnGarde*.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  * @codeCoverageIgnore
@@ -187,12 +187,10 @@ abstract class DomainApplication implements iApplication
             $targetMethod = strtoupper($this->serverRequest->getMethod());
             if ($this->rawRouteConfig !== null && isset($this->rawRouteConfig[$targetMethod]) === true) {
                 $this->routeConfig = new \AeonDigital\EnGarde\Config\RouteConfig($this->rawRouteConfig[$targetMethod]);
+
+                // P4 - Identifica se deve executar um método próprio
+                $this->runMethodName = $this->routeConfig->getRunMethodName();
             }
-
-
-
-            // P4 - Identifica se deve executar um método próprio
-            $this->runMethodName = $this->routeConfig->getRunMethodName();
         }
     }
 

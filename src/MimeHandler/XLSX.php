@@ -16,7 +16,7 @@ use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
  * Manipulador para gerar documentos XLSX.
  * 
  * @package     AeonDigital\EnGarde
- * @version     0.9.0 [alpha]
+ * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   GNUv3
  */
@@ -87,7 +87,7 @@ class XLSX extends aMimeHandler
         $this->setDocumentMetaData();
 
 		$viewData = $this->response->getViewData();
-        $dataTable = (isset($viewData->dataTable) ? $viewData->dataTable : []);
+        $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
 		$finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
 
 		return $this->createXLSXBody($finalArray);
@@ -294,7 +294,7 @@ class XLSX extends aMimeHandler
             foreach ($rowData as $columnNumber => $value) 
             {
 				$celName 		= $this->generateCellName($rowNumber, $columnNumber);
-                $valueType 		= (is_numeric($value) ? "n" : "s");
+                $valueType 		= ((is_numeric($value) === true) ? "n" : "s");
 				$valuePosition 	= $this->setUsedStringsAndRetrieveItPosition($value);
 				
 				$xmlCells[] = sprintf(
