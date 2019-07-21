@@ -17,9 +17,9 @@ use AeonDigital\EnGarde\Interfaces\iMimeHandler as iMimeHandler;
  * de mimetypes.
  * 
  * @package     AeonDigital\EnGarde
- * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @copyright   GNUv3
+ * @license     GNUv3
+ * @copyright   Aeon Digital
  */
 abstract class aMimeHandler implements iMimeHandler
 {

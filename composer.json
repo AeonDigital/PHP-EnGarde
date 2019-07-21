@@ -1,8 +1,8 @@
 {
     "name": "aeondigital/phpengarde",
     "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
-    "version": "v0.2.2-alpha",
-    "time": "2019-04-30",
+    "version": "v0.2.3-alpha",
+    "time": "2019-07-21",
     "type": "library",
     "license": "GPL-3.0-or-later",
     "authors": [
@@ -29,26 +29,17 @@
         "dompdf/dompdf": "dev-master"
     },
     "require-dev": {
-        "php": ">=7.1.14",
-        "psr/http-message": "v1.0.1",
-        "psr/http-server-middleware": "v1.0.1",
-        "aeondigital/phpcoreextension": ">=v0.2.0-alpha",
-        "aeondigital/phptraits": ">=v0.2.0-alpha",
-        "aeondigital/phpcollection": ">=v0.2.0-alpha",
-        "aeondigital/phpstream": ">=v0.2.0-alpha",
-        "aeondigital/phphttpuri": ">=v0.2.0-alpha",
-        "aeondigital/phphttpdata": ">=v0.2.0-alpha",
-        "aeondigital/phphttpmessage": ">=v0.2.0-alpha",
-        "aeondigital/phpengardeconfig": ">=v0.2.0-alpha",
-        "dompdf/dompdf": "dev-master"
+        "aeondigital/phpdoc-to-rst": "dev-master"
     },
     "autoload": {
-        "psr-4": {
-            "AeonDigital\\EnGarde\\": "/src",
-            "AeonDigital\\EnGarde\\Config\\": "/src/Config",
-            "AeonDigital\\EnGarde\\Handlers\\": "/src/Handlers",
-            "AeonDigital\\EnGarde\\Interfaces\\": "/src/Interfaces"
-        }
+        "classmap": [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "src/"
+        ]
     },
     "keywords": [
         "engarde",

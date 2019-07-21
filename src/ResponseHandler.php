@@ -17,9 +17,9 @@ use AeonDigital\EnGarde\Interfaces\iResponseHandler as iResponseHandler;
  * pelo processamento da rota alvo.
  * 
  * @package     AeonDigital\EnGarde
- * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @copyright   GNUv3
+ * @license     GNUv3
+ * @copyright   Aeon Digital
  */
 class ResponseHandler implements iResponseHandler
 {

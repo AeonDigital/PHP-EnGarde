@@ -17,9 +17,9 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  * concretas em cada Aplicações *EnGarde*.
  * 
  * @package     AeonDigital\EnGarde
- * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @copyright   GNUv3
+ * @license     GNUv3
+ * @copyright   Aeon Digital
  * @codeCoverageIgnore
  */
 abstract class DomainApplication implements iApplication
@@ -97,10 +97,22 @@ abstract class DomainApplication implements iApplication
      */
     private function defineApplicationConfig() : void
     {
+        // Identifica se há configurações de segurança a serem
+        // definidas para esta aplicação.
+        $securitySettings = [];
+        if (defined("ENVIRONMENT_SETTINGS") === true &&
+            isset(ENVIRONMENT_SETTINGS[$this->domainConfig->getApplicationName()]) === true) 
+        {
+            $securitySettings = ENVIRONMENT_SETTINGS[$this->domainConfig->getApplicationName()]["securitySettings"];
+        }
+
+
         $this->applicationConfig = new \AeonDigital\EnGarde\Config\ApplicationConfig(
             $this->domainConfig->getApplicationName(), 
-            $this->domainConfig->getRootPath()
+            $this->domainConfig->getRootPath(),
+            $securitySettings
         );
+
 
         // Aplica as configurações específicas de cada aplicação.
         $this->configureApplication();
@@ -492,6 +504,20 @@ abstract class DomainApplication implements iApplication
         // Quando NÃO se trata de um ambiente de testes,
         // efetua o envio dos dados processados para o UA.
         if ($isTestEnv === false) {
+
+            // Se o sistema de segurança está ativo os seguintes 
+            // headers serão adicionados
+            if ($this->applicationConfig->getSecuritySettings()->isActive() === true) {
+                $this->response = $this->response->withHeaders(
+                    [
+                        "Expires" => "Tue, 01 Jan 2000 00:00:00 UTC",
+                        "Last-Modified" => gmdate("D, d M Y H:i:s") . " UTC",
+                        "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
+                        "Pragma" => "no-cache"
+                    ],
+                    true
+                );
+            }
 
             // Envia os Headers para o UA
             foreach ($this->response->getHeaders() as $name => $value) {

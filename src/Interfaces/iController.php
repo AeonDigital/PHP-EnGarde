@@ -17,9 +17,9 @@ use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
  * que serão controllers das aplicações.
  * 
  * @package     AeonDigital\EnGarde
- * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @copyright   GNUv3
+ * @license     GNUv3
+ * @copyright   Aeon Digital
  */
 interface iController
 {

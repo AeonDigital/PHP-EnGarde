@@ -21,9 +21,9 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
  * Manipulador padrão para resolução das rotas.
  * 
  * @package     AeonDigital\EnGarde
- * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @copyright   GNUv3
+ * @license     GNUv3
+ * @copyright   Aeon Digital
  * @codeCoverageIgnore
  */
 class RouteResolver implements iRequestHandler

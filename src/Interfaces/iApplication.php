@@ -17,9 +17,9 @@ namespace AeonDigital\EnGarde\Interfaces;
  * Gerenciador de Domínio **AeonDigital/EnGarde/DomainManager**.
  * 
  * @package     AeonDigital\EnGarde
- * @version     v0.2.2-alpha
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @copyright   GNUv3
+ * @license     GNUv3
+ * @copyright   Aeon Digital
  */
 interface iApplication
 {
