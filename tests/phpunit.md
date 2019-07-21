@@ -73,12 +73,6 @@ Este arquivo já está preparado com as configurações necessárias para a exec
 Para um teste completo use o seguinte comando:
 > phpunit --configuration "phpunit.xml" --verbose --debug
 
-Para executar todos os testes de uma classe de testes:
-> phpunit <TestClassName> <PathToTestFile.php>
-
-Para um teste de apenas 1 método em uma classe de testes:
-> phpunit --filter <TestMethodName> <TestClassName> <PathToTestFile.php>
-
 &nbsp;  
 
 ### Teste de cobertura
@@ -104,14 +98,3 @@ Se você é novato no uso do PHPUnit pode ser importante estar ciente das sequin
   > // @codeCoverageIgnoreStart  
   >  ...  
   > // @codeCoverageIgnoreEnd
-
-
-&nbsp;  
-&nbsp;  
-
-_______________________________________________________________________________________________________________________
-
-# Menu
-  - [README](../README.md)
-  - [PHPUnit](../tests/phpunit.md)
-  - [PHPDoc](../docs/phpdoc.md)
