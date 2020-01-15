@@ -12,7 +12,7 @@ import sphinx_rtd_theme
 # -- Informações do Projeto --------------------------------------------------
 
 project = 'PHP-EnGarde!'
-project_description = 'Micro framework para criar/gerenciar multiplas aplicacoes/APIs em um mesmo domínio.'
+project_description = 'Micro framework para criar/gerenciar multiplas aplicacoes/APIs em um mesmo dominio.'
 project_year = '2020'
 project_company = 'Aeon Digital'
 project_publisher = 'Aeon Digital'
