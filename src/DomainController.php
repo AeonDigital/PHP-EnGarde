@@ -18,13 +18,12 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
 
 
 /**
- * Classe abstrata que deve ser herdada pelos controllers
- * das aplicações.
+ * Classe abstrata que deve ser herdada pelos controllers das aplicações.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  * @codeCoverageIgnore
  */
 abstract class DomainController implements iController
@@ -71,29 +70,25 @@ abstract class DomainController implements iController
      */
     protected $routeConfig = null;
     /**
-     * Objeto "iResponse".
+     * Objeto ``iResponse``.
      *
      * @var         iResponse
      */
     protected $response = null;
     /**
-     * Objeto "StdClass".
-     * Deve ser preenchido durante a execução da Action 
-     * e poderá ser acessado nas views.
-     * 
-     * Tem como finalidade agregar todas as informações que o UA
-     * está requisitando.
+     * Objeto ``StdClass``.
+     * Deve ser preenchido durante a execução da ``Action`` e poderá ser acessado nas views.
+     * Tem como finalidade agregar todas as informações que o ``UA`` está requisitando.
      *
      * @var         \StdClass
      */
     protected $viewData = null;
     /**
-     * Objeto "StdClass".
-     * Deve ser preenchido durante a execução da Action 
-     * e poderá ser acessado nas views.
+     * Objeto ``StdClass``.
+     * Deve ser preenchido durante a execução da ``Action`` e poderá ser acessado nas views.
      * 
-     * Tem como finalidade agregar informações que sirvam para
-     * a criação da view e não devem ser expostas ao UA.
+     * Tem como finalidade agregar informações que sirvam para a criação da view e não devem ser 
+     * expostas ao ``UA``.
      *
      * @var         \StdClass
      */
@@ -112,25 +107,25 @@ abstract class DomainController implements iController
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      * 
      * @param       iResponse $response
-     *              Instância "iResponse".
+     *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -158,11 +153,12 @@ abstract class DomainController implements iController
 
 
     /**
-     * Retorna a instância "iResponse".
-     * Aplica no objeto "iResponse" as propriedades 
-     * "viewData" (obtido do resultado da execução da action);
-     * "viewConfig" (obtido com a manipulação das propriedades variáveis do objeto "routeConfig");
-     * "headers" (padrões + os definidos pela action)
+     * Retorna a instância ``iResponse``.
+     * Aplica no objeto ``iResponse`` as propriedades ``viewData`` (obtido do resultado da 
+     * execução da action);
+     * ``viewConfig`` (obtido com a manipulação das propriedades variáveis do objeto 
+     * **routeConfig**);
+     * ``headers`` (padrões + os definidos pela action)
      * 
      * @return      iResponse
      */

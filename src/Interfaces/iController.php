@@ -13,13 +13,12 @@ use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 
 
 /**
- * Interface a ser usada em todas as classes
- * que serão controllers das aplicações.
+ * Interface a ser usada em todas as classes que serão controllers das aplicações.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 interface iController
 {
@@ -29,9 +28,9 @@ interface iController
 
 
     /**
-     * Retorna a instância "iResponse".
-     * Aplica no objeto "iResponse" as propriedades "viewData" e "routeConfig"
-     * com os valores resultantes do processamento da Action.
+     * Retorna a instância ``iResponse``.
+     * Aplica no objeto ``iResponse`` as propriedades ``viewData`` e ``routeConfig`` com os 
+     * valores resultantes do processamento da ``Action``.
      * 
      * @return      iResponse
      */

@@ -17,8 +17,8 @@ use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 class JSON extends aMimeHandler
 {
@@ -31,25 +31,25 @@ class JSON extends aMimeHandler
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      * 
      * @param       iResponse $response
-     *              Instância "iResponse".
+     *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -76,9 +76,8 @@ class JSON extends aMimeHandler
 
 
     /**
-     * Gera uma string que representa a resposta a ser enviada
-     * para o UA, compatível com o mimetype que esta classe está
-     * apta a manipular.
+     * Gera uma string que representa a resposta a ser enviada para o ``UA``, compatível com o 
+     * mimetype que esta classe está apta a manipular.
      * 
      * @return      string
      */

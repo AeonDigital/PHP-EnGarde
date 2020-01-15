@@ -13,13 +13,12 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
 
 
 /**
- * Classe abstrata que deve ser herdada pelas classes
- * concretas em cada Aplicações *EnGarde*.
+ * Classe abstrata que deve ser herdada pelas classes concretas em cada Aplicações ``EnGarde``.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  * @codeCoverageIgnore
  */
 abstract class DomainApplication implements iApplication
@@ -66,21 +65,19 @@ abstract class DomainApplication implements iApplication
      */
     protected $routeConfig = null;
     /**
-     * Objeto "iResponse".
+     * Objeto ``iResponse``.
      *
      * @var         iResponse
      */
     protected $response = null;
     /**
-     * Guarda a parte relativa da URI que está sendo
-     * executada no momento
+     * Guarda a parte relativa da URI que está sendo executada no momento
      *
      * @var         string
      */
     protected $executePath = null;
     /**
-     * Nome do método que deve ser usado para resolver
-     * a rota que está ativa no momento.
+     * Nome do método que deve ser usado para resolver a rota que está ativa no momento.
      *
      * @var         string
      */
@@ -91,7 +88,7 @@ abstract class DomainApplication implements iApplication
 
 
     /**
-     * Define o objeto "iApplicationConfig" para esta instância.
+     * Define o objeto ``iApplicationConfig`` para esta instância.
      * 
      * @return      void
      */
@@ -125,7 +122,7 @@ abstract class DomainApplication implements iApplication
         }
     }
     /**
-     * Define o objeto "ApplicationRouter" para esta instância.
+     * Define o objeto ``ApplicationRouter`` para esta instância.
      * 
      * @return      void
      */
@@ -140,7 +137,7 @@ abstract class DomainApplication implements iApplication
         );
     }
     /**
-     * Seleciona o objeto "iRouteConfig" para esta instância.
+     * Seleciona o objeto ``iRouteConfig`` para esta instância.
      *
      * @return      void
      */
@@ -211,8 +208,8 @@ abstract class DomainApplication implements iApplication
 
 
     /**
-     * Permite configurar ou redefinir o objeto de configuração
-     * da aplicação na classe concreta da mesma.
+     * Permite configurar ou redefinir o objeto de configuração da aplicação na classe 
+     * concreta da mesma.
      */
     abstract public function configureApplication() : void;
 
@@ -229,13 +226,13 @@ abstract class DomainApplication implements iApplication
      * Inicia uma Aplicação.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -265,8 +262,8 @@ abstract class DomainApplication implements iApplication
 
 
     /**
-     * Efetua a negociação de conteúdo para identificar
-     * de que forma os dados devem ser retornados ao UA.
+     * Efetua a negociação de conteúdo para identificar de que forma os dados devem ser 
+     * retornados ao ``UA``.
      *
      * @return      void
      */
@@ -437,8 +434,7 @@ abstract class DomainApplication implements iApplication
 
 
     /**
-     * Verifica se há erros na seleção da 
-     * configuração da rota alvo.
+     * Verifica se há erros na seleção da configuração da rota alvo.
      *
      * @return      bool
      */
@@ -489,7 +485,7 @@ abstract class DomainApplication implements iApplication
 
 
     /**
-     * Efetivamente envia os dados para o UA.
+     * Efetivamente envia os dados para o ``UA``.
      *
      * @return      void
      */
@@ -559,8 +555,7 @@ abstract class DomainApplication implements iApplication
     protected $testViewDebug = null;
     /**
      * Usado para testes em desenvolvimento.
-     * Retorna um valor interno que poderá ser aferido
-     * em ambiente de testes.
+     * Retorna um valor interno que poderá ser aferido em ambiente de testes.
      *
      * @return      mixed
      */

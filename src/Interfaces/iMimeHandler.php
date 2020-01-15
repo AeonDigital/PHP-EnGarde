@@ -13,13 +13,13 @@ namespace AeonDigital\EnGarde\Interfaces;
 
 
 /**
- * Interface para gerar um manipulador capaz de gerar uma
- * resposta adequada a um determinado tipo mime.
+ * Interface para gerar um manipulador capaz de gerar uma resposta adequada a um determinado 
+ * tipo mime.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 interface iMimeHandler
 {
@@ -29,9 +29,8 @@ interface iMimeHandler
 
 
     /**
-     * Gera uma string que representa a resposta a ser enviada
-     * para o UA, compatível com o mimetype que esta classe está
-     * apta a manipular.
+     * Gera uma string que representa a resposta a ser enviada para o ``UA``, compatível com o 
+     * mimetype que esta classe está apta a manipular.
      * 
      * @return      string
      */

@@ -22,8 +22,8 @@ use AeonDigital\EnGarde\Interfaces\iController as iController;
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  * @codeCoverageIgnore
  */
 class RouteResolver implements iRequestHandler
@@ -70,8 +70,7 @@ class RouteResolver implements iRequestHandler
      */
     protected $routeConfig = null;
     /**
-     * Objeto responsável por preparar o "iResponse" para
-     * ser servido ao UA.
+     * Objeto responsável por preparar o ``iResponse`` para ser servido ao ``UA``.
      *
      * @var         iResponseHandler
      */
@@ -85,22 +84,22 @@ class RouteResolver implements iRequestHandler
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       ?iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -123,11 +122,11 @@ class RouteResolver implements iRequestHandler
 
 
     /**
-     * A partir das configurações da rota atualmente selecionada, 
-     * gera uma instância do controller alvo e retorna-o.
+     * A partir das configurações da rota atualmente selecionada, gera uma instância do 
+     * controller alvo e retorna-o.
      * 
      * @param       iResponse $response
-     *              Objeto "iResponse" a ser passado para o controller.
+     *              Objeto ``iResponse`` a ser passado para o controller.
      *
      * @return      iController
      */

@@ -17,8 +17,8 @@ use AeonDigital\EnGarde\Interfaces\iApplication as iApplication;
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  * @codeCoverageIgnore
  */
 class DomainManager
@@ -63,12 +63,12 @@ class DomainManager
 
 
     /**
-     * Define o objeto "iServerConfig" para esta instância.
+     * Define o objeto ``iServerConfig`` para esta instância.
      *
      * @param       ?iServerConfig $serverConfig
-     *              Instância "iServerConfig" para ser usada pelo domínio. 
-     *              Se nenhuma for definida então uma nova será instanciada usando
-     *              os valores encontrados nas variáveis globais.
+     *              Instância ``iServerConfig`` para ser usada pelo domínio. 
+     *              Se nenhuma for definida então uma nova será instanciada usando os valores 
+     *              encontrados nas variáveis globais.
      *
      * @return      void
      */
@@ -82,12 +82,12 @@ class DomainManager
         $this->serverConfig = $serverConfig;
     }
     /**
-     * Define o objeto "iDomainConfig" para esta instância.
+     * Define o objeto ``iDomainConfig`` para esta instância.
      * 
      * @param       ?iDomainConfig $domainConfig
-     *              Instância "iDomainConfig" para ser usado pelo domínio.
-     *              Se nenhuma for definida então uma nova será instanciada usando
-     *              os valores encontrados nas constantes globais.
+     *              Instância ``iDomainConfig`` para ser usado pelo domínio.
+     *              Se nenhuma for definida então uma nova será instanciada usando os valores 
+     *              encontrados nas constantes globais.
      *
      * @return      void
      */
@@ -116,7 +116,7 @@ class DomainManager
         $this->domainConfig = $domainConfig;
     }
     /**
-     * Define o objeto "iServerRequest" para esta instância.
+     * Define o objeto ``iServerRequest`` para esta instância.
      *
      * @return      void
      */
@@ -142,8 +142,7 @@ class DomainManager
 
 
     /**
-     * Registra as configurações básicas para o manipulador de erros
-     * e exceções do domínio.
+     * Registra as configurações básicas para o manipulador de erros e exceções do domínio.
      *
      * @return      void
      */
@@ -176,14 +175,14 @@ class DomainManager
      * Inicia um domínio.
      *
      * @param       ?iServerConfig $serverConfig
-     *              Instância "iServerConfig" para ser usada pelo domínio. 
-     *              Se nenhuma for definida então uma nova será instanciada usando
-     *              os valores encontrados nas variáveis globais.
+     *              Instância ``iServerConfig`` para ser usada pelo domínio. 
+     *              Se nenhuma for definida então uma nova será instanciada usando os valores 
+     *              encontrados nas variáveis globais.
      * 
      * @param       ?iDomainConfig $domainConfig
-     *              Instância "iDomainConfig" para ser usado pelo domínio.
-     *              Se nenhuma for definida então uma nova será instanciada usando
-     *              os valores encontrados nas constantes globais.
+     *              Instância ``iDomainConfig`` para ser usado pelo domínio.
+     *              Se nenhuma for definida então uma nova será instanciada usando os valores 
+     *              encontrados nas constantes globais.
      */
     function __construct(
         ?iServerConfig $serverConfig = null,
@@ -206,14 +205,13 @@ class DomainManager
 
 
     /**
-     * Indica se o método "run()" já foi ativado alguma vez.
+     * Indica se o método ``run()`` já foi ativado alguma vez.
      *
      * @var         bool
      */
     private $isRun = false;
     /**
-     * Efetivamente inicia o processamento da 
-     * requisição HTTP identificando qual aplicação 
+     * Efetivamente inicia o processamento da requisição ``HTTP`` identificando qual aplicação 
      * deve ser iniciada e então executada.
      *
      * @return      void
@@ -234,8 +232,8 @@ class DomainManager
 
 
     /**
-     * Retorna uma instância da aplicação que deve ser utilizada
-     * para responder a requisição realizada.
+     * Retorna uma instância da aplicação que deve ser utilizada para responder a requisição 
+     * realizada.
      *
      * @return      iApplication
      */
@@ -257,8 +255,7 @@ class DomainManager
 
     /**
      * Usado para testes em desenvolvimento.
-     * Retorna um valor interno que poderá ser aferido
-     * em ambiente de testes.
+     * Retorna um valor interno que poderá ser aferido em ambiente de testes.
      *
      * @return      mixed
      */

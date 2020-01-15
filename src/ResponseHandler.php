@@ -13,13 +13,12 @@ use AeonDigital\EnGarde\Interfaces\iResponseHandler as iResponseHandler;
 
 
 /**
- * Permite produzir uma view a partir das informações coletadas
- * pelo processamento da rota alvo.
+ * Permite produzir uma view a partir das informações coletadas pelo processamento da rota alvo.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 class ResponseHandler implements iResponseHandler
 {
@@ -65,7 +64,7 @@ class ResponseHandler implements iResponseHandler
      */
     private $routeConfig = null;
     /**
-     * Objeto "iResponse".
+     * Objeto ``iResponse``.
      *
      * @var         iResponse
      */
@@ -89,25 +88,25 @@ class ResponseHandler implements iResponseHandler
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       ?iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      * 
      * @param       iResponse $response
-     *              Instância "iResponse".
+     *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -137,9 +136,8 @@ class ResponseHandler implements iResponseHandler
 
 
     /**
-     * Prepara o objeto "iResponse" com os "headers" e 
-     * com o "body" que deve ser usado para responder
-     * ao UA.
+     * Prepara o objeto ``iResponse`` com os ``headers`` e com o ``body`` que deve ser usado 
+     * para responder ao ``UA``.
      *
      * @return      iResponse
      */
@@ -198,8 +196,7 @@ class ResponseHandler implements iResponseHandler
 
 
     /**
-     * Ajusta os headers do objeto Response antes do mesmo
-     * ser enviado ao UA.
+     * Ajusta os headers do objeto Response antes do mesmo ser enviado ao ``UA``.
      *
      * @param       string $useMimeType
      *              Mimetype que deve ser usado.
@@ -273,8 +270,8 @@ class ResponseHandler implements iResponseHandler
 
 
     /**
-     * Prepara o objeto "response" para responder a uma
-     * requisição em que foi usado o método HTTP OPTIONS.
+     * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o 
+     * método ``HTTP OPTIONS``.
      *
      * @return      void
      */
@@ -316,8 +313,8 @@ class ResponseHandler implements iResponseHandler
         $this->response = $this->response->withBody($body);
     }
     /**
-     * Prepara o objeto "response" para responder a uma
-     * requisição em que foi usado o método HTTP TRACE.
+     * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o 
+     * método ``HTTP TRACE``.
      *
      * @return      void
      */

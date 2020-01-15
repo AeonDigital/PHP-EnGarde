@@ -13,13 +13,13 @@ namespace AeonDigital\EnGarde\Interfaces;
 
 
 /**
- * Define uma Aplicação que pode ser manipulada pelo 
- * Gerenciador de Domínio **AeonDigital/EnGarde/DomainManager**.
+ * Define uma Aplicação que pode ser manipulada pelo Gerenciador de Domínio 
+ * ``AeonDigital/EnGarde/DomainManager``.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 interface iApplication
 {
@@ -29,8 +29,8 @@ interface iApplication
 
 
     /**
-     * Permite configurar ou redefinir o objeto de configuração
-     * da aplicação na classe concreta da mesma.
+     * Permite configurar ou redefinir o objeto de configuração da aplicação na classe concreta 
+     * da mesma.
      */
     function configureApplication() : void;
 

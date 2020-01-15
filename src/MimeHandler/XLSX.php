@@ -17,8 +17,8 @@ use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 class XLSX extends aMimeHandler
 {
@@ -31,25 +31,25 @@ class XLSX extends aMimeHandler
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      * 
      * @param       iResponse $response
-     *              Instância "iResponse".
+     *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -76,9 +76,8 @@ class XLSX extends aMimeHandler
 
 
     /**
-     * Gera uma string que representa a resposta a ser enviada
-     * para o UA, compatível com o mimetype que esta classe está
-     * apta a manipular.
+     * Gera uma string que representa a resposta a ser enviada para o ``UA``, compatível com o 
+     * mimetype que esta classe está apta a manipular.
      * 
      * @return      string
      */
@@ -102,15 +101,14 @@ class XLSX extends aMimeHandler
     private $usedStrings = [];
     private $usedStringsPositions = [];
     /**
-     * A partir do array que representa a planilha a ser criada,
-     * gera uma string compatível com o formato XLS.
+     * A partir do array que representa a planilha a ser criada, gera uma string compatível com 
+     * o formato ``XLS``.
 	 * 
 	 * Baseado no original:
 	 * https://gist.github.com/kasparsd/ade34dd94a80b97fb9ec59391a0c620f
      *
      * @param       array $dataTable
-     *              Array de arrays contendo cada uma das linhas de
-     *              dados a ser usado na planilha.
+     *              Array de arrays contendo cada uma das linhas de dados a ser usado na planilha.
      * 
      * @return      string
      */
@@ -176,8 +174,8 @@ class XLSX extends aMimeHandler
 
 
 	/**
-     * Retorna documentos XML que devem ser incorporados 
-     * no corpo do ZIP que compõe o documento XLSX final.
+     * Retorna documentos ``XML`` que devem ser incorporados no corpo do ``ZIP`` que compõe o 
+     * documento ``XLSX`` final.
      *
      * @param       string $partName
      *              Nome da parte que está sendo requisitada.
@@ -272,12 +270,11 @@ class XLSX extends aMimeHandler
 
 
 	/**
-     * Cria o XML que representa os dados da planilha que está
-     * sendo incorporada no documento final.
+     * Cria o ``XML`` que representa os dados da planilha que está sendo incorporada no 
+     * documento final.
      *
      * @param       array $dataTable
-     *              Array de arrays contendo cada uma das linhas de
-     *              dados a ser usado na planilha.
+     *              Array de arrays contendo cada uma das linhas de dados a ser usado na planilha.
      * 
      * @return      string
      */
@@ -328,14 +325,14 @@ class XLSX extends aMimeHandler
 
 
     /**
-     * Registra o uso de cada uma das strings usadas no XLSX na variável
-     * "$this->usedStrings" relacionando à ela a quantidade de vezes que a 
-     * mesma é usada na planilha.
-     * Registra também na variável "$this->usedStringsPositions" cada uma das
-     * strings relacionadas à seus índices de acesso em "$this->usedStrings".
+     * Registra o uso de cada uma das strings usadas no ``XLSX`` na variável 
+     * ``$this->usedStrings`` relacionando à ela a quantidade de vezes que a mesma é usada na 
+     * planilha.
+     * Registra também na variável ``$this->usedStringsPositions`` cada uma das strings 
+     * relacionadas à seus índices de acesso em ``$this->usedStrings``.
      * 
-     * Ao final, retorna a posição da string que foi atualmente definida ou
-     * cula contagem foi incrementada.
+     * Ao final, retorna a posição da string que foi atualmente definida ou cuja contagem foi 
+     * incrementada.
      *
      * @param       string $value
      *              String que está sendo usada no documento.
@@ -359,7 +356,7 @@ class XLSX extends aMimeHandler
 		return $usedStringsPositions[$value];
     }
     /**
-	 * Gera um nome para ser usado por uma célula em uma planilha XLSX.
+	 * Gera um nome para ser usado por uma célula em uma planilha ``XLSX``.
 	 * Este nome é também a posição da célula na planilha (A1, B4, AB22 ...).
 	 *
 	 * @param 		int $rowNumber

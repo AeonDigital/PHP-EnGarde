@@ -13,14 +13,13 @@ use Psr\Http\Server\MiddlewareInterface as MiddlewareInterface;
 
 
 /**
- * Responsável por coordenar e executar uma lista de processos (Middlewares) 
- * a serem efetuados para uma requisição e ao fim, executar o próprio 
- * manipulador da requisição realizada pelo UA.
+ * Responsável por coordenar e executar uma lista de processos (Middlewares) a serem efetuados 
+ * para uma requisição e ao fim, executar o próprio manipulador da requisição realizada pelo ``UA``.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  * @codeCoverageIgnore
  */
 final class RequestHandler implements iRequestHandler
@@ -31,8 +30,8 @@ final class RequestHandler implements iRequestHandler
 
 
     /**
-     * Coleção de objetos Middleware que devem ser executados
-     * para o completo processamento da requisição.
+     * Coleção de objetos Middleware que devem ser executados para o completo processamento 
+     * da requisição.
      * Os Middlewares são executados em ordem de registro.
      *
      * @var         iMiddleware[]|MiddlewareInterface[]
@@ -60,8 +59,8 @@ final class RequestHandler implements iRequestHandler
      *
      * @param       iRequestHandler $actionHandler
      *              Manipulador da action alvo.
-     *              Será executado sempre ao finalizar
-     *              a lista de Middlewares programados para a requisição.
+     *              Será executado sempre ao finalizar a lista de Middlewares programados para a 
+     *              requisição.
      */
     public function __construct(iRequestHandler $actionHandler)
     {
@@ -94,8 +93,8 @@ final class RequestHandler implements iRequestHandler
 
 
     /**
-     * Processa a lista de Middlewares e após o próprio manipulador
-     * da requisição e produz uma resposta.
+     * Processa a lista de Middlewares e após o próprio manipulador da requisição e produz uma 
+     * resposta.
      *
      * @param       iServerRequest $request
      *              Requisição que está sendo executada.

@@ -13,21 +13,20 @@ use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 
 
 /**
- * Responsável por manipular uma requisição e 
- * processar a action alvo.
+ * Responsável por manipular uma requisição e processar a action alvo.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 interface iRequestHandler
 {
 
     /**
      * Esta interface é uma especialização da interface
-     * "Psr\Http\Server\RequestHandlerInterface" mas que utiliza as 
-     * classes derivadas das interfaces dos projetos *AeonDigital* para 
+     * ``Psr\Http\Server\RequestHandlerInterface`` mas que utiliza as 
+     * classes derivadas das interfaces dos projetos ``AeonDigital`` para 
      * executar as mesmas tarefas mas com o ganho de algumas funções extras.
      * 
      * Uma vez que todas as classes definidas aqui implementam

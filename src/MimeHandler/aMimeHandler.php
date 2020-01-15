@@ -13,13 +13,12 @@ use AeonDigital\EnGarde\Interfaces\iMimeHandler as iMimeHandler;
 
 
 /**
- * Classe abstrata a ser usada pelas classes concretas manipuladoras
- * de mimetypes.
+ * Classe abstrata a ser usada pelas classes concretas manipuladoras de mimetypes.
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 abstract class aMimeHandler implements iMimeHandler
 {
@@ -71,8 +70,7 @@ abstract class aMimeHandler implements iMimeHandler
      */
     protected $response = null;
     /**
-     * Caminho relativo a ser usado pelos recursos CSS e Javascript
-     * de documentos X/HTML.
+     * Caminho relativo a ser usado pelos recursos CSS e Javascript de documentos X/HTML.
      *
      * @var         string
      */
@@ -90,25 +88,25 @@ abstract class aMimeHandler implements iMimeHandler
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      * 
      * @param       iResponse $response
-     *              Instância "iResponse".
+     *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -145,8 +143,7 @@ abstract class aMimeHandler implements iMimeHandler
 
 
     /**
-     * Efetua o processamento da View e retorna seu 
-     * conteúdo em uma string.
+     * Efetua o processamento da View e retorna seu conteúdo em uma string.
      *
      * @return      string
      */
@@ -170,8 +167,7 @@ abstract class aMimeHandler implements iMimeHandler
         return $str;
     }
     /**
-     * Efetua o processamento da MasterPage e retorna seu 
-     * conteúdo em uma string.
+     * Efetua o processamento da MasterPage e retorna seu conteúdo em uma string.
      *
      * @return      string
      */
@@ -195,8 +191,8 @@ abstract class aMimeHandler implements iMimeHandler
         return $str;
     }
     /**
-     * Efetua o processamento dos atributos "Meta" para documentos
-     * X/HTML e retorna seu conteúdo em uma string.
+     * Efetua o processamento dos atributos ``Meta`` para documentos X/HTML e retorna seu 
+     * conteúdo em uma string.
      *
      * @return      string
      */
@@ -212,8 +208,8 @@ abstract class aMimeHandler implements iMimeHandler
         return ((count($strMetas) > 0) ? "\n" . implode("\n", $strMetas) : "");
     }
     /**
-     * Efetua o processamento das folhas de estilo a serem incorporadas
-     * a um documento X/HTML e retorna seu conteúdo em uma string.
+     * Efetua o processamento das folhas de estilo a serem incorporadas a um documento ``X/HTML`` 
+     * e retorna seu conteúdo em uma string.
      *
      * @return      string
      */
@@ -230,8 +226,8 @@ abstract class aMimeHandler implements iMimeHandler
         return ((count($strCSSs) > 0) ? "\n" . implode("\n", $strCSSs) : "");
     }
     /**
-     * Efetua o processamento dos recursos JavaScript a serem incorporados
-     * a um documento X/HTML e retorna seu conteúdo em uma string.
+     * Efetua o processamento dos recursos JavaScript a serem incorporados a um documento 
+     * ``X/HTML`` e retorna seu conteúdo em uma string.
      *
      * @return      string
      */
@@ -253,13 +249,13 @@ abstract class aMimeHandler implements iMimeHandler
 
 
     /**
-     * Efetua um tratamento "prettyPrint" para documentos X/HTML.
+     * Efetua um tratamento ``prettyPrint`` para documentos ``X/HTML``.
      *
      * @param       string $document
-     *              String do documento X/HTML.
+     *              String do documento ``X/HTML``.
      * 
      * @param       string $mime
-     *              Mime que está sendo usado [ "html" | "xhtml" ].
+     *              Mime que está sendo usado ``[ "html" | "xhtml" ]``.
      * 
      * @return      string
      */
@@ -313,22 +309,22 @@ abstract class aMimeHandler implements iMimeHandler
 
 
     /**
-     * Converte o valor indicado para uma string a ser usada em um contexto
-     * de um documento a ser entregue ao UA.
+     * Converte o valor indicado para uma string a ser usada em um contexto de um documento a 
+     * ser entregue ao ``UA``.
      *
      * @param       mixed $oData
      *              Valor que será convertido para string.
      *
      * @param       string $quote
-     *              Quando o tipo "natural" do valor for uma string ou DateTime
-     *              o resultado será retornado envolvido por este tipo de aspas.
+     *              Quando o tipo ``natural`` do valor for uma string ou DateTime o resultado 
+     *              será retornado envolvido por este tipo de aspas.
      *
      * @param       string $escapeQuote
-     *              Este valor será usado para "escapar" as aspas dentro de um valor
-     *              que possua aspas do mesmo tipo definido em "$quote".
+     *              Este valor será usado para ``escapar`` as aspas dentro de um valor que possua 
+     *              aspas do mesmo tipo definido em ``$quote``.
      * 
      * @param       bool $forceQuote
-     *              Quando "true" forçará o uso de aspas para qualquer tipo de valor.
+     *              Quando ``true`` forçará o uso de aspas para qualquer tipo de valor.
      *
      * @return      string
      */
@@ -359,9 +355,8 @@ abstract class aMimeHandler implements iMimeHandler
         return $q . $str . $q;
     }
     /**
-     * A partir de um array (associativo ou não) devolve uma string
-     * estruturada com a informação do array de forma a facilitar a leitura por
-     * um usuário humano.
+     * A partir de um array (associativo ou não) devolve uma string estruturada com a informação 
+     * do array de forma a facilitar a leitura por um usuário humano.
      *
      * @param       mixed $oData
      *              Valor que será convertido para string.
@@ -374,8 +369,7 @@ abstract class aMimeHandler implements iMimeHandler
      *              String de identação acumulada pelo uso de sub-níveis.
      *
      * @param       string $parentIndex
-     *              Index usado pelo nível superior do array que está sendo 
-     *              estruturado no momento.
+     *              Index usado pelo nível superior do array que está sendo estruturado no momento.
      *
      * @return      string
      */
@@ -414,13 +408,13 @@ abstract class aMimeHandler implements iMimeHandler
 
 
     /**
-     * Converte um array associativo em um XML.
+     * Converte um array associativo em um ``XML``.
      *
      * @param       array $oData
      *              Objeto que será convertido.
      * 
      * @param       SimpleXMLElement $xml
-     *              Instância do objeto XML que será gerado.
+     *              Instância do objeto ``XML`` que será gerado.
      *
      * @return      void
      */
@@ -456,11 +450,10 @@ abstract class aMimeHandler implements iMimeHandler
 
 
     /**
-     * Efetua um tratamento para facilitar leitura 
-     * de documentos X/HTML por parte de humanos.
+     * Efetua um tratamento para facilitar leitura de documentos ``X/HTML`` por parte de humanos.
      *
      * @param       string $document
-     *              String do documento X/HTML.
+     *              String do documento ``X/HTML``.
      * 
      * @return      string
      */
@@ -505,30 +498,29 @@ abstract class aMimeHandler implements iMimeHandler
 
 
     /**
-     * Varre o array passado item a item e gera como resposta
-     * um novo array contendo dados que podem ser usados para gerar
-     * planilhas "csv", "xls" ou "xlsx".
+     * Varre o array passado item a item e gera como resposta um novo array contendo dados que 
+     * podem ser usados para gerar planilhas ``csv``, ``xls`` ou ``xlsx``.
      *
      * @param       array $oData
-     *              Array de arrays onde cada membro filho representa uma linha
-     *              de dados da planilha.
+     *              Array de arrays onde cada membro filho representa uma linha de dados da 
+     *              planilha.
      *
      * @param       string $quote
-     *              Quando o tipo "natural" do valor for uma string ou DateTime
-     *              o resultado será retornado envolvido por este tipo de aspas.
+     *              Quando o tipo ``natural`` do valor for uma string ou ``\DateTime`` o resultado 
+     *              será retornado envolvido por este tipo de aspas.
      *
      * @param       string $escapeQuote
-     *              Este valor será usado para "escapar" as aspas dentro de um valor
-     *              que possua aspas do mesmo tipo definido em "$quote".
+     *              Este valor será usado para ``escapar`` as aspas dentro de um valor que possua 
+     *              aspas do mesmo tipo definido em ``$quote``.
      * 
      * @param       bool $forceQuote
-     *              Quando "true" forçará o uso de aspas para qualquer tipo de valor.
+     *              Quando ``true`` forçará o uso de aspas para qualquer tipo de valor.
      *
      * @return      array
      * 
      * @throws      \Exception
-     *              Disparará uma exception caso os dados enviados não estejam bem
-     *              definidos para a criação da planilha.
+     *              Disparará uma exception caso os dados enviados não estejam bem definidos para 
+     *              a criação da planilha.
      */
     protected function prepareArrayToCreateSpreadSheet(
         array $oData,
@@ -635,7 +627,7 @@ abstract class aMimeHandler implements iMimeHandler
      */
     protected $description = null;
     /**
-     * Verifica se o "$viewData" possui metadados a serem incorporados
+     * Verifica se o ``$viewData`` possui metadados a serem incorporados
      * nos documentos finais.
      *
      * @return      void

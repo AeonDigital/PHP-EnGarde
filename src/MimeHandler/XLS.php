@@ -17,8 +17,8 @@ use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
  * 
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
- * @license     GNUv3
- * @copyright   Aeon Digital
+ * @copyright   2020, Rianna Cantarelli
+ * @license     ADPL-v1.0
  */
 class XLS extends aMimeHandler
 {
@@ -31,25 +31,25 @@ class XLS extends aMimeHandler
      * Inicia uma nova instância.
      *
      * @param       iServerConfig $serverConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iDomainConfig $domainConfig
-     *              Instância "iDomainConfig".
+     *              Instância ``iDomainConfig``.
      * 
      * @param       iApplicationConfig $applicationConfig
-     *              Instância "iApplicationConfig".
+     *              Instância ``iApplicationConfig``.
      * 
      * @param       iServerRequest $serverRequest
-     *              Instância "iServerRequest".
+     *              Instância ``iServerRequest``.
      * 
      * @param       array $rawRouteConfig
-     *              Instância "iServerConfig".
+     *              Instância ``iServerConfig``.
      * 
      * @param       iRouteConfig $routeConfig
-     *              Instância "iRouteConfig".
+     *              Instância ``iRouteConfig``.
      * 
      * @param       iResponse $response
-     *              Instância "iResponse".
+     *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
@@ -76,9 +76,8 @@ class XLS extends aMimeHandler
 
 
     /**
-     * Gera uma string que representa a resposta a ser enviada
-     * para o UA, compatível com o mimetype que esta classe está
-     * apta a manipular.
+     * Gera uma string que representa a resposta a ser enviada para o ``UA``, compatível com o 
+     * mimetype que esta classe está apta a manipular.
      * 
      * @return      string
      */
@@ -95,15 +94,14 @@ class XLS extends aMimeHandler
 
 
     /**
-     * A partir do array que representa a planilha a ser criada,
-     * gera uma string compatível com o formato XLS.
+     * A partir do array que representa a planilha a ser criada, gera uma string compatível com 
+     * o formato ``XLS``.
 	 * 
 	 * Baseado no original:
 	 * https://gist.github.com/samatsav/6637984
      * 
      * @param       array $dataTable
-     *              Array de arrays contendo cada uma das linhas de
-     *              dados a ser usado na planilha.
+     *              Array de arrays contendo cada uma das linhas de dados a ser usado na planilha.
      * 
      * @return      string
      */
@@ -139,8 +137,7 @@ class XLS extends aMimeHandler
 
 
     /**
-     * Gera o código a ser usado para uma célula de texto
-     * para uma planilha Excell (xls).
+     * Gera o código a ser usado para uma célula de texto para uma planilha Excell (xls).
      *
      * @param       int $rowNumber
      *              Número da linha que a célula pertence.
@@ -162,8 +159,7 @@ class XLS extends aMimeHandler
 		return $str; 
     }
     /**
-     * Gera o código a ser usado para uma célula numérica
-     * para uma planilha Excell (xls).
+     * Gera o código a ser usado para uma célula numérica para uma planilha Excell (xls).
      *
      * @param       int $rowNumber
      *              Número da linha que a célula pertence.
