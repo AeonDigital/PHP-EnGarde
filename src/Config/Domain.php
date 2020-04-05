@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomain;
 
 
 
@@ -13,14 +13,14 @@ use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
 
 
 /**
- * Implementação de ``iDomainConfig``.
+ * Implementação de ``iDomain``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class DomainConfig implements iDomainConfig
+final class Domain implements iDomain
 {
 
 
@@ -752,7 +752,7 @@ final class DomainConfig implements iDomainConfig
             //
             //
             // Para que os erros sejam mostrados é preciso alterar os
-            // valores abaixo alem do arquivo "php.ini" para  setar os
+            // valores abaixo alem do arquivo "php.ini" para setar os
             // seguintes atributos :
             //      display_errors = 1
             //      error_reporting = E_ALL

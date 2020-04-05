@@ -20,7 +20,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-class Security implements iSecurity
+final class Security implements iSecurity
 {
 
 
