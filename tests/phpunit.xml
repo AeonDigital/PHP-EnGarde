@@ -16,6 +16,9 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
+            <file>src/Http/FactoryTest.php</file>
+
+
             <file>src/Config/SecurityTest.php</file>
             <file>src/Config/RouteTest.php</file>
             <file>src/Config/ApplicationTest.php</file>

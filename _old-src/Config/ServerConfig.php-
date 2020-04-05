@@ -397,7 +397,7 @@ final class ServerConfig implements iServerConfig
             foreach ($_FILES as $fieldName => $fieldData) {
                 if (is_array($fieldData["error"]) === false) {
                     $r[$fieldName] = new \AeonDigital\Http\Data\File(
-                        new \AeonDigital\Stream\FileStream($fieldData["tmp_name"]),
+                        new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"]),
                         $fieldData["name"],
                         $fieldData["error"]
                     );
@@ -406,7 +406,7 @@ final class ServerConfig implements iServerConfig
 
                     foreach ($fieldData["name"] as $i => $v) {
                         $r[$fieldName][] = new \AeonDigital\Http\Data\File(
-                            new \AeonDigital\Stream\FileStream($fieldData["tmp_name"][$i]),
+                            new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"][$i]),
                             $fieldData["name"][$i],
                             $fieldData["error"][$i]
                         );

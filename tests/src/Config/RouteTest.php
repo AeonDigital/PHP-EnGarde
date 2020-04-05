@@ -31,7 +31,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_application_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -46,7 +46,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_application()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setApplication("Application");
         $this->assertSame("Application", $nMock->getApplication());
 
@@ -57,7 +57,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_namespace_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -72,7 +72,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_namespace()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setNamespace("Application");
         $this->assertSame("Application", $nMock->getNamespace());
 
@@ -83,7 +83,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_controller_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -98,7 +98,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_controller()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setController("Controller");
         $this->assertSame("Controller", $nMock->getController());
 
@@ -109,7 +109,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_action_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -124,7 +124,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_action()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setAction("Action");
         $this->assertSame("Action", $nMock->getAction());
 
@@ -135,7 +135,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_method_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -151,7 +151,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_method()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setMethod("post");
         $this->assertSame("POST", $nMock->getMethod());
 
@@ -162,7 +162,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_allowedmethods_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -178,7 +178,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_allowedmethods()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setAllowedMethods(["post", "get"]);
         $this->assertSame(["POST", "GET"], $nMock->getAllowedMethods());
     }
@@ -186,7 +186,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_routes_empty_array_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -201,7 +201,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_routes_invalid_route_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -216,7 +216,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_routes()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $expected = ["/route-one", "/another-route"];
 
         $nMock->setRoutes(["/route-one", "another-route"]);
@@ -229,7 +229,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_accept_mimes_empty_array_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -244,7 +244,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_accept_mimes_invalid_value_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -259,7 +259,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_accept_mimes()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $expected = ["txt" => "text/plain", "html" => "text/html", "xhtml" => "application/xhtml+xml"];
 
         $nMock->setAcceptMimes(["txt", "html"]);
@@ -272,7 +272,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_is_use_xhtml()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(false, $nMock->getIsUseXHTML());
 
         $nMock->setIsUseXHTML(true);
@@ -288,7 +288,7 @@ class RouteTest extends TestCase
 
     public function test_method_all_middlewares_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -302,7 +302,7 @@ class RouteTest extends TestCase
 
     public function test_method_all_middlewares()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame([], $nMock->getMiddlewares());
 
         $nMock->setMiddlewares(["MiddleWare_one", "MiddleWare_two"]);
@@ -321,7 +321,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_relationed_routes()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $expected = ["/relationed-one", "/another-relationed"];
 
         $nMock->setRelationedRoutes(["relationed-one", "another-relationed", null, "", 222]);
@@ -334,7 +334,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_description()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $nMock->setDescription("Only a description.");
         $this->assertSame("Only a description.", $nMock->getDescription());
@@ -346,7 +346,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_dev_description()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $nMock->setDevDescription("Only a dev description.");
         $this->assertSame("Only a dev description.", $nMock->getDevDescription());
@@ -358,7 +358,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_is_secure()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(false, $nMock->getIsSecure());
 
         $nMock->setIsSecure(true);
@@ -371,7 +371,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_is_use_cache()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(false, $nMock->getIsUseCache());
 
         $nMock->setIsUseCache(true);
@@ -387,7 +387,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_cache_timeout()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(0, $nMock->getCacheTimeout());
 
         $nMock->setCacheTimeout(-50);
@@ -403,7 +403,7 @@ class RouteTest extends TestCase
 
     public function test_method_all_responseheaders()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame([], $nMock->getResponseHeaders());
 
         $nMock->setResponseHeaders(["META_01" => "value_01", "meta_02" => "value_02", "meta_01" => "value_nha"]);
@@ -419,7 +419,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_responsemime()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(null, $nMock->getResponseMime());
 
         $nMock->setResponseMime("txt");
@@ -429,7 +429,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_responsemimetype()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(null, $nMock->getResponseMimeType());
 
         $nMock->setResponseMimeType("text/plain");
@@ -439,7 +439,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_responselocale()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(null, $nMock->getResponseLocale());
 
         $nMock->setResponseLocale("pt-br");
@@ -449,7 +449,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_responseisprettyprint()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(false, $nMock->getResponseIsPrettyPrint());
 
         $nMock->setResponseIsPrettyPrint(true);
@@ -460,7 +460,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_responseisdownload()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(false, $nMock->getResponseIsDownload());
 
         $nMock->setResponseIsDownload(true);
@@ -473,7 +473,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_responsedownloadfilename()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame(null, $nMock->getResponseDownloadFileName());
 
         $nMock->setResponseDownloadFileName("explicit-filename");
@@ -486,7 +486,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_masterpage()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $nMock->setMasterPage("/route/to/masterpage.phtml");
         $this->assertSame("/route/to/masterpage.phtml", $nMock->getMasterPage());
@@ -498,7 +498,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_view()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $nMock->setView("/route/to/view.phtml");
         $this->assertSame("/route/to/view.phtml", $nMock->getView());
@@ -510,7 +510,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_form()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $nMock->setForm("/route/to/form.php");
         $this->assertSame("/route/to/form.php", $nMock->getForm());
@@ -522,7 +522,7 @@ class RouteTest extends TestCase
 
     public function test_method_all_stylesheets()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame([], $nMock->getStyleSheets());
 
         $nMock->setStyleSheets(["style_01", "style_02"]);
@@ -538,7 +538,7 @@ class RouteTest extends TestCase
 
     public function test_method_all_javascripts()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame([], $nMock->getJavaScripts());
 
         $nMock->setJavaScripts(["script_01", "script_02"]);
@@ -554,7 +554,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_locale_dictionary()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $nMock->setLocaleDictionary("/route/to/pt-br.php");
         $this->assertSame("/route/to/pt-br.php", $nMock->getLocaleDictionary());
@@ -566,7 +566,7 @@ class RouteTest extends TestCase
 
     public function test_method_all_metadata()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame([], $nMock->getMetaData());
 
         $nMock->setMetaData(["META_01" => "value_01", "meta_02" => "value_02", "meta_01" => "value_nha"]);
@@ -582,7 +582,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_runmethodname()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $this->assertSame("run", $nMock->getRunMethodName());
 
         $nMock->setRunMethodName("anotherName");
@@ -593,7 +593,7 @@ class RouteTest extends TestCase
 
     public function test_method_getset_custom_properties()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $cprop = ["prop1" => "val1", "prop2" => "val2"];
 
         $nMock->setCustomProperties($cprop);
@@ -606,7 +606,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_values_with_string_fail_01()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -621,7 +621,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_values_with_string_fail_02()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -636,7 +636,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_values_with_string_fail_03()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -651,7 +651,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_values_with_string_fail_04()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $fail = false;
         try {
@@ -671,7 +671,7 @@ class RouteTest extends TestCase
             $set = [
                 "invalidName" => "Application"
             ];
-            $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+            $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
             $nMock->setValues($set);
         } catch (\Exception $ex) {
             $fail = true;
@@ -684,7 +684,7 @@ class RouteTest extends TestCase
 
     public function test_method_set_values_with_string()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setValues("/router/cache/another actionAnother");
 
         $this->assertSame("GET", $nMock->getMethod());
@@ -693,7 +693,7 @@ class RouteTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setValues("GET /router/cache/sucess actionName");
 
         $this->assertSame("GET", $nMock->getMethod());
@@ -705,7 +705,7 @@ class RouteTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setValues("GET /router/cache/sucess actionName publicRoute");
 
         $this->assertSame("GET", $nMock->getMethod());
@@ -717,7 +717,7 @@ class RouteTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setValues("GET /router/cache/sucess actionName privateRoute");
 
         $this->assertSame("GET", $nMock->getMethod());
@@ -729,7 +729,7 @@ class RouteTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setValues("GET /router/cache/sucess actionName privateRoute no-cache");
 
         $this->assertSame("GET", $nMock->getMethod());
@@ -741,7 +741,7 @@ class RouteTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
         $nMock->setValues("GET /router/cache/sucess actionName privateRoute cache-2000");
 
         $this->assertSame("GET", $nMock->getMethod());
@@ -755,7 +755,7 @@ class RouteTest extends TestCase
 
     public function test_method_negotiate_locale()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $requestLocales     = ["pt-BR", "en-us", "es-es"];
         $requestLanguages   = ["pt", "en", "es"];
@@ -774,7 +774,7 @@ class RouteTest extends TestCase
 
         // Força um locale ainda que ele não esteja definido entre aqueles
         // que a aplicação é capaz de prover.
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $requestLocales     = ["pt-BR", "en-us", "es-es"];
         $requestLanguages   = ["pt", "en", "es"];
@@ -793,7 +793,7 @@ class RouteTest extends TestCase
 
         // Prioriza a seleção dos locales buscando aquele que primeiro responda
         // às opções de linguagens.
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute();
 
         $requestLocales     = null;
         $requestLanguages   = ["ch", "en", "pt", "es"];
@@ -813,7 +813,7 @@ class RouteTest extends TestCase
     public function test_method_negotiate_mimetype()
     {
         // Força um mimetype inválido
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute([
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute([
             "acceptMimes" => ["txt", "html", "pdf", "xml"]
         ]);
 
@@ -836,7 +836,7 @@ class RouteTest extends TestCase
 
 
         // Força um mimetype válido
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute([
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute([
             "acceptMimes" => ["txt", "html", "pdf", "xml"]
         ]);
 
@@ -859,7 +859,7 @@ class RouteTest extends TestCase
 
 
         // Seleciona o primeiro compatível com a definição do UA
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute([
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute([
             "acceptMimes" => ["txt", "html", "pdf", "xml"]
         ]);
 
@@ -882,7 +882,7 @@ class RouteTest extends TestCase
 
 
         // Seleciona o primeiro que a rota está apto a responder
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute([
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute([
             "acceptMimes" => ["txt", "html", "pdf", "xml"]
         ]);
 
@@ -902,7 +902,7 @@ class RouteTest extends TestCase
 
 
         // Verifica forçar usar XHTML
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute([
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute([
             "acceptMimes"   => ["txt", "html", "pdf", "xml"],
             "isUseXHTML"    => true
         ]);
@@ -973,7 +973,7 @@ class RouteTest extends TestCase
         ];
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute($set);
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute($set);
 
 
         $set["method"] = "GET";
@@ -1036,7 +1036,7 @@ class RouteTest extends TestCase
         ];
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute($set);
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute($set);
 
 
         $expected = [
@@ -1123,7 +1123,7 @@ class RouteTest extends TestCase
         ];
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigRoute($set);
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigRoute($set);
 
 
         $set["method"] = "GET";

@@ -28,7 +28,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_name()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $nMock->setName("ApplicationName");
 
         $this->assertSame("ApplicationName", $nMock->getName());
@@ -40,7 +40,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_app_root_path_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $fail = false;
         try {
@@ -55,7 +55,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_app_root_path_empty_path_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $fail = false;
         try {
@@ -70,12 +70,15 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_app_root_path()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $appRootPath = dirname(__FILE__) . $ds . "apps" . $ds;
-        $appRootSite = $appRootPath . "site" . $ds;
-        $appRootBlog = $appRootPath . "blog" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+
+        $appRootPath = $resourcesDir . $ds . "apps";
+        $appRootSite = $appRootPath . $ds . "site" . $ds;
+        $appRootBlog = $appRootPath . $ds . "blog" . $ds;
 
 
         $nMock->setAppRootPath($appRootSite);
@@ -89,9 +92,13 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_app_routes_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps" . $ds . "sites" . $ds . "AppRoutes.php";
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+
+        $targetPath = $resourcesDir. $ds ."apps" . $ds . "sites" . $ds . "AppRoutes.php";
         $dir = dirname($targetPath);
 
         $fail = false;
@@ -107,11 +114,14 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_path_to_app_routes()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath_one = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "AppRoutes.php";
-        $targetPath_two = dirname(__FILE__) . $ds . "apps" . $ds . "blog" . $ds . "AppRoutes.php";
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+
+        $targetPath_one = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "AppRoutes.php";
+        $targetPath_two = $resourcesDir . $ds . "apps" . $ds . "blog" . $ds . "AppRoutes.php";
 
         $nMock->setPathToAppRoutes($targetPath_one);
         $this->assertSame($targetPath_one, $nMock->getPathToAppRoutes());
@@ -123,9 +133,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_controllers_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath = $resourcesDir . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
 
         $fail = false;
         try {
@@ -140,11 +153,13 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_path_to_controllers()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath_one = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "controllers" . $ds;
-        $targetPath_two = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "AnotherControllers" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath_one = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "controllers" . $ds;
+        $targetPath_two = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "AnotherControllers" . $ds;
 
         $nMock->setPathToControllers($targetPath_one);
         $this->assertSame($targetPath_one, $nMock->getPathToControllers());
@@ -156,9 +171,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_views_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath = $resourcesDir . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
 
         $fail = false;
         try {
@@ -173,11 +191,13 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_path_to_views()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath_one = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "views" . $ds;
-        $targetPath_two = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "AnotherViews" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath_one = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "views" . $ds;
+        $targetPath_two = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "AnotherViews" . $ds;
 
         $nMock->setPathToViews($targetPath_one);
         $this->assertSame($targetPath_one, $nMock->getPathToViews());
@@ -189,9 +209,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_views_resources_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath = $resourcesDir . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
 
         $fail = false;
         try {
@@ -206,11 +229,13 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_views_resources()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath_one = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "views" . $ds;
-        $targetPath_two = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "AnotherViews" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath_one = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "views" . $ds;
+        $targetPath_two = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "AnotherViews" . $ds;
 
         $nMock->setPathToViewsResources($targetPath_one);
         $this->assertSame($targetPath_one, $nMock->getPathToViewsResources());
@@ -222,9 +247,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_locales_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps" . $ds . "sites" . $ds . "localess" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath = $resourcesDir . $ds . "apps" . $ds . "sites" . $ds . "localess" . $ds;
 
         $fail = false;
         try {
@@ -239,11 +267,13 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_path_to_locales()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath_one = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "locales" . $ds;
-        $targetPath_two = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "AnotherLocales" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath_one = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "locales" . $ds;
+        $targetPath_two = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "AnotherLocales" . $ds;
 
         $nMock->setPathToLocales($targetPath_one);
         $this->assertSame($targetPath_one, $nMock->getPathToLocales());
@@ -255,9 +285,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_path_to_cache_files_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath = $resourcesDir . $ds . "apps" . $ds . "sites" . $ds . "NonExist" . $ds;
 
         $fail = false;
         try {
@@ -272,11 +305,13 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_path_to_cache_files()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath_one = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "cache" . $ds;
-        $targetPath_two = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds . "AnotherCaches" . $ds;
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath_one = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "cache" . $ds;
+        $targetPath_two = $resourcesDir . $ds . "apps" . $ds . "site" . $ds . "AnotherCaches" . $ds;
 
         $nMock->setPathToCacheFiles($targetPath_one);
         $this->assertSame($targetPath_one, $nMock->getPathToCacheFiles());
@@ -288,7 +323,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_start_route()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $nMock->setStartRoute("/home");
         $this->assertSame("/home", $nMock->getStartRoute());
@@ -300,7 +335,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_controller_namespace()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $nMock->setName("AppName");
         $nMock->setControllersNamespace("controllers");
@@ -310,7 +345,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_locales_empty_collection_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $fail = false;
         try {
@@ -325,7 +360,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_locales_invalid_locale_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $fail = false;
         try {
@@ -340,7 +375,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_locales()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $nMock->setLocales(["pt-br", "en-us"]);
         $this->assertSame(["pt-br", "en-us"], $nMock->getLocales());
     }
@@ -348,7 +383,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_set_default_locale_fails()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
 
         $fail = false;
         try {
@@ -363,7 +398,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_default_locales()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $nMock->setLocales(["pt-br", "en-us"]);
         $nMock->setDefaultLocale("pt-br");
         $this->assertSame("pt-br", $nMock->getDefaultLocale());
@@ -372,10 +407,10 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_is_use_labels()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $this->assertSame(false, $nMock->getIsUseLabels());
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $nMock->setIsUseLabels(true);
         $this->assertSame(true, $nMock->getIsUseLabels());
     }
@@ -383,7 +418,7 @@ class ApplicationTest extends TestCase
 
     public function test_method_getset_default_route_config()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $this->assertSame([], $nMock->getDefaultRouteConfig());
 
         $startData = [
@@ -418,7 +453,7 @@ class ApplicationTest extends TestCase
 
     public function test_methods_getset_path_to_error_view()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
         $expected = "viewError.phtml";
 
         $nMock->setPathToErrorView($expected);
@@ -432,14 +467,14 @@ class ApplicationTest extends TestCase
 
     public function test_methods_getset_security_settings()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-        $ss = provider_PHPEnGardeConfig_InstanceOf_ConfigSecurity_AutoSet();
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $ss = provider_PHPEnGarde_InstanceOf_ConfigSecurity_AutoSet();
 
         $this->assertNull($nMock->getSecuritySettings());
         $nMock->setSecuritySettings($ss);
         $this->assertSame($ss, $nMock->getSecuritySettings());
 
-        $nMock02 = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet(
+        $nMock02 = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet(
             "",
             "",
             [
@@ -465,10 +500,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_auto_set_properties()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet();
-
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps";
+
+
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet();
+        $targetPath = $resourcesDir . $ds . "apps";
         $nMock->autoSetProperties("site", $targetPath);
 
         $appRootPath = $targetPath . $ds . "site" . $ds;
@@ -488,9 +525,12 @@ class ApplicationTest extends TestCase
 
     public function test_method_auto_set_properties_on_constructor()
     {
+        global $resourcesDir;
         $ds = DIRECTORY_SEPARATOR;
-        $targetPath = dirname(__FILE__) . $ds . "apps";
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet("site", $targetPath);
+
+
+        $targetPath = $resourcesDir . $ds . "apps";
+        $nMock = provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet("site", $targetPath);
 
         $appRootPath = $targetPath . $ds . "site" . $ds;
 

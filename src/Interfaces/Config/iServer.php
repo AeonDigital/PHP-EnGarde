@@ -1,9 +1,9 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde\Config;
+namespace AeonDigital\EnGarde\Interfaces\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iHttpFactory as iHttpFactory;
+use AeonDigital\EnGarde\Interfaces\Http\iFactory as iFactory;
 
 
 
@@ -61,20 +61,20 @@ interface iServerConfig
 
 
     /**
-     * Retorna um objeto ``iHttpFactory``.
+     * Retorna um objeto ``iFactory``.
      *
-     * @return      iHttpFactory
+     * @return      iFactory
      */
-    function getHttpFactory() : iHttpFactory;
+    function getHttpFactory() : iFactory;
     /**
-     * Define uma instância ``iHttpFactory`` para ser usada.
+     * Define uma instância ``iFactory`` para ser usada.
      *
-     * @param       iHttpFactory $httpFactory
+     * @param       iFactory $httpFactory
      *              Instância a ser definida.
      *
      * @return      void
      */
-    function setHttpFactory(iHttpFactory $httpFactory) : void;
+    function setHttpFactory(iFactory $httpFactory) : void;
 
 
 

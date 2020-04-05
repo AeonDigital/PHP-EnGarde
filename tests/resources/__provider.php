@@ -5,7 +5,7 @@ $defaultServerConfig = null;
 
 
 
-function provider_PHPEnGardeConfig_DefineServerFiles()
+function provider_PHPEnGarde_DefineServerFiles()
 {
     $_FILES = [
         "fieldOne" => [
@@ -32,14 +32,33 @@ function provider_PHPEnGardeConfig_DefineServerFiles()
 
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ConfigRoute($cfg = null)
+
+
+
+
+
+function provider_PHPEnGarde_InstanceOf_HttpFactory()
+{
+    return new \AeonDigital\EnGarde\Http\Factory();
+}
+
+
+
+
+
+
+
+
+
+
+function provider_PHPEnGarde_InstanceOf_ConfigRoute($cfg = null)
 {
     return new \AeonDigital\EnGarde\Config\Route($cfg);
 }
 
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet(
+function provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet(
     $appName = "",
     $rootPath = "",
     $settings = null
@@ -49,7 +68,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet(
 
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ConfigSecurity_AutoSet(
+function provider_PHPEnGarde_InstanceOf_ConfigSecurity_AutoSet(
     $settings = null
 ) {
     if ($settings === null) {
@@ -75,7 +94,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ConfigSecurity_AutoSet(
 
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ConfigDomain(
+function provider_PHPEnGarde_InstanceOf_ConfigDomain(
     $autoSet = true,
     $version = "0.9.0 [alpha]",
     $environmentType = "test",
@@ -122,13 +141,8 @@ function provider_PHPEnGardeConfig_InstanceOf_ConfigDomain(
 
 
 
-function provider_PHPEnGardeConfig_InstanceOf_HttpFactory()
-{
-    return new \AeonDigital\EnGarde\Config\HttpFactory();
-}
 
-
-function provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
+function provider_PHPEnGarde_InstanceOf_ServerConfig(
     $autoSet = true,
     $serverIP = null,
     $serverPort = null,
@@ -240,7 +254,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
 
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
+function provider_PHPEnGarde_InstanceOf_ApplicationConfig(
     $autoSet = true,
     $name = "site",
     $rootPath = "",
@@ -292,9 +306,9 @@ function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
 }
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter()
+function provider_PHPEnGarde_InstanceOf_ApplicationRouter()
 {
-    $applicationConfig = provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig();
+    $applicationConfig = provider_PHPEnGarde_InstanceOf_ApplicationConfig();
 
     return new \AeonDigital\EnGarde\Config\ApplicationRouter(
         $applicationConfig->getName(),
@@ -306,7 +320,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter()
 }
 
 
-function provider_PHPEnGardeConfig_Configure_ErrorListening(
+function provider_PHPEnGarde_Configure_ErrorListening(
     $debugMode = false,
     $env = "test",
     $method = "get",

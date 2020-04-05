@@ -1,19 +1,19 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde\Config;
+namespace AeonDigital\EnGarde\Interfaces\Http;
 
-use AeonDigital\Http\Uri\Interfaces\iUrl as iUrl;
-use AeonDigital\Stream\Interfaces\iStream as iStream;
-use AeonDigital\Stream\Interfaces\iFileStream as iFileStream;
-use AeonDigital\Http\Message\Interfaces\iRequest as iRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Data\Interfaces\iHeaderCollection as iHeaderCollection;
-use AeonDigital\Http\Data\Interfaces\iCookieCollection as iCookieCollection;
-use AeonDigital\Http\Data\Interfaces\iQueryStringCollection as iQueryStringCollection;
-use AeonDigital\Http\Data\Interfaces\iFileCollection as iFileCollection;
-use AeonDigital\Collection\Interfaces\iCollection as iCollection;
+use AeonDigital\Interfaces\Http\Uri\iUrl as iUrl;
+use AeonDigital\Interfaces\Stream\iStream as iStream;
+use AeonDigital\Interfaces\Stream\iFileStream as iFileStream;
+use AeonDigital\Interfaces\Http\Message\iRequest as iRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Data\iHeaderCollection as iHeaderCollection;
+use AeonDigital\Interfaces\Http\Data\iCookieCollection as iCookieCollection;
+use AeonDigital\Interfaces\Http\Data\iQueryStringCollection as iQueryStringCollection;
+use AeonDigital\Interfaces\Http\Data\iFileCollection as iFileCollection;
+use AeonDigital\Interfaces\Collection\iCollection as iCollection;
 
 
 
@@ -25,7 +25,7 @@ use AeonDigital\Collection\Interfaces\iCollection as iCollection;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-interface iHttpFactory
+interface iFactory
 {
 
 

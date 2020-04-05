@@ -7,7 +7,7 @@ use AeonDigital\Interfaces\EnGarde\iRequestHandler as iRequestHandler;
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
 use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
 use AeonDigital\Http\Data\HeaderCollection as HeaderCollection;
-use AeonDigital\Stream\Stream as Stream;
+use AeonDigital\Http\Stream\Stream as Stream;
 
 
 
