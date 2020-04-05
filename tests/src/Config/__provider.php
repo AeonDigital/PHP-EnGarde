@@ -39,6 +39,42 @@ function provider_PHPEnGardeConfig_InstanceOf_ConfigRoute($cfg = null)
 
 
 
+function provider_PHPEnGardeConfig_InstanceOf_ConfigApplication_AutoSet(
+    $appName = "",
+    $rootPath = "",
+    $settings = null
+) {
+    return new \AeonDigital\EnGarde\Config\Application($appName, $rootPath, $settings);
+}
+
+
+
+function provider_PHPEnGardeConfig_InstanceOf_ConfigSecurity_AutoSet(
+    $settings = null
+) {
+    if ($settings === null) {
+        $settings = [
+            "active"                => true,
+            "dataCookieName"        => "cname",
+            "securityCookieName"    => "sname",
+            "routeToLogin"          => "login",
+            "routeToStart"          => "start",
+            "routeToResetPassword"  => "reset",
+            "anonymousId"           => 1,
+            "sessionType"           => "local",
+            "sessionRenew"          => true,
+            "sessionTimeout"        => 11,
+            "allowedFaultByIP"      => 12,
+            "ipBlockTimeout"        => 13,
+            "allowedFaultByLogin"   => 14,
+            "loginBlockTimeout"     => 15
+        ];
+    }
+    return \AeonDigital\EnGarde\Config\Security::fromArray($settings);
+}
+
+
+
 
 
 
@@ -199,13 +235,6 @@ function provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
 }
 
 
-function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig_AutoSet(
-    $appName = "",
-    $rootPath = "",
-    $settings = null
-) {
-    return new \AeonDigital\EnGarde\Config\ApplicationConfig($appName, $rootPath, $settings);
-}
 
 
 function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
@@ -288,29 +317,4 @@ function provider_PHPEnGardeConfig_Configure_ErrorListening(
         $method,
         $pathToErrorView
     );
-}
-
-
-function provider_PHPEnGardeConfig_InstanceOf_SecuritySettings_AutoSet(
-    $settings = null
-) {
-    if ($settings === null) {
-        $settings = [
-            "active"                => true,
-            "dataCookieName"        => "cname",
-            "securityCookieName"    => "sname",
-            "routeToLogin"          => "login",
-            "routeToStart"          => "start",
-            "routeToResetPassword"  => "reset",
-            "anonymousId"           => 1,
-            "sessionType"           => "local",
-            "sessionRenew"          => true,
-            "sessionTimeout"        => 11,
-            "allowedFaultByIP"      => 12,
-            "ipBlockTimeout"        => 13,
-            "allowedFaultByLogin"   => 14,
-            "loginBlockTimeout"     => 15
-        ];
-    }
-    return \AeonDigital\EnGarde\Config\SecuritySettings::fromArray($settings);
 }

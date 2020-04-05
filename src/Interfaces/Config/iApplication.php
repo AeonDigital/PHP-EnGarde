@@ -1,9 +1,9 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde\Config;
+namespace AeonDigital\EnGarde\Interfaces\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings;
+use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 
 
 
@@ -22,7 +22,7 @@ use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-interface iApplicationConfig
+interface iApplication
 {
 
 
@@ -410,18 +410,18 @@ interface iApplicationConfig
     /**
      * Retorna as configurações de segurança da aplicação.
      *
-     * @return      ?iSecuritySettings
+     * @return      ?iSecurity
      */
-    function getSecuritySettings() : ?iSecuritySettings;
+    function getSecuritySettings() : ?iSecurity;
     /**
      * Define as configurações de segurança para a aplicação.
      *
-     * @param       iSecuritySettings $securitySettings
+     * @param       iSecurity $securitySettings
      *              Instância das configurações de segurança que será definida para a aplicação.
      *
      * @return      void
      */
-    function setSecuritySettings(iSecuritySettings $securitySettings) : void;
+    function setSecuritySettings(iSecurity $securitySettings) : void;
 
 
 

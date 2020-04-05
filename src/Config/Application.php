@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
+use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 
 
 
@@ -13,14 +13,14 @@ use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings
 
 
 /**
- * Implementação de ``iApplicationConfig``.
+ * Implementação de ``iApplication``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class ApplicationConfig implements iApplicationConfig
+final class Application implements iApplication
 {
 
 
@@ -724,21 +724,21 @@ final class ApplicationConfig implements iApplicationConfig
     /**
      * Retorna as configurações de segurança da aplicação.
      *
-     * @return      ?iSecuritySettings
+     * @return      ?iSecurity
      */
-    function getSecuritySettings() : ?iSecuritySettings
+    function getSecuritySettings() : ?iSecurity
     {
         return $this->securitySettings;
     }
     /**
      * Define as configurações de segurança para a aplicação.
      *
-     * @param       iSecuritySettings $securitySettings
+     * @param       iSecurity $securitySettings
      *              Instância das configurações de segurança que será definida para a aplicação.
      *
      * @return      void
      */
-    function setSecuritySettings(iSecuritySettings $securitySettings) : void
+    function setSecuritySettings(iSecurity $securitySettings) : void
     {
         if ($this->securitySettings === null) {
             $this->securitySettings = $securitySettings;
@@ -783,7 +783,7 @@ final class ApplicationConfig implements iApplicationConfig
         }
 
         if ($securitySettings !== null) {
-            $this->securitySettings = \AeonDigital\EnGarde\Config\SecuritySettings::fromArray($securitySettings);
+            $this->securitySettings = \AeonDigital\EnGarde\Config\Security::fromArray($securitySettings);
         }
     }
 
