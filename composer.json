@@ -1,8 +1,8 @@
 {
     "name": "aeondigital/phpengarde",
     "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
-    "version": "v0.3.5-alpha",
-    "time": "2020-01-14",
+    "version": "v0.5.0-beta",
+    "time": "2020-04-05",
     "type": "library",
     "authors": [
         {
@@ -14,38 +14,16 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.1.14",
-        "psr/http-message": "v1.0.1",
+        "php": ">=7.4",
         "psr/http-server-middleware": "v1.0.1",
-        "aeondigital/phpcoreextension": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phptraits": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phpcollection": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phpstream": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phphttpuri": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phphttpdata": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phphttpmessage": ">=v0.3.5-alpha,<v0.5.0",
-        "aeondigital/phpengardeconfig": ">=v0.3.5-alpha,<v0.5.0",
+        "aeondigital/phpinterfaces": ">=v0.5.0-beta",
+        "aeondigital/phpcore": ">=v0.5.0-beta",
+        "aeondigital/phpdal": ">=v0.5.0-beta",
         "dompdf/dompdf": "dev-master"
-    },
-    "require-dev": {
-        "aeondigital/phpdoc-to-rst": "dev-master"
     },
     "autoload": {
         "classmap": [
             "src/"
         ]
-    },
-    "autoload-dev": {
-        "classmap": [
-            "src/"
-        ]
-    },
-    "keywords": [
-        "engarde",
-        "domain",
-        "server",
-        "application",
-        "router",
-        "framework"
-    ]
+    }
 }

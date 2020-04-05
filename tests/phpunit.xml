@@ -6,7 +6,7 @@
     bootstrap="phpunit.php">
 
     <!--
-        Todos os endereços de arquivos e diretórios são relativos ao 
+        Todos os endereços de arquivos e diretórios são relativos ao
         diretório no qual o PHP unit foi iniciado, ou aquele onde está
         o arquivo de configuração "phpunit.xml".
     -->
@@ -16,10 +16,10 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
-            <file>src/DomainManagerTest.php</file>
+            <!--file>src/DomainManagerTest.php</file>
             <file>src/DomainApplicationTest.php</file>
             <file>src/RequestHandlerTest.php</file>
-            <file>src/ResponseHandlerTest.php</file>
+            <file>src/ResponseHandlerTest.php</file-->
         </testsuite>
     </testsuites>
     <filter>
