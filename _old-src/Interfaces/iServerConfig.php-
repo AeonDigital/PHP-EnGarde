@@ -1,9 +1,9 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Config\Interfaces;
+namespace AeonDigital\Interfaces\EnGarde\Config;
 
-use AeonDigital\EnGarde\Config\Interfaces\iHttpFactory as iHttpFactory;
+use AeonDigital\Interfaces\EnGarde\Config\iHttpFactory as iHttpFactory;
 
 
 
@@ -18,7 +18,7 @@ use AeonDigital\EnGarde\Config\Interfaces\iHttpFactory as iHttpFactory;
  *
  * Normalmente servirá como um wrapper para os valores da variável ``$_SERVER``.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0

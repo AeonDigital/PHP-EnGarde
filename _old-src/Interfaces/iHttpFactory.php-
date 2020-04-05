@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Config\Interfaces;
+namespace AeonDigital\Interfaces\EnGarde\Config;
 
 use AeonDigital\Http\Uri\Interfaces\iUrl as iUrl;
 use AeonDigital\Stream\Interfaces\iStream as iStream;
@@ -20,7 +20,7 @@ use AeonDigital\Collection\Interfaces\iCollection as iCollection;
 /**
  * Define uma fábrica de instâncias para lidar com dados ``HTTP``.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0

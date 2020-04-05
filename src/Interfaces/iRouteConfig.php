@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Config\Interfaces;
+namespace AeonDigital\Interfaces\EnGarde\Config;
 
 
 
@@ -16,7 +16,7 @@ namespace AeonDigital\EnGarde\Config\Interfaces;
  * Interface usada para representar a configuração de uma determinada rota em execução de uma
  * aplicação.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0

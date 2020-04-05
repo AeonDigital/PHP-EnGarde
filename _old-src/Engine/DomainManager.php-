@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde;
 
-use AeonDigital\EnGarde\Config\Interfaces\iServerConfig as iServerConfig;
-use AeonDigital\EnGarde\Config\Interfaces\iDomainConfig as iDomainConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
 use AeonDigital\Interfaces\EnGarde\iApplication as iApplication;
 
 

@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\EnGarde\Config\Interfaces\iHttpFactory as iHttpFactory;
+use AeonDigital\Interfaces\EnGarde\Config\iHttpFactory as iHttpFactory;
 use AeonDigital\Http\Uri\Interfaces\iUrl as iUrl;
 use AeonDigital\Stream\Interfaces\iStream as iStream;
 use AeonDigital\Stream\Interfaces\iFileStream as iFileStream;
@@ -20,7 +20,7 @@ use AeonDigital\Collection\Interfaces\iCollection as iCollection;
 /**
  * Implementação de ``iHttpFactory``.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
@@ -259,7 +259,7 @@ class HttpFactory implements iHttpFactory
 
 
         $validMethod = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE"];
-        if (in_array_ci($httpMethod, $validMethod) === false) {
+        if (array_in_ci($httpMethod, $validMethod) === false) {
             $err = "Invalid method [ \"$httpMethod\" ].";
             throw new \InvalidArgumentException($err);
         }
@@ -356,7 +356,7 @@ class HttpFactory implements iHttpFactory
 
 
         $validMethod = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE"];
-        if (in_array_ci($httpMethod, $validMethod) === false) {
+        if (array_in_ci($httpMethod, $validMethod) === false) {
             $err = "Invalid method [ \"$httpMethod\" ].";
             throw new \InvalidArgumentException($err);
         }

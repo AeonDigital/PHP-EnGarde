@@ -5,10 +5,10 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
 use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\EnGarde\Config\Interfaces\iServerConfig as iServerConfig;
-use AeonDigital\EnGarde\Config\Interfaces\iDomainConfig as iDomainConfig;
-use AeonDigital\EnGarde\Config\Interfaces\iApplicationConfig as iApplicationConfig;
-use AeonDigital\EnGarde\Config\Interfaces\iRouteConfig as iRouteConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
 use AeonDigital\Interfaces\EnGarde\iController as iController;
 
 

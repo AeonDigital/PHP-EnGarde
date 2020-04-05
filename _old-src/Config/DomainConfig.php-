@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\EnGarde\Config\Interfaces\iDomainConfig as iDomainConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
 
 
 
@@ -15,7 +15,7 @@ use AeonDigital\EnGarde\Config\Interfaces\iDomainConfig as iDomainConfig;
 /**
  * Implementação de ``iDomainConfig``.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0

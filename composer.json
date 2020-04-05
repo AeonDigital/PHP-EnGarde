@@ -19,6 +19,7 @@
         "aeondigital/phpinterfaces": ">=v0.5.0-beta",
         "aeondigital/phpcore": ">=v0.5.0-beta",
         "aeondigital/phpdal": ">=v0.5.0-beta",
+        "aeondigital/phphttp": ">=v0.5.0-beta",
         "dompdf/dompdf": "dev-master"
     },
     "autoload": {

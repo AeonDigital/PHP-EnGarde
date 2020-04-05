@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\EnGarde\Config\Interfaces\iApplicationConfig as iApplicationConfig;
-use AeonDigital\EnGarde\Config\Interfaces\iSecuritySettings as iSecuritySettings;
+use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings;
 
 
 
@@ -15,7 +15,7 @@ use AeonDigital\EnGarde\Config\Interfaces\iSecuritySettings as iSecuritySettings
 /**
  * Implementação de ``iApplicationConfig``.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
@@ -548,7 +548,7 @@ final class ApplicationConfig implements iApplicationConfig
     {
         if ($this->defaultLocale === null) {
             $this->defaultLocale = strtolower($locale);
-            if (in_array_ci($locale, $this->locales) === false) {
+            if (array_in_ci($locale, $this->locales) === false) {
                 $err = "The given locale is not defined in the application locale collection.";
                 throw new \InvalidArgumentException($err);
             }
@@ -655,7 +655,7 @@ final class ApplicationConfig implements iApplicationConfig
 
 
             foreach ($defaultRouteConfig as $key => $value) {
-                if (in_array_ci($key, $allowedProperties) === true && $value !== null) {
+                if (array_in_ci($key, $allowedProperties) === true && $value !== null) {
                     $this->defaultRouteConfig[strtolower($key)] = $value;
                 }
             }

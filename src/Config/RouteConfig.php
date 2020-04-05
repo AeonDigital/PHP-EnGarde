@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\EnGarde\Config\Interfaces\iRouteConfig as iRouteConfig;
+use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
 
 
 
@@ -15,14 +15,14 @@ use AeonDigital\EnGarde\Config\Interfaces\iRouteConfig as iRouteConfig;
 /**
  * Implementação de ``iRouteConfig``.
  *
- * @package     AeonDigital\EnGarde\Config
+ * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
 final class RouteConfig implements iRouteConfig
 {
-    use \AeonDigital\Traits\MimeTypeData;
+    use \AeonDigital\Http\Traits\MimeTypeData;
 
 
 
@@ -60,7 +60,7 @@ final class RouteConfig implements iRouteConfig
     private function checkMethod(string $method) : bool
     {
         $validMethod = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE"];
-        if (in_array_ci($method, $validMethod) === false) {
+        if (array_in_ci($method, $validMethod) === false) {
             $err = "Invalid Method. Expected one of : \"" . implode("\", \"", $validMethod) . "\".";
             throw new \InvalidArgumentException($err);
         }
@@ -501,10 +501,10 @@ final class RouteConfig implements iRouteConfig
 
                 $v = [];
                 $keyMimes = array_keys($this->responseMimeTypes);
-                $keyValues = ((is_assoc($acceptMimes) === false) ? $acceptMimes : array_keys($acceptMimes));
+                $keyValues = ((array_is_assoc($acceptMimes) === false) ? $acceptMimes : array_keys($acceptMimes));
 
                 foreach ($keyValues as $mime) {
-                    if ($mime === null || in_array_ci($mime, $keyMimes) === false) {
+                    if ($mime === null || array_in_ci($mime, $keyMimes) === false) {
                         $err = "Unsuported mime [ \"$mime\" ].";
                         throw new \InvalidArgumentException($err);
                         break;
@@ -672,7 +672,9 @@ final class RouteConfig implements iRouteConfig
     public function setRelationedRoutes(?array $relationedRoutes) : void
     {
         if ($this->isLockProperties === false) {
-            $relationedRoutes = (($relationedRoutes === null || count($relationedRoutes) === 0) ? null : $relationedRoutes);
+            $relationedRoutes = (
+                ($relationedRoutes === null || count($relationedRoutes) === 0) ? null : $relationedRoutes
+            );
             $nrroutes = null;
 
             if ($relationedRoutes !== null) {
@@ -949,7 +951,7 @@ final class RouteConfig implements iRouteConfig
         $headers = [];
 
         foreach ($responseHeaders as $k => $v) {
-            if (is_string($k) === true && $k !== "" && in_array_ci($k, array_keys($headers)) === false) {
+            if (is_string($k) === true && $k !== "" && array_in_ci($k, array_keys($headers)) === false) {
                 $headers[$k] = (string)$v;
             }
         }
@@ -1509,7 +1511,7 @@ final class RouteConfig implements iRouteConfig
         $meta = [];
 
         foreach ($metaData as $k => $v) {
-            if (is_string($k) === true && $k !== "" && in_array_ci($k, array_keys($meta)) === false) {
+            if (is_string($k) === true && $k !== "" && array_in_ci($k, array_keys($meta)) === false) {
                 $meta[$k] = (string)$v;
             }
         }
@@ -1687,7 +1689,7 @@ final class RouteConfig implements iRouteConfig
                 // enviados pelo UA são também fornecidos pela aplicação.
                 if ($requestLocales === null) { $requestLocales = []; }
                 foreach ($requestLocales as $headerLocale) {
-                    if (in_array_ci($headerLocale, $applicationLocales) === true) {
+                    if (array_in_ci($headerLocale, $applicationLocales) === true) {
                         $useLocale = $headerLocale;
                         break;
                     }
@@ -1710,7 +1712,7 @@ final class RouteConfig implements iRouteConfig
                             $appLan = array_values($appLanguages);
                         }
 
-                        if (in_array_ci($headerLanguage, $appLan) === true) {
+                        if (array_in_ci($headerLanguage, $appLan) === true) {
                             $useLocale = array_search($headerLanguage, $appLanguages);
                             break;
                         }
