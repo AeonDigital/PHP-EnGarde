@@ -1,9 +1,9 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde;
+namespace AeonDigital\EnGarde\Interfaces\Http;
 
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 
 
 

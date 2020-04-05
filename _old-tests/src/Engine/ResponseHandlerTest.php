@@ -2,9 +2,9 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\ResponseHandler as ResponseHandler;
+use AeonDigital\EnGarde\Http\ResponseHandler as ResponseHandler;
 
-require_once __DIR__ . "/../phpunit.php";
+require_once __DIR__ . "/../../phpunit.php";
 
 
 
@@ -28,6 +28,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_OPTIONS()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "OPTIONS"
@@ -36,7 +40,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseOPTIONSHeaders.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseOPTIONSHeaders.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -51,7 +55,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseOPTIONSBody.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseOPTIONSBody.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -67,6 +71,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_TRACE()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "TRACE"
@@ -75,7 +83,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseTRACEHeaders.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseTRACEHeaders.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -90,7 +98,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseTRACEBody.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseTRACEBody.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -106,6 +114,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_html()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -117,7 +129,7 @@ class ResponseHandlerTest extends TestCase
         // um tenha algo substancialmente difernte permitindo o teste adequado.
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_html.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_html.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -132,7 +144,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.html";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.html";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -142,6 +154,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_xhtml()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -152,7 +168,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_xhtml.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_xhtml.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -167,7 +183,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.xhtml";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.xhtml";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -177,6 +193,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_json()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -187,7 +207,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_json.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_json.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -202,7 +222,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -212,6 +232,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_txt()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -222,7 +246,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_txt.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_txt.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -237,7 +261,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.txt";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.txt";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -247,6 +271,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_xml()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -257,7 +285,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_xml.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_xml.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -272,7 +300,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.xml";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.xml";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -282,6 +310,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_csv()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -292,7 +324,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_csv.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_csv.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -307,7 +339,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.csv";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.csv";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -317,6 +349,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_xls()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -327,7 +363,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_xls.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_xls.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -342,7 +378,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.xls";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.xls";
         $expected           = file_get_contents($tgtPathToExpected);
 
         //file_put_contents($tgtPathToExpected, (string)$rResponse->getBody());
@@ -352,6 +388,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_xlsx()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -362,7 +402,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_xlsx.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_xlsx.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -377,7 +417,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.xlsx";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.xlsx";
         $expected           = file_get_contents($tgtPathToExpected);
 
         // O corpo deste tipo de arquivo não pode ser testado com uma simples comparação pois
@@ -390,6 +430,10 @@ class ResponseHandlerTest extends TestCase
 
     public function test_check_response_to_GET_pdf()
     {
+        global $resourcesDir;
+        $ds = DIRECTORY_SEPARATOR;
+
+
         $obj = provider_PHPEnGarde_InstanceOf_ResponseHandler(
             "localtest",
             "GET",
@@ -400,7 +444,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa os headers
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETHeaders_pdf.json";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETHeaders_pdf.json";
         $expected           = file_get_contents($tgtPathToExpected);
 
         $objExpected    = json_decode($expected);
@@ -415,7 +459,7 @@ class ResponseHandlerTest extends TestCase
 
 
         // Testa o corpo criado
-        $tgtPathToExpected  = __DIR__ . DIRECTORY_SEPARATOR . "expectedresponses/responseGETBody.pdf";
+        $tgtPathToExpected  = $resourcesDir . $ds . "expectedresponses" . $ds . "responseGETBody.pdf";
         //$expected           = file_get_contents($tgtPathToExpected);
 
         // O corpo deste tipo de arquivo não pode ser testado com uma simples comparação pois
