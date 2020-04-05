@@ -2,17 +2,17 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\Config\SecuritySettings as SecuritySettings;
+use AeonDigital\EnGarde\Config\Security as Security;
 
-require_once __DIR__ . "/../phpunit.php";
-
-
+require_once __DIR__ . "/../../phpunit.php";
 
 
 
 
 
-class SecuritySettingsTest extends TestCase
+
+
+class SecurityTest extends TestCase
 {
 
 
@@ -20,7 +20,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "", "", "", "", "");
+            $obj = new Security(true, "", "", "", "", "");
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"dataCookieName\" defined.", $ex->getMessage());
@@ -31,7 +31,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "", "", "", "");
+            $obj = new Security(true, "cname", "", "", "", "");
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"securityCookieName\" defined.", $ex->getMessage());
@@ -42,7 +42,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "", "", "");
+            $obj = new Security(true, "cname", "sname", "", "", "");
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"routeToLogin\" defined.", $ex->getMessage());
@@ -53,7 +53,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "", "");
+            $obj = new Security(true, "cname", "sname", "login", "", "");
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"routeToStart\" defined.", $ex->getMessage());
@@ -64,7 +64,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "");
+            $obj = new Security(true, "cname", "sname", "login", "start", "");
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"routeToResetPassword\" defined.", $ex->getMessage());
@@ -75,7 +75,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset", 0);
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset", 0);
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("\"anonymousId\" must be a integer granther than zero.", $ex->getMessage());
@@ -86,7 +86,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset", 1, "invalid");
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset", 1, "invalid");
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("Session type must be \"local\" or \"database\".", $ex->getMessage());
@@ -97,7 +97,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset",
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
                                 1, "local", true, -1);
         } catch (\Exception $ex) {
             $fail = true;
@@ -109,7 +109,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset",
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
                                 1, "local", true, 10, -1);
         } catch (\Exception $ex) {
             $fail = true;
@@ -121,7 +121,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset",
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
                                 1, "local", true, 10, 10, -1);
         } catch (\Exception $ex) {
             $fail = true;
@@ -133,7 +133,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset",
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
                                 1, "local", true, 10, 10, 10, -1);
         } catch (\Exception $ex) {
             $fail = true;
@@ -145,7 +145,7 @@ class SecuritySettingsTest extends TestCase
     {
         $fail = false;
         try {
-            $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset",
+            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
                                 1, "local", true, 10, 10, 10, 10, -1);
         } catch (\Exception $ex) {
             $fail = true;
@@ -158,9 +158,9 @@ class SecuritySettingsTest extends TestCase
 
     public function test_constructor_ok()
     {
-        $obj = new SecuritySettings(true, "cname", "sname", "login", "start", "reset",
+        $obj = new Security(true, "cname", "sname", "login", "start", "reset",
                             1, "local", true, 11, 12, 13, 14, 15);
-        $this->assertTrue(is_a($obj, SecuritySettings::class));
+        $this->assertTrue(is_a($obj, Security::class));
 
         $this->assertSame(true, $obj->isActive());
         $this->assertSame("cname", $obj->getDataCookieName());
@@ -182,7 +182,7 @@ class SecuritySettingsTest extends TestCase
 
     public function test_constructor_from_array()
     {
-        $obj = SecuritySettings::fromArray([
+        $obj = Security::fromArray([
             "active"                => true,
             "dataCookieName"        => "cname",
             "securityCookieName"    => "sname",
@@ -198,7 +198,7 @@ class SecuritySettingsTest extends TestCase
             "allowedFaultByLogin"   => 14,
             "loginBlockTimeout"     => 15
         ]);
-        $this->assertTrue(is_a($obj, SecuritySettings::class));
+        $this->assertTrue(is_a($obj, Security::class));
 
         $this->assertSame(true, $obj->isActive());
         $this->assertSame("cname", $obj->getDataCookieName());

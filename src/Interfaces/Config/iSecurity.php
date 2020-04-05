@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde\Config;
+namespace AeonDigital\EnGarde\Interfaces\Config;
 
 
 
@@ -20,7 +20,7 @@ namespace AeonDigital\Interfaces\EnGarde\Config;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-interface iSecuritySettings
+interface iSecurity
 {
 
 
@@ -169,10 +169,10 @@ interface iSecuritySettings
      * Retorna uma instância configurada a partir de um array que contenha
      * as chaves correlacionadas a cada propriedade aqui definida.
      *
-     * @param       array $settings
+     * @param       array $config
      *              Array associativo contendo os valores a serem definidos para a instância.
      *
-     * @return      iSecuritySettings
+     * @return      iSecurity
      */
-    static function fromArray(array $settings) : iSecuritySettings;
+    static function fromArray(array $config) : iSecurity;
 }

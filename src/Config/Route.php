@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 
 
 
@@ -13,14 +13,14 @@ use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
 
 
 /**
- * Implementação de ``iRouteConfig``.
+ * Implementação de ``iRoute``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class RouteConfig implements iRouteConfig
+final class Route implements iRoute
 {
     use \AeonDigital\Http\Traits\MimeTypeData;
 

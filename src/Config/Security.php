@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings;
+use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 
 
 
@@ -13,14 +13,14 @@ use AeonDigital\Interfaces\EnGarde\Config\iSecuritySettings as iSecuritySettings
 
 
 /**
- * Implementação de ``iSecuritySettings``.
+ * Implementação de ``iSecurity``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-class SecuritySettings implements iSecuritySettings
+class Security implements iSecurity
 {
 
 
@@ -434,12 +434,12 @@ class SecuritySettings implements iSecuritySettings
      * Retorna uma instância configurada a partir de um array que contenha
      * as chaves correlacionadas a cada propriedade aqui definida.
      *
-     * @param       array $settings
+     * @param       array $config
      *              Array associativo contendo os valores a serem definidos para a instância.
      *
-     * @return      iSecuritySettings
+     * @return      iSecurity
      */
-    public static function fromArray(array $settings) : iSecuritySettings
+    public static function fromArray(array $config) : iSecurity
     {
         $useValues = array_merge([
             "active"                => false,
@@ -457,9 +457,9 @@ class SecuritySettings implements iSecuritySettings
             "allowedFaultByLogin"   => 5,
             "loginBlockTimeout"     => 20
         ],
-        $settings);
+        $config);
 
-        return new \AeonDigital\EnGarde\Config\SecuritySettings(
+        return new \AeonDigital\EnGarde\Config\Security(
             $useValues["active"],
             $useValues["dataCookieName"],
             $useValues["securityCookieName"],

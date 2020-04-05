@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde;
+namespace AeonDigital\Interfaces\EnGarde\Engine;
 
 
 

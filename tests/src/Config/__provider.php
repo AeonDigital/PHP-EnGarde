@@ -29,6 +29,25 @@ function provider_PHPEnGardeConfig_DefineServerFiles()
 }
 
 
+
+
+
+function provider_PHPEnGardeConfig_InstanceOf_ConfigRoute($cfg = null)
+{
+    return new \AeonDigital\EnGarde\Config\Route($cfg);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 function provider_PHPEnGardeConfig_InstanceOf_HttpFactory()
 {
     return new \AeonDigital\EnGarde\Config\HttpFactory();
@@ -113,7 +132,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
             "SCRIPT_NAME"           => $serverScript,
             "SCRIPT_FILENAME"       => $documentRoot . $serverScript,
             "PHP_SELF"              => $serverScript,
-            
+
             "HTTP_HOST"             => $serverDomain,
             "HTTP_COOKIE"           => $requestCookies,
 
@@ -137,7 +156,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
         $defaultServerConfig = $serverData;
     }
 
-    
+
     $obj->setServerVariables($serverData);
     return $obj;
 }
@@ -181,7 +200,7 @@ function provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
 
 
 function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig_AutoSet(
-    $appName = "", 
+    $appName = "",
     $rootPath = "",
     $settings = null
 ) {
@@ -224,7 +243,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
         $applicationConfig->setPathToMasterPage($pathToMasterPage);
     }
 
-    
+
     $applicationConfig->setDefaultRouteConfig([
         "description" => "Descrição genérica.",
         "acceptmimes" => ["xhtml", "html"],
@@ -236,7 +255,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
             "FrameWork" => "PHP-Domain 0.9.0 [alpha]"
         ]
     ]);
-    
+
     return $applicationConfig;
 }
 
@@ -244,7 +263,7 @@ function provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
 function provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter()
 {
     $applicationConfig = provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig();
-    
+
     return new \AeonDigital\EnGarde\Config\ApplicationRouter(
         $applicationConfig->getName(),
         $applicationConfig->getPathToAppRoutes(),
@@ -257,8 +276,8 @@ function provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter()
 
 function provider_PHPEnGardeConfig_Configure_ErrorListening(
     $debugMode = false,
-    $env = "test", 
-    $method = "get", 
+    $env = "test",
+    $method = "get",
     $pathToErrorView = null
 ) {
     \AeonDigital\EnGarde\Config\ErrorListening::setContext(
@@ -269,12 +288,6 @@ function provider_PHPEnGardeConfig_Configure_ErrorListening(
         $method,
         $pathToErrorView
     );
-}
-
-
-function provider_PHPEnGardeConfig_InstanceOf_RouteConfig($cfg = null)
-{
-    return new \AeonDigital\EnGarde\Config\RouteConfig($cfg);
 }
 
 
