@@ -16,19 +16,20 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
-            <file>src/Http/FactoryTest.php</file>
+            <file>src/Http/HttpFactoryTest.php</file>
 
 
-            <file>src/Config/SecurityTest.php</file>
-            <file>src/Config/RouteTest.php</file>
-            <file>src/Config/ApplicationTest.php</file>
-            <file>src/Config/DomainTest.php</file>
+            <file>src/Config/ConfigSecurityTest.php</file>
+            <file>src/Config/ConfigRouteTest.php</file>
+            <file>src/Config/ConfigApplicationTest.php</file>
+            <file>src/Config/ConfigDomainTest.php</file>
+            <file>src/Config/ConfigServerTest.php</file>
 
 
             <!--file>src/Http/ResponseHandlerTest.php</file>
 
             <file>src/Config/HttpFactoryTest.php</file>
-            <file>src/Config/ServerConfigTest.php</file>
+
 
             <file>src/Config/ApplicationRouterTest.php</file>
             <file>src/Config/ErrorListeningTest.php</file>

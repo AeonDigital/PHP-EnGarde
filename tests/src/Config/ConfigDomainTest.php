@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../phpunit.php";
 
 
 
-class DomainTest extends TestCase
+class ConfigDomainTest extends TestCase
 {
 
 

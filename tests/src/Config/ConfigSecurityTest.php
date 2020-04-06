@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../phpunit.php";
 
 
 
-class SecurityTest extends TestCase
+class ConfigSecurityTest extends TestCase
 {
 
 

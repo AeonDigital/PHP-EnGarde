@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../phpunit.php";
 
 
 
-class FactoryTest extends TestCase
+class HttpFactoryTest extends TestCase
 {
 
 

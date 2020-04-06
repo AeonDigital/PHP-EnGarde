@@ -23,7 +23,7 @@ use AeonDigital\EnGarde\Interfaces\Http\iFactory as iFactory;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-interface iServerConfig
+interface iServer
 {
 
 

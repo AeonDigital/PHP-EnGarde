@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\Interfaces\EnGarde\Config\iHttpFactory as iHttpFactory;
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
+use AeonDigital\EnGarde\Interfaces\Http\iFactory as iFactory;
 
 
 
@@ -13,14 +13,14 @@ use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
 
 
 /**
- * Implementação de "iServerConfig".
+ * Implementação de "iServer".
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class ServerConfig implements iServerConfig
+final class Server implements iServer
 {
 
 
@@ -46,9 +46,9 @@ final class ServerConfig implements iServerConfig
      */
     private $headers = null;
     /**
-     * Objeto ``iHttpFactory``.
+     * Objeto ``iFactory``.
      *
-     * @var         iHttpFactory
+     * @var         iFactory
      */
     private $httpFactory = null;
 
@@ -132,23 +132,23 @@ final class ServerConfig implements iServerConfig
 
 
     /**
-     * Retorna um objeto ``iHttpFactory``.
+     * Retorna um objeto ``iFactory``.
      *
-     * @return      iHttpFactory
+     * @return      iFactory
      */
-    public function getHttpFactory() : iHttpFactory
+    public function getHttpFactory() : iFactory
     {
         return $this->httpFactory;
     }
     /**
-     * Define uma instância ``iHttpFactory`` para ser usada.
+     * Define uma instância ``iFactory`` para ser usada.
      *
-     * @param       iHttpFactory $httpFactory
+     * @param       iFactory $httpFactory
      *              Instância a ser definida.
      *
      * @return      void
      */
-    public function setHttpFactory(iHttpFactory $httpFactory) : void
+    public function setHttpFactory(iFactory $httpFactory) : void
     {
         $this->httpFactory = $httpFactory;
     }

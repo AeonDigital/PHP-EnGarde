@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../phpunit.php";
 
 
 
-class RouteTest extends TestCase
+class ConfigRouteTest extends TestCase
 {
 
 
