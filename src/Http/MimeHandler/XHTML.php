@@ -1,15 +1,15 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\MimeHandler;
+namespace AeonDigital\EnGarde\Http\MimeHandler;
 
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
-use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
+use AeonDigital\EnGarde\Http\MimeHandler\aMimeHandler as aMimeHandler;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 
 
 /**

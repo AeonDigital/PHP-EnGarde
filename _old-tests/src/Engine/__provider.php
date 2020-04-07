@@ -33,7 +33,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
     $serverRequest = provider_PHPHTTPMessage_InstanceOf_ServerRequest_02($requestMethod, $url);
     $serverRequest = $serverRequest->withCookieParams([]);
 
-    
+
     $response = null;
     $routeConfig = null;
     $tempAppRoutes = require(__DIR__ . "/concrete/AppRoutes.php");
@@ -56,9 +56,9 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
         }
         $routeConfig->setResponseIsDownload(
             (
-                $isDownload_param === true || 
+                $isDownload_param === true ||
                 (
-                    ($isDownload_param === null || $isDownload_param === true) && 
+                    ($isDownload_param === null || $isDownload_param === true) &&
                     $isDownload_route === true
                 )
             )
@@ -82,7 +82,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
 
         if ($mime === "html") {
             $viewData->mimeContent = "This is a HTML document.";
-        } 
+        }
         elseif ($mime === "xhtml") {
             $viewData->mimeContent = "This is a X/HTML document.";
         }
@@ -146,7 +146,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
 
 
     if ($serverConfig === null) {
-        $serverConfig = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
+        $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $serverRequest->getUri()->getRelativeUri()
         );
         $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
@@ -173,7 +173,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
 
 
     if ($routeConfig !== null) {
-        // Verifica qual locale deve ser usado para responder 
+        // Verifica qual locale deve ser usado para responder
         // esta requisição
         $useLocale = $routeConfig->negotiateLocale(
             $serverRequest->getResponseLocales(),
@@ -186,7 +186,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
 
 
 
-        // Verifica qual mimetype deve ser usado para responder 
+        // Verifica qual mimetype deve ser usado para responder
         // esta requisição
         $routeMime = $routeConfig->negotiateMimeType(
             $serverRequest->getResponseMimes(),
@@ -216,7 +216,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
 
 
 function provider_PHPEnGarde_InstanceOf_Response(
-    $headers = null, 
+    $headers = null,
     $strBody = null,
     $viewData = null,
     $viewConfig = null
@@ -239,17 +239,17 @@ function provider_PHPEnGarde_InstanceOf_Response(
 
 
     return new \AeonDigital\Http\Message\Response(
-        200, 
-        "", 
-        "1.1", 
-        provider_PHPHTTPData_InstanceOf_HeaderCollection($headers), 
+        200,
+        "",
+        "1.1",
+        provider_PHPHTTPData_InstanceOf_HeaderCollection($headers),
         provider_PHPStream_InstanceOf_Stream_FromText($strBody),
         $viewData,
         $viewConfig
     );
 }
 
-function provider_PHPEnGarde_InstanceOf_RouteConfig($cfg = null) 
+function provider_PHPEnGarde_InstanceOf_RouteConfig($cfg = null)
 {
     $routeConfig = provider_PHPEnGardeConfig_InstanceOf_RouteConfig($cfg);
     $routeConfig->setMasterPage("masterPage.phtml");
@@ -275,9 +275,9 @@ function provider_PHPEnGarde_InstanceOf_RouteConfig($cfg = null)
 
 
 
-function provider_PHPEnGarde_InstanceOf_DomainManager() 
+function provider_PHPEnGarde_InstanceOf_DomainManager()
 {
-    $serverConfig = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+    $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
     $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
     $serverConfig->setHttpFactory($httpFactory);
 
@@ -302,7 +302,7 @@ function provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet(
     $debugMode = false
 ) {
     if ($serverConfig === null) {
-        $serverConfig = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
+        $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $requestURI
         );
         $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();

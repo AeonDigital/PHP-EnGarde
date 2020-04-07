@@ -25,23 +25,22 @@ class ConfigServerTest extends TestCase
         $this->assertTrue(is_a($nMock, Server::class));
     }
 
-    /*  Prosseguir daqui! - Resolver estas questões dos "providers"
-        gerar um padrão para todos os projetos, começando pelo PHP-HTTP
+
     public function test_method_get_server_variables()
     {
         global $defaultServerConfig;
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(false);
         $this->assertNull($nMock->getServerVariables());
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig();
+        $nMock = prov_instanceOf_EnGarde_Config_Server();
         $this->assertSame($defaultServerConfig, $nMock->getServerVariables());
     }
 
 
     public function test_method_getset_httptools()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
-        $nHttpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
+        $nHttpFactory = prov_instanceOf_EnGarde_HttpFactory();
 
         $nMock->setHttpFactory($nHttpFactory);
         $this->assertSame($nHttpFactory, $nMock->getHttpFactory());
@@ -50,7 +49,7 @@ class ConfigServerTest extends TestCase
 
     public function test_method_set_rootpath_fail()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         try {
             $nMock->setRootPath("non/existent/directory");
         } catch (\Exception $ex) {
@@ -63,14 +62,14 @@ class ConfigServerTest extends TestCase
 
     public function test_method_getset_rootpath()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $targetDir = __DIR__;
 
         $nMock->setRootPath($targetDir);
         $this->assertSame($targetDir, $nMock->getRootPath());
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame("/var/www/html", $nMock->getRootPath());
     }
 
@@ -86,7 +85,7 @@ class ConfigServerTest extends TestCase
             "HTTP_CLIENT_IP" => "192.168.0.1"
         ];
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(false);
         foreach ($strTest as $k => $v) {
             putenv($k . "=" . $v);
             $result = $nMock->getClientIP();
@@ -98,11 +97,11 @@ class ConfigServerTest extends TestCase
     public function test_method_get_request_headers()
     {
         global $defaultServerConfig;
-        $nMock      = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock      = prov_instanceOf_EnGarde_Config_Server(false);
         $headers    = $nMock->getRequestHeaders();
         $this->assertNull($headers);
 
-        $nMock      = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock      = prov_instanceOf_EnGarde_Config_Server(true);
         $headers    = $nMock->getRequestHeaders();
         $this->assertNotNull($headers);
 
@@ -125,19 +124,19 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_request_http_version()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame("1.1", $nMock->getRequestHTTPVersion());
     }
 
 
     public function test_method_get_request_is_use_https()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(false);
         $nMock->setServerVariables(["SERVER_PORT" => "443"]);
         $this->assertTrue($nMock->getRequestIsUseHTTPS());
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(false);
         $nMock->setServerVariables(["SERVER_PORT" => "80"]);
         $this->assertFalse($nMock->getRequestIsUseHTTPS());
     }
@@ -145,12 +144,12 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_request_method()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $nMock->setServerVariables(["REQUEST_METHOD" => "POST"]);
         $this->assertSame("POST", $nMock->getRequestMethod());
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $nMock->setServerVariables(["REQUEST_METHOD" => "PUT"]);
         $this->assertSame("PUT", $nMock->getRequestMethod());
     }
@@ -158,12 +157,12 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_request_protocol()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $nMock->setServerVariables(["SERVER_PORT" => "443"]);
         $this->assertSame("https", $nMock->getRequestProtocol());
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $nMock->setServerVariables(["SERVER_PORT" => "80"]);
         $this->assertSame("http", $nMock->getRequestProtocol());
     }
@@ -171,28 +170,28 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_request_domain_name()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame("test.server.com.br", $nMock->getRequestDomainName());
     }
 
 
     public function test_method_get_request_path()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame("/", $nMock->getRequestPath());
     }
 
 
     public function test_method_get_request_port()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame(80, $nMock->getRequestPort());
     }
 
 
     public function test_method_get_request_cookies()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame(
             "first=primeiro+valor%3A+rianna%40gmail.com; second=segundo+valor%3A+http%3A%2F%2Faeondigital.com.br",
             $nMock->getRequestCookies()
@@ -202,7 +201,7 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_request_querystrings()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $this->assertSame(
             "qskey1=valor 1&qskey2=valor 2",
             $nMock->getRequestQueryStrings()
@@ -212,9 +211,9 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_request_files()
     {
-        provider_PHPEnGardeConfig_DefineServerFiles();
+        prov_defineGlobal_FILES();
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(false);
         $newObj = $nMock->getRequestFiles();
 
         $this->assertSame(2, count($newObj));
@@ -223,7 +222,7 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_current_uri()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(false);
         $this->assertSame(null, $nMock->getServerVariables());
 
         $result = $nMock->getCurrentURI();
@@ -231,17 +230,17 @@ class ConfigServerTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
         $result = $nMock->getCurrentURI();
         $this->assertSame("http://test.server.com.br", $result);
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true, "200.200.100.50", 443, "test.server.com.br");
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true, "200.200.100.50", 443, "test.server.com.br");
         $result = $nMock->getCurrentURI();
         $this->assertSame("https://test.server.com.br", $result);
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true, "200.200.100.50", 8080, "test.server.com.br");
+        $nMock = prov_instanceOf_EnGarde_Config_Server(true, "200.200.100.50", 8080, "test.server.com.br");
         $result = $nMock->getCurrentURI();
         $this->assertSame("http://test.server.com.br:8080", $result);
     }
@@ -249,7 +248,7 @@ class ConfigServerTest extends TestCase
 
     public function test_method_get_posted_data()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(
+        $nMock = prov_instanceOf_EnGarde_Config_Server(
             true,
             "200.200.100.50",
             80,
@@ -267,5 +266,5 @@ class ConfigServerTest extends TestCase
         $result = $nMock->getPostedData();
         $this->assertSame($expected, $result);
     }
-    */
+
 }

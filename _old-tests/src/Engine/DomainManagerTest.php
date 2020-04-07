@@ -20,7 +20,7 @@ class DomainManagerTest extends TestCase
 
     public function test_constructor()
     {
-        $serverConfig = provider_PHPEnGardeConfig_InstanceOf_ServerConfig(true);
+        $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
         $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
         $serverConfig->setHttpFactory($httpFactory);
 

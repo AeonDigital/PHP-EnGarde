@@ -1,26 +1,26 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\MimeHandler;
+namespace AeonDigital\EnGarde\Http\MimeHandler;
 
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
-use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
+use AeonDigital\EnGarde\Http\MimeHandler\aMimeHandler as aMimeHandler;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 
 
 /**
- * Manipulador para gerar documentos HTML.
+ * Manipulador para gerar documentos JSON.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-class HTML extends aMimeHandler
+class JSON extends aMimeHandler
 {
 
 
@@ -83,32 +83,16 @@ class HTML extends aMimeHandler
      */
     public function createResponseBody() : string
     {
-        $body = "";
-        $viewContent    = $this->processViewContent();
-        $masterContent  = $this->processMasterPageContent();
-        $strMetaData    = $this->processXHTMLMetaData();
-        $strStyleSheet  = $this->processXHTMLStyleSheets();
-        $strJavaScript  = $this->processXHTMLJavaScripts();
-
-
-        $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
-
-
-        // Mescla os dados obtidos
-        $body = str_replace("<view />",          $viewContent, $masterContent);
-        $body = str_replace("<metatags />",      $strMetaData, $body);
-        $body = str_replace("<stylesheets />",   $strStyleSheet, $body);
-        $body = str_replace("<javascripts />",   $strJavaScript, $body);
-
-        $htmlProp = "lang=\"".$this->routeConfig->getResponseLocale()."\"";
-        $body = str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
-
-
-        // Aplica "prettyPrint" caso seja requisitado
+        // Converte o valor de "viewData" em uma representação JSON
+        $jsonOptions = (JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
         if ($this->routeConfig->getResponseIsPrettyPrint() === true) {
-            $body = $this->prettyPrintXHTMLDocument($body, "html");
+            $jsonOptions = (JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES |
+                            JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
         }
 
-        return $body;
+        return json_encode(
+            $this->response->getViewData(),
+            $jsonOptions
+        );
     }
 }

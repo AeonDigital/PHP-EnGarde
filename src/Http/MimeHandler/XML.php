@@ -1,26 +1,26 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\MimeHandler;
+namespace AeonDigital\EnGarde\Http\MimeHandler;
 
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
-use AeonDigital\EnGarde\MimeHandler\aMimeHandler as aMimeHandler;
+use AeonDigital\EnGarde\Http\MimeHandler\aMimeHandler as aMimeHandler;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 
 
 /**
- * Manipulador para gerar documentos ``CSV``.
+ * Manipulador para gerar documentos XML.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-class CSV extends aMimeHandler
+class XML extends aMimeHandler
 {
 
 
@@ -84,18 +84,31 @@ class CSV extends aMimeHandler
     public function createResponseBody() : string
     {
         $body = "";
-        $viewData = $this->response->getViewData();
-        $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
+        $hasTemplate = ($this->routeConfig->getView() !== null || $this->routeConfig->getMasterPage() !== null);
 
-        $finalArray = $this->prepareArrayToCreateSpreadSheet(
-            $dataTable, '"', '""', true
-        );
 
-        $tmpData    = [];
-        foreach ($finalArray as $dataRow) {
-            $tmpData[] = implode(",", $dataRow);
+        if ($hasTemplate === true) {
+            $viewContent    = $this->processViewContent();
+            $masterContent  = $this->processMasterPageContent();
+
+            $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
+            // Mescla os dados obtidos
+            $body = str_replace("<view />", $viewContent, $masterContent);
         }
-        $body = implode("\n", $tmpData);
+        else {
+            $viewData = $this->response->getViewData();
+            if ($viewData !== null) {
+                $xml = new \SimpleXMLElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><root></root>");
+                $this->convertArrayToXML((array)$viewData, $xml);
+                $body = $xml->asXML();
+            }
+        }
+
+
+        // Aplica "prettyPrint" caso seja requisitado
+        if ($this->routeConfig->getResponseIsPrettyPrint() === true) {
+            $body = $this->prettyPrintXMLDocument($body);
+        }
 
         return $body;
     }

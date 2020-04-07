@@ -1,11 +1,11 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde;
+namespace AeonDigital\EnGarde\Interfaces\Http;
 
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Interfaces\EnGarde\iRequestHandler as iRequestHandler;
+use AeonDigital\EnGarde\Interfaces\Http\iRequestHandler as iRequestHandler;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 
 
 
