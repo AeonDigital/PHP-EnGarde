@@ -1,98 +1,15 @@
 <?php
-$baseTargetFileDir =  __DIR__ . "/files";
-$defaultServerConfig = null;
+
+
+
+// ---
+// Objetos e processos de uso variado.
 
 
 
 
-function provider_PHPEnGarde_DefineServerFiles()
-{
-    $_FILES = [
-        "fieldOne" => [
-            "name"      => "ua-file-name.png",
-            "type"      => "image/png",
-            "tmp_name"  => to_system_path(__DIR__ . "/files/image-resource.jpg"),
-            "error"     => 0,
-            "size"      => 1000
-        ],
-        "multiField" => [
-            "name"      => ["upload-image-1.jpg", "upload-image-1.jpg"],
-            "type"      => ["image/jpeg", "image/jpeg"],
-            "tmp_name"  => [
-                to_system_path(__DIR__ . "/files/upload-image-1.jpg"),
-                to_system_path(__DIR__ . "/files/upload-image-2.jpg")
-            ],
-            "error"     => [0, 0],
-            "size"      => [1000, 1000],
-        ]
-    ];
-}
-
-
-
-
-
-
-
-
-
-
-function provider_PHPEnGarde_InstanceOf_HttpFactory()
-{
-    return new \AeonDigital\EnGarde\Http\Factory();
-}
-
-
-
-
-
-
-
-
-
-
-function provider_PHPEnGarde_InstanceOf_ConfigRoute($cfg = null)
-{
-    return new \AeonDigital\EnGarde\Config\Route($cfg);
-}
-
-
-
-function provider_PHPEnGarde_InstanceOf_ConfigApplication_AutoSet(
-    $appName = "",
-    $rootPath = "",
-    $settings = null
-) {
-    return new \AeonDigital\EnGarde\Config\Application($appName, $rootPath, $settings);
-}
-
-
-
-function provider_PHPEnGarde_InstanceOf_ConfigSecurity_AutoSet(
-    $settings = null
-) {
-    if ($settings === null) {
-        $settings = [
-            "active"                => true,
-            "dataCookieName"        => "cname",
-            "securityCookieName"    => "sname",
-            "routeToLogin"          => "login",
-            "routeToStart"          => "start",
-            "routeToResetPassword"  => "reset",
-            "anonymousId"           => 1,
-            "sessionType"           => "local",
-            "sessionRenew"          => true,
-            "sessionTimeout"        => 11,
-            "allowedFaultByIP"      => 12,
-            "ipBlockTimeout"        => 13,
-            "allowedFaultByLogin"   => 14,
-            "loginBlockTimeout"     => 15
-        ];
-    }
-    return \AeonDigital\EnGarde\Config\Security::fromArray($settings);
-}
-
-
+// ---
+// Geração de Instâncias de objetos.
 
 function provider_PHPEnGarde_InstanceOf_ConfigDomain(
     $autoSet = true,
@@ -109,7 +26,7 @@ function provider_PHPEnGarde_InstanceOf_ConfigDomain(
     $maxPostSize = 100,
     $applicationClassName = "AppStart"
 ) {
-    $rootPath = (($rootPath === "") ? to_system_path(__DIR__ . "/apps") : $rootPath);
+    $rootPath = (($rootPath === "") ? to_system_path(dirname(__DIR__) . "/apps") : $rootPath);
     $domainConfig = new \AeonDigital\EnGarde\Config\Domain();
 
     if ($autoSet === true) {
@@ -129,6 +46,18 @@ function provider_PHPEnGarde_InstanceOf_ConfigDomain(
 
     return $domainConfig;
 }
+
+
+
+
+/*
+$baseTargetFileDir =  __DIR__ . "/files";
+$defaultServerConfig = null;
+
+
+
+
+
 
 
 
@@ -344,7 +273,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
 
 
 
-/*
+
 function provider_PHPEnGarde_InstanceOf_ServerConfig(
     $autoSet = true,
     $serverIP = null,

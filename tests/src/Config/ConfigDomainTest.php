@@ -99,12 +99,12 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_set_root_path_wrong_fails()
     {
-        global $resourcesDir;
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
 
 
         $nMock = provider_PHPEnGarde_InstanceOf_ConfigDomain(false);
-        $rootPath = $resourcesDir . $ds . "app";
+        $rootPath = $dirResources . $ds . "app";
 
         $fail = false;
         try {
@@ -119,12 +119,12 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_root_path()
     {
-        global $resourcesDir;
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
 
 
         $nMock = provider_PHPEnGarde_InstanceOf_ConfigDomain(false);
-        $expected = $resourcesDir . $ds . "apps" . $ds;
+        $expected = $dirResources . $ds . "apps" . $ds;
 
         $nMock->setRootPath($expected);
         $this->assertSame($expected, $nMock->getRootPath());
@@ -166,12 +166,12 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_hosted_apps()
     {
-        global $resourcesDir;
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
 
 
         $nMock = provider_PHPEnGarde_InstanceOf_ConfigDomain(false);
-        $rootPath = $resourcesDir . $ds . "apps" . $ds;
+        $rootPath = $dirResources . $ds . "apps" . $ds;
         $expected = ["site", "blog"];
 
         $nMock->setRootPath($rootPath);
@@ -185,12 +185,12 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_default_app_nonexist_fails()
     {
-        global $resourcesDir;
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
 
 
         $nMock = provider_PHPEnGarde_InstanceOf_ConfigDomain(false);
-        $rootPath = $resourcesDir . $ds . "apps";
+        $rootPath = $dirResources . $ds . "apps";
         $applications = ["site", "blog"];
 
         $nMock->setRootPath($rootPath);
@@ -210,12 +210,12 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_default_app()
     {
-        global $resourcesDir;
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
 
 
         $nMock = provider_PHPEnGarde_InstanceOf_ConfigDomain(false);
-        $rootPath = $resourcesDir . $ds . "apps" . $ds;
+        $rootPath = $dirResources . $ds . "apps" . $ds;
         $applications = ["site", "blog"];
         $expected = "site";
 

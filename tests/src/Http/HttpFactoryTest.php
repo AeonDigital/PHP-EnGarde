@@ -27,7 +27,7 @@ class HttpFactoryTest extends TestCase
             "h3" => "v3"
         ];
 
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $newObj = $nMock->createHeaderCollection($expected);
 
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Http\\Data\\iHeaderCollection", class_implements($newObj)));
@@ -43,7 +43,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_cookie_collection()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $headers = [
             "COOKIE" => "first=primeiro valor: rianna@gmail.com;second=segundo valor: http://aeondigital.com.br"
         ];
@@ -79,7 +79,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_querystring_collection()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $headers = [
             "QUERY_STRING" => "qskey1=valor 1&qskey2=valor 2"
         ];
@@ -119,7 +119,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_methdod_create_file_collection()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
         $newObj = $nMock->createFileCollection();
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Http\\Data\\iFileCollection", class_implements($newObj)));
@@ -127,7 +127,7 @@ class HttpFactoryTest extends TestCase
 
 
 
-        provider_PHPEnGarde_DefineServerFiles();
+        prov_defineGlobal_FILES();
         $initialValues = [];
         if (isset($_FILES) === true && count($_FILES) > 0) {
             foreach ($_FILES as $fieldName => $fieldData) {
@@ -179,7 +179,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_uri()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
         $expected = "http://test.server.com.br?param1=value1&param2=value2";
 
@@ -191,7 +191,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_stream()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
         $useBody = "Test Body";
         $newObj = $nMock->createStream($useBody);
@@ -203,11 +203,11 @@ class HttpFactoryTest extends TestCase
 
     public function test__method_create_stream_from_file()
     {
-        global $resourcesDir;
+        global $dirResources;
 
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
-        $tgtFile = to_system_path($resourcesDir . "/files/image-resource.jpg");
+        $tgtFile = to_system_path($dirResources . "/files/image-resource.jpg");
         $newObj = $nMock->createStreamFromFile($tgtFile);
 
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Stream\\iFileStream", class_implements($newObj)));
@@ -217,7 +217,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_stream_from_resource()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
         $useBody = "Test Body";
         $useStream = fopen("data://text/plain;base64,", "r+");
@@ -232,7 +232,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_stream_from_body_request()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
         $newObj = $nMock->createStreamFromBodyRequest();
 
@@ -243,7 +243,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_collection()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $newObj = $nMock->createCollection();
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Collection\\iCollection", class_implements($newObj)));
     }
@@ -251,7 +251,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_request_fail()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         try {
             $newObj = $nMock->createRequest("INVALID", "test.server.com.br");
         } catch (\Exception $ex) {
@@ -264,7 +264,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_request()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $newObj = $nMock->createRequest("", "test.server.com.br");
 
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Http\\Message\\iRequest", class_implements($newObj)));
@@ -278,7 +278,7 @@ class HttpFactoryTest extends TestCase
     {
         $fail = false;
         try {
-            $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+            $nMock = prov_instanceOf_EnGarde_HttpFactory();
             $newObj = $nMock->createServerRequest("INVALID", "test.server.com.br?qskey1=valor 1&qskey2=valor 2");
         } catch (\Exception $ex) {
             $fail = true;
@@ -290,7 +290,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_server_request()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $newObj = $nMock->createServerRequest("", "test.server.com.br?qskey1=valor 1&qskey2=valor 2");
 
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Http\\Message\\iServerRequest", class_implements($newObj)));
@@ -302,7 +302,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_create_response()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $newObj = $nMock->createResponse();
 
         $this->assertTrue(in_array("AeonDigital\\Interfaces\\Http\\Message\\iResponse", class_implements($newObj)));
@@ -321,7 +321,7 @@ class HttpFactoryTest extends TestCase
 
     public function test_method_execute_request()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
         $parans = [
             "foo"=>"bar",
             "baz"=>"boom",
@@ -333,7 +333,7 @@ class HttpFactoryTest extends TestCase
     /*
     public function test_method_execute_download()
     {
-        $nMock = provider_PHPEnGarde_InstanceOf_HttpFactory();
+        $nMock = prov_instanceOf_EnGarde_HttpFactory();
 
         $ds = DIRECTORY_SEPARATOR;
 

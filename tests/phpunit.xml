@@ -28,8 +28,6 @@
 
             <!--file>src/Http/ResponseHandlerTest.php</file>
 
-            <file>src/Config/HttpFactoryTest.php</file>
-
 
             <file>src/Config/ApplicationRouterTest.php</file>
             <file>src/Config/ErrorListeningTest.php</file>
