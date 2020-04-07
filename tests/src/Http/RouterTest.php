@@ -2,17 +2,17 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\Config\ApplicationRouter as ApplicationRouter;
-use AeonDigital\EnGarde\Config\ApplicationConfig as ApplicationConfig;
+use AeonDigital\EnGarde\Http\Router as Router;
 
-require_once __DIR__ . "/../phpunit.php";
-
+require_once __DIR__ . "/../../phpunit.php";
 
 
 
 
 
-class ApplicationRouterTest extends TestCase
+
+
+class RouterTest extends TestCase
 {
 
 
@@ -21,9 +21,9 @@ class ApplicationRouterTest extends TestCase
 
     public function test_constructor_ok()
     {
-        $applicationConfig = provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig();
+        $applicationConfig = prov_instanceOf_EnGarde_Config_Application();
 
-        $nMock = new ApplicationRouter(
+        $nMock = new Router(
             $applicationConfig->getName(),
             $applicationConfig->getPathToAppRoutes(),
             $applicationConfig->getPathToControllers(),
@@ -31,32 +31,34 @@ class ApplicationRouterTest extends TestCase
             $applicationConfig->getDefaultRouteConfig()
         );
 
-        $this->assertTrue(is_a($nMock, ApplicationRouter::class));
+        $this->assertTrue(is_a($nMock, Router::class));
     }
 
 
     public function test_method_set_default_route_config()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter();
+        $nMock = prov_instanceOf_EnGarde_Http_Router();
         $nMock->setDefaultRouteConfig(["property" => "value"]);
-        $this->assertTrue(is_a($nMock, ApplicationRouter::class));
+        $this->assertTrue(is_a($nMock, Router::class));
     }
 
 
     public function test_method_set_is_update_routes()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter();
+        $nMock = prov_instanceOf_EnGarde_Http_Router();
         $nMock->setIsUpdateRoutes(true);
-        $this->assertTrue(is_a($nMock, ApplicationRouter::class));
+        $this->assertTrue(is_a($nMock, Router::class));
     }
 
 
     public function test_method_force_update_routes()
     {
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter();
-
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
-        $baseAppDirectory = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds;
+
+        $nMock = prov_instanceOf_EnGarde_Http_Router();
+
+        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
         $appRoutes = $baseAppDirectory . "AppRoutes.php";
         file_put_contents($appRoutes, "cfg-");
 
@@ -72,8 +74,10 @@ class ApplicationRouterTest extends TestCase
 
     public function test_method_check_for_update_application_routes()
     {
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
-        $baseAppDirectory = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds;
+
+        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
         $appRoutes = $baseAppDirectory . "AppRoutes.php";
         $ctrlTest1 = $baseAppDirectory . "controllers" . $ds . "Test1.php";
         $ctrlTest2 = $baseAppDirectory . "controllers" . $ds . "Test2.php";
@@ -93,7 +97,7 @@ class ApplicationRouterTest extends TestCase
 
 
 
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter();
+        $nMock = prov_instanceOf_EnGarde_Http_Router();
         $nMock->setIsUpdateRoutes(true);
         $this->assertTrue($nMock->checkForUpdateApplicationRoutes());
 
@@ -116,8 +120,10 @@ class ApplicationRouterTest extends TestCase
 
     public function test_method_update_application_routes()
     {
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
-        $baseAppDirectory = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds;
+
+        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
         $appRoutes = $baseAppDirectory . "AppRoutes.php";
         $ctrlTest1 = $baseAppDirectory . "controllers" . $ds . "Test1.php";
         $ctrlTest2 = $baseAppDirectory . "controllers" . $ds . "Test2.php";
@@ -136,7 +142,7 @@ class ApplicationRouterTest extends TestCase
 
 
         require_once($ctrlHome);
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter();
+        $nMock = prov_instanceOf_EnGarde_Http_Router();
         $nMock->updateApplicationRoutes();
         $this->assertTrue(file_exists($appRoutes));
     }
@@ -144,8 +150,10 @@ class ApplicationRouterTest extends TestCase
 
     public function test_method_select_target_raw_route()
     {
+        global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
-        $baseAppDirectory = dirname(__FILE__) . $ds . "apps" . $ds . "site" . $ds;
+
+        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
         $appRoutes = $baseAppDirectory . "AppRoutes.php";
         $ctrlHome = $baseAppDirectory . "controllers" . $ds . "Home.php";
 
@@ -155,7 +163,7 @@ class ApplicationRouterTest extends TestCase
 
 
         require_once($ctrlHome);
-        $nMock = provider_PHPEnGardeConfig_InstanceOf_ApplicationRouter();
+        $nMock = prov_instanceOf_EnGarde_Http_Router();
         $nMock->updateApplicationRoutes();
         $this->assertTrue(file_exists($appRoutes));
 

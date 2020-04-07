@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde\Config;
+namespace AeonDigital\EnGarde\Interfaces\Http;
 
 
 
@@ -21,7 +21,7 @@ namespace AeonDigital\Interfaces\EnGarde\Config;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-interface iApplicationRouter
+interface iRouter
 {
 
 

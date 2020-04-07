@@ -1,10 +1,10 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Config;
+namespace AeonDigital\EnGarde\Http;
 
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationRouter as iApplicationRouter;
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Http\iRouter as iRouter;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 
 
 
@@ -20,7 +20,7 @@ use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class ApplicationRouter implements iApplicationRouter
+final class Router implements iRouter
 {
 
 
@@ -193,7 +193,7 @@ final class ApplicationRouter implements iApplicationRouter
                 // Verifica os arquivos da pasta de controller
                 $controllersFiles = scandir($controllersPath);
                 foreach ($controllersFiles as $key => $fileName) {
-                    if (in_array($fileName, [".", ".."]) === false && is_dir($fileName) === false && ends_with($fileName, ".php") === true) {
+                    if (in_array($fileName, [".", ".."]) === false && is_dir($fileName) === false && mb_str_ends_with($fileName, ".php") === true) {
                         $fileMod = filemtime($controllersPath . DS . $fileName);
 
                         // Mantém o maior valor
@@ -249,7 +249,7 @@ final class ApplicationRouter implements iApplicationRouter
             // Verifica os arquivos da pasta de controller
             $controllersFiles = scandir($this->pathToControllers);
             foreach ($controllersFiles as $key => $fileName) {
-                if (in_array($fileName, [".", ".."]) === false && is_dir($fileName) === false && ends_with($fileName, ".php") === true) {
+                if (in_array($fileName, [".", ".."]) === false && is_dir($fileName) === false && mb_str_ends_with($fileName, ".php") === true) {
                     $controllerName = str_replace(".php", "", $fileName);
                     $this->registerControllerRoutes($controllerName);
                 }
@@ -259,13 +259,13 @@ final class ApplicationRouter implements iApplicationRouter
         }
     }
     /**
-     * Cria uma instância de um objeto que implemente a interface ``iRouteConfig``.
+     * Cria uma instância de um objeto que implemente a interface ``iRoute``.
      *
-     * @return      iRouteConfig
+     * @return      iRoute
      */
-    private function createRouteConfig() : iRouteConfig
+    private function createRouteConfig() : iRoute
     {
-        return new \AeonDigital\EnGarde\Config\RouteConfig();
+        return new \AeonDigital\EnGarde\Config\Route();
     }
     /**
      * Percorre todas as rotas definidas no controller indicado para efetuar o registro de

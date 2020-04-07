@@ -122,13 +122,13 @@ abstract class DomainApplication implements iApplication
         }
     }
     /**
-     * Define o objeto ``ApplicationRouter`` para esta instância.
+     * Define o objeto ``Router`` para esta instância.
      *
      * @return      void
      */
-    private function defineApplicationRouter() : void
+    private function defineRouter() : void
     {
-        $this->applicationRouter = new \AeonDigital\EnGarde\Config\ApplicationRouter(
+        $this->applicationRouter = new \AeonDigital\EnGarde\Config\Router(
             $this->applicationConfig->getName(),
             $this->applicationConfig->getPathToAppRoutes(),
             $this->applicationConfig->getPathToControllers(),
@@ -244,7 +244,7 @@ abstract class DomainApplication implements iApplication
         $this->serverRequest    = $serverRequest;
 
         $this->defineApplicationConfig();
-        $this->defineApplicationRouter();
+        $this->defineRouter();
         $this->selectTargetRouteConfig();
 
         if ($this->routeConfig !== null) {
