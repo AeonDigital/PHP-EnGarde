@@ -4,12 +4,9 @@ $baseTargetFileDir =  __DIR__ . "/files";
 
 
 
-function provider_PHPEnGarde_InstanceOf_Concrete_RequestHandler() {
-    return new \AeonDigital\EnGarde\Tests\Concrete\RequestHandler01();
-}
 
 function provider_PHPEnGarde_InstanceOf_RequestHandler() {
-    $reqHand = provider_PHPEnGarde_InstanceOf_Concrete_RequestHandler();
+    $reqHand = prov_instanceOf_EnGarde_HttpRequestHandler();
     return new \AeonDigital\EnGarde\RequestHandler($reqHand);
 }
 
@@ -20,202 +17,7 @@ function provider_PHPEnGarde_InstanceOf_Middleware($useId) {
 }
 
 
-function provider_PHPEnGarde_InstanceOf_ResponseHandler(
-    $environmentType = "localtest",
-    $requestMethod = "GET",
-    $url = "http://aeondigital.com.br",
-    $serverConfig = null,
-    $domainConfig = null,
-    $applicationConfig = null,
-    $specialSet = "0.9.0 [alpha]",
-    $debugMode = false
-) {
-    $serverRequest = provider_PHPHTTPMessage_InstanceOf_ServerRequest_02($requestMethod, $url);
-    $serverRequest = $serverRequest->withCookieParams([]);
-
-
-    $response = null;
-    $routeConfig = null;
-    $tempAppRoutes = require(__DIR__ . "/concrete/AppRoutes.php");
-    if ($requestMethod === "OPTIONS" || $requestMethod === "TRACE") {
-        $response = provider_PHPHTTPMessage_InstanceOf_Response();
-    } else {
-        $routeConfig = provider_PHPEnGarde_InstanceOf_RouteConfig($tempAppRoutes["simple"]["/^\\/site\\//"][$requestMethod]);
-
-        $routeMime = $routeConfig->negotiateMimeType(
-            $serverRequest->getResponseMimes(),
-            $serverRequest->getParam("_mime")
-        );
-        $routeConfig->setResponseMime($routeMime["mime"]);
-        $routeConfig->setResponseMimeType($routeMime["mimetype"]);
-
-        $isDownload_route = $routeConfig->getResponseIsDownload();
-        $isDownload_param = $serverRequest->getParam("_download");
-        if ($isDownload_param !== null) {
-            $isDownload_param = ($isDownload_param === "true" || $isDownload_param === "1");
-        }
-        $routeConfig->setResponseIsDownload(
-            (
-                $isDownload_param === true ||
-                (
-                    ($isDownload_param === null || $isDownload_param === true) &&
-                    $isDownload_route === true
-                )
-            )
-        );
-
-        $prettyPrint = $serverRequest->getParam("_pretty_print");
-        $routeConfig->setResponseIsPrettyPrint(($prettyPrint === "true" || $prettyPrint === "1"));
-
-
-
-
-
-        $viewData = (object)[
-            "appTitle" => "Application Title",
-            "viewTitle" => "View Title",
-            "mimeContent" => null
-        ];
-
-
-        $mime = $routeConfig->getResponseMime();
-
-        if ($mime === "html") {
-            $viewData->mimeContent = "This is a HTML document.";
-        }
-        elseif ($mime === "xhtml") {
-            $viewData->mimeContent = "This is a X/HTML document.";
-        }
-        elseif ($mime === "json") {
-            $viewData->mimeContent = "This is a JSON document.";
-        }
-        elseif ($mime === "txt") {
-            $routeConfig->setMasterPage(null);
-            $routeConfig->setView(null);
-
-            $viewData->subData = [
-                "attr1" => "val1",
-                "attr2" => "val2",
-                "attr3" => "val3",
-                "attr4" => 8383738,
-                "attr5" => new \DateTime("2000-01-01 00:00:00"),
-                "attr6" => $routeConfig
-            ];
-        }
-        elseif ($mime === "xml") {
-            $routeConfig->setMasterPage(null);
-            $routeConfig->setView(null);
-        }
-        elseif ($mime === "csv" || $mime === "xls" || $mime === "xlsx") {
-            $viewData->metaData = (object)[
-                "authorName" => "Rianna Cantarelli",
-                "companyName" => "Aeon Digital",
-                "createdDate" => new \DateTime("2019-02-10 10:10:10"),
-                "keywords" => "key1, key2, key3",
-                "description" => "Teste de criação de planilhas"
-            ];
-            $viewData->dataTable = [
-                ["nome", "email", "categoria", "cpf", "number", "data"],
-                ["n1\"com aspas e acentuação", "email@1", "cat1", "cpf1", 1, new \DateTime("2001-01-01 01:01:01")],
-                ["n2", "email@2", "cat2", "cpf2", 2, new \DateTime("2002-02-02 02:02:02")],
-                ["n3", "email@3", "cat3", "cpf3", 3, new \DateTime("2003-03-03 03:03:03")],
-                ["n4", "email@4", "cat4", "cpf4", 4, new \DateTime("2004-04-04 04:04:04")]
-            ];
-        }
-        elseif ($mime === "pdf") {
-            $routeConfig->setMasterPage("masterPagePDF.phtml");
-            $routeConfig->setView("home/indexPDF.phtml");
-            $viewData->mimeContent = "This is a PDF document.";
-            $viewData->metaData = (object)[
-                "authorName" => "Rianna Cantarelli",
-                "companyName" => "Aeon Digital",
-                "createdDate" => new \DateTime("2019-02-10 10:10:10"),
-                "keywords" => "key1, key2, key3",
-                "description" => "Teste de criação de planilhas"
-            ];
-        }
-
-
-        $response = provider_PHPEnGarde_InstanceOf_Response(
-            null,
-            null,
-            $viewData,
-            null
-        );
-    }
-
-
-    if ($serverConfig === null) {
-        $serverConfig = prov_instanceOf_EnGarde_Config_Server(
-            true, null, null, null, null, $requestMethod, $serverRequest->getUri()->getRelativeUri()
-        );
-        $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
-        $serverConfig->setHttpFactory($httpFactory);
-    }
-
-    if ($domainConfig === null) {
-        $domainConfig = provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
-            true, $specialSet, $environmentType, $debugMode, false, to_system_path(__DIR__ . "/apps")
-        );
-        $domainConfig->setPathToErrorView("errorView.phtml");
-    }
-
-    if ($applicationConfig === null) {
-        $applicationConfig = provider_PHPEnGardeConfig_InstanceOf_ApplicationConfig(
-            true,
-            "site",
-            to_system_path(__DIR__ . "/apps")
-        );
-        $applicationConfig->setLocales(["pt-BR", "en-US"]);
-        $applicationConfig->setDefaultLocale("pt-BR");
-    }
-
-
-
-    if ($routeConfig !== null) {
-        // Verifica qual locale deve ser usado para responder
-        // esta requisição
-        $useLocale = $routeConfig->negotiateLocale(
-            $serverRequest->getResponseLocales(),
-            $serverRequest->getResponseLanguages(),
-            $applicationConfig->getLocales(),
-            $applicationConfig->getDefaultLocale(),
-            $serverRequest->getParam("_locale")
-        );
-        $routeConfig->setResponseLocale($useLocale);
-
-
-
-        // Verifica qual mimetype deve ser usado para responder
-        // esta requisição
-        $routeMime = $routeConfig->negotiateMimeType(
-            $serverRequest->getResponseMimes(),
-            $serverRequest->getParam("_mime")
-        );
-        $routeConfig->setResponseMime($routeMime["mime"]);
-        $routeConfig->setResponseMimeType($routeMime["mimetype"]);
-
-
-        // Identifica se é para usar "pretty print" no código fonte de retorno
-        $prettyPrint = $serverRequest->getParam("_pretty_print");
-        $routeConfig->setResponseIsPrettyPrint(($prettyPrint === "true" || $prettyPrint === "1"));
-    }
-
-
-
-    return new \AeonDigital\EnGarde\ResponseHandler(
-        $serverConfig,
-        $domainConfig,
-        $applicationConfig,
-        $serverRequest,
-        $tempAppRoutes["simple"]["/^\\/site\\//"],
-        $routeConfig,
-        $response
-    );
-}
-
-
-function provider_PHPEnGarde_InstanceOf_Response(
+function prov_instanceOf_Http_Response_02(
     $headers = null,
     $strBody = null,
     $viewData = null,
@@ -249,7 +51,7 @@ function provider_PHPEnGarde_InstanceOf_Response(
     );
 }
 
-function provider_PHPEnGarde_InstanceOf_RouteConfig($cfg = null)
+function prov_instanceOf_EnGarde_Config_Route($cfg = null)
 {
     $routeConfig = provider_PHPEnGardeConfig_InstanceOf_RouteConfig($cfg);
     $routeConfig->setMasterPage("masterPage.phtml");
@@ -278,11 +80,11 @@ function provider_PHPEnGarde_InstanceOf_RouteConfig($cfg = null)
 function provider_PHPEnGarde_InstanceOf_DomainManager()
 {
     $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
-    $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
+    $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
     $serverConfig->setHttpFactory($httpFactory);
 
 
-    $domainConfig = provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
+    $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
         true, "0.9.0 [alpha]", "test", false, false, to_system_path(__DIR__ . "/apps")
     );
     $domainConfig->setPathToErrorView("errorView.phtml");
@@ -305,13 +107,13 @@ function provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet(
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $requestURI
         );
-        $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
+        $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
         $serverConfig->setHttpFactory($httpFactory);
     }
 
 
     if ($domainConfig === null) {
-        $domainConfig = provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
             true, $specialSet, $environmentType, $debugMode, false, to_system_path(__DIR__ . "/apps")
         );
         $domainConfig->setPathToErrorView("errorView.phtml");

@@ -171,7 +171,7 @@ final class Server implements iServer
      */
     public function getRootPath() : string
     {
-        if ($this->rootPath === null) {
+        if ($this->rootPath === "") {
             $oServer = $this->getServerVariables();
             $this->rootPath = $oServer["DOCUMENT_ROOT"];
         }
@@ -333,7 +333,7 @@ final class Server implements iServer
     public function getRequestDomainName() : string
     {
         $oServer = $this->getServerVariables();
-        return $oServer["SERVER_NAME"];
+        return (string)$oServer["SERVER_NAME"];
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
@@ -344,7 +344,7 @@ final class Server implements iServer
     public function getRequestPath() : string
     {
         $oServer = $this->getServerVariables();
-        return $oServer["REQUEST_URI"];
+        return (string)$oServer["REQUEST_URI"];
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
@@ -441,7 +441,7 @@ final class Server implements iServer
         $str = "";
         $oServer = $this->getServerVariables();
 
-        if ($oServer !== null) {
+        if ($oServer !== []) {
             $protocol = $this->getRequestProtocol();
             $domainName = $this->getRequestDomainName();
             $requestURL = $this->getRequestPath();

@@ -20,7 +20,7 @@ use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-interface iRequest
+interface iRequestHandler
 {
 
     /**

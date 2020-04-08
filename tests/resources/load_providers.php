@@ -1,4 +1,6 @@
 <?php
+require_once $dirRoot . "/vendor/aeondigital/phphttp/tests/resources/load_providers.php";
+
 
 require_once "provider/HttpFactory.php";
 require_once "provider/HttpRouter.php";
@@ -11,6 +13,12 @@ require_once "provider/ConfigDomain.php";
 require_once "provider/ConfigServer.php";
 
 
+require_once "provider/HttpResponseHandler.php";
+
+
+//require_once "concrete/RequestHandler01.php";
+
+
 
 
 
@@ -20,9 +28,6 @@ require_once "provider/ConfigServer.php";
 
 
 /*
-Revisar todas as classes criadas até este momento.
-Corrigir documentação, adicionar tipos nas propriedades e demais itens de padronização.
-
 DEPOIS
 
 Seguir com:
@@ -35,7 +40,7 @@ $baseTargetFileDir =  __DIR__ . "/files";
 $defaultServerConfig = null;
 
 
-function provider_PHPEnGarde_InstanceOf_ResponseHandler(
+function prov_instanceOf_EnGarde_Http_RequestHandler(
     $environmentType = "localtest",
     $requestMethod = "GET",
     $url = "http://aeondigital.com.br",
@@ -45,7 +50,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
     $specialSet = "0.9.0 [alpha]",
     $debugMode = false
 ) {
-    $serverRequest = provider_PHPHTTPMessage_InstanceOf_ServerRequest_02($requestMethod, $url);
+    $serverRequest = prov_instanceOf_Http_ServerRequest_02($requestMethod, $url);
     $serverRequest = $serverRequest->withCookieParams([]);
 
 
@@ -53,9 +58,9 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
     $routeConfig = null;
     $tempAppRoutes = require(__DIR__ . "/concrete/AppRoutes.php");
     if ($requestMethod === "OPTIONS" || $requestMethod === "TRACE") {
-        $response = provider_PHPHTTPMessage_InstanceOf_Response();
+        $response = prov_instanceOf_Http_Response();
     } else {
-        $routeConfig = provider_PHPEnGarde_InstanceOf_RouteConfig($tempAppRoutes["simple"]["/^\\/site\\//"][$requestMethod]);
+        $routeConfig = prov_instanceOf_EnGarde_Config_Route($tempAppRoutes["simple"]["/^\\/site\\//"][$requestMethod]);
 
         $routeMime = $routeConfig->negotiateMimeType(
             $serverRequest->getResponseMimes(),
@@ -151,7 +156,7 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
         }
 
 
-        $response = provider_PHPEnGarde_InstanceOf_Response(
+        $response = prov_instanceOf_Http_Response_02(
             null,
             null,
             $viewData,
@@ -164,12 +169,12 @@ function provider_PHPEnGarde_InstanceOf_ResponseHandler(
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $serverRequest->getUri()->getRelativeUri()
         );
-        $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
+        $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
         $serverConfig->setHttpFactory($httpFactory);
     }
 
     if ($domainConfig === null) {
-        $domainConfig = provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
             true, $specialSet, $environmentType, $debugMode, false, to_system_path(__DIR__ . "/apps")
         );
         $domainConfig->setPathToErrorView("errorView.phtml");

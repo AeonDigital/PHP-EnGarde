@@ -539,7 +539,7 @@ final class Router implements iRouter
         $rawConfig  = null;
         $urlParans  = null;
 
-        $this->selectedRouteParans = null;
+        $this->selectedRouteParans = [];
 
 
         // Se nenhuma rota está definida...

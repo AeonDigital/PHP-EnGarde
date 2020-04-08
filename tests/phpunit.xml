@@ -27,6 +27,10 @@
             <file>src/Config/ConfigServerTest.php</file>
 
 
+            <!--file>src/Http/ResponseHandlerTest.php</file>
+            <file>src/Http/RequestHandlerTest.php</file-->
+
+
 
             <!--file>src/Config/ErrorListeningTest.php</file>
             <file>src/Config/SecuritySettingsTest.php</file>

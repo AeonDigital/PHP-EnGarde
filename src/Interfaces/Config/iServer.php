@@ -50,12 +50,12 @@ interface iServer
      * Num ambiente de produção estes valores devem ser definidos automaticamente pelo construtor
      * da classe.
      *
-     * @param       ?array $oServer
+     * @param       array $oServer
      *              Array associativo com as variáveis do servidor.
      *
      * @return      void
      */
-    function setServerVariables(?array $oServer) : void;
+    function setServerVariables(array $oServer) : void;
 
 
 

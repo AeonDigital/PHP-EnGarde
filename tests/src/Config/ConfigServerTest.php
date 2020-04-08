@@ -30,7 +30,7 @@ class ConfigServerTest extends TestCase
     {
         global $defaultServerConfig;
         $nMock = prov_instanceOf_EnGarde_Config_Server(false);
-        $this->assertNull($nMock->getServerVariables());
+        $this->assertEquals([], $nMock->getServerVariables());
 
         $nMock = prov_instanceOf_EnGarde_Config_Server();
         $this->assertSame($defaultServerConfig, $nMock->getServerVariables());
@@ -99,7 +99,7 @@ class ConfigServerTest extends TestCase
         global $defaultServerConfig;
         $nMock      = prov_instanceOf_EnGarde_Config_Server(false);
         $headers    = $nMock->getRequestHeaders();
-        $this->assertNull($headers);
+        $this->assertEquals([], $headers);
 
         $nMock      = prov_instanceOf_EnGarde_Config_Server(true);
         $headers    = $nMock->getRequestHeaders();
@@ -223,7 +223,7 @@ class ConfigServerTest extends TestCase
     public function test_method_get_current_uri()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Server(false);
-        $this->assertSame(null, $nMock->getServerVariables());
+        $this->assertSame([], $nMock->getServerVariables());
 
         $result = $nMock->getCurrentURI();
         $this->assertSame("", $result);

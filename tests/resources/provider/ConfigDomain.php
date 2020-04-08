@@ -5,7 +5,7 @@
 // ---
 // Geração de Instâncias de objetos.
 
-function provider_PHPEnGarde_InstanceOf_ConfigDomain(
+function prov_instanceOf_EnGarde_Config_Domain(
     $autoSet = true,
     $version = "0.9.0 [alpha]",
     $environmentType = "test",

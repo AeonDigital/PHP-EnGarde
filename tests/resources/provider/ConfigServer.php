@@ -22,8 +22,8 @@ function prov_instanceOf_EnGarde_Config_Server(
     $httpHeaderAcceptEncoding = null
 ) {
     global $defaultServerConfig;
-    $obj = new \AeonDigital\EnGarde\Config\Server(null, true);
-    $serverData = null;
+    $obj = new \AeonDigital\EnGarde\Config\Server([], true);
+    $serverData = [];
 
     if ($autoSet === true) {
         if ($serverIP === null) {

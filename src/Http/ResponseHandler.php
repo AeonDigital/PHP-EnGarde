@@ -159,7 +159,7 @@ class ResponseHandler implements iResponseHandler
 
             // Inicia o manipulador do mimetype alvo
             $useMime = \strtoupper($this->routeConfig->getResponseMime());
-            $mimeNS = "\\AeonDigital\\EnGarde\\MimeHandler\\$useMime";
+            $mimeNS = "\\AeonDigital\\EnGarde\\Http\\MimeHandler\\$useMime";
 
             $mimeHandler = new $mimeNS(
                 $this->serverConfig,

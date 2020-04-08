@@ -21,10 +21,10 @@ class DomainManagerTest extends TestCase
     public function test_constructor()
     {
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
-        $httpFactory = provider_PHPEnGardeConfig_InstanceOf_HttpFactory();
+        $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
         $serverConfig->setHttpFactory($httpFactory);
 
-        $domainConfig = provider_PHPEnGardeConfig_InstanceOf_DomainConfig(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
             true, "0.9.0 [alpha]", "test", false, false, to_system_path(__DIR__ . "/apps")
         );
         $domainConfig->setPathToErrorView("errorView.phtml");
