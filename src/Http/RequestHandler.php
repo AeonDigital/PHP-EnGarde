@@ -36,14 +36,14 @@ final class RequestHandler implements iRequestHandler
      *
      * @var         iMiddleware[]|MiddlewareInterface[]
      */
-    private $middlewares = [];
+    private array $middlewares = [];
 
     /**
      * Manipulador que executará a action alvo.
      *
      * @var         iRequestHandler
      */
-    private $actionHandler;
+    private iRequestHandler $actionHandler;
 
 
 
@@ -105,11 +105,11 @@ final class RequestHandler implements iRequestHandler
     {
         // Quando não houverem mais Middlewares a serem executados
         // evoca a ação que corresponde a rota alvo.
-        if (count($this->middlewares) === 0) {
+        if (\count($this->middlewares) === 0) {
             return $this->actionHandler->handle($request);
         }
         else {
-            $middleware = array_shift($this->middlewares);
+            $middleware = \array_shift($this->middlewares);
             return $middleware->process($request, $this);
         }
     }

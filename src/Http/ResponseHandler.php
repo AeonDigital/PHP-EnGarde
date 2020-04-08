@@ -32,49 +32,49 @@ class ResponseHandler implements iResponseHandler
      *
      * @var         iServerConfig
      */
-    private $serverConfig = null;
+    private iServerConfig $serverConfig;
     /**
      * Instância das configurações do Domínio.
      *
      * @var         iDomainConfig
      */
-    private $domainConfig = null;
+    private iDomainConfig $domainConfig;
     /**
      * Configuraçõs para a Aplicação corrente.
      *
      * @var         iApplicationConfig
      */
-    private $applicationConfig = null;
+    private iApplicationConfig $applicationConfig;
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    private $serverRequest = null;
+    private iServerRequest $serverRequest;
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
-     * @var         ?array
+     * @var         array
      */
-    private $rawRouteConfig = null;
+    private array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
      */
-    private $routeConfig = null;
+    private iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
      * @var         iResponse
      */
-    private $response = null;
+    private iResponse $response;
     /**
      * Coleção de headers que devem ser enviados para o UA.
      *
      * @var         array
      */
-    private $useHeaders = [];
+    private array $useHeaders = [];
 
 
 
@@ -122,7 +122,9 @@ class ResponseHandler implements iResponseHandler
         $this->applicationConfig    = $applicationConfig;
         $this->serverRequest        = $serverRequest;
         $this->rawRouteConfig       = $rawRouteConfig;
-        $this->routeConfig          = $routeConfig;
+        if ($routeConfig !== null) {
+            $this->routeConfig      = $routeConfig;
+        }
         $this->response             = $response;
     }
 
@@ -156,7 +158,7 @@ class ResponseHandler implements iResponseHandler
         else {
 
             // Inicia o manipulador do mimetype alvo
-            $useMime = strtoupper($this->routeConfig->getResponseMime());
+            $useMime = \strtoupper($this->routeConfig->getResponseMime());
             $mimeNS = "\\AeonDigital\\EnGarde\\MimeHandler\\$useMime";
 
             $mimeHandler = new $mimeNS(
@@ -245,7 +247,7 @@ class ResponseHandler implements iResponseHandler
         // os aqui definidos.
         foreach ($useHeaders as $key => $value) {
             if (isset($this->useHeaders[$key]) === false) {
-                $this->useHeaders[$key] = implode(", ", $value);
+                $this->useHeaders[$key] = \implode(", ", $value);
             }
         }
 
@@ -283,7 +285,7 @@ class ResponseHandler implements iResponseHandler
             $this->responseMimeTypes["json"],
             $this->applicationConfig->getDefaultLocale(),
             [
-                "Allow"             => array_merge(array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
+                "Allow"             => \array_merge(\array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
                 "Allow-Languages"   => $this->applicationConfig->getLocales()
             ]
         );
@@ -291,7 +293,10 @@ class ResponseHandler implements iResponseHandler
 
         // Prepara o Body a ser enviado
         $useBody        = $this->useHeaders;
-        $showAllValues  = ($this->domainConfig->getIsDebugMode() === true && $this->domainConfig->getEnvironmentType() !== "production");
+        $showAllValues  = (
+            $this->domainConfig->getIsDebugMode() === true &&
+            $this->domainConfig->getEnvironmentType() !== "production"
+        );
         $allowedValues  = [
             "routes", "acceptMimes", "relationedRoutes", "description", "devDescription", "metaData"
         ];
@@ -300,7 +305,7 @@ class ResponseHandler implements iResponseHandler
             $cfg = [];
 
             foreach ($config as $k => $v) {
-                if (in_array($k, $allowedValues) === true || $showAllValues === true) {
+                if (\in_array($k, $allowedValues) === true || $showAllValues === true) {
                     $cfg[$k] = $v;
                 }
             }
@@ -309,7 +314,7 @@ class ResponseHandler implements iResponseHandler
         }
 
         $body = $this->response->getBody();
-        $body->write(json_encode($useBody));
+        $body->write(\json_encode($useBody));
         $this->response = $this->response->withBody($body);
     }
     /**
@@ -326,7 +331,7 @@ class ResponseHandler implements iResponseHandler
             $this->responseMimeTypes["json"],
             $this->applicationConfig->getDefaultLocale(),
             [
-                "Allow"             => array_merge(array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
+                "Allow"             => \array_merge(\array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
                 "Allow-Languages"   => $this->applicationConfig->getLocales()
             ]
         );
@@ -365,7 +370,7 @@ class ResponseHandler implements iResponseHandler
         ];
 
         $body = $this->response->getBody();
-        $body->write(json_encode($useBody));
+        $body->write(\json_encode($useBody));
         $this->response = $this->response->withBody($body);
     }
 }

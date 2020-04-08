@@ -380,16 +380,16 @@ interface iApplication
      * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros
      * na aplicação.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getPathToErrorView() : ?string;
+    function getPathToErrorView() : string;
     /**
      * Resgata o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros
      * na aplicação.
      *
      * @return      ?string
      */
-    function getFullPathToErrorView() : ?string;
+    function getFullPathToErrorView() : string;
     /**
      * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros
      * no domínio.
@@ -401,7 +401,7 @@ interface iApplication
      *
      * @return      void
      */
-    function setPathToErrorView(?string $pathToErrorView) : void;
+    function setPathToErrorView(string $pathToErrorView) : void;
 
 
 
@@ -416,12 +416,12 @@ interface iApplication
     /**
      * Define as configurações de segurança para a aplicação.
      *
-     * @param       iSecurity $securitySettings
+     * @param       ?iSecurity $securitySettings
      *              Instância das configurações de segurança que será definida para a aplicação.
      *
      * @return      void
      */
-    function setSecuritySettings(iSecurity $securitySettings) : void;
+    function setSecuritySettings(?iSecurity $securitySettings) : void;
 
 
 

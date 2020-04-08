@@ -32,49 +32,49 @@ abstract class aMimeHandler implements iMimeHandler
      *
      * @var         iServerConfig
      */
-    protected $serverConfig = null;
+    protected iServerConfig $serverConfig;
     /**
      * Instância das configurações do Domínio.
      *
      * @var         iDomainConfig
      */
-    protected $domainConfig = null;
+    protected iDomainConfig $domainConfig;
     /**
      * Configuraçõs para a Aplicação corrente.
      *
      * @var         iApplicationConfig
      */
-    protected $applicationConfig = null;
+    protected iApplicationConfig $applicationConfig;
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    protected $serverRequest = null;
+    protected iServerRequest $serverRequest;
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
-     * @var         ?array
+     * @var         array
      */
-    private $rawRouteConfig = null;
+    private array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
      */
-    protected $routeConfig = null;
+    protected iRouteConfig $routeConfig;
     /**
      * Objeto "iResponse".
      *
      * @var         iResponse
      */
-    protected $response = null;
+    protected iResponse $response;
     /**
      * Caminho relativo a ser usado pelos recursos CSS e Javascript de documentos X/HTML.
      *
      * @var         string
      */
-    protected $resourcesBasePath = null;
+    protected string $resourcesBasePath = "";
 
 
 
@@ -125,12 +125,12 @@ abstract class aMimeHandler implements iMimeHandler
         $this->routeConfig          = $routeConfig;
         $this->response             = $response;
 
-        $resourcesBasePath = str_replace(
+        $resourcesBasePath = \str_replace(
                                 [$this->domainConfig->getRootPath(), "\\"],
                                 ["", "/"],
                                 $this->applicationConfig->getPathToViewsResources()
                             );
-        $this->resourcesBasePath = "/" . trim($resourcesBasePath, "/") . "/";
+        $this->resourcesBasePath = "/" . \trim($resourcesBasePath, "/") . "/";
     }
 
 
@@ -156,12 +156,14 @@ abstract class aMimeHandler implements iMimeHandler
             $viewData = $this->response->getViewData();
             $viewConfig = $this->response->getViewConfig();
 
-            $viewPath = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView());
-		    ob_start("mb_output_handler");
+            $viewPath = \to_system_path(
+                $this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView()
+            );
+            \ob_start("mb_output_handler");
             require $viewPath;
 
-            $str = "\n" . ob_get_contents();
-            @ob_end_clean();
+            $str = "\n" . \ob_get_contents();
+            @\ob_end_clean();
         }
 
         return $str;
@@ -180,12 +182,12 @@ abstract class aMimeHandler implements iMimeHandler
             $viewData = $this->response->getViewData();
             $viewConfig = $this->response->getViewConfig();
 
-            $viewMaster = to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
-            ob_start("mb_output_handler");
+            $viewMaster = \to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
+            \ob_start("mb_output_handler");
             require $viewMaster;
 
-            $str = ob_get_contents();
-            @ob_end_clean();
+            $str = \ob_get_contents();
+            @\ob_end_clean();
         }
 
         return $str;
@@ -202,10 +204,10 @@ abstract class aMimeHandler implements iMimeHandler
         $strMetas = [];
 
         foreach ($allMetas as $key => $value) {
-            $strMetas[] = "<meta name=\"$key\" content=\"". htmlspecialchars($value) ."\" />";
+            $strMetas[] = "<meta name=\"$key\" content=\"". \htmlspecialchars($value) ."\" />";
         }
 
-        return ((count($strMetas) > 0) ? "\n" . implode("\n", $strMetas) : "");
+        return ((\count($strMetas) > 0) ? "\n" . \implode("\n", $strMetas) : "");
     }
     /**
      * Efetua o processamento das folhas de estilo a serem incorporadas a um documento ``X/HTML``
@@ -219,11 +221,11 @@ abstract class aMimeHandler implements iMimeHandler
         $strCSSs = [];
 
         foreach ($allCSSs as $css) {
-            $cssPath = $this->resourcesBasePath . trim($css, "/");
+            $cssPath = $this->resourcesBasePath . \trim($css, "/");
             $strCSSs[] = "<link rel=\"stylesheet\" href=\"$cssPath\" />";
         }
 
-        return ((count($strCSSs) > 0) ? "\n" . implode("\n", $strCSSs) : "");
+        return ((\count($strCSSs) > 0) ? "\n" . \implode("\n", $strCSSs) : "");
     }
     /**
      * Efetua o processamento dos recursos JavaScript a serem incorporados a um documento
@@ -237,11 +239,11 @@ abstract class aMimeHandler implements iMimeHandler
         $strJSs = [];
 
         foreach ($allJSs as $js) {
-            $jsPath = $this->resourcesBasePath . trim($js, "/");
+            $jsPath = $this->resourcesBasePath . \trim($js, "/");
             $strJSs[] = "<script src=\"$jsPath\"></script>";
         }
 
-        return ((count($strJSs) > 0) ? "\n" . implode("\n", $strJSs) : "");
+        return ((\count($strJSs) > 0) ? "\n" . \implode("\n", $strJSs) : "");
     }
 
 
@@ -296,7 +298,7 @@ abstract class aMimeHandler implements iMimeHandler
             }
 
 
-            $tidy = tidy_parse_string($strTidy, $configOutput, "UTF8");
+            $tidy = \tidy_parse_string($strTidy, $configOutput, "UTF8");
             $tidy->cleanRepair();
             $strTidy = (string)$tidy;
         }
@@ -337,18 +339,18 @@ abstract class aMimeHandler implements iMimeHandler
         $str = "";
         $useQuote = ($forceQuote === true);
 
-        if (is_bool($oData) === true) {
+        if (\is_bool($oData) === true) {
             $str = ($oData === true) ? "true" : "false";
-        } elseif (is_numeric($oData) === true) {
+        } elseif (\is_numeric($oData) === true) {
             $str = (string)$oData;
-        } elseif (is_string($oData) === true) {
-            $str = str_replace($quote, $escapeQuote, $oData);
+        } elseif (\is_string($oData) === true) {
+            $str = \str_replace($quote, $escapeQuote, $oData);
             $useQuote = true;
-        } elseif (is_a($oData, "\DateTime") === true) {
+        } elseif (\is_a($oData, "\DateTime") === true) {
             $str = $oData->format("Y-m-d H:i:s");
             $useQuote = true;
-        } elseif (is_object($oData) === true) {
-            $str = "INSTANCE OF '" . get_class($oData) . "'";
+        } elseif (\is_object($oData) === true) {
+            $str = "INSTANCE OF '" . \get_class($oData) . "'";
         }
 
         $q = (($useQuote === true) ? $quote : "");
@@ -386,20 +388,22 @@ abstract class aMimeHandler implements iMimeHandler
             $useI = (($parentIndex === "") ? (string)$i : $parentIndex . "." . (string)$i);
             $useTab = (($parentIndex === "") ? "" : $acIndend);
 
-            if (array_is_assoc($oData) === true && (is_array($oData[$i]) === true || is_a($oData[$i], "\StdClass") === true)) {
+            if (\array_is_assoc($oData) === true &&
+                (\is_array($oData[$i]) === true || \is_a($oData[$i], "\StdClass") === true))
+            {
                 $val[] = $acIndend . "[" . $i . "]";
             }
 
-            if (is_array($v) === true) {
+            if (\is_array($v) === true) {
                 $val[] = $this->convertArrayToStructuredString($v, $indent, ($acIndend . $indent), $useI);
-            } elseif (is_a($v, "\StdClass") === true) {
+            } elseif (\is_a($v, "\StdClass") === true) {
                 $val[] = $this->convertArrayToStructuredString((array)$v, $indent, ($acIndend . $indent), $useI);
             } else {
                 $val[] = $useTab . "[" . $useI . "] : " . $this->convertValueToString($v, '"', '""');
             }
         }
 
-        $str = implode("\n", $val);
+        $str = \implode("\n", $val);
         return $str;
     }
 
@@ -426,21 +430,21 @@ abstract class aMimeHandler implements iMimeHandler
             $useKey = $key;
 
             // Verifica se "key" é um valor numérico
-            if (is_numeric($key) === true) {
+            if (\is_numeric($key) === true) {
                 $useKey = "item_" . $key;
             }
 
             // Se o valor for um novo array, gera um subnode
             // e preenche-o
-            if (is_array($value) === true) {
+            if (\is_array($value) === true) {
                 $subnode = $xml->addChild($useKey);
                 $this->convertArrayToXML($value, $subnode);
-            } elseif (is_a($value, "\StdClass") === true) {
+            } elseif (\is_a($value, "\StdClass") === true) {
                 $subnode = $xml->addChild($useKey);
                 $this->convertArrayToXML((array)$value, $subnode);
             } else {
                 $value = $this->convertValueToString($value);
-                $xml->addChild($useKey, htmlspecialchars($value));
+                $xml->addChild($useKey, \htmlspecialchars($value));
             }
         }
     }
@@ -485,7 +489,7 @@ abstract class aMimeHandler implements iMimeHandler
                 "char-encoding"     => "utf8"   // Encoding do código de saida.
             ];
 
-            $tidy = tidy_parse_string($strTidy, $configOutput, "UTF8");
+            $tidy = \tidy_parse_string($strTidy, $configOutput, "UTF8");
             $tidy->cleanRepair();
             $strTidy = (string)$tidy;
         }
@@ -541,17 +545,17 @@ abstract class aMimeHandler implements iMimeHandler
 
             // Verifica se o array está minimamente formatado.
             foreach ($oData as $dataRow) {
-                if (is_a($dataRow, "\StdClass") === true) {
+                if (\is_a($dataRow, "\StdClass") === true) {
                     $dataRow = (array)$dataRow;
                 }
 
 
-                if (is_array($dataRow) === false) {
+                if (\is_array($dataRow) === false) {
                     $msgError .= "Invalid row data [line $countLines]. Must be array object.";
                     break;
                 } else {
                     $finalRow = [];
-                    $countColumns = count($dataRow);
+                    $countColumns = \count($dataRow);
 
                     if ($expectedCountColumns === null) {
                         $expectedCountColumns = $countColumns;
@@ -597,35 +601,35 @@ abstract class aMimeHandler implements iMimeHandler
      *
      * @var         string
      */
-    protected $authorName = "EnGarde! Framework";
+    protected string $authorName = "EnGarde! Framework";
     /**
      * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
      * Nome da empresa criadora do conteúdo.
      *
      * @var         string
      */
-    protected $companyName = "Aeon Digital";
+    protected string $companyName = "Aeon Digital";
     /**
      * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
      * Data de criação do documento.
      *
      * @var         \DateTime
      */
-    protected $createdDate = null;
+    protected \DateTime $createdDate;
     /**
      * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
      * Palavras chave referentes ao documento.
      *
      * @var         string
      */
-    protected $keywords = null;
+    protected string $keywords = "";
     /**
      * Meta-propriedade para uso em documentos estruturados (xls, xlsx e pdf).
      * Descrição do documento.
      *
      * @var         string
      */
-    protected $description = null;
+    protected string $description = "";
     /**
      * Verifica se o ``$viewData`` possui metadados a serem incorporados
      * nos documentos finais.
@@ -644,13 +648,17 @@ abstract class aMimeHandler implements iMimeHandler
                 "authorName", "companyName", "keywords", "description"
             ];
             foreach ($strPropNames as $propName) {
-                if (isset($viewData->metaData->{$propName}) === true && is_string($viewData->metaData->{$propName}) === true) {
+                if (isset($viewData->metaData->{$propName}) === true &&
+                    \is_string($viewData->metaData->{$propName}) === true)
+                {
                     $this->{$propName} = $viewData->metaData->{$propName};
                 }
             }
 
 
-            if (isset($viewData->metaData->createdDate) === true && is_a($viewData->metaData->createdDate, "\DateTime") === true) {
+            if (isset($viewData->metaData->createdDate) === true &&
+                \is_a($viewData->metaData->createdDate, "\DateTime") === true)
+            {
                 $this->createdDate = $viewData->metaData->createdDate;
             }
         }

@@ -95,14 +95,14 @@ class XHTML extends aMimeHandler
 
 
         // Mescla os dados obtidos
-        $body = str_replace("<view />",          $viewContent, $masterContent);
-        $body = str_replace("<metatags />",      $strMetaData, $body);
-        $body = str_replace("<stylesheets />",   $strStyleSheet, $body);
-        $body = str_replace("<javascripts />",   $strJavaScript, $body);
+        $body = \str_replace("<view />",          $viewContent, $masterContent);
+        $body = \str_replace("<metatags />",      $strMetaData, $body);
+        $body = \str_replace("<stylesheets />",   $strStyleSheet, $body);
+        $body = \str_replace("<javascripts />",   $strJavaScript, $body);
 
         $body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $body;
         $htmlProp = "xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"".$this->routeConfig->getResponseLocale()."\"";
-        $body = str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
+        $body = \str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
 
 
         // Aplica "prettyPrint" caso seja requisitado

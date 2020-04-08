@@ -85,11 +85,11 @@ class XLSX extends aMimeHandler
     {
         $this->setDocumentMetaData();
 
-		$viewData = $this->response->getViewData();
+        $viewData = $this->response->getViewData();
         $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
-		$finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
+        $finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
 
-		return $this->createXLSXBody($finalArray);
+        return $this->createXLSXBody($finalArray);
     }
 
 
@@ -103,9 +103,9 @@ class XLSX extends aMimeHandler
     /**
      * A partir do array que representa a planilha a ser criada, gera uma string compatível com
      * o formato ``XLS``.
-	 *
-	 * Baseado no original:
-	 * https://gist.github.com/kasparsd/ade34dd94a80b97fb9ec59391a0c620f
+     *
+     * Baseado no original:
+     * https://gist.github.com/kasparsd/ade34dd94a80b97fb9ec59391a0c620f
      *
      * @param       array $dataTable
      *              Array de arrays contendo cada uma das linhas de dados a ser usado na planilha.
@@ -115,55 +115,55 @@ class XLSX extends aMimeHandler
     private function createXLSXBody(array $dataTable) : string
     {
         $str = "";
-		$msgError = null;
+        $msgError = null;
 
 
-		if (class_exists("ZipArchive", false) === false) {
-			$msgError = "This PHP instalation does not support creating ZIP files. It is required for creating XLSX files.";
-		}
-		else {
-			$tempFileName   = tempnam(sys_get_temp_dir(), "engarde-framework-xlsx");
-			$tempZip        = new \ZipArchive();
-			$isCreated      = $tempZip->open($tempFileName, \ZipArchive::CREATE);
+        if (\class_exists("ZipArchive", false) === false) {
+            $msgError = "This PHP instalation does not support creating ZIP files. It is required for creating XLSX files.";
+        }
+        else {
+            $tempFileName   = \tempnam(\sys_get_temp_dir(), "engarde-framework-xlsx");
+            $tempZip        = new \ZipArchive();
+            $isCreated      = $tempZip->open($tempFileName, \ZipArchive::CREATE);
 
 
-			if ($isCreated === false) {
-				$msgError = "Failed to create XLSX file [err 01].";
-			}
-			else {
-				$tempZip->addEmptyDir(		"docProps");
-				$tempZip->addFromString(	"docProps/app.xml", 			$this->retrieveXLSXDocPart("Properties"));
-				$tempZip->addFromString(	"docProps/core.xml", 			$this->retrieveXLSXDocPart("cp:coreProperties"));
-				$tempZip->addEmptyDir(		"_rels");
-				$tempZip->addFromString(	"_rels/.rels", 					$this->retrieveXLSXDocPart("Relationships1"));
-				$tempZip->addEmptyDir(		"xl/worksheets");
-				$tempZip->addFromString(	"xl/worksheets/sheet1.xml", 	$this->retrieveSheetXML($dataTable));
-				$tempZip->addFromString(	"xl/workbook.xml", 				$this->retrieveXLSXDocPart("workbook"));
-				$tempZip->addFromString(	"xl/sharedStrings.xml", 		$this->retrieveXLSXDocPart("sst"));
-				$tempZip->addEmptyDir(		"xl/_rels");
-				$tempZip->addFromString(	"xl/_rels/workbook.xml.rels", 	$this->retrieveXLSXDocPart("Relationships2"));
-				$tempZip->addFromString(	"[Content_Types].xml", 			$this->retrieveXLSXDocPart("Types"));
-				$tempZip->close();
+            if ($isCreated === false) {
+                $msgError = "Failed to create XLSX file [err 01].";
+            }
+            else {
+                $tempZip->addEmptyDir("docProps");
+                $tempZip->addFromString("docProps/app.xml",         $this->retrieveXLSXDocPart("Properties"));
+                $tempZip->addFromString("docProps/core.xml",        $this->retrieveXLSXDocPart("cp:coreProperties"));
+                $tempZip->addEmptyDir("_rels");
+                $tempZip->addFromString("_rels/.rels",              $this->retrieveXLSXDocPart("Relationships1"));
+                $tempZip->addEmptyDir("xl/worksheets");
+                $tempZip->addFromString("xl/worksheets/sheet1.xml", $this->retrieveSheetXML($dataTable));
+                $tempZip->addFromString("xl/workbook.xml",          $this->retrieveXLSXDocPart("workbook"));
+                $tempZip->addFromString("xl/sharedStrings.xml",     $this->retrieveXLSXDocPart("sst"));
+                $tempZip->addEmptyDir("xl/_rels");
+                $tempZip->addFromString("xl/_rels/workbook.xml.rels", $this->retrieveXLSXDocPart("Relationships2"));
+                $tempZip->addFromString("[Content_Types].xml",      $this->retrieveXLSXDocPart("Types"));
+                $tempZip->close();
 
 
-				$stream = fopen($tempFileName, "r");
-				if ($stream === false) {
-					$msgError = "Impossible to get XLSX stream.";
-				}
-				else {
-					while (feof($stream) === false) {
-						$str .= fread($stream, 2);
-					}
-					fclose($stream);
-				}
-			}
-		}
+                $stream = \fopen($tempFileName, "r");
+                if ($stream === false) {
+                    $msgError = "Impossible to get XLSX stream.";
+                }
+                else {
+                    while (\feof($stream) === false) {
+                        $str .= \fread($stream, 2);
+                    }
+                    \fclose($stream);
+                }
+            }
+        }
 
 
         // Havendo algum erro, mostra a falha.
         if ($msgError !== null) {
             throw new \Exception($msgError);
-		}
+        }
 
 
         return $str;
@@ -173,7 +173,7 @@ class XLSX extends aMimeHandler
 
 
 
-	/**
+    /**
      * Retorna documentos ``XML`` que devem ser incorporados no corpo do ``ZIP`` que compõe o
      * documento ``XLSX`` final.
      *
@@ -195,7 +195,7 @@ class XLSX extends aMimeHandler
                 break;
 
             case "cp:coreProperties":
-		        $str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                $str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                         <dcterms:created xsi:type="dcterms:W3CDTF">' . $this->createdDate->format("Y-m-d\TH:i:s.00\Z") . '</dcterms:created>
                         <dc:creator>' . $this->companyName . " | " . $this->authorName . '</dc:creator>
@@ -204,7 +204,7 @@ class XLSX extends aMimeHandler
                 break;
 
             case "Relationships1":
-		        $str = '<?xml version="1.0" encoding="UTF-8"?>
+                $str = '<?xml version="1.0" encoding="UTF-8"?>
                     <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
                         <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
                         <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
@@ -240,26 +240,26 @@ class XLSX extends aMimeHandler
                         <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
                         <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
                     </Types>';
-				break;
+                break;
 
-			case "sst":
-				$usedStrings = [];
+            case "sst":
+                $usedStrings = [];
 
-				foreach ($this->usedStrings as $string => $string_count) {
-					$usedStrings[] = sprintf(
-						'<si><t>%s</t></si>',
-						filter_var($string, FILTER_SANITIZE_SPECIAL_CHARS)
-					);
-				}
+                foreach ($this->usedStrings as $string => $string_count) {
+                    $usedStrings[] = \sprintf(
+                        '<si><t>%s</t></si>',
+                        \filter_var($string, FILTER_SANITIZE_SPECIAL_CHARS)
+                    );
+                }
 
-				$str = sprintf(
-					'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-					<sst count="%d" uniqueCount="%d" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">%s</sst>',
-					array_sum($this->usedStrings),
-					count($this->usedStrings),
-					implode("\n", $usedStrings)
-				);
-				break;
+                $str = \sprintf(
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                    <sst count="%d" uniqueCount="%d" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">%s</sst>',
+                    \array_sum($this->usedStrings),
+                    \count($this->usedStrings),
+                    \implode("\n", $usedStrings)
+                );
+                break;
         }
 
         return $str;
@@ -269,7 +269,7 @@ class XLSX extends aMimeHandler
 
 
 
-	/**
+    /**
      * Cria o ``XML`` que representa os dados da planilha que está sendo incorporada no
      * documento final.
      *
@@ -282,40 +282,40 @@ class XLSX extends aMimeHandler
     {
         $str = "";
 
-		$xmlRows = [];
-		$rowNumber = 0;
+        $xmlRows = [];
+        $rowNumber = 0;
         foreach ($dataTable as $i => $rowData)
         {
-			$rowNumber++;
-			$xmlCells = [];
+            $rowNumber++;
+            $xmlCells = [];
             foreach ($rowData as $columnNumber => $value)
             {
-				$celName 		= $this->generateCellName($rowNumber, $columnNumber);
-                $valueType 		= ((is_numeric($value) === true) ? "n" : "s");
-				$valuePosition 	= $this->setUsedStringsAndRetrieveItPosition($value);
+                $celName        = $this->generateCellName($rowNumber, $columnNumber);
+                $valueType      = ((\is_numeric($value) === true) ? "n" : "s");
+                $valuePosition  = $this->setUsedStringsAndRetrieveItPosition($value);
 
-				$xmlCells[] = sprintf(
-					'<c r="%s" t="%s"><v>%d</v></c>',
-					$celName,
-					$valueType,
-					$valuePosition
-				);
+                $xmlCells[] = \sprintf(
+                    '<c r="%s" t="%s"><v>%d</v></c>',
+                    $celName,
+                    $valueType,
+                    $valuePosition
+                );
             }
 
-			$xmlRows[] = sprintf(
-				'<row r="%s">%s</row>',
-				$rowNumber,
-				implode( "\n", $xmlCells)
-			);
-		}
+            $xmlRows[] = \sprintf(
+                '<row r="%s">%s</row>',
+                $rowNumber,
+                \implode( "\n", $xmlCells)
+            );
+        }
 
-		$str = sprintf(
-			'<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-			<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-				<sheetData>%s</sheetData>
-			</worksheet>',
-			implode("\n", $xmlRows)
-		);
+        $str = \sprintf(
+            '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+            <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+                <sheetData>%s</sheetData>
+            </worksheet>',
+            \implode("\n", $xmlRows)
+        );
 
         return $str;
     }
@@ -341,39 +341,39 @@ class XLSX extends aMimeHandler
      */
     private function setUsedStringsAndRetrieveItPosition(string $value) : int
     {
-		if (isset($this->usedStrings[$value]) === true) {
+        if (isset($this->usedStrings[$value]) === true) {
             // Incrementa contagem de uso da string
-			$this->usedStrings[$value]++;
-		} else {
+            $this->usedStrings[$value]++;
+        } else {
             // Inicia a contagem de uso da string
-			$this->usedStrings[$value] = 1;
+            $this->usedStrings[$value] = 1;
         }
 
-		if (isset($usedStringsPositions[$value]) === false) {
-			$usedStringsPositions[$value] = array_search($value, array_keys($this->usedStrings));
+        if (isset($usedStringsPositions[$value]) === false) {
+            $usedStringsPositions[$value] = \array_search($value, \array_keys($this->usedStrings));
         }
 
-		return $usedStringsPositions[$value];
+        return $usedStringsPositions[$value];
     }
     /**
-	 * Gera um nome para ser usado por uma célula em uma planilha ``XLSX``.
-	 * Este nome é também a posição da célula na planilha (A1, B4, AB22 ...).
-	 *
-	 * @param 		int $rowNumber
-	 * 				Número da linha.
-	 *
-	 * @param 		int $columnNumber
-	 * 				Número da coluna.
-	 *
-	 * @return 		string
-	 */
+     * Gera um nome para ser usado por uma célula em uma planilha ``XLSX``.
+     * Este nome é também a posição da célula na planilha (A1, B4, AB22 ...).
+     *
+     * @param       int $rowNumber
+     *              Número da linha.
+     *
+     * @param       int $columnNumber
+     *              Número da coluna.
+     *
+     * @return      string
+     */
     private function generateCellName(int $rowNumber, int $columnNumber) : string
     {
         $str = "";
-		$n = $columnNumber;
+        $n = $columnNumber;
         for ($str = ""; $n >= 0; $n = intval($n / 26) - 1) {
-			$str = chr(($n % 26) + 0x41) . $str;
-		}
-		return $str . $rowNumber;
-	}
+            $str = chr(($n % 26) + 0x41) . $str;
+        }
+        return $str . $rowNumber;
+    }
 }

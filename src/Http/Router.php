@@ -32,32 +32,32 @@ final class Router implements iRouter
      *
      * @var         string
      */
-    private $applicationName = null;
+    private string $applicationName = "";
     /**
      * Caminho relativo para o arquivo de rotas da aplicação.
      *
      * @var         string
      */
-    private $pathToAppRoutes = null;
+    private string $pathToAppRoutes = "";
     /**
      * Caminho relativo até o diretório de controllers da aplicação
      *
      * @var         string
      */
-    private $pathToControllers = null;
+    private string $pathToControllers = "";
     /**
      * Namespaces usadas pelos controllers da aplicação.
      *
      * @var         string
      */
-    private $controllersNamespace = null;
+    private string $controllersNamespace = "";
     /**
      * Preenchido com a execução do método ``selectTargetRawRoute``, trará um array associativo
      * contendo os parametros identificados na ``URL`` passada.
      *
-     * @var         ?array
+     * @var         array
      */
-    private $selectedRouteParans = null;
+    private array $selectedRouteParans = [];
 
 
 
@@ -104,7 +104,7 @@ final class Router implements iRouter
      *
      * @var         array
      */
-    private $defaultRouteConfig = [];
+    private array $defaultRouteConfig = [];
     /**
      * Define o valores padrões para as configurações de rotas de uma aplicação.
      *
@@ -126,9 +126,9 @@ final class Router implements iRouter
     /**
      * Indica se o roteador pode executar a atualização do arquivo de rotas.
      *
-     * @var         string
+     * @var         bool
      */
-    private $isUpdateRoutes = false;
+    private bool $isUpdateRoutes = false;
     /**
      * Indica se é permitido efetuar a atualização do arquivo de rotas da aplicação.
      *
@@ -154,8 +154,8 @@ final class Router implements iRouter
      */
     public function forceUpdateRoutes() : void
     {
-        if (file_exists($this->pathToAppRoutes) === true) {
-            unlink($this->pathToAppRoutes);
+        if (\file_exists($this->pathToAppRoutes) === true) {
+            \unlink($this->pathToAppRoutes);
         }
     }
 
@@ -183,18 +183,21 @@ final class Router implements iRouter
         $controllersPath    = $this->pathToControllers;
 
 
-        if (file_exists($appRoutes) === false) {
+        if (\file_exists($appRoutes) === false) {
             $r = true;
         } else {
             if ($this->isUpdateRoutes === true) {
-                $appRoutesFileLastMod = filemtime($appRoutes);
+                $appRoutesFileLastMod = \filemtime($appRoutes);
                 $controllersLastMod = 0;
 
                 // Verifica os arquivos da pasta de controller
-                $controllersFiles = scandir($controllersPath);
+                $controllersFiles = \scandir($controllersPath);
                 foreach ($controllersFiles as $key => $fileName) {
-                    if (in_array($fileName, [".", ".."]) === false && is_dir($fileName) === false && mb_str_ends_with($fileName, ".php") === true) {
-                        $fileMod = filemtime($controllersPath . DS . $fileName);
+                    if (\in_array($fileName, [".", ".."]) === false &&
+                        \is_dir($fileName) === false &&
+                        \mb_str_ends_with($fileName, ".php") === true)
+                    {
+                        $fileMod = \filemtime($controllersPath . DS . $fileName);
 
                         // Mantém o maior valor
                         $controllersLastMod = ($fileMod > $controllersLastMod) ? $fileMod : $controllersLastMod;
@@ -247,15 +250,18 @@ final class Router implements iRouter
             $this->appRoutes = [];
 
             // Verifica os arquivos da pasta de controller
-            $controllersFiles = scandir($this->pathToControllers);
+            $controllersFiles = \scandir($this->pathToControllers);
             foreach ($controllersFiles as $key => $fileName) {
-                if (in_array($fileName, [".", ".."]) === false && is_dir($fileName) === false && mb_str_ends_with($fileName, ".php") === true) {
-                    $controllerName = str_replace(".php", "", $fileName);
+                if (\in_array($fileName, [".", ".."]) === false &&
+                    \is_dir($fileName) === false &&
+                    \mb_str_ends_with($fileName, ".php") === true)
+                {
+                    $controllerName = \str_replace(".php", "", $fileName);
                     $this->registerControllerRoutes($controllerName);
                 }
             }
 
-            file_put_contents($this->pathToAppRoutes, "<?php return " . var_export($this->appRoutes, true) . ";");
+            \file_put_contents($this->pathToAppRoutes, "<?php return " . \var_export($this->appRoutes, true) . ";");
         }
     }
     /**
@@ -302,12 +308,12 @@ final class Router implements iRouter
 
 
         // Apenas se houverem propriedades estáticas definidas...
-        if (is_array($staticProperties) !== false && count($staticProperties) > 0) {
+        if (\is_array($staticProperties) !== false && \count($staticProperties) > 0) {
             foreach ($staticProperties as $propName => $value) {
                 // sendo uma propriedade de registro de rotas.
-                if (mb_strlen($propName) >= 13 && substr($propName, 0, 13) === "registerRoute") {
+                if (\mb_strlen($propName) >= 13 && \substr($propName, 0, 13) === "registerRoute") {
 
-                    if (is_string($value) === true) {
+                    if (\is_string($value) === true) {
                         $rConfig = $this->createRouteConfig();
                         $rConfig->setApplication($appName);
                         $rConfig->setNamespace($controllersNS);
@@ -328,14 +334,14 @@ final class Router implements iRouter
                             throw new \RuntimeException($err);
                             // @codeCoverageIgnoreEnd
                         } else {
-                            if (is_string($baseRouteConfig["method"]) === true) {
+                            if (\is_string($baseRouteConfig["method"]) === true) {
                                 $allowedMethods = [$baseRouteConfig["method"]];
                                 $useRouteConfig[] = $baseRouteConfig;
                             } else {
                                 $allowedMethods = $baseRouteConfig["method"];
 
                                 foreach ($baseRouteConfig["method"] as $method) {
-                                    $cloneRouteConfig = array_merge($baseRouteConfig, []);
+                                    $cloneRouteConfig = \array_merge($baseRouteConfig, []);
                                     $cloneRouteConfig["method"] = $method;
                                     $useRouteConfig[] = $cloneRouteConfig;
                                 }
@@ -362,7 +368,7 @@ final class Router implements iRouter
 
 
         // Apenas se houverem rotas definidas
-        if (count($routesConfig) > 0) {
+        if (\count($routesConfig) > 0) {
 
             // Classifica as rotas
             foreach ($routesConfig as $cfg) {
@@ -374,7 +380,7 @@ final class Router implements iRouter
                 // Os métodos "HEAD", "OPTIONS", "TRACE" e "CONNECT" são
                 // automaticamente resolvidos pelo framework e não pelos controllers.
                 $invalidMethods = ["HEAD", "OPTIONS", "TRACE", "CONNECT"];
-                if (array_in_ci($method, $invalidMethods) === true) {
+                if (\array_in_ci($method, $invalidMethods) === true) {
                     // @codeCoverageIgnoreStart
                     $err = "The Method HTTP \"" . $method . "\" is implemented by the framework and can not be set in route configuration.";
                     throw new \InvalidArgumentException($err);
@@ -385,8 +391,8 @@ final class Router implements iRouter
 
                 // Para cada rota que executa esta mesma ação
                 foreach ($routes as $route) {
-                    $regexRoute = $this->normalizeRouteRegEx("/" . $appName . "/" . ltrim($route, "/"));
-                    $routeType = ((mb_strpos($regexRoute, "<") === false) ? "simple" : "complex");
+                    $regexRoute = $this->normalizeRouteRegEx("/" . $appName . "/" . \ltrim($route, "/"));
+                    $routeType = ((\mb_strpos($regexRoute, "<") === false) ? "simple" : "complex");
 
                     if (isset($this->appRoutes[$routeType][$regexRoute]) === false) {
                         $this->appRoutes[$routeType][$regexRoute] = [];
@@ -421,7 +427,7 @@ final class Router implements iRouter
 
         $rConfig = $initialRouteConfig;
 
-        if (count($newRouteConfig) > 0) {
+        if (\count($newRouteConfig) > 0) {
 
             $allowedProperties = null;
             if ($isController === true) {
@@ -447,13 +453,13 @@ final class Router implements iRouter
 
 
             foreach ($newRouteConfig as $key => $value) {
-                $k = strtolower($key);
+                $k = \strtolower($key);
 
-                if ($allowedProperties === null || (in_array($k, $allowedProperties) === true && $value !== null)) {
+                if ($allowedProperties === null || (\in_array($k, $allowedProperties) === true && $value !== null)) {
                     $v = $value;
 
-                    if (isset($rConfig[$k]) === true && in_array($k, $mergeArrays) === true) {
-                        $v = array_merge($rConfig[$k], $value);
+                    if (isset($rConfig[$k]) === true && \in_array($k, $mergeArrays) === true) {
+                        $v = \array_merge($rConfig[$k], $value);
                     }
 
                     $rConfig[$k] = $v;
@@ -479,22 +485,22 @@ final class Router implements iRouter
     {
         $str = "";
         if ($route !== "") {
-            $route = rtrim($route, "/") . "/";
+            $route = \rtrim($route, "/") . "/";
 
             $patternNamedKey = "/\/(\w+):([\w\{\}\(\)\[\]\-\_\+\\\]+)/";
             $replaceNamedKey = "/(?P<=\$1=>\$2)";
 
-            $finalRegex = preg_replace($patternNamedKey, $replaceNamedKey, $route);
-            $finalRegex = str_replace("/", "\/", $finalRegex);
+            $finalRegex = \preg_replace($patternNamedKey, $replaceNamedKey, $route);
+            $finalRegex = \str_replace("/", "\/", $finalRegex);
 
 
-            while (mb_strpos($finalRegex, "=") !== false) {
-                $pos = mb_strpos($finalRegex, "=");
+            while (\mb_strpos($finalRegex, "=") !== false) {
+                $pos = \mb_strpos($finalRegex, "=");
                 $finalRegex[$pos] = "\0";
             }
 
             // Remove bytes nulos e retorna o resultado
-            $str = str_replace("\0", "", "/^" . $finalRegex . "/");
+            $str = \str_replace("\0", "", "/^" . $finalRegex . "/");
         }
 
         return $str;
@@ -526,7 +532,7 @@ final class Router implements iRouter
      */
     public function selectTargetRawRoute(string $targetRoute) : ?array
     {
-        $targetRoute    = "/" . trim($targetRoute, "/") . "/";
+        $targetRoute    = "/" . \trim($targetRoute, "/") . "/";
         $appRoutes  = include($this->pathToAppRoutes);
         $regexRoute = $this->normalizeRouteRegEx($targetRoute);
         $rawRoute   = null;
@@ -537,7 +543,7 @@ final class Router implements iRouter
 
 
         // Se nenhuma rota está definida...
-        if (count($appRoutes) !== 0) {
+        if (\count($appRoutes) !== 0) {
             if ($rawRoute === null && isset($appRoutes["simple"]) === true) {
                 // Verifica se há alguma rota com nome exato da atual URL
                 foreach ($appRoutes["simple"] as $route => $config) {
@@ -558,7 +564,7 @@ final class Router implements iRouter
                 // Verifica apenas as rotas que ainda não foram conferidas
                 foreach ($appRoutes["complex"] as $route => $config) {
                     // Verifica se a URL atual é compativel com a rota informada.
-                    if (preg_match($route, $targetRoute, $urlParans) === 1) {
+                    if (\preg_match($route, $targetRoute, $urlParans) === 1) {
                         $matchRoutes[] = [
                             "rawRoute"  => $route,
                             "rawConfig" => $config,
@@ -569,17 +575,17 @@ final class Router implements iRouter
 
 
                 // Apenas se realmente encontrou alguma rota válida...
-                if (count($matchRoutes) > 0) {
+                if (\count($matchRoutes) > 0) {
 
                     // Se encontrou mais de 1 match
-                    if (count($matchRoutes) > 1) {
+                    if (\count($matchRoutes) > 1) {
                         $countParts = 0;
 
                         // Verifica qual rota fechou mais partes
                         // significando assim que ela adequa-se mais idealmente ao
                         // definido.
                         foreach ($matchRoutes as $k => $matchs) {
-                            $parts = substr_count($matchs["rawRoute"], "/");
+                            $parts = \substr_count($matchs["rawRoute"], "/");
 
                             if ($parts > $countParts) {
                                 $matchIndex = $k;
@@ -597,13 +603,13 @@ final class Router implements iRouter
 
                     // Remove as chaves numéricas do array de parametros resultante
                     foreach ($urlParans as $key => $value) {
-                        if ($key === 0 || intval($key)) {
+                        if ($key === 0 || \intval($key)) {
                             unset($urlParans[$key]);
                         }
                     }
 
 
-                    if (count($urlParans) > 0) {
+                    if (\count($urlParans) > 0) {
                         $this->selectedRouteParans = $urlParans;
                     }
                 }

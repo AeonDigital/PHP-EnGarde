@@ -96,9 +96,9 @@ class XLS extends aMimeHandler
     /**
      * A partir do array que representa a planilha a ser criada, gera uma string compatível com
      * o formato ``XLS``.
-	 *
-	 * Baseado no original:
-	 * https://gist.github.com/samatsav/6637984
+     *
+     * Baseado no original:
+     * https://gist.github.com/samatsav/6637984
      *
      * @param       array $dataTable
      *              Array de arrays contendo cada uma das linhas de dados a ser usado na planilha.
@@ -108,14 +108,14 @@ class XLS extends aMimeHandler
     private function createXLSBody(array $dataTable) : string
     {
         // excell BOF
-		$str = pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
+        $str = \pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
 
         $rowNumber = 0;
         foreach ($dataTable as $rowData) {
 
             $columnNumber = 0;
             foreach($rowData as $value) {
-                if (is_numeric($value) === true) {
+                if (\is_numeric($value) === true) {
                     $str .= $this->numberCell($rowNumber, $columnNumber, $value);
                 }
                 else {
@@ -129,7 +129,7 @@ class XLS extends aMimeHandler
         }
 
         // excell EOF
-        $str .= pack("ss", 0x0A, 0x00);
+        $str .= \pack("ss", 0x0A, 0x00);
 
         return $str;
     }
@@ -152,11 +152,11 @@ class XLS extends aMimeHandler
      */
     private function textCell(int $rowNumber, int $columnNumber, string $value) : string
     {
-        $value = utf8_decode($value);
-		$length = strlen($value);
-		$str = pack("ssssss", 0x204, 8 + $length, $rowNumber, $columnNumber, 0x0, $length);
-		$str .= $value;
-		return $str;
+        $value = \utf8_decode($value);
+        $length = \strlen($value);
+        $str = \pack("ssssss", 0x204, 8 + $length, $rowNumber, $columnNumber, 0x0, $length);
+        $str .= $value;
+        return $str;
     }
     /**
      * Gera o código a ser usado para uma célula numérica para uma planilha Excell (xls).
@@ -174,8 +174,8 @@ class XLS extends aMimeHandler
      */
     private function numberCell(int $rowNumber, int $columnNumber, string $value) : string
     {
-        $str = pack("sssss", 0x203, 14, $rowNumber, $columnNumber, 0x0);
-        $str .= pack("d", $value);
-		return $str;
+        $str = \pack("sssss", 0x203, 14, $rowNumber, $columnNumber, 0x0);
+        $str .= \pack("d", $value);
+        return $str;
     }
 }

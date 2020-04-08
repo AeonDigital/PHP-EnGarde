@@ -58,9 +58,9 @@ class Factory implements iFactory
      */
     public function createCookieCollection($initialValues = null) : iCookieCollection
     {
-        if (is_string($initialValues) === true) {
+        if (\is_string($initialValues) === true) {
             return \AeonDigital\Http\Data\CookieCollection::fromString($initialValues);
-        } elseif (is_array($initialValues) === true) {
+        } elseif (\is_array($initialValues) === true) {
             return new \AeonDigital\Http\Data\CookieCollection($initialValues);
         } else {
             return new \AeonDigital\Http\Data\CookieCollection();
@@ -78,9 +78,9 @@ class Factory implements iFactory
      */
     public function createQueryStringCollection($initialValues = null) : iQueryStringCollection
     {
-        if (is_string($initialValues) === true) {
+        if (\is_string($initialValues) === true) {
             return \AeonDigital\Http\Data\QueryStringCollection::fromString($initialValues);
-        } elseif (is_array($initialValues) === true) {
+        } elseif (\is_array($initialValues) === true) {
             return new \AeonDigital\Http\Data\QueryStringCollection($initialValues);
         } else {
             return new \AeonDigital\Http\Data\QueryStringCollection();
@@ -163,8 +163,8 @@ class Factory implements iFactory
      */
     public function createStream(string $content = "") : iStream
     {
-        $useStream = fopen("php://temp", "r+");
-        fwrite($useStream, $content);
+        $useStream = \fopen("php://temp", "r+");
+        \fwrite($useStream, $content);
 
         return new \AeonDigital\Http\Stream\Stream($useStream);
     }
@@ -205,9 +205,9 @@ class Factory implements iFactory
      */
     public function createStreamFromBodyRequest() : iStream
     {
-        $reqBody = fopen("php://temp", "w+");
-        stream_copy_to_stream(fopen("php://input", "r"), $reqBody);
-        rewind($reqBody);
+        $reqBody = \fopen("php://temp", "w+");
+        \stream_copy_to_stream(\fopen("php://input", "r"), $reqBody);
+        \rewind($reqBody);
 
         return $this->createStreamFromResource($reqBody);
     }
@@ -259,7 +259,7 @@ class Factory implements iFactory
 
 
         $validMethod = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE"];
-        if (array_in_ci($httpMethod, $validMethod) === false) {
+        if (\array_in_ci($httpMethod, $validMethod) === false) {
             $err = "Invalid method [ \"$httpMethod\" ].";
             throw new \InvalidArgumentException($err);
         }
@@ -346,9 +346,9 @@ class Factory implements iFactory
         // Une as duas coleções de querystrings e normaliza ambos objetos.
         if ($queryStrings->toString() !== $uri->getQuery()) {
             $uriQS = [];
-            parse_str($uri->getQuery(), $uriQS);
+            \parse_str($uri->getQuery(), $uriQS);
 
-            $useQS = http_build_query(array_merge($uriQS, $queryStrings->toArray()));
+            $useQS = \http_build_query(\array_merge($uriQS, $queryStrings->toArray()));
             $uri = $uri->withQuery($useQS);
             $queryStrings = $this->createQueryStringCollection($useQS);
         }
@@ -356,7 +356,7 @@ class Factory implements iFactory
 
 
         $validMethod = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE"];
-        if (array_in_ci($httpMethod, $validMethod) === false) {
+        if (\array_in_ci($httpMethod, $validMethod) === false) {
             $err = "Invalid method [ \"$httpMethod\" ].";
             throw new \InvalidArgumentException($err);
         }
@@ -478,23 +478,23 @@ class Factory implements iFactory
         array $headers = []
     ) : ?string {
         $r = null;
-        $method = (($method === "") ? "GET" : strtoupper($method));
+        $method = (($method === "") ? "GET" : \strtoupper($method));
 
 
 
         // Remove qualquer particula #hash da URL
-        if (mb_strpos($absoluteURL, "#") !== false) {
-            $absoluteURL = explode("#", $absoluteURL)[0];
+        if (\mb_strpos($absoluteURL, "#") !== false) {
+            $absoluteURL = \explode("#", $absoluteURL)[0];
         }
 
 
 
         // Se for um GET, converte todos os valores a serem enviados em
         // parametros de URL
-        if ($method === "GET" && count($content) > 0) {
-            $urlParans = http_build_query($content);
+        if ($method === "GET" && \count($content) > 0) {
+            $urlParans = \http_build_query($content);
 
-            $firstParan = ((mb_strpos($absoluteURL, "?") !== false) ? "&" : "?");
+            $firstParan = ((\mb_strpos($absoluteURL, "?") !== false) ? "&" : "?");
             $absoluteURL .= $firstParan . $urlParans;
             $content = [];
         }
@@ -502,20 +502,20 @@ class Factory implements iFactory
 
 
         // Prepara os dados que serão enviados
-        $postContent = http_build_query($content);
+        $postContent = \http_build_query($content);
 
 
         // Uma requisição terá, inicialmente os seguintes headers
         $defaultHeaders = [
             "Connection"        => "close",
             "Content-type"      => "application/x-www-form-urlencoded",
-            "Content-Length"    => mb_strlen($postContent)
+            "Content-Length"    => \mb_strlen($postContent)
         ];
 
 
         // Une os headers padrão e os passados
         // substituindo os iniciais caso novos valores sejam passados.
-        $finalHeaders = array_merge($defaultHeaders, $headers);
+        $finalHeaders = \array_merge($defaultHeaders, $headers);
 
 
         // Prepara os headers em formato de string para serem usados.
@@ -526,7 +526,7 @@ class Factory implements iFactory
 
 
         // Cria um objeto "stream" preparado com o conteúdo definido
-        $streamResource = stream_context_create([
+        $streamResource = \stream_context_create([
             "http" => [
                 "method"    => $method,
                 "header"    => $strHeaders,
@@ -535,7 +535,7 @@ class Factory implements iFactory
         ]);
 
 
-        $resultData = @file_get_contents($absoluteURL, false, $streamResource);
+        $resultData = @\file_get_contents($absoluteURL, false, $streamResource);
         if ($resultData !== false) {
             $r = $resultData;
         }
@@ -573,36 +573,36 @@ class Factory implements iFactory
         $rBool = false;
 
         // Efetua o download do arquivo
-        $downloadedFile = fopen($absoluteURL, "rb");
+        $downloadedFile = \fopen($absoluteURL, "rb");
         if ($downloadedFile !== false) {
-            $originalExt = pathinfo($absoluteURL, PATHINFO_EXTENSION);
-            $originalFileName = pathinfo($absoluteURL, PATHINFO_BASENAME);
+            $originalExt = \pathinfo($absoluteURL, PATHINFO_EXTENSION);
+            $originalFileName = \pathinfo($absoluteURL, PATHINFO_BASENAME);
 
 
             // Se não for definido o nome do arquivo... resgata o nome original
             $fileName = (($fileName === "") ? $originalFileName : $fileName);
-            $fileNamelExt = pathinfo($fileName, PATHINFO_EXTENSION);
+            $fileNamelExt = \pathinfo($fileName, PATHINFO_EXTENSION);
 
-            if (strtolower($originalExt) !== strtolower($fileNamelExt)) {
-                $fileName = str_replace("." . $fileNamelExt, "." . strtolower($originalExt), $fileName);
+            if (\strtolower($originalExt) !== \strtolower($fileNamelExt)) {
+                $fileName = \str_replace("." . $fileNamelExt, "." . \strtolower($originalExt), $fileName);
             }
 
 
             // Corrige "/" no final do caminho
             $ds = DIRECTORY_SEPARATOR;
-            $absoluteSystemPathToDir = rtrim($absoluteSystemPathToDir, $ds) . $ds;
+            $absoluteSystemPathToDir = \rtrim($absoluteSystemPathToDir, $ds) . $ds;
 
             // Abre/Cria o novo arquivo
-            $newFile = fopen($absoluteSystemPathToDir . $fileName, "ab+");
+            $newFile = \fopen($absoluteSystemPathToDir . $fileName, "ab+");
             if ($newFile !== false) {
                 // Recria o conteúdo do arquivo
-                while (feof($downloadedFile) === false) {
-                    fwrite($newFile, fread($downloadedFile, 1024 * 8), 1024 * 8);
+                while (\feof($downloadedFile) === false) {
+                    \fwrite($newFile, \fread($downloadedFile, 1024 * 8), 1024 * 8);
                 }
 
                 // Encerra os arquivos abertos
-                fclose($downloadedFile);
-                fclose($newFile);
+                \fclose($downloadedFile);
+                \fclose($newFile);
 
                 $rBool = true;
             }

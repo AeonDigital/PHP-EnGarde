@@ -122,11 +122,11 @@ interface iServer
      * Retorna uma coleção de headers ``HTTP`` definidos para a requisição que está sendo
      * executada.
      *
-     * Retornará ``null`` caso nenhum seja encontrado.
+     * Retornará ``[]`` caso nenhum seja encontrado.
      *
-     * @return      ?array
+     * @return      array
      */
-    function getRequestHeaders() : ?array;
+    function getRequestHeaders() : array;
     /**
      * Baseado nos dados da requisição que está sendo executada.
      * Retorna a versão do protocolo ``HTTP``.

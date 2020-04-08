@@ -32,38 +32,38 @@ final class Server implements iServer
      *
      * @var         array[string => mixed]
      */
-    private $SERVER = null;
+    private array $SERVER = [];
     /**
      * Caminho completo até o diretório onde o domínio está sendo executado.
      *
      * @var         string
      */
-    private $rootPath = null;
+    private string $rootPath = "";
     /**
      * Coleção de headers ``HTTP`` recebidas pela requisição.
      *
      * @var         array[string => mixed]
      */
-    private $headers = null;
+    private array $headers = [];
     /**
      * Objeto ``iFactory``.
      *
      * @var         iFactory
      */
-    private $httpFactory = null;
+    private iFactory $httpFactory;
 
     /**
      * Indica se está rodando em um ambiente de testes.
      *
      * @var         bool
      */
-    private $testEnvironment = false;
+    private bool $testEnvironment = false;
     /**
      * Data e Hora da criação desta instância.
      *
      * @var         \DateTime
      */
-    private $now = null;
+    private \DateTime $now;
 
 
 
@@ -82,7 +82,7 @@ final class Server implements iServer
      * @param       bool $testEnvironment
      *              Quando ``true`` permite definir ativamente o valor das propriedades.
      */
-    function __construct(?array $oServer = null, bool $testEnvironment = false)
+    function __construct(array $oServer = [], bool $testEnvironment = false)
     {
         $this->testEnvironment = $testEnvironment;
         $this->setServerVariables($oServer);
@@ -114,12 +114,12 @@ final class Server implements iServer
      * Num ambiente de produção estes valores devem ser definidos automaticamente pelo construtor
      * da classe.
      *
-     * @param       ?array $oServer
+     * @param       array $oServer
      *              Array associativo com as variáveis do servidor.
      *
      * @return      void
      */
-    public function setServerVariables(?array $oServer) : void
+    public function setServerVariables(array $oServer) : void
     {
         $this->SERVER = $_SERVER;
         if ($this->testEnvironment === true) {
@@ -193,7 +193,7 @@ final class Server implements iServer
     {
         $rootPath = to_system_path($rootPath);
 
-        if (file_exists($rootPath) === false || is_dir($rootPath) === false) {
+        if (\file_exists($rootPath) === false || \is_dir($rootPath) === false) {
             $err = "The given directory does not exist.";
             throw new \InvalidArgumentException($err);
         }
@@ -215,18 +215,18 @@ final class Server implements iServer
     {
         $ip = "";
 
-        if (getenv("HTTP_CLIENT_IP") !== false) {
-            $ip = getenv("HTTP_CLIENT_IP");
-        } elseif (getenv("HTTP_X_FORWARDED_FOR") !== false) {
-            $ip = getenv("HTTP_X_FORWARDED_FOR");
-        } elseif (getenv("HTTP_X_FORWARDED") !== false) {
-            $ip = getenv("HTTP_X_FORWARDED");
-        } elseif (getenv("HTTP_FORWARDED_FOR") !== false) {
-            $ip = getenv("HTTP_FORWARDED_FOR");
-        } elseif (getenv("HTTP_FORWARDED") !== false) {
-            $ip = getenv("HTTP_FORWARDED");
-        } elseif (getenv("REMOTE_ADDR") !== false) {
-            $ip = getenv("REMOTE_ADDR");
+        if (\getenv("HTTP_CLIENT_IP") !== false) {
+            $ip = \getenv("HTTP_CLIENT_IP");
+        } elseif (\getenv("HTTP_X_FORWARDED_FOR") !== false) {
+            $ip = \getenv("HTTP_X_FORWARDED_FOR");
+        } elseif (\getenv("HTTP_X_FORWARDED") !== false) {
+            $ip = \getenv("HTTP_X_FORWARDED");
+        } elseif (\getenv("HTTP_FORWARDED_FOR") !== false) {
+            $ip = \getenv("HTTP_FORWARDED_FOR");
+        } elseif (\getenv("HTTP_FORWARDED") !== false) {
+            $ip = \getenv("HTTP_FORWARDED");
+        } elseif (\getenv("REMOTE_ADDR") !== false) {
+            $ip = \getenv("REMOTE_ADDR");
         }
 
         return $ip;
@@ -241,13 +241,13 @@ final class Server implements iServer
      * Retorna uma coleção de headers ``HTTP`` definidos para a requisição que está sendo
      * executada.
      *
-     * Retornará ``null`` caso nenhum seja encontrado.
+     * Retornará ``[]`` caso nenhum seja encontrado.
      *
-     * @return      ?array
+     * @return      array
      */
-    public function getRequestHeaders() : ?array
+    public function getRequestHeaders() : array
     {
-        if ($this->headers === null) {
+        if ($this->headers === []) {
             $oServer = $this->getServerVariables();
 
             if ($oServer !== null) {
@@ -257,10 +257,10 @@ final class Server implements iServer
                 ];
 
                 foreach ($oServer as $name => $value) {
-                    $upName = strtoupper($name);
+                    $upName = \strtoupper($name);
 
-                    if (in_array($upName, $sHeaders) === true || mb_substr($upName, 0, 5) === "HTTP_") {
-                        $key = str_replace("HTTP_", "", $name);
+                    if (\in_array($upName, $sHeaders) === true || \mb_substr($upName, 0, 5) === "HTTP_") {
+                        $key = \str_replace("HTTP_", "", $name);
                         $this->headers[$key] = $value;
                     }
                 }
@@ -283,8 +283,8 @@ final class Server implements iServer
 
         $oServer = $this->getServerVariables();
         if (isset($oServer["SERVER_PROTOCOL"]) === true) {
-            $s = explode("/", $oServer["SERVER_PROTOCOL"]);
-            if (count($s) === 2) {
+            $s = \explode("/", $oServer["SERVER_PROTOCOL"]);
+            if (\count($s) === 2) {
                 $v = $s[1];
             }
         }
@@ -311,7 +311,7 @@ final class Server implements iServer
     public function getRequestMethod() : string
     {
         $oServer = $this->getServerVariables();
-        return ((isset($oServer["REQUEST_METHOD"]) === false) ? "GET" : strtoupper($oServer["REQUEST_METHOD"]));
+        return ((isset($oServer["REQUEST_METHOD"]) === false) ? "GET" : \strtoupper($oServer["REQUEST_METHOD"]));
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
@@ -393,9 +393,9 @@ final class Server implements iServer
     {
         $r = [];
 
-        if (isset($_FILES) === true && count($_FILES) > 0) {
+        if (isset($_FILES) === true && \count($_FILES) > 0) {
             foreach ($_FILES as $fieldName => $fieldData) {
-                if (is_array($fieldData["error"]) === false) {
+                if (\is_array($fieldData["error"]) === false) {
                     $r[$fieldName] = new \AeonDigital\Http\Data\File(
                         new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"]),
                         $fieldData["name"],
@@ -456,7 +456,7 @@ final class Server implements iServer
             if ($port != "") {
                 $str .= ":" . $port;
             }
-            $str .= rtrim($requestURL, "/");
+            $str .= \rtrim($requestURL, "/");
         }
 
         return $str;
@@ -477,8 +477,8 @@ final class Server implements iServer
     public function getPostedData() : array
     {
         $rawData = [];
-        parse_str(file_get_contents("php://input"), $rawData);
-        $parans = array_merge($rawData, $_GET, $_POST);
+        \parse_str(\file_get_contents("php://input"), $rawData);
+        $parans = \array_merge($rawData, $_GET, $_POST);
 
         $oServer = $this->getServerVariables();
 
@@ -489,9 +489,9 @@ final class Server implements iServer
         // verifica se alguma informação foi passada via URL
         if ($parans === [] && $this->testEnvironment === true) {
             if ($oServer !== null && isset($oServer["REQUEST_URI"]) === true) {
-                $qs = parse_url($oServer["REQUEST_URI"], PHP_URL_QUERY);
+                $qs = \parse_url($oServer["REQUEST_URI"], PHP_URL_QUERY);
                 if ($qs !== null) {
-                    parse_str($qs, $parans);
+                    \parse_str($qs, $parans);
                 }
             }
         }

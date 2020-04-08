@@ -90,7 +90,7 @@ class JSON extends aMimeHandler
                             JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
         }
 
-        return json_encode(
+        return \json_encode(
             $this->response->getViewData(),
             $jsonOptions
         );

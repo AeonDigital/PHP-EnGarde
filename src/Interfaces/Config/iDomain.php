@@ -173,9 +173,9 @@ interface iDomain
      * Define a aplicação padrão para o domínio.
      * A aplicação apontada precisa estar definida em ``hostedApps``.
      *
-     * @param       ?string $defaultApp
+     * @param       string $defaultApp
      *              Nome da aplicação que será a padrão.
-     *              Caso ``null`` ou ``''`` será definida a primeira aplicação definida em
+     *              Caso ``''`` será definida a primeira aplicação definida em
      *              ``hostedApps``.
      *
      * @return      void
@@ -183,7 +183,7 @@ interface iDomain
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    function setDefaultApp(?string $defaultApp = null) : void;
+    function setDefaultApp(string $defaultApp = "") : void;
 
 
 
@@ -263,28 +263,28 @@ interface iDomain
      * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
      * domínio.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getPathToErrorView() : ?string;
+    function getPathToErrorView() : string;
     /**
      * Resgata o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros no
      * domínio.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getFullPathToErrorView() : ?string;
+    function getFullPathToErrorView() : string;
     /**
      * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
      * domínio.
      *
      * O caminho deve ser definido a partir do diretório raiz do domínio.
      *
-     * @param       ?string $pathToErrorView
+     * @param       string $pathToErrorView
      *              Caminho até a view de erro padrão.
      *
      * @return      void
      */
-    function setPathToErrorView(?string $pathToErrorView) : void;
+    function setPathToErrorView(string $pathToErrorView) : void;
 
 
 
@@ -339,9 +339,9 @@ interface iDomain
      * Retorna o nome completo da classe da aplicação que deve ser instanciada para responder
      * a requisição atual.
      *
-     * @return      ?string
+     * @return      string
      */
-    function retrieveApplicationNS() : ?string;
+    function retrieveApplicationNS() : string;
 
 
 
@@ -350,11 +350,11 @@ interface iDomain
      * configurações ou processamento dos presentes dados indique que tal redirecionamento
      * seja necessário.
      *
-     * Retorna ``null`` caso nenhum redirecionamento seja necessário.
+     * Retorna ``''`` caso nenhum redirecionamento seja necessário.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getNewLocationPath() : ?string;
+    function getNewLocationPath() : string;
 
 
 

@@ -100,13 +100,13 @@ class PDF extends aMimeHandler
 
 
             // Mescla os dados obtidos
-            $body = str_replace("<view />",          $viewContent, $masterContent);
-            $body = str_replace("<metatags />",      $strMetaData, $body);
-            $body = str_replace("<stylesheets />",   $strStyleSheet, $body);
-            $body = str_replace("<javascripts />",   "", $body);
+            $body = \str_replace("<view />",          $viewContent, $masterContent);
+            $body = \str_replace("<metatags />",      $strMetaData, $body);
+            $body = \str_replace("<stylesheets />",   $strStyleSheet, $body);
+            $body = \str_replace("<javascripts />",   "", $body);
 
             $htmlProp = "lang=\"".$this->routeConfig->getResponseLocale()."\"";
-            $body = str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
+            $body = \str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
         }
         else {
             $viewData = $this->response->getViewData();
@@ -118,8 +118,8 @@ class PDF extends aMimeHandler
 
 
         $msgError = null;
-        if (class_exists("Dompdf\Dompdf") === false) {
-			$msgError = "To create PDF documents using the native resources, please, install the \"dompdf/dompdf\" library.";
+        if (\class_exists("Dompdf\Dompdf") === false) {
+            $msgError = "To create PDF documents using the native resources, please, install the \"dompdf/dompdf\" library.";
         }
         else {
             $dompdf = new \Dompdf\Dompdf();
@@ -138,7 +138,7 @@ class PDF extends aMimeHandler
         // Havendo algum erro, mostra a falha.
         if ($msgError !== null) {
             throw new \Exception($msgError);
-		}
+        }
 
         return $body;
     }

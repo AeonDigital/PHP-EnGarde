@@ -33,7 +33,7 @@ final class Domain implements iDomain
      *
      * @var         \DateTime
      */
-    private $now = null;
+    private \DateTime $now;
     /**
      * Resgata a data e hora do momento em que a requisição chegou ao domínio.
      *
@@ -53,7 +53,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $version = null;
+    private string $version = "";
     /**
      * Resgata a versão atual do framework.
      *
@@ -73,7 +73,7 @@ final class Domain implements iDomain
      */
     public function setVersion(string $version) : void
     {
-        if ($this->version === null) {
+        if ($this->version === "") {
             $this->version = $version;
         }
     }
@@ -92,7 +92,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $environmentType = null;
+    private string $environmentType = "";
     /**
      * Retorna o tipo de ambiente que o domínio está rodando no momento.
      *
@@ -120,7 +120,7 @@ final class Domain implements iDomain
      */
     public function setEnvironmentType(string $environmentType) : void
     {
-        if ($this->environmentType === null) {
+        if ($this->environmentType === "") {
             $this->environmentType = $environmentType;
         }
     }
@@ -132,9 +132,9 @@ final class Domain implements iDomain
     /**
      * Indica se o domínio está em modo de debug.
      *
-     * @var         bool
+     * @var         ?bool
      */
-    private $isDebugMode = null;
+    private ?bool $isDebugMode = null;
     /**
      * Retorna ``true`` se o domínio está em modo de debug.
      *
@@ -142,7 +142,7 @@ final class Domain implements iDomain
      */
     public function getIsDebugMode() : bool
     {
-        return $this->isDebugMode;
+        return (($this->isDebugMode === null) ? false : $this->isDebugMode);
     }
     /**
      * Define configuração para o modo de debug.
@@ -166,9 +166,9 @@ final class Domain implements iDomain
     /**
      * Indica se a aplicação alvo da requisição deve atualizar suas respectivas rotas.
      *
-     * @var         bool
+     * @var         ?bool
      */
-    private $isUpdateRoutes = null;
+    private ?bool $isUpdateRoutes = null;
     /**
      * Retorna ``true`` se for para a aplicação alvo atualizar suas respectivas rotas.
      *
@@ -176,7 +176,7 @@ final class Domain implements iDomain
      */
     public function getIsUpdateRoutes() : bool
     {
-        return $this->isUpdateRoutes;
+        return (($this->isUpdateRoutes === null) ? false : $this->isUpdateRoutes);
     }
     /**
      * Define configuração que indica para a aplicação algo que ela deve atualizar suas
@@ -203,7 +203,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $rootPath = null;
+    private string $rootPath = "";
     /**
      * Retorna o caminho completo até o diretório raiz do domínio.
      *
@@ -226,16 +226,16 @@ final class Domain implements iDomain
      */
     public function setRootPath(string $rootPath) : void
     {
-        if ($this->rootPath === null) {
+        if ($this->rootPath === "") {
             $err = null;
             // Se nenhum caminho foi definido para o caminho da raiz do domínio
             if ($rootPath === "") {
                 $err = "The path to the root directory is invalid. Empty string received.";
             } else {
                 // Verifica o diretório raiz da aplicação
-                $rootPath = to_system_path($rootPath) . DS;
-                if (file_exists($rootPath) === false) {
-                    $err = "The path to the root directory of the domain does not exist [ \"" . trim($rootPath, DS) . "\" ].";
+                $rootPath = \to_system_path($rootPath) . DS;
+                if (\file_exists($rootPath) === false) {
+                    $err = "The path to the root directory of the domain does not exist [ \"" . \trim($rootPath, DS) . "\" ].";
                 }
             }
 
@@ -257,7 +257,7 @@ final class Domain implements iDomain
      *
      * @var         array
      */
-    private $hostedApps = null;
+    private array $hostedApps = [];
     /**
      * Retorna a coleção de nomes de aplicações instaladas no domínio
      *
@@ -282,14 +282,14 @@ final class Domain implements iDomain
      */
     public function setHostedApps(array $hostedApps) : void
     {
-        if ($this->hostedApps === null) {
+        if ($this->hostedApps === []) {
             $err = null;
-            if (count($hostedApps) === 0) {
+            if (\count($hostedApps) === 0) {
                 $err = "No application was set for domain configuration.";
             } else {
                 foreach ($hostedApps as $app) {
                     $appPath = $this->rootPath . (string)$app;
-                    if (file_exists($appPath) === false) {
+                    if (\file_exists($appPath) === false) {
                         $err = "The main directory of the application \"" . (string)$app . "\" does not exist.";
                     }
                 }
@@ -312,7 +312,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $defaultApp = null;
+    private string $defaultApp = "";
     /**
      * Retorna o nome da aplicação padrão do domínio.
      *
@@ -326,9 +326,9 @@ final class Domain implements iDomain
      * Define a aplicação padrão para o domínio.
      * A aplicação apontada precisa estar definida em ``hostedApps``.
      *
-     * @param       ?string $defaultApp
+     * @param       string $defaultApp
      *              Nome da aplicação que será a padrão.
-     *              Caso ``null`` ou ``''`` será definida a primeira aplicação definida em
+     *              Caso ``''`` será definida a primeira aplicação definida em
      *              ``hostedApps``.
      *
      * @return      void
@@ -336,14 +336,14 @@ final class Domain implements iDomain
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    public function setDefaultApp(?string $defaultApp = null) : void
+    public function setDefaultApp(string $defaultApp = "") : void
     {
-        if ($this->defaultApp === null) {
+        if ($this->defaultApp === "") {
             if ($defaultApp === null || $defaultApp === "") {
                 $defaultApp = $this->hostedApps[0];
             }
 
-            if (in_array($defaultApp, $this->hostedApps) === true) {
+            if (\in_array($defaultApp, $this->hostedApps) === true) {
                 $this->defaultApp = $defaultApp;
             } else {
                 $err = "The application \"" . $defaultApp . "\" does not exist between hosted applications.";
@@ -363,7 +363,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $dateTimeLocal = null;
+    private string $dateTimeLocal = "";
     /**
      * Retorna o timezone do domínio.
      *
@@ -383,7 +383,7 @@ final class Domain implements iDomain
      */
     public function setDateTimeLocal(string $dateTimeLocal) : void
     {
-        if ($this->dateTimeLocal === null) {
+        if ($this->dateTimeLocal === "") {
             $this->dateTimeLocal = $dateTimeLocal;
         }
     }
@@ -397,7 +397,7 @@ final class Domain implements iDomain
      *
      * @var         int
      */
-    private $timeOut = null;
+    private int $timeOut = 0;
     /**
      * Retorna o tempo máximo (em segundos) para a execução das requisições.
      *
@@ -417,7 +417,7 @@ final class Domain implements iDomain
      */
     public function setTimeOut(int $timeOut) : void
     {
-        if ($this->timeOut === null) {
+        if ($this->timeOut === 0) {
             $this->timeOut = $timeOut;
         }
     }
@@ -431,7 +431,7 @@ final class Domain implements iDomain
      *
      * @var         int
      */
-    private $maxFileSize = null;
+    private int $maxFileSize = 0;
     /**
      * Valor máximo (em Mb) para o upload de um arquivo.
      *
@@ -451,7 +451,7 @@ final class Domain implements iDomain
      */
     public function setMaxFileSize(int $maxFileSize) : void
     {
-        if ($this->maxFileSize === null) {
+        if ($this->maxFileSize === 0) {
             $this->maxFileSize = $maxFileSize;
         }
     }
@@ -465,7 +465,7 @@ final class Domain implements iDomain
      *
      * @var         int
      */
-    private $maxPostSize = null;
+    private int $maxPostSize = 0;
     /**
      * Valor máximo (em Mb) para a postagem de dados.
      *
@@ -485,7 +485,7 @@ final class Domain implements iDomain
      */
     public function setMaxPostSize(int $maxPostSize) : void
     {
-        if ($this->maxPostSize === null) {
+        if ($this->maxPostSize === 0) {
             $this->maxPostSize = $maxPostSize;
         }
     }
@@ -497,16 +497,16 @@ final class Domain implements iDomain
     /**
      * Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no domínio.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $pathToErrorView = null;
+    private string $pathToErrorView = "";
     /**
      * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
      * domínio.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getPathToErrorView() : ?string
+    public function getPathToErrorView() : string
     {
         return $this->pathToErrorView;
     }
@@ -516,9 +516,9 @@ final class Domain implements iDomain
      *
      * @return      ?string
      */
-    public function getFullPathToErrorView() : ?string
+    public function getFullPathToErrorView() : string
     {
-        return (($this->pathToErrorView === null) ? null : $this->rootPath . $this->pathToErrorView);
+        return (($this->pathToErrorView === "") ? "" : $this->rootPath . $this->pathToErrorView);
     }
     /**
      * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
@@ -526,15 +526,15 @@ final class Domain implements iDomain
      *
      * O caminho deve ser definido a partir do diretório raiz do domínio.
      *
-     * @param       ?string $pathToErrorView
+     * @param       string $pathToErrorView
      *              Caminho até a view de erro padrão.
      *
      * @return      void
      */
-    public function setPathToErrorView(?string $pathToErrorView) : void
+    public function setPathToErrorView(string $pathToErrorView) : void
     {
-        if ($this->pathToErrorView === null) {
-            $this->pathToErrorView = to_system_path(trim($pathToErrorView, "/\\"));
+        if ($this->pathToErrorView === "") {
+            $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
         }
     }
 
@@ -547,7 +547,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $applicationClassName = null;
+    private string $applicationClassName = "";
     /**
      * Resgata o nome da classe responsável por iniciar a aplicação.
      *
@@ -567,7 +567,7 @@ final class Domain implements iDomain
      */
     public function setApplicationClassName(string $applicationClassName) : void
     {
-        if ($this->applicationClassName === null) {
+        if ($this->applicationClassName === "") {
             $this->applicationClassName = $applicationClassName;
         }
     }
@@ -606,29 +606,29 @@ final class Domain implements iDomain
      */
     public function defineTargetApplication(string $uriRelativePath) : void
     {
-        if ($this->applicationName === null) {
+        if ($this->applicationName === "") {
             $applicationName = "";
             $this->applicationName = $this->getDefaultApp();
             $this->applicationNameOmitted = true;
 
             if ($uriRelativePath !== "" && $uriRelativePath !== "/") {
-                $applicationName = strtok(strtok(ltrim($uriRelativePath, "/"), "?"), "/");
+                $applicationName = \strtok(\strtok(\ltrim($uriRelativePath, "/"), "?"), "/");
             }
 
 
-            if (in_array($applicationName, $this->getHostedApps()) === true) {
+            if (\in_array($applicationName, $this->getHostedApps()) === true) {
                 $this->applicationName = $applicationName;
                 $this->applicationNameOmitted = false;
             } else {
                 foreach ($this->getHostedApps() as $i => $app) {
-                    if (strtolower($applicationName) === strtolower($app)) {
+                    if (\strtolower($applicationName) === \strtolower($app)) {
                         $this->applicationName = $app;
                         $this->applicationNameOmitted = false;
 
-                        $parts = explode("/", ltrim($uriRelativePath, "/"));
-                        array_shift($parts);
+                        $parts = \explode("/", \ltrim($uriRelativePath, "/"));
+                        \array_shift($parts);
 
-                        $this->newLocation = "/" . $app . "/" . implode("/", $parts);
+                        $this->newLocation = "/" . $app . "/" . \implode("/", $parts);
                     }
                 }
             }
@@ -642,7 +642,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private $applicationName = null;
+    private string $applicationName = "";
     /**
      * Retorna o nome da aplicação que deve responder a requisição ``HTTP`` atual.
      *
@@ -660,7 +660,7 @@ final class Domain implements iDomain
      *
      * @var         bool
      */
-    private $applicationNameOmitted = null;
+    private bool $applicationNameOmitted = false;
     /**
      * Indica quando na ``URI`` atual o nome da aplicação a ser executada está omitida. Nestes
      * casos a aplicação padrão deve ser executada.
@@ -678,11 +678,11 @@ final class Domain implements iDomain
      * Retorna o nome completo da classe da aplicação que deve ser instanciada para responder
      * a requisição atual.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function retrieveApplicationNS() : ?string
+    public function retrieveApplicationNS() : string
     {
-        $r = null;
+        $r = "";
         if ($this->applicationName !== null && $this->applicationClassName !== null) {
             $r = "\\" . $this->applicationName . "\\" . $this->applicationClassName;
         }
@@ -696,19 +696,19 @@ final class Domain implements iDomain
     /**
      * Local para onde o ``UA`` deve ser redirecionado.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $newLocation = null;
+    private string $newLocation = "";
     /**
      * Pode retornar uma string para onde o UA deve ser redirecionado caso alguma das
      * configurações ou processamento dos presentes dados indique que tal redirecionamento
      * seja necessário.
      *
-     * Retorna ``null`` caso nenhum redirecionamento seja necessário.
+     * Retorna ``''`` caso nenhum redirecionamento seja necessário.
      *
      * @return      ?string
      */
-    public function getNewLocationPath() : ?string
+    public function getNewLocationPath() : string
     {
         return $this->newLocation;
     }
@@ -727,7 +727,7 @@ final class Domain implements iDomain
      *
      * @var         bool
      */
-    private $isSetConfig = false;
+    private bool $isSetConfig = false;
     /**
      * Efetua configurações para o ``PHP`` conforme as propriedades definidas para esta classe.
      *
@@ -756,10 +756,10 @@ final class Domain implements iDomain
             // seguintes atributos :
             //      display_errors = 1
             //      error_reporting = E_ALL
-            error_reporting(0);
-            ini_set("display_errors", "0");
-            if (function_exists("xdebug_disable")) {
-                xdebug_disable();
+            \error_reporting(0);
+            \ini_set("display_errors", "0");
+            if (\function_exists("xdebug_disable")) {
+                \xdebug_disable();
             }
 
 
@@ -767,23 +767,23 @@ final class Domain implements iDomain
 
 
             // Define o UTF-8 como o padrão para uso nos domínios
-            mb_internal_encoding("UTF-8");
-            mb_http_output("UTF-8");
-            mb_http_input("UTF-8");
-            mb_language("uni");
-            mb_regex_encoding("UTF-8");
+            \mb_internal_encoding("UTF-8");
+            \mb_http_output("UTF-8");
+            \mb_http_input("UTF-8");
+            \mb_language("uni");
+            \mb_regex_encoding("UTF-8");
 
 
             // Seta o timezone para o domínio
-            date_default_timezone_set($this->getDateTimeLocal());
+            \date_default_timezone_set($this->getDateTimeLocal());
 
 
             // - Define o valor máximo (em segundos) que um processamento pode durar.
-            ini_set("max_execution_time", (string)$this->getTimeOut());
+            \ini_set("max_execution_time", (string)$this->getTimeOut());
 
             // - Define os limites aceitáveis para o upload e a postagem de dados vindos do cliente.
-            ini_set("upload_max_filesize", (string)$this->getMaxFileSize());
-            ini_set("post_max_size", (string)$this->getMaxPostSize());
+            \ini_set("upload_max_filesize", (string)$this->getMaxFileSize());
+            \ini_set("post_max_size", (string)$this->getMaxPostSize());
         }
     }
 

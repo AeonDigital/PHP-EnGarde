@@ -32,7 +32,7 @@ final class Security implements iSecurity
      *
      * @var         bool
      */
-    private $active = false;
+    private bool $active = false;
     /**
      * Retornará ``true`` se a aplicação estiver configurada para usar as definições de segurança.
      * Quando ``false`` indica que a aplicação é pública.
@@ -51,7 +51,7 @@ final class Security implements iSecurity
      *
      * @var         string
      */
-    private $dataCookieName = "";
+    private string $dataCookieName = "";
     /**
      * Retornará o nome do cookie que carrega informações da sessão atual do usuário.
      *
@@ -69,7 +69,7 @@ final class Security implements iSecurity
      *
      * @var         string
      */
-    private $securityCookieName = "";
+    private string $securityCookieName = "";
     /**
      * Retornará o nome do cookie de autenticação.
      *
@@ -87,7 +87,7 @@ final class Security implements iSecurity
      *
      * @var         string
      */
-    private $routeToLogin = "";
+    private string $routeToLogin = "";
     /**
      * Retorna a rota para o local onde o usuário faz login.
      *
@@ -105,7 +105,7 @@ final class Security implements iSecurity
      *
      * @var         string
      */
-    private $routeToStart = "";
+    private string $routeToStart = "";
     /**
      * Retorna a rota para o local onde o usuário deve ser direcionado quando efetua o login.
      *
@@ -123,7 +123,7 @@ final class Security implements iSecurity
      *
      * @var         string
      */
-    private $routeToResetPassword = "";
+    private string $routeToResetPassword = "";
     /**
      * Retorna a rota para o local onde o usuário pode ir para efetuar o reset de sua senha.
      *
@@ -141,7 +141,7 @@ final class Security implements iSecurity
      *
      * @var         int
      */
-    private $anonymousId = 1;
+    private int $anonymousId = 1;
     /**
      * Retornará o Id do usuário anonimo da aplicação.
      *
@@ -159,7 +159,7 @@ final class Security implements iSecurity
      *
      * @var         string
      */
-    private $sessionType = "local";
+    private string $sessionType = "local";
     /**
      * Retorna o tipo de sessão que está sendo usada.
      * - "local"     :  A sessão autenticada do usuário é armazenada na própria aplicação.
@@ -182,7 +182,7 @@ final class Security implements iSecurity
      *
      * @var         bool
      */
-    private $sessionRenew = true;
+    private bool $sessionRenew = true;
     /**
      * Indica se as sessões devem ser renovar a cada iteração do usuário.
      * O padrão é ``true``.
@@ -201,7 +201,7 @@ final class Security implements iSecurity
      *
      * @var         int
      */
-    private $sessionTimeout = 40;
+    private int $sessionTimeout = 40;
     /**
      * Retornará o tempo (em minutos) que cada sessão deve suportar de inatividade.
      * O padrão são 40 minutos.
@@ -220,7 +220,7 @@ final class Security implements iSecurity
      *
      * @var         int
      */
-    private $allowedFaultByIP = 50;
+    private int $allowedFaultByIP = 50;
     /**
      * Retornará o limite de falhas de login permitidas para um mesmo ``IP`` em um determinado
      * periodo. O padrão são 50 tentativas.
@@ -239,7 +239,7 @@ final class Security implements iSecurity
      *
      * @var         int
      */
-    private $ipBlockTimeout = 50;
+    private int $ipBlockTimeout = 50;
     /**
      * Retornará o tempo de bloqueio para um ``IP`` [em minutos].
      * O padrão são 50 minutos.
@@ -258,7 +258,7 @@ final class Security implements iSecurity
      *
      * @var         int
      */
-    private $allowedFaultByLogin = 5;
+    private int $allowedFaultByLogin = 5;
     /**
      * Retornará o limite de falhas permitidas para erros sucessivos de senha para um mesmo login.
      * O padrão são 5 tentativas.
@@ -277,7 +277,7 @@ final class Security implements iSecurity
      *
      * @var         int
      */
-    private $loginBlockTimeout = 20;
+    private int $loginBlockTimeout = 20;
     /**
      * Retornará o tempo de bloqueio para um Login [em minutos].
      * O padrão são 20 minutos.

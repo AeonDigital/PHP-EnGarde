@@ -328,7 +328,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame($expected, $nMock->getRelationedRoutes());
 
         $nMock->setRelationedRoutes([]);
-        $this->assertSame(null, $nMock->getRelationedRoutes());
+        $this->assertSame([], $nMock->getRelationedRoutes());
     }
 
 
@@ -340,7 +340,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("Only a description.", $nMock->getDescription());
 
         $nMock->setDescription("");
-        $this->assertSame(null, $nMock->getDescription());
+        $this->assertSame("", $nMock->getDescription());
     }
 
 
@@ -352,7 +352,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("Only a dev description.", $nMock->getDevDescription());
 
         $nMock->setDevDescription("");
-        $this->assertSame(null, $nMock->getDevDescription());
+        $this->assertSame("", $nMock->getDevDescription());
     }
 
 
@@ -420,7 +420,7 @@ class ConfigRouteTest extends TestCase
     public function test_method_getset_responsemime()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame(null, $nMock->getResponseMime());
+        $this->assertSame("", $nMock->getResponseMime());
 
         $nMock->setResponseMime("txt");
         $this->assertSame("txt", $nMock->getResponseMime());
@@ -430,7 +430,7 @@ class ConfigRouteTest extends TestCase
     public function test_method_getset_responsemimetype()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame(null, $nMock->getResponseMimeType());
+        $this->assertSame("", $nMock->getResponseMimeType());
 
         $nMock->setResponseMimeType("text/plain");
         $this->assertSame("text/plain", $nMock->getResponseMimeType());
@@ -440,7 +440,7 @@ class ConfigRouteTest extends TestCase
     public function test_method_getset_responselocale()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame(null, $nMock->getResponseLocale());
+        $this->assertSame("", $nMock->getResponseLocale());
 
         $nMock->setResponseLocale("pt-br");
         $this->assertSame("pt-br", $nMock->getResponseLocale());
@@ -474,13 +474,13 @@ class ConfigRouteTest extends TestCase
     public function test_method_getset_responsedownloadfilename()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame(null, $nMock->getResponseDownloadFileName());
+        $this->assertSame("", $nMock->getResponseDownloadFileName());
 
         $nMock->setResponseDownloadFileName("explicit-filename");
         $this->assertSame("explicit-filename", $nMock->getResponseDownloadFileName());
 
         $nMock->setResponseDownloadFileName("");
-        $this->assertSame(null, $nMock->getResponseDownloadFileName());
+        $this->assertSame("", $nMock->getResponseDownloadFileName());
     }
 
 
@@ -492,7 +492,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("/route/to/masterpage.phtml", $nMock->getMasterPage());
 
         $nMock->setMasterPage("");
-        $this->assertSame(null, $nMock->getMasterPage());
+        $this->assertSame("", $nMock->getMasterPage());
     }
 
 
@@ -504,7 +504,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("/route/to/view.phtml", $nMock->getView());
 
         $nMock->setView("");
-        $this->assertSame(null, $nMock->getView());
+        $this->assertSame("", $nMock->getView());
     }
 
 
@@ -516,7 +516,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("/route/to/form.php", $nMock->getForm());
 
         $nMock->setForm("");
-        $this->assertSame(null, $nMock->getForm());
+        $this->assertSame("", $nMock->getForm());
     }
 
 
@@ -560,7 +560,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("/route/to/pt-br.php", $nMock->getLocaleDictionary());
 
         $nMock->setLocaleDictionary("");
-        $this->assertSame(null, $nMock->getLocaleDictionary());
+        $this->assertSame("", $nMock->getLocaleDictionary());
     }
 
 
@@ -599,8 +599,8 @@ class ConfigRouteTest extends TestCase
         $nMock->setCustomProperties($cprop);
         $this->assertSame($cprop, $nMock->getCustomProperties());
 
-        $nMock->setCustomProperties(null);
-        $this->assertSame(null, $nMock->getCustomProperties());
+        $nMock->setCustomProperties([]);
+        $this->assertSame([], $nMock->getCustomProperties());
     }
 
 

@@ -93,7 +93,7 @@ class XML extends aMimeHandler
 
             $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
             // Mescla os dados obtidos
-            $body = str_replace("<view />", $viewContent, $masterContent);
+            $body = \str_replace("<view />", $viewContent, $masterContent);
         }
         else {
             $viewData = $this->response->getViewData();

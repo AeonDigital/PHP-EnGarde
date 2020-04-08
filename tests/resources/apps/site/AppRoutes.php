@@ -34,31 +34,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Descrição genérica no controller.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -66,7 +68,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
     '/^\\/site\\//' => 
@@ -116,29 +120,29 @@
           0 => '/list',
         ),
         'description' => 'Página home da aplicação',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -146,7 +150,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
       'POST' => 
       array (
@@ -193,29 +199,29 @@
           0 => '/list',
         ),
         'description' => 'Página home da aplicação',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -223,7 +229,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
     '/^\\/site\\/home\\//' => 
@@ -273,29 +281,29 @@
           0 => '/list',
         ),
         'description' => 'Página home da aplicação',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -303,7 +311,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
       'POST' => 
       array (
@@ -350,29 +360,29 @@
           0 => '/list',
         ),
         'description' => 'Página home da aplicação',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => 'bem_vindo',
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -380,7 +390,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
     '/^\\/site\\/list\\//' => 
@@ -418,31 +430,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Evoca a view de lista.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -450,7 +464,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
     '/^\\/site\\/contact\\//' => 
@@ -485,31 +501,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Evoca a view para o formulário de contato.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -517,7 +535,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
       'POST' => 
       array (
@@ -550,31 +570,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Recebe os dados submetidos pelo formulário de contato, processa-os e retorna o resultado.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -582,7 +604,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
   ),
@@ -623,31 +647,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Evoca a view de lista.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -655,7 +681,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
     '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\/(?P<page>[0-9])\\//' => 
@@ -693,31 +721,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Evoca a view de lista.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -725,7 +755,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
     '/^\\/site\\/configurando-uma-rota\\/propriedades\\/(?P<propertie>[a-zA-Z]+)\\//' => 
@@ -763,31 +795,33 @@
           4 => 'ctrl_mid_02',
           5 => 'ctrl_mid_03',
         ),
-        'relationedRoutes' => NULL,
+        'relationedRoutes' => 
+        array (
+        ),
         'description' => 'Evoca a view de lista.',
-        'devDescription' => NULL,
+        'devDescription' => '',
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => NULL,
-        'responseMimeType' => NULL,
-        'responseLocale' => NULL,
+        'responseMime' => '',
+        'responseMimeType' => '',
+        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => NULL,
-        'masterPage' => NULL,
-        'view' => NULL,
-        'form' => NULL,
+        'responseDownloadFileName' => '',
+        'masterPage' => '',
+        'view' => '',
+        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => NULL,
+        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
@@ -795,7 +829,9 @@
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
         'runMethodName' => 'run',
-        'customProperties' => NULL,
+        'customProperties' => 
+        array (
+        ),
       ),
     ),
   ),

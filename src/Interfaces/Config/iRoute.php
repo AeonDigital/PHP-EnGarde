@@ -329,20 +329,20 @@ interface iRoute
     /**
      * Retorna uma coleção de rotas e/ou URLs que tem relação com esta.
      *
-     * @return      ?array
+     * @return      array
      */
-    function getRelationedRoutes() : ?array;
+    function getRelationedRoutes() : array;
     /**
      * Define uma coleção de rotas e/ou URLs que tem relação com esta.
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?array $relationedRoutes
+     * @param       array $relationedRoutes
      *              Coleção de rotas.
      *
      * @return      void
      */
-    function setRelationedRoutes(?array $relationedRoutes) : void;
+    function setRelationedRoutes(array $relationedRoutes) : void;
 
 
 
@@ -351,21 +351,21 @@ interface iRoute
     /**
      * Retorna uma descrição sobre a ação executada por esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getDescription() : ?string;
+    function getDescription() : string;
     /**
      * Define uma descrição sobre a ação executada por esta rota.
      * Esta descrição deve ter um teor mais abrangente e não técnico.
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $description
+     * @param       string $description
      *              Descrição para a rota.
      *
      * @return      void
      */
-    function setDescription(?string $description) : void;
+    function setDescription(string $description) : void;
 
 
 
@@ -375,9 +375,9 @@ interface iRoute
      * Retorna uma descrição técnica para a rota.
      * O formato MarkDown pode ser utilizado.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getDevDescription() : ?string;
+    function getDevDescription() : string;
     /**
      * Define uma descrição técnica para a rota.
      * O formato MarkDown pode ser utilizado.
@@ -389,7 +389,7 @@ interface iRoute
      *
      * @return      void
      */
-    function setDevDescription(?string $devDescription) : void;
+    function setDevDescription(string $devDescription) : void;
 
 
 
@@ -512,20 +512,20 @@ interface iRoute
     /**
      * Retorna o Mime (extenção) a ser usado para resolver esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getResponseMime() : ?string;
+    function getResponseMime() : string;
     /**
      * Define o Mime (extenção) a ser usado para resolver esta rota.
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $mime
+     * @param       string $mime
      *              Mime (extenção) que será usado.
      *
      * @return      void
      */
-    function setResponseMime(?string $mime) : void;
+    function setResponseMime(string $mime) : void;
 
 
 
@@ -534,20 +534,20 @@ interface iRoute
     /**
      * Retorna o MimeType (canônico) a ser usado para resolver esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getResponseMimeType() : ?string;
+    function getResponseMimeType() : string;
     /**
      * Define o MimeType (canônico) a ser usado para resolver esta rota.
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $mimeType
+     * @param       string $mimeType
      *              MimeType (canônico) que será usado.
      *
      * @return      void
      */
-    function setResponseMimeType(?string $mimeType) : void;
+    function setResponseMimeType(string $mimeType) : void;
 
 
 
@@ -556,20 +556,20 @@ interface iRoute
     /**
      * Retorna o Locale a ser usado para resolver esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getResponseLocale() : ?string;
+    function getResponseLocale() : string;
     /**
      * Define o Locale a ser usado para resolver esta rota.
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $locale
+     * @param       string $locale
      *              Locale que será usado.
      *
      * @return      void
      */
-    function setResponseLocale(?string $locale) : void;
+    function setResponseLocale(string $locale) : void;
 
 
 
@@ -627,20 +627,20 @@ interface iRoute
      * Se nenhum nome for definido de forma explicita, este valor será criado a partir do nome da
      * rota principal.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getResponseDownloadFileName() : ?string;
+    function getResponseDownloadFileName() : string;
     /**
      * Define o nome do documento que deve ser devolvido ao efetuar o download da rota.
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $downloadFileName
+     * @param       string $downloadFileName
      *              Nome do arquivo que será enviado ao UA como um download.
      *
      * @return      void
      */
-    function setResponseDownloadFileName(?string $downloadFileName) : void;
+    function setResponseDownloadFileName(string $downloadFileName) : void;
 
 
 
@@ -650,21 +650,21 @@ interface iRoute
      * Retorna o caminho relativo (a partir de ``appRootPath``) até a master page que será
      * utilizada.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getMasterPage() : ?string;
+    function getMasterPage() : string;
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até a master page que será
      * utilizada.
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $masterPage
+     * @param       string $masterPage
      *              Caminho relativo até a master page.
      *
      * @return      void
      */
-    function setMasterPage(?string $masterPage) : void;
+    function setMasterPage(string $masterPage) : void;
 
 
 
@@ -674,21 +674,21 @@ interface iRoute
      * Retorna o caminho relativo (a partir do diretório definido para as views) até a view
      * que será utilizada.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getView() : ?string;
+    function getView() : string;
     /**
      * Define o caminho relativo (a partir do diretório definido para as views) até a view
      * que será utilizada.
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $view
+     * @param       string $view
      *              Caminho relativo até a view.
      *
      * @return      void
      */
-    function setView(?string $view) : void;
+    function setView(string $view) : void;
 
 
 
@@ -698,21 +698,21 @@ interface iRoute
      * Retorna o caminho relativo (a partir de ``appRootPath``) até um arquivo de formulário
      * que esteja sendo utilizado pela rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getForm() : ?string;
+    function getForm() : string;
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até um arquivo de formulário
      * que esteja sendo utilizado pela rota.
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $form
+     * @param       string $form
      *              Caminho relativo até o arquivo que define o formulário alvo.
      *
      * @return      void
      */
-    function setForm(?string $form) : void;
+    function setForm(string $form) : void;
 
 
 
@@ -802,16 +802,16 @@ interface iRoute
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o arquivo de legendas do locale
      * que será usado para responder a requisição.
      *
-     * @return      ?string
+     * @return      string
      */
-    function getLocaleDictionary() : ?string;
+    function getLocaleDictionary() : string;
     /*
      * Define o caminho relativo (a partir de ``appRootPath``) até o arquivo de legendas do
      * locale que será usado para responder a requisição.
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $localeDictionary
+     * @param       string $localeDictionary
      *              Caminho relativo até o arquivo de legendas.
      *
      * @return      void
@@ -819,7 +819,7 @@ interface iRoute
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    function setLocaleDictionary(?string $localeDictionary) : void;
+    function setLocaleDictionary(string $localeDictionary) : void;
 
 
 
@@ -887,18 +887,18 @@ interface iRoute
      * Resgata um array associativo contendo propriedades customizadas para o processamento
      * da rota.
      *
-     * @return      ?array
+     * @return      array
      */
-    function getCustomProperties() : ?array;
+    function getCustomProperties() : array;
     /**
      * Define uma coleção de propriedades customizadas para o processamento da rota.
      *
-     * @param       ?array $customProperties
+     * @param       array $customProperties
      *              Array associativo contendo as informações customizadas.
      *
      * @return      void
      */
-    function setCustomProperties(?array $customProperties) : void;
+    function setCustomProperties(array $customProperties) : void;
 
 
 
@@ -929,7 +929,7 @@ interface iRoute
      *              Locale que terá prioridade sobre os demais podendo inclusive ser um que a
      *              aplicação não esteja apta a servir.
      *
-     * @return      ?string
+     * @return      string
      */
     function negotiateLocale(
         ?array $requestLocales,
@@ -937,7 +937,7 @@ interface iRoute
         ?array $applicationLocales,
         ?string $defaultLocale,
         ?string $forceLocale
-    ) : ?string;
+    ) : string;
 
 
 
@@ -952,7 +952,7 @@ interface iRoute
      *              Mime que terá prioridade sobre os demais podendo inclusive ser um que a rota
      *              não esteja apta a utilizar.
      *
-     * @return      ?array
+     * @return      array
      * ``` php
      *  $arr = [
      *      "valid"     bool    Indica se o mimetype encontrado é válido para ser usado em um response
@@ -964,7 +964,7 @@ interface iRoute
     function negotiateMimeType(
         ?array $requestMimes,
         ?string $forceMime
-    ) : ?array;
+    ) : array;
 
 
 

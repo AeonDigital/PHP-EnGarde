@@ -84,7 +84,10 @@ class TXT extends aMimeHandler
     public function createResponseBody() : string
     {
         $body = "";
-        $hasTemplate = ($this->routeConfig->getView() !== null || $this->routeConfig->getMasterPage() !== null);
+        $hasTemplate = (
+            $this->routeConfig->getView() !== null ||
+            $this->routeConfig->getMasterPage() !== null
+        );
 
 
         if ($hasTemplate === true) {
@@ -93,7 +96,7 @@ class TXT extends aMimeHandler
 
             $masterContent = (($masterContent === "") ? "<view />" : $masterContent);
             // Mescla os dados obtidos
-            $body = str_replace("<view />", $viewContent, $masterContent);
+            $body = \str_replace("<view />", $viewContent, $masterContent);
         }
         else {
             $viewData = $this->response->getViewData();

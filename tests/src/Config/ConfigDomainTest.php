@@ -366,7 +366,7 @@ class ConfigDomainTest extends TestCase
         $nMock = provider_PHPEnGarde_InstanceOf_ConfigDomain(true);
         $nMock->defineTargetApplication("/site/path/to/resource?qs1=v1");
 
-        $this->assertSame(null, $nMock->getNewLocationPath());
+        $this->assertSame("", $nMock->getNewLocationPath());
 
 
 

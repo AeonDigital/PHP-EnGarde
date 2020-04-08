@@ -35,7 +35,7 @@ final class Route implements iRoute
      *
      * @var     bool
      */
-    private $isLockProperties = false;
+    private bool $isLockProperties = false;
 
 
 
@@ -59,9 +59,13 @@ final class Route implements iRoute
      */
     private function checkMethod(string $method) : bool
     {
-        $validMethod = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE"];
-        if (array_in_ci($method, $validMethod) === false) {
-            $err = "Invalid Method. Expected one of : \"" . implode("\", \"", $validMethod) . "\".";
+        $validMethod = [
+            "GET", "HEAD", "POST", "PUT", "PATCH", "DELETE",
+            "CONNECT", "OPTIONS", "TRACE"
+        ];
+
+        if (\array_in_ci($method, $validMethod) === false) {
+            $err = "Invalid Method. Expected one of : \"" . \implode("\", \"", $validMethod) . "\".";
             throw new \InvalidArgumentException($err);
         }
         return true;
@@ -81,7 +85,7 @@ final class Route implements iRoute
      *
      * @var         string
      */
-    private $application = null;
+    private string $application = "";
     /**
      * Retorna o nome da aplicação que está sendo executada.
      *
@@ -107,14 +111,12 @@ final class Route implements iRoute
      */
     public function setApplication(string $application) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->application === null) {
-                if ($application === "") {
-                    $err = "Invalid Application. Must be a not empty string.";
-                    throw new \InvalidArgumentException($err);
-                }
-                $this->application = $application;
+        if ($this->isLockProperties === false && $this->application === "") {
+            if ($application === "") {
+                $err = "Invalid Application. Must be a not empty string.";
+                throw new \InvalidArgumentException($err);
             }
+            $this->application = $application;
         }
     }
 
@@ -132,7 +134,7 @@ final class Route implements iRoute
      *
      * @var         string
      */
-    private $namespace = null;
+    private string $namespace = "";
     /**
      * Retorna a namespace completa do controller que está respondendo a requisição.
      *
@@ -158,14 +160,12 @@ final class Route implements iRoute
      */
     public function setNamespace(string $namespace) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->namespace === null) {
-                if ($namespace === "") {
-                    $err = "Invalid Namespace. Must be a not empty string.";
-                    throw new \InvalidArgumentException($err);
-                }
-                $this->namespace = $namespace;
+        if ($this->isLockProperties === false && $this->namespace === "") {
+            if ($namespace === "") {
+                $err = "Invalid Namespace. Must be a not empty string.";
+                throw new \InvalidArgumentException($err);
             }
+            $this->namespace = $namespace;
         }
     }
 
@@ -183,7 +183,7 @@ final class Route implements iRoute
      *
      * @var         string
      */
-    private $controller = null;
+    private string $controller = "";
     /**
      * Retorna o nome do controller que possui a action que deve resolver a rota.
      *
@@ -209,14 +209,12 @@ final class Route implements iRoute
      */
     public function setController(string $controller) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->controller === null) {
-                if ($controller === "") {
-                    $err = "Invalid Controller. Must be a not empty string.";
-                    throw new \InvalidArgumentException($err);
-                }
-                $this->controller = $controller;
+        if ($this->isLockProperties === false && $this->controller === "") {
+            if ($controller === "") {
+                $err = "Invalid Controller. Must be a not empty string.";
+                throw new \InvalidArgumentException($err);
             }
+            $this->controller = $controller;
         }
     }
 
@@ -234,7 +232,7 @@ final class Route implements iRoute
      *
      * @var         string
      */
-    private $action = null;
+    private string $action = "";
     /**
      * Retorna o nome da action que resolve a rota.
      *
@@ -260,14 +258,12 @@ final class Route implements iRoute
      */
     public function setAction(string $action) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->action === null) {
-                if ($action === "") {
-                    $err = "Invalid Action. Must be a not empty string.";
-                    throw new \InvalidArgumentException($err);
-                }
-                $this->action = $action;
+        if ($this->isLockProperties === false && $this->action === "") {
+            if ($action === "") {
+                $err = "Invalid Action. Must be a not empty string.";
+                throw new \InvalidArgumentException($err);
             }
+            $this->action = $action;
         }
     }
 
@@ -285,7 +281,7 @@ final class Route implements iRoute
      *
      * @var         string
      */
-    private $method = null;
+    private string $method = "";
     /**
      * Retorna o método ``HTTP`` que deve ser usado para evocar esta rota.
      *
@@ -311,11 +307,9 @@ final class Route implements iRoute
      */
     public function setMethod(string $method) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->method === null) {
-                $this->checkMethod($method);
-                $this->method = strtoupper($method);
-            }
+        if ($this->isLockProperties === false && $this->method === "") {
+            $this->checkMethod($method);
+            $this->method = \strtoupper($method);
         }
     }
 
@@ -331,9 +325,9 @@ final class Route implements iRoute
     /**
      * Método ``HTTP`` usado para evocar esta rota.
      *
-     * @var         string
+     * @var         array
      */
-    private $allowedMethods = null;
+    private array $allowedMethods = [];
     /**
      * Retorna os métodos ``HTTP`` que podem ser usados para esta mesma rota.
      *
@@ -341,7 +335,7 @@ final class Route implements iRoute
      */
     public function getAllowedMethods() : array
     {
-        if ($this->allowedMethods === null && $this->method !== null) {
+        if ($this->allowedMethods === [] && $this->method !== "") {
             $this->allowedMethods = [$this->method];
         }
         return $this->allowedMethods;
@@ -362,13 +356,10 @@ final class Route implements iRoute
      */
     public function setAllowedMethods(array $methods) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->allowedMethods === null) {
-                $this->allowedMethods = [];
-                foreach ($methods as $method) {
-                    $this->checkMethod($method);
-                    $this->allowedMethods[] = strtoupper($method);
-                }
+        if ($this->isLockProperties === false && $this->allowedMethods === []) {
+            foreach ($methods as $method) {
+                $this->checkMethod($method);
+                $this->allowedMethods[] = \strtoupper($method);
             }
         }
     }
@@ -387,7 +378,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $routes = null;
+    private array $routes = [];
     /**
      * Retorna a rota que está sendo resolvida e seus respectivos aliases.
      *
@@ -415,22 +406,20 @@ final class Route implements iRoute
      */
     public function setRoutes(array $routes) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->routes === null) {
-                if (count($routes) === 0) {
-                    $err = "Invalid Routes. The array must have at last one value.";
-                    throw new \InvalidArgumentException($err);
-                } else {
-                    foreach ($routes as $i => $r) {
-                        if (is_string($r) === false || $r === "") {
-                            $err = "Invalid Route definition. Empty strings are not valid.";
-                            throw new \InvalidArgumentException($err);
-                        }
-                        $routes[$i] = "/" . trim($r, " /");
+        if ($this->isLockProperties === false && $this->routes === []) {
+            if (\count($routes) === 0) {
+                $err = "Invalid Routes. The array must have at last one value.";
+                throw new \InvalidArgumentException($err);
+            } else {
+                foreach ($routes as $i => $r) {
+                    if (\is_string($r) === false || $r === "") {
+                        $err = "Invalid Route definition. Empty strings are not valid.";
+                        throw new \InvalidArgumentException($err);
                     }
+                    $routes[$i] = "/" . \trim($r, " /");
                 }
-                $this->routes = $routes;
             }
+            $this->routes = $routes;
         }
     }
 
@@ -449,7 +438,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $acceptMimes = null;
+    private array $acceptMimes = [];
     /**
      * Retorna um array associativo contendo a coleção de mimetypes que esta rota é capaz de
      * devolver como resposta.
@@ -458,7 +447,7 @@ final class Route implements iRoute
      */
     public function getAcceptMimes() : array
     {
-        $r = (($this->acceptMimes === null) ? ["html" => "text/html"] : $this->acceptMimes);
+        $r = (($this->acceptMimes === []) ? ["html" => "text/html"] : $this->acceptMimes);
         if (isset($r["html"]) === true) {
             $r["xhtml"] = "application/xhtml+xml";
         }
@@ -491,31 +480,29 @@ final class Route implements iRoute
      */
     public function setAcceptMimes(array $acceptMimes) : void
     {
-        if ($this->isLockProperties === false) {
-            if ($this->acceptMimes === null) {
-                if (count($acceptMimes) === 0) {
-                    $err = "Invalid definition of AcceptMimes. The array must have at last one value.";
-                    throw new \InvalidArgumentException($err);
-                }
-
-
-                $v = [];
-                $keyMimes = array_keys($this->responseMimeTypes);
-                $keyValues = ((array_is_assoc($acceptMimes) === false) ? $acceptMimes : array_keys($acceptMimes));
-
-                foreach ($keyValues as $mime) {
-                    if ($mime === null || array_in_ci($mime, $keyMimes) === false) {
-                        $err = "Unsuported mime [ \"$mime\" ].";
-                        throw new \InvalidArgumentException($err);
-                        break;
-                    } else {
-                        $m = strtolower($mime);
-                        $v[$m] = $this->responseMimeTypes[$m];
-                    }
-                }
-
-                $this->acceptMimes = $v;
+        if ($this->isLockProperties === false && $this->acceptMimes === []) {
+            if (\count($acceptMimes) === 0) {
+                $err = "Invalid definition of AcceptMimes. The array must have at last one value.";
+                throw new \InvalidArgumentException($err);
             }
+
+
+            $v = [];
+            $keyMimes = \array_keys($this->responseMimeTypes);
+            $keyValues = ((\array_is_assoc($acceptMimes) === false) ? $acceptMimes : \array_keys($acceptMimes));
+
+            foreach ($keyValues as $mime) {
+                if ($mime === null || \array_in_ci($mime, $keyMimes) === false) {
+                    $err = "Unsuported mime [ \"$mime\" ].";
+                    throw new \InvalidArgumentException($err);
+                    break;
+                } else {
+                    $m = \strtolower($mime);
+                    $v[$m] = $this->responseMimeTypes[$m];
+                }
+            }
+
+            $this->acceptMimes = $v;
         }
     }
 
@@ -533,7 +520,7 @@ final class Route implements iRoute
      *
      * @var         bool
      */
-    private $isUseXHTML = false;
+    private bool $isUseXHTML = false;
     /**
      * Retorna ``true`` caso aplicação deve priorizar o uso do mime ``xhtml``.
      *
@@ -574,7 +561,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $middlewares = [];
+    private array $middlewares = [];
     /**
      * Retorna a coleção de nomes de Middlewares que devem ser executados durante o
      * processamento da rota alvo.
@@ -606,7 +593,7 @@ final class Route implements iRoute
     {
         if ($this->isLockProperties === false) {
             foreach ($middlewares as $i => $r) {
-                if (is_string($r) === false || $r === "") {
+                if (\is_string($r) === false || $r === "") {
                     $err = "Invalid Middleware definition. Empty strings are not valid.";
                     throw new \InvalidArgumentException($err);
                 }
@@ -630,7 +617,7 @@ final class Route implements iRoute
     public function addMiddlewares(array $middlewares) : void
     {
         if ($this->isLockProperties === false) {
-            $this->setMiddlewares(array_merge($this->middlewares, $middlewares));
+            $this->setMiddlewares(\array_merge($this->middlewares, $middlewares));
         }
     }
 
@@ -649,13 +636,13 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $relationedRoutes = null;
+    private array $relationedRoutes = [];
     /**
      * Retorna uma coleção de rotas e/ou URLs que tem relação com esta.
      *
-     * @return      ?array
+     * @return      array
      */
-    public function getRelationedRoutes() : ?array
+    public function getRelationedRoutes() : array
     {
         return $this->relationedRoutes;
     }
@@ -664,28 +651,20 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?array $relationedRoutes
+     * @param       array $relationedRoutes
      *              Coleção de rotas.
      *
      * @return      void
      */
-    public function setRelationedRoutes(?array $relationedRoutes) : void
+    public function setRelationedRoutes(array $relationedRoutes) : void
     {
         if ($this->isLockProperties === false) {
-            $relationedRoutes = (
-                ($relationedRoutes === null || count($relationedRoutes) === 0) ? null : $relationedRoutes
-            );
-            $nrroutes = null;
-
-            if ($relationedRoutes !== null) {
-                $nrroutes = [];
-                foreach ($relationedRoutes as $i => $r) {
-                    if (is_string($r) === true && $r !== "") {
-                        $nrroutes[] = "/" . trim($r, " /");
-                    }
+            $nrroutes = [];
+            foreach ($relationedRoutes as $i => $r) {
+                if (\is_string($r) === true && $r !== "") {
+                    $nrroutes[] = "/" . \trim($r, " /");
                 }
             }
-
             $this->relationedRoutes = $nrroutes;
         }
     }
@@ -702,15 +681,15 @@ final class Route implements iRoute
     /**
      * Descrição sobre a ação executada por esta rota.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $description = null;
+    private $description = "";
     /**
      * Retorna uma descrição sobre a ação executada por esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getDescription() : ?string
+    public function getDescription() : string
     {
         return $this->description;
     }
@@ -720,15 +699,15 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $description
+     * @param       string $description
      *              Descrição para a rota.
      *
      * @return      void
      */
-    public function setDescription(?string $description) : void
+    public function setDescription(string $description) : void
     {
         if ($this->isLockProperties === false) {
-            $this->description = (($description === "") ? null : $description);
+            $this->description = $description;
         }
     }
 
@@ -744,16 +723,16 @@ final class Route implements iRoute
     /**
      * Descrição da rota com detalhes voltado para desenvolvedores.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $devDescription = null;
+    private string $devDescription = "";
     /**
      * Retorna uma descrição técnica para a rota.
      * O formato MarkDown pode ser utilizado.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getDevDescription() : ?string
+    public function getDevDescription() : string
     {
         return $this->devDescription;
     }
@@ -763,15 +742,15 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $devDescription
+     * @param       string $devDescription
      *              Descrição técnica para a rota.
      *
      * @return      void
      */
-    public function setDevDescription(?string $devDescription) : void
+    public function setDevDescription(string $devDescription) : void
     {
         if ($this->isLockProperties === false) {
-            $this->devDescription = (($devDescription === "") ? null : $devDescription);
+            $this->devDescription = $devDescription;
         }
     }
 
@@ -789,7 +768,7 @@ final class Route implements iRoute
      *
      * @var         bool
      */
-    private $isSecure = false;
+    private bool $isSecure = false;
     /**
      * Retorna ``true`` se a rota é protegida pelo sistema de segurança do aplicação.
      *
@@ -833,7 +812,7 @@ final class Route implements iRoute
      *
      * @var         bool
      */
-    private $isUseCache = false;
+    private bool $isUseCache = false;
     /**
      * Retorna ``true`` se a rota possui um conteúdo cacheável.
      *
@@ -873,7 +852,7 @@ final class Route implements iRoute
      *
      * @var         int
      */
-    private $cacheTimeout = 0;
+    private int $cacheTimeout = 0;
     /**
      * Retorna o tempo (em segundos) pelo qual o documento em cache deve ser armazenado até
      * expirar.
@@ -924,7 +903,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $responseHeaders = [];
+    private array $responseHeaders = [];
     /**
      * Retorna a coleção de headers a serem enviados na resposta para o ``UA``.
      *
@@ -951,7 +930,7 @@ final class Route implements iRoute
         $headers = [];
 
         foreach ($responseHeaders as $k => $v) {
-            if (is_string($k) === true && $k !== "" && array_in_ci($k, array_keys($headers)) === false) {
+            if (\is_string($k) === true && $k !== "" && \array_in_ci($k, \array_keys($headers)) === false) {
                 $headers[$k] = (string)$v;
             }
         }
@@ -971,7 +950,7 @@ final class Route implements iRoute
      */
     public function addResponseHeaders(array $responseHeaders) : void
     {
-        $this->setResponseHeaders(array_merge($this->responseHeaders, $responseHeaders));
+        $this->setResponseHeaders(\array_merge($this->responseHeaders, $responseHeaders));
     }
 
 
@@ -981,15 +960,15 @@ final class Route implements iRoute
     /**
      * Mime (extenção) a ser usado para resolver esta rota.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $responseMime = null;
+    private string $responseMime = "";
     /**
      * Retorna o Mime (extenção) a ser usado para resolver esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getResponseMime() : ?string
+    public function getResponseMime() : string
     {
         return $this->responseMime;
     }
@@ -998,15 +977,15 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $mime
+     * @param       string $mime
      *              Mime (extenção) que será usado.
      *
      * @return      void
      */
-    public function setResponseMime(?string $mime) : void
+    public function setResponseMime(string $mime) : void
     {
         if ($this->isLockProperties === false) {
-            $this->responseMime = (($mime === "") ? null : $mime);
+            $this->responseMime = $mime;
         }
     }
 
@@ -1017,15 +996,15 @@ final class Route implements iRoute
     /**
      * MimeType (canônico) a ser usado para resolver esta rota.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $responseMimeType = null;
+    private string $responseMimeType = "";
     /**
      * Retorna o MimeType (canônico) a ser usado para resolver esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getResponseMimeType() : ?string
+    public function getResponseMimeType() : string
     {
         return $this->responseMimeType;
     }
@@ -1034,15 +1013,15 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $mimeType
+     * @param       string $mimeType
      *              MimeType (canônico) que será usado.
      *
      * @return      void
      */
-    public function setResponseMimeType(?string $mimeType) : void
+    public function setResponseMimeType(string $mimeType) : void
     {
         if ($this->isLockProperties === false) {
-            $this->responseMimeType = (($mimeType === "") ? null : $mimeType);
+            $this->responseMimeType = $mimeType;
         }
     }
 
@@ -1053,15 +1032,15 @@ final class Route implements iRoute
     /**
      * Locale a ser usado para resolver esta rota.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $responseLocale = null;
+    private string $responseLocale = "";
     /**
      * Retorna o Locale a ser usado para resolver esta rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getResponseLocale() : ?string
+    public function getResponseLocale() : string
     {
         return $this->responseLocale;
     }
@@ -1070,15 +1049,15 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $locale
+     * @param       string $locale
      *              Locale que será usado.
      *
      * @return      void
      */
-    public function setResponseLocale(?string $locale) : void
+    public function setResponseLocale(string $locale) : void
     {
         if ($this->isLockProperties === false) {
-            $this->responseLocale = (($locale === "") ? null : $locale);
+            $this->responseLocale = $locale;
         }
     }
 
@@ -1091,7 +1070,7 @@ final class Route implements iRoute
      *
      * @var         bool
      */
-    private $responseIsPrettyPrint = false;
+    private bool $responseIsPrettyPrint = false;
     /**
      * Quando ``true`` indica que o código de retorno deve passar por algum tratamento que
      * facilite a leitura do mesmo por humanos.
@@ -1129,7 +1108,7 @@ final class Route implements iRoute
      *
      * @var         bool
      */
-    private $responseIsDownload = false;
+    private bool $responseIsDownload = false;
     /**
      * Retorna ``true`` se o resultado da execução da rota deve ser uma resposta em formato de
      * download.
@@ -1164,17 +1143,17 @@ final class Route implements iRoute
     /**
      * Nome do documento enviado por download.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $responseDownloadFileName = null;
+    private string $responseDownloadFileName = "";
     /**
      * Retorna o nome do documento que deve ser devolvido ao efetuar o download da rota.
      * Se nenhum nome for definido de forma explicita, este valor será criado a partir do nome da
      * rota principal.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getResponseDownloadFileName() : ?string
+    public function getResponseDownloadFileName() : string
     {
         return $this->responseDownloadFileName;
     }
@@ -1183,14 +1162,14 @@ final class Route implements iRoute
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $downloadFileName
+     * @param       string $downloadFileName
      *              Nome do arquivo que será enviado ao UA como um download.
      *
      * @return      void
      */
-    public function setResponseDownloadFileName(?string $downloadFileName) : void
+    public function setResponseDownloadFileName(string $downloadFileName) : void
     {
-        $this->responseDownloadFileName = (($downloadFileName === "") ? null : $downloadFileName);
+        $this->responseDownloadFileName = $downloadFileName;
     }
 
 
@@ -1205,16 +1184,16 @@ final class Route implements iRoute
     /**
      * Caminho relativo (a partir de ``appRootPath``) até a master page que será utilizada.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $masterPage = null;
+    private string $masterPage = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até a master page que será
      * utilizada.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getMasterPage() : ?string
+    public function getMasterPage() : string
     {
         return $this->masterPage;
     }
@@ -1229,9 +1208,9 @@ final class Route implements iRoute
      *
      * @return      void
      */
-    public function setMasterPage(?string $masterPage) : void
+    public function setMasterPage(string $masterPage) : void
     {
-        $this->masterPage = (($masterPage === "") ? null : $masterPage);
+        $this->masterPage = $masterPage;
     }
 
 
@@ -1241,16 +1220,16 @@ final class Route implements iRoute
     /**
      * Caminho relativo (a partir do diretório definido para as views) até a view que será utilizada.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $view = null;
+    private string $view = "";
     /**
      * Retorna o caminho relativo (a partir do diretório definido para as views) até a view
      * que será utilizada.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getView() : ?string
+    public function getView() : string
     {
         return $this->view;
     }
@@ -1260,14 +1239,14 @@ final class Route implements iRoute
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $view
+     * @param       string $view
      *              Caminho relativo até a view.
      *
      * @return      void
      */
-    public function setView(?string $view) : void
+    public function setView(string $view) : void
     {
-        $this->view = (($view === "") ? null : $view);
+        $this->view = $view;
     }
 
 
@@ -1277,16 +1256,16 @@ final class Route implements iRoute
     /**
      * Caminho relativo até um arquivo de formulário que esteja sendo utilizado pela rota.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $form = null;
+    private string $form = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até um arquivo de formulário
      * que esteja sendo utilizado pela rota.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getForm() : ?string
+    public function getForm() : string
     {
         return $this->form;
     }
@@ -1296,15 +1275,15 @@ final class Route implements iRoute
      *
      * Deve ser definido **ANTES** de iniciar o processamento da rota.
      *
-     * @param       ?string $form
+     * @param       string $form
      *              Caminho relativo até o arquivo que define o formulário alvo.
      *
      * @return      void
      */
-    public function setForm(?string $form) : void
+    public function setForm(string $form) : void
     {
         if ($this->isLockProperties === false) {
-            $this->form = (($form === "") ? null : $form);
+            $this->form = $form;
         }
     }
 
@@ -1316,7 +1295,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $styleSheets = [];
+    private array $styleSheets = [];
     /**
      * Retorna uma coleção de caminhos até as folhas de estilos que devem ser incorporadas no
      * documento final (caso trate-se de um formato que aceita este tipo de recurso).
@@ -1346,7 +1325,7 @@ final class Route implements iRoute
         $styles = [];
 
         foreach ($styleSheets as $i => $s) {
-            if (is_string($s) !== false && $s !== "") {
+            if (\is_string($s) !== false && $s !== "") {
                 $styles[] = $s;
             }
         }
@@ -1368,7 +1347,7 @@ final class Route implements iRoute
      */
     public function addStyleSheets(array $styleSheets) : void
     {
-        $this->setStyleSheets(array_merge($this->styleSheets, $styleSheets));
+        $this->setStyleSheets(\array_merge($this->styleSheets, $styleSheets));
     }
 
 
@@ -1380,7 +1359,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $javaScripts = [];
+    private array $javaScripts = [];
     /**
      * Retorna uma coleção de caminhos até as scripts que devem ser incorporadas no documento
      * final (caso trate-se de um formato que aceita este tipo de recurso).
@@ -1410,7 +1389,7 @@ final class Route implements iRoute
         $scripts = [];
 
         foreach ($javaScripts as $i => $s) {
-            if (is_string($s) !== false && $s !== "") {
+            if (\is_string($s) !== false && $s !== "") {
                 $scripts[] = $s;
             }
         }
@@ -1432,7 +1411,7 @@ final class Route implements iRoute
      */
     public function addJavaScripts(array $javaScripts) : void
     {
-        $this->setJavaScripts(array_merge($this->javaScripts, $javaScripts));
+        $this->setJavaScripts(\array_merge($this->javaScripts, $javaScripts));
     }
 
 
@@ -1443,16 +1422,16 @@ final class Route implements iRoute
      * Caminho relativo (a partir de ``appRootPath``) até o arquivo de legendas do locale
      * que será usado para responder a requisição.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $localeDictionary = null;
+    private string $localeDictionary = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o arquivo de legendas do locale
      * que será usado para responder a requisição.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getLocaleDictionary() : ?string
+    public function getLocaleDictionary() : string
     {
         return $this->localeDictionary;
     }
@@ -1462,7 +1441,7 @@ final class Route implements iRoute
      *
      * Pode ser redefinido durante o processamento da rota.
      *
-     * @param       ?string $localeDictionary
+     * @param       string $localeDictionary
      *              Caminho relativo até o arquivo de legendas.
      *
      * @return      void
@@ -1470,9 +1449,9 @@ final class Route implements iRoute
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    public function setLocaleDictionary(?string $localeDictionary) : void
+    public function setLocaleDictionary(string $localeDictionary) : void
     {
-        $this->localeDictionary = (($localeDictionary === "") ? null : $localeDictionary);
+        $this->localeDictionary = $localeDictionary;
     }
 
 
@@ -1484,7 +1463,7 @@ final class Route implements iRoute
      *
      * @var         array
      */
-    private $metaData = [];
+    private array $metaData = [];
     /**
      * Retorna a coleção de metadados a serem incorporados nas views ``X/HTML``.
      *
@@ -1511,7 +1490,7 @@ final class Route implements iRoute
         $meta = [];
 
         foreach ($metaData as $k => $v) {
-            if (is_string($k) === true && $k !== "" && array_in_ci($k, array_keys($meta)) === false) {
+            if (\is_string($k) === true && $k !== "" && \array_in_ci($k, \array_keys($meta)) === false) {
                 $meta[$k] = (string)$v;
             }
         }
@@ -1531,7 +1510,7 @@ final class Route implements iRoute
      */
     public function addMetaData(array $metaData) : void
     {
-        $this->setMetaData(array_merge($this->metaData, $metaData));
+        $this->setMetaData(\array_merge($this->metaData, $metaData));
     }
 
 
@@ -1544,7 +1523,7 @@ final class Route implements iRoute
      *
      * @var         string
      */
-    private $runMethodName = "run";
+    private string $runMethodName = "run";
     /**
      * Retorna o nome do método que deve ser executado na classe da Aplicação para resolver a rota.
      * Se não for definido deve retornar ``run`` como valor padrão.
@@ -1576,28 +1555,28 @@ final class Route implements iRoute
     /**
      * Coleção de propriedades customizadas da rota.
      *
-     * @var         ?array
+     * @var         array
      */
-    private $customProperties = null;
+    private array $customProperties = [];
     /**
      * Resgata um array associativo contendo propriedades customizadas para o processamento
      * da rota.
      *
-     * @return      ?array
+     * @return      array
      */
-    public function getCustomProperties() : ?array
+    public function getCustomProperties() : array
     {
         return $this->customProperties;
     }
     /**
      * Define uma coleção de propriedades customizadas para o processamento da rota.
      *
-     * @param       ?array $customProperties
+     * @param       array $customProperties
      *              Array associativo contendo as informações customizadas.
      *
      * @return      void
      */
-    public function setCustomProperties(?array $customProperties) : void
+    public function setCustomProperties(array $customProperties) : void
     {
         if ($this->isLockProperties === false) {
             $this->customProperties = $customProperties;
@@ -1642,9 +1621,9 @@ final class Route implements iRoute
     /**
      * Armazena o locale que deve ser usado frente as configurações definidas para a rota.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $useLocale = null;
+    private string $useLocale = "";
     /**
      * Processa a negociação de conteúdo para identificar qual locale deve ser usado para
      * responder a esta rota.
@@ -1665,7 +1644,7 @@ final class Route implements iRoute
      *              Locale que terá prioridade sobre os demais podendo inclusive ser um que a
      *              aplicação não esteja apta a servir.
      *
-     * @return      ?string
+     * @return      string
      */
     public function negotiateLocale(
         ?array $requestLocales,
@@ -1673,11 +1652,10 @@ final class Route implements iRoute
         ?array $applicationLocales,
         ?string $defaultLocale,
         ?string $forceLocale
-    ) : ?string
-    {
-        $useLocale = null;
+    ) : string {
+        $useLocale = "";
 
-        if ($this->useLocale === null) {
+        if ($this->useLocale === "") {
             // Havendo um locale que deve ser usado de forma forçada.
             if ($forceLocale !== null) {
                 $useLocale = $forceLocale;
@@ -1689,7 +1667,7 @@ final class Route implements iRoute
                 // enviados pelo UA são também fornecidos pela aplicação.
                 if ($requestLocales === null) { $requestLocales = []; }
                 foreach ($requestLocales as $headerLocale) {
-                    if (array_in_ci($headerLocale, $applicationLocales) === true) {
+                    if (\array_in_ci($headerLocale, $applicationLocales) === true) {
                         $useLocale = $headerLocale;
                         break;
                     }
@@ -1698,7 +1676,7 @@ final class Route implements iRoute
 
                 // Se nenhum dos locales servidos pela aplicação corresponde
                 // a algum que o UA queira, verifica se há linguas compatíveis
-                if ($useLocale === null) {
+                if ($useLocale === "") {
                     // Linguagens que o UA passou como sendo aquelas que ele prefere.
                     if ($requestLanguages === null) { $requestLanguages = []; }
 
@@ -1707,13 +1685,13 @@ final class Route implements iRoute
                     foreach ($requestLanguages as $i => $headerLanguage) {
                         if ($i === 0) {
                             foreach ($applicationLocales as $appLocale) {
-                                $appLanguages[$appLocale] = substr($appLocale, 0, 2);
+                                $appLanguages[$appLocale] = \substr($appLocale, 0, 2);
                             }
-                            $appLan = array_values($appLanguages);
+                            $appLan = \array_values($appLanguages);
                         }
 
-                        if (array_in_ci($headerLanguage, $appLan) === true) {
-                            $useLocale = array_search($headerLanguage, $appLanguages);
+                        if (\array_in_ci($headerLanguage, $appLan) === true) {
+                            $useLocale = \array_search($headerLanguage, $appLanguages);
                             break;
                         }
                     }
@@ -1722,10 +1700,10 @@ final class Route implements iRoute
 
                 // Se nenhum locale foi identificado
                 // usa o padrão
-                if ($useLocale === null) { $useLocale = $defaultLocale; }
+                if ($useLocale === "") { $useLocale = $defaultLocale; }
             }
 
-            $this->useLocale = strtolower($useLocale);
+            $this->useLocale = \strtolower($useLocale);
         }
 
         return $this->useLocale;
@@ -1739,9 +1717,9 @@ final class Route implements iRoute
      * Armazena uma coleção de valores referentes ao mimetype que deve ser usado para responder
      * à requisição do UA.
      *
-     * @var         ?array
+     * @var         array
      */
-    private $useMimes = null;
+    private array $useMimes = [];
     /**
      * Processa a negociação de conteúdo para identificar qual mimetype deve ser usado para
      * responder a esta rota.
@@ -1753,7 +1731,7 @@ final class Route implements iRoute
      *              Mime que terá prioridade sobre os demais podendo inclusive ser um que a rota
      *              não esteja apta a utilizar.
      *
-     * @return      ?array
+     * @return      array
      * ``` php
      *  $arr = [
      *      "valid"     bool    Indica se o mimetype encontrado é válido para ser usado em um response
@@ -1765,9 +1743,9 @@ final class Route implements iRoute
     public function negotiateMimeType(
         ?array $requestMimes,
         ?string $forceMime
-    ) : ?array {
+    ) : array {
 
-        if ($this->useMimes === null) {
+        if ($this->useMimes === []) {
             $r = null;
 
             $useAny             = false;
@@ -1810,7 +1788,7 @@ final class Route implements iRoute
             // do UA é permitido usar qualquer um, seleciona o primeiro
             // que a rota disponibiliza
             if ($useMime === null && $useAny === true) {
-                $useMime = key($routeAcceptMimes);
+                $useMime = \key($routeAcceptMimes);
             }
 
 
@@ -1827,7 +1805,11 @@ final class Route implements iRoute
             // Tendo encontrado algum mime para ser usado,
             // preenche o mimetype
             if ($useMime !== null) {
-                $useMimeType = (isset($this->responseMimeTypes[$useMime]) === true) ? $this->responseMimeTypes[$useMime] : null;
+                $useMimeType = (
+                    (isset($this->responseMimeTypes[$useMime]) === true) ?
+                    $this->responseMimeTypes[$useMime] :
+                    null
+                );
             }
 
 
@@ -1862,14 +1844,14 @@ final class Route implements iRoute
      */
     public function setValues($cfg) : void
     {
-        if ((is_string($cfg) === false && is_array($cfg) === false) || $cfg === null || $cfg === "") {
+        if ((\is_string($cfg) === false && \is_array($cfg) === false) || $cfg === null || $cfg === "") {
             $err = "Invalid configuration value. Expected a not empty string or array.";
             throw new \InvalidArgumentException($err);
         }
 
 
 
-        if (is_string($cfg) === true) {
+        if (\is_string($cfg) === true) {
             // Se a regra das configurações é descrita em uma única string,
             // admite que pode haver entre 2 e 5 partes (separadas por um espaço) onde:
             //
@@ -1892,15 +1874,15 @@ final class Route implements iRoute
             //     "no-cache"   :   Explicitamente nega à esta rota que ela possa ser cacheada.
             //
 
-            $parts = explode(" ", $cfg);
+            $parts = \explode(" ", $cfg);
 
-            if (count($parts) === 1) {
+            if (\count($parts) === 1) {
                 $msg = "Route configuration fail. Check documentation [ \"$cfg\" ].";
                 throw new \InvalidArgumentException($msg);
             } else {
                 $cfg = null;
 
-                if (count($parts) === 2) {
+                if (\count($parts) === 2) {
                     $cfg["Method"] = "GET";
                     $cfg["Routes"] = [$parts[0]];
                     $cfg["Action"] = $parts[1];
@@ -1910,7 +1892,7 @@ final class Route implements iRoute
                     $cfg["Action"] = $parts[2];
 
                     // Identifica configuração de segurança para a rota.
-                    if (count($parts) >= 4) {
+                    if (\count($parts) >= 4) {
                         switch ($parts[3]) {
                             case "b":
                             case "block":
@@ -1931,13 +1913,13 @@ final class Route implements iRoute
                     }
 
                     // Identifica configuração para o sistema de cache
-                    if (count($parts) > 4) {
+                    if (\count($parts) > 4) {
                         if ($parts[4] === "no-cache") {
                             $cfg["IsUseCache"] = false;
                             $cfg["CacheTimeout"] = 0;
                         } else {
-                            $cacheTimeout = explode("-", $parts[4]);
-                            if (count($cacheTimeout) !== 2 || is_numeric($cacheTimeout[1]) === false) {
+                            $cacheTimeout = \explode("-", $parts[4]);
+                            if (\count($cacheTimeout) !== 2 || \is_numeric($cacheTimeout[1]) === false) {
                                 $err = "Route configuration fail. Expected integer cache timeout. Check documentation.";
                                 throw new \InvalidArgumentException($err);
                             } else {
@@ -1953,7 +1935,7 @@ final class Route implements iRoute
 
 
         foreach ($cfg as $key => $value) {
-            $k = strtolower($key);
+            $k = \strtolower($key);
 
 
             switch ($k) {

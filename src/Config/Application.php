@@ -32,7 +32,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $name = null;
+    private string $name = "";
     /**
      * Retorna o nome da aplicação.
      *
@@ -52,7 +52,7 @@ final class Application implements iApplication
      */
     public function setName(string $name) : void
     {
-        if ($this->name === null) {
+        if ($this->name === "") {
             $this->name = $name;
         }
     }
@@ -66,7 +66,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $appRootPath = null;
+    private string $appRootPath = "";
     /**
      * Retorna o caminho completo até o diretório raiz da aplicação.
      *
@@ -95,7 +95,7 @@ final class Application implements iApplication
      */
     public function setAppRootPath(string $appRootPath) : void
     {
-        if ($this->appRootPath === null) {
+        if ($this->appRootPath === "") {
             $err = null;
 
             // Se nenhum caminho foi definido para o caminho da raiz da aplicação
@@ -103,8 +103,8 @@ final class Application implements iApplication
                 $err = "The path to the root directory is invalid. Empty string received.";
             } else {
                 // Verifica o diretório raiz da aplicação
-                $appRootPath = to_system_path($appRootPath) . DS;
-                if (file_exists($appRootPath) === false) {
+                $appRootPath = \to_system_path($appRootPath) . DS;
+                if (\file_exists($appRootPath) === false) {
                     $err = "The path to the root directory of the application does not exist [ \"" . $appRootPath . "\" ].";
                 }
             }
@@ -128,7 +128,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $pathToAppRoutes = null;
+    private string $pathToAppRoutes = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o arquivo de rotas da aplicação.
      *
@@ -151,11 +151,11 @@ final class Application implements iApplication
      */
     public function setPathToAppRoutes(string $pathToAppRoutes) : void
     {
-        if ($this->pathToAppRoutes === null) {
-            $this->pathToAppRoutes = to_system_path($pathToAppRoutes);
-            $dir = dirname($this->pathToAppRoutes);
+        if ($this->pathToAppRoutes === "") {
+            $this->pathToAppRoutes = \to_system_path($pathToAppRoutes);
+            $dir = \dirname($this->pathToAppRoutes);
 
-            if (file_exists($dir) === false) {
+            if (\file_exists($dir) === false) {
                 $err = "The path to AppRoutes file does not exist [ \"" . $dir . "\" ].";
                 throw new \InvalidArgumentException($err);
             }
@@ -172,7 +172,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $pathToControllers = null;
+    private string $pathToControllers = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório de controllers
      * da aplicação.
@@ -197,10 +197,10 @@ final class Application implements iApplication
      */
     public function setPathToControllers(string $pathToControllers) : void
     {
-        if ($this->pathToControllers === null) {
-            $this->pathToControllers = to_system_path($pathToControllers) . DS;
+        if ($this->pathToControllers === "") {
+            $this->pathToControllers = \to_system_path($pathToControllers) . DS;
 
-            if (file_exists($this->pathToControllers) === false) {
+            if (\file_exists($this->pathToControllers) === false) {
                 $err = "The path to controllers does not exist [ \"" . $this->pathToControllers . "\" ].";
                 throw new \InvalidArgumentException($err);
             }
@@ -217,7 +217,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $pathToViews = null;
+    private string $pathToViews = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório das views
      * da aplicação.
@@ -242,10 +242,10 @@ final class Application implements iApplication
      */
     public function setPathToViews(string $pathToViews) : void
     {
-        if ($this->pathToViews === null) {
-            $this->pathToViews = to_system_path($pathToViews) . DS;
+        if ($this->pathToViews === "") {
+            $this->pathToViews = \to_system_path($pathToViews) . DS;
 
-            if (file_exists($this->pathToViews) === false) {
+            if (\file_exists($this->pathToViews) === false) {
                 $err = "The path to views does not exist [ \"" . $this->pathToViews . "\" ].";
                 throw new \InvalidArgumentException($err);
             }
@@ -262,7 +262,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $pathToViewsResources = null;
+    private string $pathToViewsResources = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório que estarão
      * armazenados os recursos para as views (imagens, JS, CSS ...).
@@ -287,10 +287,10 @@ final class Application implements iApplication
      */
     public function setPathToViewsResources(string $pathToViewsResources) : void
     {
-        if ($this->pathToViewsResources === null) {
-            $this->pathToViewsResources = to_system_path($pathToViewsResources) . DS;
+        if ($this->pathToViewsResources === "") {
+            $this->pathToViewsResources = \to_system_path($pathToViewsResources) . DS;
 
-            if (file_exists($this->pathToViewsResources) === false) {
+            if (\file_exists($this->pathToViewsResources) === false) {
                 $err = "The path to views resources does not exist [ \"" . $this->pathToViewsResources . "\" ].";
                 throw new \InvalidArgumentException($err);
             }
@@ -307,7 +307,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $pathToLocales = null;
+    private string $pathToLocales = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório que estarão
      * armazenados os documentos de configuração das legendas.
@@ -332,10 +332,10 @@ final class Application implements iApplication
      */
     public function setPathToLocales(string $pathToLocales) : void
     {
-        if ($this->pathToLocales === null) {
-            $this->pathToLocales = to_system_path($pathToLocales) . DS;
+        if ($this->pathToLocales === "") {
+            $this->pathToLocales = \to_system_path($pathToLocales) . DS;
 
-            if (file_exists($this->pathToLocales) === false) {
+            if (\file_exists($this->pathToLocales) === false) {
                 $err = "The path to locales does not exist [ \"" . $this->pathToLocales . "\" ].";
                 throw new \InvalidArgumentException($err);
             }
@@ -352,7 +352,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $pathToCacheFiles = null;
+    private string $pathToCacheFiles = "";
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
      * para os arquivos de cache.
@@ -377,10 +377,10 @@ final class Application implements iApplication
      */
     public function setPathToCacheFiles(string $pathToCacheFiles) : void
     {
-        if ($this->pathToCacheFiles === null) {
-            $this->pathToCacheFiles = to_system_path($pathToCacheFiles) . DS;
+        if ($this->pathToCacheFiles === "") {
+            $this->pathToCacheFiles = \to_system_path($pathToCacheFiles) . DS;
 
-            if (file_exists($this->pathToCacheFiles) === false) {
+            if (\file_exists($this->pathToCacheFiles) === false) {
                 $err = "The path to cache files does not exist [ \"" . $this->pathToCacheFiles . "\" ].";
                 throw new \InvalidArgumentException($err);
             }
@@ -396,7 +396,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $startRoute = null;
+    private string $startRoute = "";
     /**
      * Retorna a rota inicial da aplicação.
      *
@@ -419,7 +419,7 @@ final class Application implements iApplication
      */
     public function setStartRoute(string $startRoute) : void
     {
-        if ($this->startRoute === null) {
+        if ($this->startRoute === "") {
             $this->startRoute = $startRoute;
         }
     }
@@ -433,7 +433,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $controllersNamespace = null;
+    private string $controllersNamespace = "";
     /**
      * Retorna a Namespace comum à todos os controllers da aplicação corrente.
      *
@@ -456,8 +456,8 @@ final class Application implements iApplication
      */
     public function setControllersNamespace(string $controllersNamespace) : void
     {
-        if ($this->controllersNamespace === null) {
-            $this->controllersNamespace = trim($controllersNamespace, "\\");
+        if ($this->controllersNamespace === "") {
+            $this->controllersNamespace = \trim($controllersNamespace, "\\");
         }
     }
 
@@ -470,7 +470,7 @@ final class Application implements iApplication
      *
      * @var         array
      */
-    private $locales = [];
+    private array $locales = [];
     /**
      * Retorna a coleção de locales suportada pela aplicação.
      *
@@ -493,17 +493,17 @@ final class Application implements iApplication
      */
     public function setLocales(array $locales) : void
     {
-        if (count($this->locales) === 0) {
-            if (count($locales) === 0) {
+        if (\count($this->locales) === 0) {
+            if (\count($locales) === 0) {
                 $err = "It is not allowed to define an empty collection of locales.";
                 throw new \InvalidArgumentException($err);
             } else {
                 foreach ($locales as $value) {
-                    if (is_string($value) === false || strlen($value) !== 5 || strpos($value, "-") !== 2) {
+                    if (\is_string($value) === false || \strlen($value) !== 5 || \strpos($value, "-") !== 2) {
                         $err = "The value \"$value\" is not a valid locale.";
                         throw new \InvalidArgumentException($err);
                     } else {
-                        $this->locales[] = strtolower($value);
+                        $this->locales[] = \strtolower($value);
                     }
                 }
 
@@ -523,7 +523,7 @@ final class Application implements iApplication
      *
      * @var         string
      */
-    private $defaultLocale = null;
+    private string $defaultLocale = "";
     /**
      * Retorna o locale padrão para a aplicação corrente.
      *
@@ -546,12 +546,12 @@ final class Application implements iApplication
      */
     public function setDefaultLocale(string $locale) : void
     {
-        if ($this->defaultLocale === null) {
-            $this->defaultLocale = strtolower($locale);
-            if (array_in_ci($locale, $this->locales) === false) {
+        if ($this->defaultLocale === "") {
+            if (\array_in_ci($locale, $this->locales) === false) {
                 $err = "The given locale is not defined in the application locale collection.";
                 throw new \InvalidArgumentException($err);
             }
+            $this->defaultLocale = \strtolower($locale);
         }
     }
 
@@ -564,7 +564,7 @@ final class Application implements iApplication
      *
      * @var         bool
      */
-    private $isUseLabels = null;
+    private bool $isUseLabels = false;
     /**
      * Retorna ``true`` se a aplicação deve usar o sistema de legendas.
      *
@@ -572,9 +572,6 @@ final class Application implements iApplication
      */
     public function getIsUseLabels() : bool
     {
-        if ($this->isUseLabels === null) {
-            $this->isUseLabels = false;
-        }
         return $this->isUseLabels;
     }
     /**
@@ -587,9 +584,7 @@ final class Application implements iApplication
      */
     public function setIsUseLabels(bool $isUseLabels) : void
     {
-        if ($this->isUseLabels === null) {
-            $this->isUseLabels = $isUseLabels;
-        }
+        $this->isUseLabels = $isUseLabels;
     }
 
 
@@ -601,7 +596,7 @@ final class Application implements iApplication
      *
      * @var         array
      */
-    private $defaultRouteConfig = [];
+    private array $defaultRouteConfig = [];
     /**
      * Retorna um array associativo contendo os valores padrões para as rotas de toda a
      * aplicação. Estes valores podem ser sobrescritos pelas definições padrões dos controllers
@@ -634,7 +629,7 @@ final class Application implements iApplication
      */
     public function setDefaultRouteConfig(array $defaultRouteConfig) : void
     {
-        if (count($this->defaultRouteConfig) === 0) {
+        if (\count($this->defaultRouteConfig) === 0) {
 
 
             // Coleção de propriedades que podem ser definidas
@@ -655,8 +650,8 @@ final class Application implements iApplication
 
 
             foreach ($defaultRouteConfig as $key => $value) {
-                if (array_in_ci($key, $allowedProperties) === true && $value !== null) {
-                    $this->defaultRouteConfig[strtolower($key)] = $value;
+                if (\array_in_ci($key, $allowedProperties) === true && $value !== null) {
+                    $this->defaultRouteConfig[\strtolower($key)] = $value;
                 }
             }
         }
@@ -670,16 +665,16 @@ final class Application implements iApplication
      * caminho relativo até a view que deve ser enviada ao
      * UA em caso de erros na aplicação.
      *
-     * @var         ?string
+     * @var         string
      */
-    private $pathToErrorView = null;
+    private string $pathToErrorView = "";
     /**
      * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros
      * na aplicação.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getPathToErrorView() : ?string
+    public function getPathToErrorView() : string
     {
         return $this->pathToErrorView;
     }
@@ -687,11 +682,11 @@ final class Application implements iApplication
      * Resgata o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros
      * na aplicação.
      *
-     * @return      ?string
+     * @return      string
      */
-    public function getFullPathToErrorView() : ?string
+    public function getFullPathToErrorView() : string
     {
-        return (($this->pathToErrorView === null) ? null : $this->appRootPath . $this->pathToErrorView);
+        return (($this->pathToErrorView === "") ? "" : $this->appRootPath . $this->pathToErrorView);
     }
     /**
      * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros
@@ -704,10 +699,10 @@ final class Application implements iApplication
      *
      * @return      void
      */
-    public function setPathToErrorView(?string $pathToErrorView) : void
+    public function setPathToErrorView(string $pathToErrorView) : void
     {
-        if ($this->pathToErrorView === null) {
-            $this->pathToErrorView = to_system_path(trim($pathToErrorView, "/\\"));
+        if ($this->pathToErrorView === "") {
+            $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
         }
     }
 
@@ -718,13 +713,13 @@ final class Application implements iApplication
     /**
      * Configurações de segurança da aplicação.
      *
-     * @var         ?string
+     * @var         ?iSecurity
      */
-    private $securitySettings = null;
+    private ?iSecurity $securitySettings = null;
     /**
      * Retorna as configurações de segurança da aplicação.
      *
-     * @return      ?iSecurity
+     * @return      iSecurity
      */
     function getSecuritySettings() : ?iSecurity
     {
@@ -733,12 +728,12 @@ final class Application implements iApplication
     /**
      * Define as configurações de segurança para a aplicação.
      *
-     * @param       iSecurity $securitySettings
+     * @param       ?iSecurity $securitySettings
      *              Instância das configurações de segurança que será definida para a aplicação.
      *
      * @return      void
      */
-    function setSecuritySettings(iSecurity $securitySettings) : void
+    function setSecuritySettings(?iSecurity $securitySettings) : void
     {
         if ($this->securitySettings === null) {
             $this->securitySettings = $securitySettings;
@@ -776,8 +771,7 @@ final class Application implements iApplication
         string $appName = "",
         string $rootPath = "",
         ?array $securitySettings = null
-    )
-    {
+    ) {
         if ($appName !== "" && $rootPath !== "") {
             $this->autoSetProperties($appName, $rootPath);
         }
@@ -813,7 +807,7 @@ final class Application implements iApplication
      */
     public function autoSetProperties(string $appName, string $rootPath) : void
     {
-        if ($this->name === null && $this->appRootPath === null) {
+        if ($this->name === "" && $this->appRootPath === "") {
             $this->setName($appName);
             $this->setAppRootPath($rootPath . DS . $appName . DS);
 

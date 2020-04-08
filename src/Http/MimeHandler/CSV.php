@@ -93,9 +93,9 @@ class CSV extends aMimeHandler
 
         $tmpData    = [];
         foreach ($finalArray as $dataRow) {
-            $tmpData[] = implode(",", $dataRow);
+            $tmpData[] = \implode(",", $dataRow);
         }
-        $body = implode("\n", $tmpData);
+        $body = \implode("\n", $tmpData);
 
         return $body;
     }
