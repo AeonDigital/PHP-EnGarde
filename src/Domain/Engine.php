@@ -1,19 +1,19 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde;
+namespace AeonDigital\EnGarde\Domain;
 
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Interfaces\EnGarde\iApplication as iApplication;
-
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Domain\iApplication as iApplication;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 
 
 
 
 
 /**
- * Gerenciador principal do domínio.
+ * Motor das aplicações do domínio.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
@@ -21,7 +21,7 @@ use AeonDigital\Interfaces\EnGarde\iApplication as iApplication;
  * @license     ADPL-v1.0
  * @codeCoverageIgnore
  */
-class DomainManager
+class Engine
 {
 
 
@@ -33,30 +33,27 @@ class DomainManager
      *
      * @var         iServerConfig
      */
-    private $serverConfig = null;
+    private iServerConfig $serverConfig;
+    /**
+     * Configurações do Domínio.
+     *
+     * @var         iDomainConfig
+     */
+    private iDomainConfig $domainConfig;
+
+
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    private $serverRequest = null;
-    /**
-     * Configurações do Domínio
-     *
-     * @var         iDomainConfig
-     */
-    private $domainConfig = null;
+    private iServerRequest $serverRequest;
     /**
      * Instância da Aplicação alvo.
      *
      * @var         iApplication
      */
-    private $targetApplication = null;
-
-
-
-
-
+    private iApplication $targetApplication;
 
 
 
@@ -76,8 +73,8 @@ class DomainManager
     {
         if ($serverConfig === null) {
             $isTestEnv = (ENVIRONMENT === "test" || ENVIRONMENT === "testview" || ENVIRONMENT === "localtest");
-            $serverConfig = new \AeonDigital\EnGarde\Config\ServerConfig($_SERVER, $isTestEnv);
-            $serverConfig->setHttpFactory(new \AeonDigital\EnGarde\Config\HttpFactory());
+            $serverConfig = new \AeonDigital\EnGarde\Config\Server($_SERVER, $isTestEnv);
+            $serverConfig->setHttpFactory(new \AeonDigital\EnGarde\Http\Factory());
         }
         $this->serverConfig = $serverConfig;
     }
@@ -94,7 +91,7 @@ class DomainManager
     private function defineDomainConfig(?iDomainConfig $domainConfig = null) : void
     {
         if ($domainConfig === null) {
-            $domainConfig = new \AeonDigital\EnGarde\Config\DomainConfig();
+            $domainConfig = new \AeonDigital\EnGarde\Config\Domain();
 
             $domainConfig->setVersion("0.9.0 [alpha]");
             $domainConfig->setEnvironmentType(ENVIRONMENT);
@@ -115,6 +112,9 @@ class DomainManager
         $domainConfig->defineTargetApplication($this->serverConfig->getRequestPath());
         $this->domainConfig = $domainConfig;
     }
+
+
+
     /**
      * Define o objeto ``iServerRequest`` para esta instância.
      *
@@ -122,25 +122,24 @@ class DomainManager
      */
     private function defineServerRequest() : void
     {
-        $this->serverRequest = $this->serverConfig->getHttpFactory()->createServerRequest(
-            $this->serverConfig->getRequestMethod(),
-            $this->serverConfig->getCurrentURI(),
-            $this->serverConfig->getRequestHTTPVersion(),
-            $this->serverConfig->getHttpFactory()->createHeaderCollection($this->serverConfig->getRequestHeaders()),
-            $this->serverConfig->getHttpFactory()->createStreamFromBodyRequest(),
-            $this->serverConfig->getHttpFactory()->createCookieCollection($this->serverConfig->getRequestCookies()),
-            $this->serverConfig->getHttpFactory()->createQueryStringCollection($this->serverConfig->getRequestQueryStrings()),
-            $this->serverConfig->getHttpFactory()->createFileCollection($this->serverConfig->getRequestFiles()),
-            $this->serverConfig->getServerVariables(),
-            $this->serverConfig->getHttpFactory()->createCollection(),
-            $this->serverConfig->getHttpFactory()->createCollection()
+        $this->serverRequest = $this->serverConfig
+            ->getHttpFactory()
+            ->createServerRequest(
+                $this->serverConfig->getRequestMethod(),
+                $this->serverConfig->getCurrentURI(),
+                $this->serverConfig->getRequestHTTPVersion(),
+                $this->serverConfig->getHttpFactory()->createHeaderCollection($this->serverConfig->getRequestHeaders()),
+                $this->serverConfig->getHttpFactory()->createStreamFromBodyRequest(),
+                $this->serverConfig->getHttpFactory()->createCookieCollection($this->serverConfig->getRequestCookies()),
+                $this->serverConfig->getHttpFactory()->createQueryStringCollection(
+                    $this->serverConfig->getRequestQueryStrings()
+                ),
+                $this->serverConfig->getHttpFactory()->createFileCollection($this->serverConfig->getRequestFiles()),
+                $this->serverConfig->getServerVariables(),
+                $this->serverConfig->getHttpFactory()->createCollection(),
+                $this->serverConfig->getHttpFactory()->createCollection()
         );
     }
-
-
-
-
-
     /**
      * Registra as configurações básicas para o manipulador de erros e exceções do domínio.
      *
@@ -191,7 +190,6 @@ class DomainManager
         $this->defineServerConfig($serverConfig);
         $this->defineDomainConfig($domainConfig);
         $this->defineServerRequest();
-
         $this->registerErrorListening();
     }
 
@@ -209,7 +207,7 @@ class DomainManager
      *
      * @var         bool
      */
-    private $isRun = false;
+    private bool $isRun = false;
     /**
      * Efetivamente inicia o processamento da requisição ``HTTP`` identificando qual aplicação
      * deve ser iniciada e então executada.

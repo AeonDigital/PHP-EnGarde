@@ -2,17 +2,17 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\DomainManager as DomainManager;
+use AeonDigital\EnGarde\Domain\Engine as Engine;
 
-require_once __DIR__ . "/../phpunit.php";
-
-
+require_once __DIR__ . "/../../phpunit.php";
 
 
 
 
 
-class DomainManagerTest extends TestCase
+
+
+class DomainEngineTest extends TestCase
 {
 
 
@@ -20,25 +20,29 @@ class DomainManagerTest extends TestCase
 
     public function test_constructor()
     {
-        $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
-        $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
-        $serverConfig->setHttpFactory($httpFactory);
+        global $dirResources;
 
+        $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
+        $serverConfig->setHttpFactory(
+            prov_instanceOf_EnGarde_HttpFactory()
+        );
         $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
-            true, "0.9.0 [alpha]", "test", false, false, to_system_path(__DIR__ . "/apps")
+            true, "0.9.0 [alpha]", "test", false, false, $dirResources . "/apps"
         );
         $domainConfig->setPathToErrorView("errorView.phtml");
 
-        $obj = new DomainManager($serverConfig, $domainConfig);
-        $this->assertTrue(is_a($obj, DomainManager::class));
+        $obj = new Engine($serverConfig, $domainConfig);
+        $this->assertTrue(is_a($obj, Engine::class));
     }
 
 
 
     public function test_constructor_register_errorlistening()
     {
-        $domainManager  = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("localtest");
-        $rootPath       = to_system_path(__DIR__ . DIRECTORY_SEPARATOR . "apps");
+        global $dirResources;
+
+        $domainEngine  = prov_instanceOf_EnGarde_Domain_Engine("localtest");
+        $rootPath       = to_system_path($dirResources . "/apps");
 
         $expected = [
             "rootPath"          => $rootPath . DS,
@@ -54,24 +58,27 @@ class DomainManagerTest extends TestCase
     }
 
 
+
     public function test_constructor_register_routes()
     {
-        $domainManager      = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("localtest", "GET", "/");
-        $rootPath           = to_system_path(__DIR__ . DIRECTORY_SEPARATOR . "apps");
-        $pathToAppRoutes    = $rootPath . DS . "site/AppRoutes.php";
+        global $dirResources;
+
+        $domainEngine      = prov_instanceOf_EnGarde_Domain_Engine("localtest", "GET", "/");
+        $rootPath           = to_system_path($dirResources . "/apps");
+        $pathToAppRoutes    = $rootPath . "/site/AppRoutes.php";
 
         if (file_exists($pathToAppRoutes) === true) {
             unlink($pathToAppRoutes);
         }
 
-        $domainManager->run();
+        $domainEngine->run();
         $this->assertTrue(file_exists($pathToAppRoutes));
     }
 
-
+/*
     public function test_method_starttargetapplication()
     {
-        $domainManager  = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet("localtest");
+        $domainEngine  = prov_instanceOf_EnGarde_Domain_Engine("localtest");
         $rootPath       = to_system_path(__DIR__ . DIRECTORY_SEPARATOR . "apps");
 
         $expected = [
@@ -88,7 +95,7 @@ class DomainManagerTest extends TestCase
 
 
         // Roda a aplicação alvo
-        $domainManager->run();
+        $domainEngine->run();
 
         $expected = [
             "rootPath"          => $rootPath . DS,
@@ -106,11 +113,12 @@ class DomainManagerTest extends TestCase
 
     public function test_method_custom_run()
     {
-        $domainManager  = provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet(
+        $domainEngine  = prov_instanceOf_EnGarde_Domain_Engine(
             "localtest", "GET", "/customrun", null, null
         );
 
-        $domainManager->run();
-        $this->assertSame("custom run executed", $domainManager->getTestViewDebug());
+        $domainEngine->run();
+        $this->assertSame("custom run executed", $domainEngine->getTestViewDebug());
     }
+    */
 }

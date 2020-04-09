@@ -77,7 +77,7 @@ function prov_instanceOf_EnGarde_Config_Route($cfg = null)
 
 
 
-function provider_PHPEnGarde_InstanceOf_DomainManager()
+function provider_PHPEnGarde_InstanceOf_Domain_Engine()
 {
     $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
     $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
@@ -90,11 +90,11 @@ function provider_PHPEnGarde_InstanceOf_DomainManager()
     $domainConfig->setPathToErrorView("errorView.phtml");
 
 
-    return new \AeonDigital\EnGarde\DomainManager($serverConfig, $domainConfig);
+    return new \AeonDigital\EnGarde\Domain\Engine($serverConfig, $domainConfig);
 }
 
 
-function provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet(
+function prov_instanceOf_EnGarde_Domain_Engine(
     $environmentType = "localtest",
     $requestMethod = "GET",
     $requestURI = "/",
@@ -119,5 +119,5 @@ function provider_PHPEnGarde_InstanceOf_DomainManager_AutoSet(
         $domainConfig->setPathToErrorView("errorView.phtml");
     }
 
-    return new \AeonDigital\EnGarde\DomainManager($serverConfig, $domainConfig);
+    return new \AeonDigital\EnGarde\Domain\Engine($serverConfig, $domainConfig);
 }

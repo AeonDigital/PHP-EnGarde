@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace site;
 
-use AeonDigital\EnGarde\DomainApplication as DomainApplication;
-use AeonDigital\Interfaces\EnGarde\iMiddleware as iMiddleware;
+use AeonDigital\EnGarde\Domain\Application as Application;
+use AeonDigital\EnGarde\Interfaces\Http\iMiddleware as iMiddleware;
 
 
 
@@ -13,7 +13,7 @@ use AeonDigital\Interfaces\EnGarde\iMiddleware as iMiddleware;
 /**
  * Classe base da aplicação.
  */
-class AppStart extends DomainApplication
+class AppStart extends Application
 {
 
 

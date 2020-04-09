@@ -9,6 +9,9 @@ require_once $dirResources . "/load_providers.php";
 
 
 /*
+Prosseguir recriando todo o Domain Engine de cima para baixo!
+
+
 <?php
 require_once $dirRoot . "/tests/src/concrete/RequestHandler01.php";
 require_once $dirRoot . "/tests/src/concrete/Middleware01.php";

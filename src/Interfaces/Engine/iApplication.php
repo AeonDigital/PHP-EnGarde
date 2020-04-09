@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\Interfaces\EnGarde\Engine;
+namespace AeonDigital\EnGarde\Interfaces\Domain;
 
 
 
@@ -13,8 +13,7 @@ namespace AeonDigital\Interfaces\EnGarde\Engine;
 
 
 /**
- * Define uma Aplicação que pode ser manipulada pelo Gerenciador de Domínio
- * ``AeonDigital/EnGarde/DomainManager``.
+ * Define uma Aplicação que pode ser manipulada pelo Gerenciador de Domínio.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>

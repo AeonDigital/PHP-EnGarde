@@ -22,7 +22,7 @@ namespace AeonDigital\EnGarde\Config;
  */
 final class ErrorListening
 {
-    use \AeonDigital\Traits\HTTPRawStatusCode;
+    use \AeonDigital\Http\Traits\HTTPRawStatusCode;
 
 
 
@@ -106,42 +106,42 @@ final class ErrorListening
      *
      * @var         string
      */
-    private static $rootPath = null;
+    private static string $rootPath = "";
     /**
      * Tipo de ambiente que o domínio está rodando no momento.
      * Esta propriedade deve ser imutável.
      *
      * @var         string
      */
-    private static $environmentType = null;
+    private static string $environmentType = "";
     /**
      * Indica se o domínio está em modo de debug.
      * Esta propriedade deve ser imutável.
      *
      * @var         bool
      */
-    private static $isDebugMode = null;
+    private static bool $isDebugMode = false;
     /**
      * Protocolo HTTP/HTTPS.
      * Esta propriedade deve ser imutável.
      *
      * @var         string
      */
-    private static $protocol = null;
+    private static string $protocol = "";
     /**
      * Método HTTP usado.
      * Esta propriedade deve ser imutável.
      *
      * @var         string
      */
-    private static $method = null;
+    private static string $method = "";
     /**
      * Caminho completo até a view que deve ser enviada ao
      * UA em caso de erros no domínio.
      *
      * @var         string
      */
-    private static $pathToErrorView = null;
+    private static string $pathToErrorView = "";
 
 
 
@@ -170,7 +170,7 @@ final class ErrorListening
      * @param       string $method
      *              Método HTTP usado.
      *
-     * @param       ?string $pathToErrorView
+     * @param       string $pathToErrorView
      *              Caminho completo até a view de erros
      */
     static public function setContext(
@@ -179,9 +179,9 @@ final class ErrorListening
         bool $isDebugMode,
         string $protocol,
         string $method,
-        ?string $pathToErrorView = null
+        string $pathToErrorView = ""
     ) : void {
-        $isTestEnv = (  self::$environmentType === null ||
+        $isTestEnv = (  self::$environmentType === "" ||
                         self::$environmentType === "test" ||
                         self::$environmentType === "testview" ||
                         self::$environmentType === "localtest");
@@ -221,19 +221,19 @@ final class ErrorListening
      */
     static public function clearContext() : void
     {
-        $isTestEnv = (  self::$environmentType === null ||
+        $isTestEnv = (  self::$environmentType === "" ||
                         self::$environmentType === "test" ||
                         self::$environmentType === "testview" ||
                         self::$environmentType === "localtest");
 
         if ($isTestEnv === true)
         {
-            self::$rootPath         = null;
-            self::$environmentType  = null;
-            self::$isDebugMode      = null;
-            self::$protocol         = null;
-            self::$method           = null;
-            self::$pathToErrorView  = null;
+            self::$rootPath         = "";
+            self::$environmentType  = "";
+            self::$isDebugMode      = false;
+            self::$protocol         = "";
+            self::$method           = "";
+            self::$pathToErrorView  = "";
         }
     }
 
@@ -245,15 +245,15 @@ final class ErrorListening
      * Define o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros no
      * domínio.
      *
-     * @param       ?string $pathToErrorView
+     * @param       string $pathToErrorView
      *              Caminho até a view de erro padrão.
      *
      * @return      void
      */
-    static public function setPathToErrorView(?string $pathToErrorView = null) : void
+    static public function setPathToErrorView(string $pathToErrorView = "") : void
     {
-        self::$pathToErrorView = null;
-        if ($pathToErrorView !== null) {
+        self::$pathToErrorView = "";
+        if ($pathToErrorView !== "") {
             self::$pathToErrorView = to_system_path($pathToErrorView);
         }
     }
@@ -274,7 +274,7 @@ final class ErrorListening
     {
         $str = "";
 
-        if (self::$pathToErrorView === null || file_exists(self::$pathToErrorView) === false) {
+        if (self::$pathToErrorView === "" || file_exists(self::$pathToErrorView) === false) {
             $str = self::createNonStyleErrorPage($viewData);
         } else {
             $viewData = (object)$viewData;
