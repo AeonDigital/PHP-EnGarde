@@ -17,6 +17,7 @@
         "php": ">=7.4",
         "psr/http-server-middleware": "v1.0.1",
         "aeondigital/phpinterfaces": ">=v0.5.0-beta",
+        "aeondigital/phpengardeinterfaces": ">=v0.5.0-beta",
         "aeondigital/phpcore": ">=v0.5.0-beta",
         "aeondigital/phpdal": ">=v0.5.0-beta",
         "aeondigital/phphttp": ">=v0.5.0-beta",

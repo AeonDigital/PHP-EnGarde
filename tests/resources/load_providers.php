@@ -2,10 +2,6 @@
 require_once $dirRoot . "/vendor/aeondigital/phphttp/tests/resources/load_providers.php";
 
 
-require_once "provider/HttpFactory.php";
-require_once "provider/HttpRouter.php";
-
-
 require_once "provider/ConfigSecurity.php";
 require_once "provider/ConfigRoute.php";
 require_once "provider/ConfigApplication.php";
@@ -13,10 +9,11 @@ require_once "provider/ConfigDomain.php";
 require_once "provider/ConfigServer.php";
 
 
-require_once "provider/DomainEngine.php";
-require_once "provider/HttpResponseHandler.php";
+//require_once "provider/DomainEngine.php";
+//require_once "provider/HttpResponseHandler.php";
 
 
+//require_once "provider/HttpRouter.php";
 //require_once "concrete/RequestHandler01.php";
 
 

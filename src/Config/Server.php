@@ -4,7 +4,7 @@ declare (strict_types=1);
 namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
-use AeonDigital\EnGarde\Interfaces\Http\iFactory as iFactory;
+use AeonDigital\Interfaces\Http\iFactory as iFactory;
 
 
 

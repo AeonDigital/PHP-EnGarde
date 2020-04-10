@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Http;
+namespace AeonDigital\EnGarde\Domain;
 
 use AeonDigital\EnGarde\Interfaces\Http\iResponseHandler as iResponseHandler;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;

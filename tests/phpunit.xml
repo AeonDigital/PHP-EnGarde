@@ -16,9 +16,6 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
-            <file>src/Http/HttpFactoryTest.php</file>
-
-
             <file>src/Config/ConfigSecurityTest.php</file>
             <file>src/Config/ConfigRouteTest.php</file>
             <file>src/Config/ConfigApplicationTest.php</file>
@@ -26,18 +23,18 @@
             <file>src/Config/ConfigServerTest.php</file>
 
 
-            <file>src/Http/RouterTest.php</file>
+            <!--file>src/Http/RouterTest.php</file>
 
 
-            <!--file>src/Domain/EngineTest.php</file>
+            <file>src/Domain/EngineTest.php</file>
 
 
             <file>src/Http/ResponseHandlerTest.php</file>
-            <file>src/Http/RequestHandlerTest.php</file-->
+            <file>src/Http/RequestHandlerTest.php</file>
 
 
 
-            <!--file>src/Config/ErrorListeningTest.php</file>
+            <file>src/Config/ErrorListeningTest.php</file>
             <file>src/Config/SecuritySettingsTest.php</file>
 
 
