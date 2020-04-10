@@ -1,0 +1,49 @@
+{
+    "viewTitle": "Página de teste",
+    "prop1": true,
+    "prop2": false,
+    "prop3": 0,
+    "prop4": 0.552,
+    "prop5": {
+        "date": "2000-01-01 00:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "America/Sao_Paulo"
+    },
+    "prop6": [
+        1,
+        2,
+        3,
+        4,
+        "teste"
+    ],
+    "prop7": {
+        "p7.1": 1,
+        "p7.2": 2
+    },
+    "dataTable": [
+        [
+            "col1",
+            "col2",
+            "col3",
+            "col4"
+        ],
+        [
+            "a1",
+            "a2",
+            "a3",
+            "a4"
+        ],
+        [
+            "b1",
+            "b2",
+            "b3",
+            "b4"
+        ],
+        [
+            "c1",
+            "c2",
+            "c3",
+            "c4"
+        ]
+    ]
+}

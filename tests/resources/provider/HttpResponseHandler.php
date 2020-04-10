@@ -5,7 +5,7 @@
 // ---
 // Geração de Instâncias de objetos.
 
-function prov_instanceOf_EnGarde_Http_RequestHandler(
+function prov_instanceOf_Http_RequestHandler(
     $environmentType = "localtest",
     $requestMethod = "GET",
     $url = "http://aeondigital.com.br",

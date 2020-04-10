@@ -8,14 +8,7 @@ require_once $dirRoot . "/vendor/autoload.php";
 require_once $dirResources . "/load_providers.php";
 
 
-/*
-Prosseguir recriando todo o Domain Engine de cima para baixo!
-
-
-<?php
-require_once $dirRoot . "/tests/src/concrete/RequestHandler01.php";
-require_once $dirRoot . "/tests/src/concrete/Middleware01.php";
-require_once $dirRoot . "/tests/src/apps/site/AppStart.php";
-require_once $dirRoot . "/tests/src/apps/site/controllers/Home.php";
-require_once $dirRoot . "/tests/src/apps/site/middlewares/TestMiddleware.php";
-*/
+// Prosseguir com:
+// - ErrorListening
+// - ResponseHandler
+// - RouteResolver

@@ -9,15 +9,6 @@ require_once "provider/ConfigDomain.php";
 require_once "provider/ConfigServer.php";
 
 
-//require_once "provider/DomainEngine.php";
-//require_once "provider/HttpResponseHandler.php";
-
-
-//require_once "provider/HttpRouter.php";
-//require_once "concrete/RequestHandler01.php";
-
-
-
 
 
 
@@ -26,19 +17,9 @@ require_once "provider/ConfigServer.php";
 
 
 /*
-DEPOIS
-
-Seguir com:
-- Http\RequestHandler
-- Http\ResponseHandler
-- Http\MimeHandler\{...}
-
-
-$baseTargetFileDir =  __DIR__ . "/files";
-$defaultServerConfig = null;
-
-
-function prov_instanceOf_EnGarde_Http_RequestHandler(
+//
+// Provê uma instância da classe 'AeonDigital\Http\Server\RequestHandler'
+function prov_instanceOf_Http_RequestHandler(
     $environmentType = "localtest",
     $requestMethod = "GET",
     $url = "http://aeondigital.com.br",
@@ -48,17 +29,31 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
     $specialSet = "0.9.0 [alpha]",
     $debugMode = false
 ) {
+    global $dirResources;
+
+    $response       = null;
+    $routeConfig    = null;
+    $tempAppRoutes  = require($dirResources . "/concrete/AppRoutes.php");
+
+
+
+    // Inicia uma instância 'AeonDigital\Http\Message\ServerRequest'
     $serverRequest = prov_instanceOf_Http_ServerRequest_02($requestMethod, $url);
-    $serverRequest = $serverRequest->withCookieParams([]);
+    //$serverRequest = $serverRequest->withCookieParams([]);
 
 
-    $response = null;
-    $routeConfig = null;
-    $tempAppRoutes = require(__DIR__ . "/concrete/AppRoutes.php");
+
+    // Conforme o método HTTP sendo testado...
     if ($requestMethod === "OPTIONS" || $requestMethod === "TRACE") {
         $response = prov_instanceOf_Http_Response();
-    } else {
-        $routeConfig = prov_instanceOf_EnGarde_Config_Route($tempAppRoutes["simple"]["/^\\/site\\//"][$requestMethod]);
+    }
+    else {
+        // Inicia e configura o objeto 'AeonDigital\EnGarde\Config\Route'
+        $routeConfig = prov_instanceOf_EnGarde_Config_Route(
+            $tempAppRoutes["simple"]["/^\\/site\\//"][$requestMethod]
+        );
+
+
 
         $routeMime = $routeConfig->negotiateMimeType(
             $serverRequest->getResponseMimes(),
@@ -67,6 +62,9 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
         $routeConfig->setResponseMime($routeMime["mime"]);
         $routeConfig->setResponseMimeType($routeMime["mimetype"]);
 
+
+
+        // Configura teste para casos onde a requisição é de um download.
         $isDownload_route = $routeConfig->getResponseIsDownload();
         $isDownload_param = $serverRequest->getParam("_download");
         if ($isDownload_param !== null) {
@@ -82,6 +80,10 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
             )
         );
 
+
+
+        // Configura teste para casos onde a requisição exige que o código seja
+        // retornado de forma "pretty_print"
         $prettyPrint = $serverRequest->getParam("_pretty_print");
         $routeConfig->setResponseIsPrettyPrint(($prettyPrint === "true" || $prettyPrint === "1"));
 
@@ -89,6 +91,7 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
 
 
 
+        // Valores iniciais do viewData
         $viewData = (object)[
             "appTitle" => "Application Title",
             "viewTitle" => "View Title",
@@ -96,8 +99,9 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
         ];
 
 
-        $mime = $routeConfig->getResponseMime();
 
+        // Faz um ajuste particular conforme o mime a ser usado
+        $mime = $routeConfig->getResponseMime();
         if ($mime === "html") {
             $viewData->mimeContent = "This is a HTML document.";
         }
@@ -163,26 +167,35 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
     }
 
 
+
+
+    // Inicia e configura uma instância 'AeonDigital\EnGarde\Config\Server'
     if ($serverConfig === null) {
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $serverRequest->getUri()->getRelativeUri()
         );
-        $httpFactory = prov_instanceOf_Http_Factory();
-        $serverConfig->setHttpFactory($httpFactory);
+
+        $serverConfig->setHttpFactory(
+            prov_instanceOf_Http_Factory()
+        );
     }
 
+
+    // Inicia e configura uma instância 'AeonDigital\EnGarde\Config\Domain'
     if ($domainConfig === null) {
         $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
-            true, $specialSet, $environmentType, $debugMode, false, to_system_path(__DIR__ . "/apps")
+            true, $specialSet, $environmentType, $debugMode, false, to_system_path($dirResources . "/apps")
         );
         $domainConfig->setPathToErrorView("errorView.phtml");
     }
 
+
+    // Inicia e configura uma instância 'AeonDigital\EnGarde\Config\Application'
     if ($applicationConfig === null) {
         $applicationConfig = prov_instanceOf_EnGarde_Config_Application(
             true,
             "site",
-            to_system_path(__DIR__ . "/apps")
+            to_system_path($dirResources . "/apps")
         );
         $applicationConfig->setLocales(["pt-BR", "en-US"]);
         $applicationConfig->setDefaultLocale("pt-BR");
@@ -190,6 +203,9 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
 
 
 
+
+
+    // Se existir, configura a instância 'AeonDigital\EnGarde\Config\Route'
     if ($routeConfig !== null) {
         // Verifica qual locale deve ser usado para responder
         // esta requisição
@@ -204,8 +220,7 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
 
 
 
-        // Verifica qual mimetype deve ser usado para responder
-        // esta requisição
+        // Verifica qual mimetype deve ser usado para responder esta requisição
         $routeMime = $routeConfig->negotiateMimeType(
             $serverRequest->getResponseMimes(),
             $serverRequest->getParam("_mime")
@@ -221,6 +236,8 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
 
 
 
+
+    // Monta e retorna a instância
     return new \AeonDigital\EnGarde\ResponseHandler(
         $serverConfig,
         $domainConfig,
@@ -231,6 +248,49 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
         $response
     );
 }
+
+
+
+
+
+
+
+
+
+
+function prov_instanceOf_Http_Response_02(
+    $headers = [],
+    $strBody = "",
+    $viewData = null,
+    $viewConfig = null
+) {
+    return new \AeonDigital\Http\Message\Response(
+        200,
+        "",
+        "1.1",
+        prov_instanceOf_Http_HeaderCollection_01($headers),
+        prov_instanceOf_Http_Stream_fromString($strBody),
+        $viewData,
+        $viewConfig
+    );
+}
+
+
+
+
+
+DEPOIS
+
+Seguir com:
+- Http\RequestHandler
+- Http\ResponseHandler
+- Http\MimeHandler\{...}
+
+
+$baseTargetFileDir =  __DIR__ . "/files";
+$defaultServerConfig = null;
+
+
 function provider_PHPEnGarde_InstanceOf_ServerConfig(
     $autoSet = true,
     $serverIP = null,

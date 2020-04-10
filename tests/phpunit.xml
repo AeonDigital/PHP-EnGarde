@@ -23,24 +23,15 @@
             <file>src/Config/ConfigServerTest.php</file>
 
 
-            <!--file>src/Http/RouterTest.php</file>
-
-
-            <file>src/Domain/EngineTest.php</file>
-
-
-            <file>src/Http/ResponseHandlerTest.php</file>
-            <file>src/Http/RequestHandlerTest.php</file>
-
-
-
-            <file>src/Config/ErrorListeningTest.php</file>
-            <file>src/Config/SecuritySettingsTest.php</file>
-
-
-            <file>src/DomainApplicationTest.php</file>
-            <file>src/RequestHandlerTest.php</file>
-            <file>src/ResponseHandlerTest.php</file-->
+            <file>src/Handler/Mime/HTMLTest.php</file>
+            <file>src/Handler/Mime/XHTMLTest.php</file>
+            <file>src/Handler/Mime/XMLTest.php</file>
+            <file>src/Handler/Mime/CSVTest.php</file>
+            <file>src/Handler/Mime/JSONTest.php</file>
+            <file>src/Handler/Mime/TXTTest.php</file>
+            <file>src/Handler/Mime/XLSTest.php</file>
+            <file>src/Handler/Mime/XLSXTest.php</file>
+            <file>src/Handler/Mime/PDFTest.php</file>
         </testsuite>
     </testsuites>
     <filter>
