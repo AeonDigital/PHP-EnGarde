@@ -40,7 +40,7 @@ class ConfigServerTest extends TestCase
     public function test_method_getset_httptools()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Server(true);
-        $nHttpFactory = prov_instanceOf_EnGarde_HttpFactory();
+        $nHttpFactory = prov_instanceOf_Http_Factory();
 
         $nMock->setHttpFactory($nHttpFactory);
         $this->assertSame($nHttpFactory, $nMock->getHttpFactory());

@@ -24,7 +24,7 @@ class DomainEngineTest extends TestCase
 
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
         $serverConfig->setHttpFactory(
-            prov_instanceOf_EnGarde_HttpFactory()
+            prov_instanceOf_Http_Factory()
         );
         $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
             true, "0.9.0 [alpha]", "test", false, false, $dirResources . "/apps"

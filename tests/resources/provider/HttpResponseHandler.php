@@ -134,7 +134,7 @@ function prov_instanceOf_EnGarde_Http_RequestHandler(
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $serverRequest->getUri()->getRelativeUri()
         );
-        $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
+        $httpFactory = prov_instanceOf_Http_Factory();
         $serverConfig->setHttpFactory($httpFactory);
     }
 

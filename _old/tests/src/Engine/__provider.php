@@ -80,7 +80,7 @@ function prov_instanceOf_EnGarde_Config_Route($cfg = null)
 function provider_PHPEnGarde_InstanceOf_Domain_Engine()
 {
     $serverConfig = prov_instanceOf_EnGarde_Config_Server(true);
-    $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
+    $httpFactory = prov_instanceOf_Http_Factory();
     $serverConfig->setHttpFactory($httpFactory);
 
 
@@ -107,7 +107,7 @@ function prov_instanceOf_EnGarde_Domain_Engine(
         $serverConfig = prov_instanceOf_EnGarde_Config_Server(
             true, null, null, null, null, $requestMethod, $requestURI
         );
-        $httpFactory = prov_instanceOf_EnGarde_HttpFactory();
+        $httpFactory = prov_instanceOf_Http_Factory();
         $serverConfig->setHttpFactory($httpFactory);
     }
 
