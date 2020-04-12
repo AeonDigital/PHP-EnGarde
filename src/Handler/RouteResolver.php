@@ -1,17 +1,17 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde;
+namespace AeonDigital\EnGarde\Handler;
 
-use AeonDigital\Interfaces\EnGarde\iRequestHandler as iRequestHandler;
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
-use AeonDigital\Interfaces\EnGarde\iController as iController;
-
+use AeonDigital\Interfaces\Http\Server\iRequestHandler as iRequestHandler;
+use AeonDigital\Interfaces\Http\Server\iResponseHandler as iResponseHandler;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Engine\iController as iController;
 
 
 
@@ -38,43 +38,43 @@ class RouteResolver implements iRequestHandler
      *
      * @var         iServerConfig
      */
-    protected $serverConfig = null;
+    protected iServerConfig $serverConfig;
     /**
      * Instância das configurações do Domínio.
      *
      * @var         iDomainConfig
      */
-    protected $domainConfig = null;
+    protected iDomainConfig $domainConfig;
     /**
      * Configuraçõs para a Aplicação corrente.
      *
      * @var         iApplicationConfig
      */
-    protected $applicationConfig = null;
+    protected iApplicationConfig $applicationConfig;
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    protected $serverRequest = null;
+    protected iServerRequest $serverRequest;
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
-     * @var         ?array
+     * @var         array
      */
-    protected $rawRouteConfig = null;
+    protected array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
      */
-    protected $routeConfig = null;
+    protected iRouteConfig $routeConfig;
     /**
-     * Objeto responsável por preparar o ``iResponse`` para ser servido ao ``UA``.
+     * Objeto responsável por preparar o ``iResponseHandler`` para ser servido ao ``UA``.
      *
      * @var         iResponseHandler
      */
-    private $responseHandler = null;
+    private iResponseHandler $responseHandler;
 
 
 
@@ -107,14 +107,16 @@ class RouteResolver implements iRequestHandler
         iApplicationConfig $applicationConfig,
         iServerRequest $serverRequest,
         array $rawRouteConfig,
-        ?iRouteConfig $routeConfig
+        ?iRouteConfig $routeConfig = null
     ) {
         $this->serverConfig         = $serverConfig;
         $this->domainConfig         = $domainConfig;
         $this->applicationConfig    = $applicationConfig;
         $this->serverRequest        = $serverRequest;
         $this->rawRouteConfig       = $rawRouteConfig;
-        $this->routeConfig          = $routeConfig;
+        if ($routeConfig !== null) {
+            $this->routeConfig = $routeConfig;
+        }
     }
 
 
@@ -183,7 +185,7 @@ class RouteResolver implements iRequestHandler
 
         // A partir do objeto "iResponse" obtido,
         // gera a view a ser enviada para o UA.
-        $this->responseHandler = new \AeonDigital\EnGarde\ResponseHandler(
+        $this->responseHandler = new \AeonDigital\EnGarde\Handler\ResponseHandler(
             $this->serverConfig,
             $this->domainConfig,
             $this->applicationConfig,
