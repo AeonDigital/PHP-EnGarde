@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Config;
+namespace AeonDigital\EnGarde\Handler;
 
 
 

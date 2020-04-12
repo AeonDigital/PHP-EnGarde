@@ -23,7 +23,7 @@
             <file>src/Config/ConfigServerTest.php</file>
 
 
-            <file>src/Handler/Mime/HTMLTest.php</file>
+            <!--file>src/Handler/Mime/HTMLTest.php</file>
             <file>src/Handler/Mime/XHTMLTest.php</file>
             <file>src/Handler/Mime/XMLTest.php</file>
             <file>src/Handler/Mime/CSVTest.php</file>
@@ -32,6 +32,8 @@
             <file>src/Handler/Mime/XLSTest.php</file>
             <file>src/Handler/Mime/XLSXTest.php</file>
             <file>src/Handler/Mime/PDFTest.php</file>
+
+            <file>src/Handler/ErrorListeningTest.php</file-->
         </testsuite>
     </testsuites>
     <filter>

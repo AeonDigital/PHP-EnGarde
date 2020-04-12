@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
-    <?php 
+    <?php
         $useCode        = $viewData->http->code;
         $useMessage     = $viewData->http->message;
         if ($viewData->isDebugMode === true && $viewData->environmentType !== "production") {
             $useMessage = $viewData->debugLog->message;
         }
     ?>
+
     <head>
         <meta charset="utf-8" />
         <title><?php echo $useCode; ?> - <?php echo $useMessage; ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
             body {
-                background-color:#E9E9E9; 
+                background-color:#E9E9E9;
                 font-size:16px; font-family:"Georgia"; color:#1C386C;
                 text-align:center;
             }
@@ -26,7 +27,7 @@
     <body>
         <h1><?php echo $useCode; ?></h1>
         <h2><?php echo $useMessage; ?></h2>
-        <?php 
+        <?php
         if ($viewData->isDebugMode === true && $viewData->environmentType !== "production") {
             echo "<h3>rootPath: " . $viewData->rootPath . "</h3>";
             echo "\n";
@@ -34,5 +35,6 @@
             echo "\n";
         }
         ?>
+
     </body>
 </html>

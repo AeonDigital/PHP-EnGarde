@@ -1,5 +1,5 @@
 <?php return array (
-  'rootPath' => 'E:\\Aeon Digital\\Projetos Open Source\\PHP-EnGarde-Config\\tests\\src\\',
+  'rootPath' => 'E:\\Projetos\\Open Source\\PHP-EnGarde\\tests\\resources\\apps\\',
   'environmentType' => 'test',
   'isDebugMode' => false,
   'http' => 
