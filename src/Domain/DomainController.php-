@@ -3,28 +3,24 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde;
 
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Http\Message\Interfaces\iResponse as iResponse;
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iApplicationConfig as iApplicationConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iRouteConfig as iRouteConfig;
-use AeonDigital\Interfaces\EnGarde\iController as iController;
-
-
-
-
-
+use AeonDigital\EnGarde\Interfaces\Engine\iController as iController;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 
 
 /**
  * Classe abstrata que deve ser herdada pelos controllers das aplicações.
  *
+ * @codeCoverageIgnore
+ *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
- * @codeCoverageIgnore
  */
 abstract class DomainController implements iController
 {
@@ -38,61 +34,61 @@ abstract class DomainController implements iController
      *
      * @var         iServerConfig
      */
-    protected $serverConfig = null;
+    protected iServerConfig $serverConfig;
     /**
      * Instância das configurações do Domínio.
      *
      * @var         iDomainConfig
      */
-    protected $domainConfig = null;
+    protected iDomainConfig $domainConfig;
     /**
      * Configuraçõs para a Aplicação corrente.
      *
      * @var         iApplicationConfig
      */
-    protected $applicationConfig = null;
+    protected iApplicationConfig $applicationConfig;
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    protected $serverRequest = null;
+    protected iServerRequest $serverRequest;
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
-     * @var         ?array
+     * @var         array
      */
-    protected $rawRouteConfig = null;
+    protected array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
      */
-    protected $routeConfig = null;
+    protected iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
      * @var         iResponse
      */
-    protected $response = null;
+    protected iResponse $response;
     /**
-     * Objeto ``StdClass``.
+     * Objeto ``stdClass``.
      * Deve ser preenchido durante a execução da ``Action`` e poderá ser acessado nas views.
      * Tem como finalidade agregar todas as informações que o ``UA`` está requisitando.
      *
-     * @var         \StdClass
+     * @var         \stdClass
      */
-    protected $viewData = null;
+    protected \stdClass $viewData;
     /**
-     * Objeto ``StdClass``.
+     * Objeto ``stdClass``.
      * Deve ser preenchido durante a execução da ``Action`` e poderá ser acessado nas views.
      *
      * Tem como finalidade agregar informações que sirvam para a criação da view e não devem ser
      * expostas ao ``UA``.
      *
-     * @var         \StdClass
+     * @var         \stdClass
      */
-    protected $viewConfig = null;
+    protected \stdClass $viewConfig;
 
 
 
@@ -144,8 +140,8 @@ abstract class DomainController implements iController
         $this->routeConfig          = $routeConfig;
         $this->response             = $response;
 
-        $this->viewData = new \StdClass();
-        $this->viewConfig = new \StdClass();
+        $this->viewData     = new \stdClass();
+        $this->viewConfig   = new \stdClass();
     }
 
 

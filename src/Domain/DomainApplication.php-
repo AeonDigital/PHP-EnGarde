@@ -3,10 +3,10 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde;
 
-use AeonDigital\Interfaces\EnGarde\Config\iServerConfig as iServerConfig;
-use AeonDigital\Interfaces\EnGarde\Config\iDomainConfig as iDomainConfig;
-use AeonDigital\Http\Message\Interfaces\iServerRequest as iServerRequest;
-use AeonDigital\Interfaces\EnGarde\iApplication as iApplication;
+use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
+use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 
 
 
@@ -15,11 +15,12 @@ use AeonDigital\Interfaces\EnGarde\iApplication as iApplication;
 /**
  * Classe abstrata que deve ser herdada pelas classes concretas em cada Aplicações ``EnGarde``.
  *
+ * @codeCoverageIgnore
+ *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
- * @codeCoverageIgnore
  */
 abstract class DomainApplication implements iApplication
 {
@@ -33,55 +34,55 @@ abstract class DomainApplication implements iApplication
      *
      * @var         iServerConfig
      */
-    protected $serverConfig = null;
+    protected iServerConfig $serverConfig;
     /**
      * Instância das configurações do Domínio.
      *
      * @var         iDomainConfig
      */
-    protected $domainConfig = null;
+    protected iDomainConfig $domainConfig;
     /**
      * Configuraçõs para a Aplicação corrente.
      *
      * @var         iApplicationConfig
      */
-    protected $applicationConfig = null;
+    protected iApplicationConfig $applicationConfig;
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    protected $serverRequest = null;
+    protected iServerRequest $serverRequest;
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
-     * @var         ?array
+     * @var         array
      */
-    protected $rawRouteConfig = null;
+    protected array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
      */
-    protected $routeConfig = null;
+    protected iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
      * @var         iResponse
      */
-    protected $response = null;
+    protected iResponse $response;
     /**
      * Guarda a parte relativa da URI que está sendo executada no momento
      *
      * @var         string
      */
-    protected $executePath = null;
+    protected string $executePath = "";
     /**
      * Nome do método que deve ser usado para resolver a rota que está ativa no momento.
      *
      * @var         string
      */
-    protected $runMethodName = "run";
+    protected string $runMethodName = "run";
 
 
 
@@ -104,7 +105,7 @@ abstract class DomainApplication implements iApplication
         }
 
 
-        $this->applicationConfig = new \AeonDigital\EnGarde\Config\ApplicationConfig(
+        $this->applicationConfig = new \AeonDigital\EnGarde\Config\Application(
             $this->domainConfig->getApplicationName(),
             $this->domainConfig->getRootPath(),
             $securitySettings
@@ -117,7 +118,7 @@ abstract class DomainApplication implements iApplication
         // Se a Aplicação tem uma página própria para
         // amostragem de erros, registra-a no manipulador de erros.
         $fullPathToErrorView = $this->applicationConfig->getFullPathToErrorView();
-        if ($fullPathToErrorView !== null) {
+        if ($fullPathToErrorView !== "") {
             \AeonDigital\EnGarde\Config\ErrorListening::setPathToErrorView($fullPathToErrorView);
         }
     }
@@ -128,7 +129,7 @@ abstract class DomainApplication implements iApplication
      */
     private function defineRouter() : void
     {
-        $this->applicationRouter = new \AeonDigital\EnGarde\Config\Router(
+        $this->applicationRouter = new \AeonDigital\EnGarde\Engine\Router(
             $this->applicationConfig->getName(),
             $this->applicationConfig->getPathToAppRoutes(),
             $this->applicationConfig->getPathToControllers(),
@@ -156,7 +157,10 @@ abstract class DomainApplication implements iApplication
             // força o update de rotas em toda requisição
             if ($this->domainConfig->getIsUpdateRoutes() === true &&
                 $this->domainConfig->getIsDebugMode() === true &&
-                ($this->domainConfig->getEnvironmentType() === "local" || $this->domainConfig->getEnvironmentType() === "localtest"))
+                (
+                    $this->domainConfig->getEnvironmentType() === "local" ||
+                    $this->domainConfig->getEnvironmentType() === "localtest")
+                )
             {
                 $this->applicationRouter->forceUpdateRoutes();
             }
@@ -194,8 +198,8 @@ abstract class DomainApplication implements iApplication
 
             // P3 - Identificando exatamente a configuração da rota alvo
             $targetMethod = strtoupper($this->serverRequest->getMethod());
-            if ($this->rawRouteConfig !== null && isset($this->rawRouteConfig[$targetMethod]) === true) {
-                $this->routeConfig = new \AeonDigital\EnGarde\Config\RouteConfig($this->rawRouteConfig[$targetMethod]);
+            if ($this->rawRouteConfig !== [] && isset($this->rawRouteConfig[$targetMethod]) === true) {
+                $this->routeConfig = new \AeonDigital\EnGarde\Config\Route($this->rawRouteConfig[$targetMethod]);
 
                 // P4 - Identifica se deve executar um método próprio
                 $this->runMethodName = $this->routeConfig->getRunMethodName();
@@ -279,7 +283,7 @@ abstract class DomainApplication implements iApplication
             $this->serverRequest->getParam("_locale")
         );
 
-        if ($useLocale === null) {
+        if ($useLocale === "") {
             $msg = "Locale \"$useLocale\" is not supported by this Application.";
             \AeonDigital\EnGarde\Config\ErrorListening::throwHTTPError(415, $msg);
         } else {
@@ -365,7 +369,7 @@ abstract class DomainApplication implements iApplication
 
                 // Inicia uma instância "iRequestHandler" responsável
                 // por iniciar o controller alvo e executar o método correspondente a rota.
-                $resolver = new \AeonDigital\EnGarde\RouteResolver(
+                $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
                     $this->serverConfig,
                     $this->domainConfig,
                     $this->applicationConfig,
@@ -378,7 +382,7 @@ abstract class DomainApplication implements iApplication
                 // Inicia a instância do manipulador da requisição.
                 // e passa para ele o resolver da rota para ser executado após
                 // os middlewares.
-                $requestHandler = new \AeonDigital\EnGarde\RequestHandler($resolver);
+                $requestHandler = new \AeonDigital\Http\Server\RequestHandler($resolver);
 
 
                 // Registra os middlewares caso existam

@@ -20,11 +20,12 @@ use AeonDigital\EnGarde\Interfaces\Engine\iController as iController;
 /**
  * Manipulador padrão para resolução das rotas.
  *
+ * @codeCoverageIgnore
+ *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
- * @codeCoverageIgnore
  */
 class RouteResolver implements iRequestHandler
 {
@@ -38,37 +39,37 @@ class RouteResolver implements iRequestHandler
      *
      * @var         iServerConfig
      */
-    protected iServerConfig $serverConfig;
+    private iServerConfig $serverConfig;
     /**
      * Instância das configurações do Domínio.
      *
      * @var         iDomainConfig
      */
-    protected iDomainConfig $domainConfig;
+    private iDomainConfig $domainConfig;
     /**
      * Configuraçõs para a Aplicação corrente.
      *
      * @var         iApplicationConfig
      */
-    protected iApplicationConfig $applicationConfig;
+    private iApplicationConfig $applicationConfig;
     /**
      * Objeto de configuração da Requisição atual.
      *
      * @var         iServerRequest
      */
-    protected iServerRequest $serverRequest;
+    private iServerRequest $serverRequest;
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
      * @var         array
      */
-    protected array $rawRouteConfig = [];
+    private array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
      */
-    protected iRouteConfig $routeConfig;
+    private iRouteConfig $routeConfig;
     /**
      * Objeto responsável por preparar o ``iResponseHandler`` para ser servido ao ``UA``.
      *

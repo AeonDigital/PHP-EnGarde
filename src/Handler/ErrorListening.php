@@ -453,7 +453,7 @@ final class ErrorListening
      * @param       int $errorLine
      *              Número da linha onde ocorreu a falha.
      *
-     * @return      StdClass|void
+     * @return      stdClass|void
      */
     static public function onError(
         $errorCode,

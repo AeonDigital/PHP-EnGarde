@@ -390,14 +390,14 @@ abstract class aMime implements iMimeHandler
             $useTab = (($parentIndex === "") ? "" : $acIndend);
 
             if (\array_is_assoc($oData) === true &&
-                (\is_array($oData[$i]) === true || \is_a($oData[$i], "\StdClass") === true))
+                (\is_array($oData[$i]) === true || \is_a($oData[$i], "\stdClass") === true))
             {
                 $val[] = $acIndend . "[" . $i . "]";
             }
 
             if (\is_array($v) === true) {
                 $val[] = $this->convertArrayToStructuredString($v, $indent, ($acIndend . $indent), $useI);
-            } elseif (\is_a($v, "\StdClass") === true) {
+            } elseif (\is_a($v, "\stdClass") === true) {
                 $val[] = $this->convertArrayToStructuredString((array)$v, $indent, ($acIndend . $indent), $useI);
             } else {
                 $val[] = $useTab . "[" . $useI . "] : " . $this->convertValueToString($v, '"', '""');
@@ -440,7 +440,7 @@ abstract class aMime implements iMimeHandler
             if (\is_array($value) === true) {
                 $subnode = $xml->addChild($useKey);
                 $this->convertArrayToXML($value, $subnode);
-            } elseif (\is_a($value, "\StdClass") === true) {
+            } elseif (\is_a($value, "\stdClass") === true) {
                 $subnode = $xml->addChild($useKey);
                 $this->convertArrayToXML((array)$value, $subnode);
             } else {
@@ -546,7 +546,7 @@ abstract class aMime implements iMimeHandler
 
             // Verifica se o array está minimamente formatado.
             foreach ($oData as $dataRow) {
-                if (\is_a($dataRow, "\StdClass") === true) {
+                if (\is_a($dataRow, "\stdClass") === true) {
                     $dataRow = (array)$dataRow;
                 }
 
