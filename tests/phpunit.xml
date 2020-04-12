@@ -16,14 +16,14 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
-            <file>src/Config/ConfigSecurityTest.php</file>
+            <!--file>src/Config/ConfigSecurityTest.php</file>
             <file>src/Config/ConfigRouteTest.php</file>
             <file>src/Config/ConfigApplicationTest.php</file>
             <file>src/Config/ConfigDomainTest.php</file>
             <file>src/Config/ConfigServerTest.php</file>
 
 
-            <!--file>src/Handler/Mime/HTMLTest.php</file>
+            <file>src/Handler/Mime/HTMLTest.php</file>
             <file>src/Handler/Mime/XHTMLTest.php</file>
             <file>src/Handler/Mime/XMLTest.php</file>
             <file>src/Handler/Mime/CSVTest.php</file>
@@ -34,6 +34,7 @@
             <file>src/Handler/Mime/PDFTest.php</file>
 
             <file>src/Handler/ErrorListeningTest.php</file-->
+            <file>src/Handler/ResponseHandlerTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

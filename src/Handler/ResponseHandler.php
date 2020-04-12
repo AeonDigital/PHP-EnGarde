@@ -1,15 +1,15 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Domain;
+namespace AeonDigital\EnGarde\Handler;
 
-use AeonDigital\EnGarde\Interfaces\Http\iResponseHandler as iResponseHandler;
+use AeonDigital\Interfaces\Http\Server\iResponseHandler as iResponseHandler;
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
-use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
-use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 
 
 /**
@@ -159,7 +159,7 @@ class ResponseHandler implements iResponseHandler
 
             // Inicia o manipulador do mimetype alvo
             $useMime = \strtoupper($this->routeConfig->getResponseMime());
-            $mimeNS = "\\AeonDigital\\EnGarde\\Http\\MimeHandler\\$useMime";
+            $mimeNS = "\\AeonDigital\\EnGarde\\Handler\\Mime\\$useMime";
 
             $mimeHandler = new $mimeNS(
                 $this->serverConfig,
