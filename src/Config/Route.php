@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
+use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
-
 
 
 
@@ -20,7 +20,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Route implements iRoute
+final class Route extends BObject implements iRoute
 {
     use \AeonDigital\Http\Traits\MimeTypeData;
 
@@ -2171,24 +2171,5 @@ final class Route implements iRoute
     public function lockProperties() : void
     {
         $this->isLockProperties = true;
-    }
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Desabilita a função mágica "__set".
-     *
-     * @codeCoverageIgnore
-     */
-    public function __set($name, $value)
-    {
-        // Não produz efeito
     }
 }

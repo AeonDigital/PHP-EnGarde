@@ -3,7 +3,9 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
+use AeonDigital\BObject as BObject;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngineConfig;
 use AeonDigital\Interfaces\Http\iFactory as iFactory;
 
 
@@ -13,20 +15,26 @@ use AeonDigital\Interfaces\Http\iFactory as iFactory;
 
 
 /**
- * Implementação de "iServer".
+ * Implementação de "Config\iServer".
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Server implements iServer
+final class Server extends BObject implements iServerConfig
 {
 
 
 
 
 
+    /**
+     * Data e hora do momento em que a requisição chegou ao domínio.
+     *
+     * @var         \DateTime
+     */
+    private \DateTime $now;
     /**
      * Array associativo contendo todas as variáveis definidas para o servidor no momento atual.
      *
@@ -58,12 +66,6 @@ final class Server implements iServer
      * @var         bool
      */
     private bool $testEnvironment = false;
-    /**
-     * Data e Hora da criação desta instância.
-     *
-     * @var         \DateTime
-     */
-    private \DateTime $now;
 
 
 
@@ -95,14 +97,26 @@ final class Server implements iServer
 
 
     /**
+     * Data e hora do momento em que a requisição que ativou a aplicação
+     * chegou ao domínio.
+     *
+     * @return      \DateTime
+     */
+    public function getNow() : \DateTime
+    {
+        return $this->now;
+    }
+
+
+
+    /**
      * Resgata um array associativo contendo todas as variáveis definidas para o servidor no
      * momento atual.
      *
-     * Será retornado ``null`` caso nada tenha sido definido.
-     *
-     * @return      ?array
+     * @return      array
+     *              Será retornado ``[]`` caso nada tenha sido definido.
      */
-    public function getServerVariables() : ?array
+    public function getServerVariables() : array
     {
         return $this->SERVER;
     }
@@ -150,7 +164,9 @@ final class Server implements iServer
      */
     public function setHttpFactory(iFactory $httpFactory) : void
     {
-        $this->httpFactory = $httpFactory;
+        if (isset($this->httpFactory) === false) {
+            $this->httpFactory = $httpFactory;
+        }
     }
 
 
@@ -191,14 +207,16 @@ final class Server implements iServer
      */
     public function setRootPath(string $rootPath) : void
     {
-        $rootPath = to_system_path($rootPath);
+        if ($this->rootPath === "") {
+            $rootPath = \to_system_path($rootPath);
 
-        if (\file_exists($rootPath) === false || \is_dir($rootPath) === false) {
-            $err = "The given directory does not exist.";
-            throw new \InvalidArgumentException($err);
+            if (\file_exists($rootPath) === false || \is_dir($rootPath) === false) {
+                $err = "The given directory does not exist.";
+                throw new \InvalidArgumentException($err);
+            }
+
+            $this->rootPath = $rootPath;
         }
-
-        $this->rootPath = $rootPath;
     }
 
 
@@ -238,12 +256,10 @@ final class Server implements iServer
 
     /**
      * Baseado nos dados da requisição que está sendo executada.
-     * Retorna uma coleção de headers ``HTTP`` definidos para a requisição que está sendo
-     * executada.
-     *
-     * Retornará ``[]`` caso nenhum seja encontrado.
+     * Retorna uma coleção de headers ``HTTP`` definidos.
      *
      * @return      array
+     *              Retornará ``[]`` caso nenhum seja encontrado.
      */
     public function getRequestHeaders() : array
     {
@@ -273,9 +289,8 @@ final class Server implements iServer
      * Baseado nos dados da requisição que está sendo executada.
      * Retorna a versão do protocolo ``HTTP``.
      *
-     * Caso não seja possível identificar a versão deve ser retornado o valor ``1.1``.
-     *
      * @return      string
+     *              Caso não seja possível identificar a versão deve ser retornado o valor ``1.1``.
      */
     public function getRequestHTTPVersion() : string
     {
@@ -385,9 +400,8 @@ final class Server implements iServer
      * Retorna um array de objetos que implementam ``AeonDigital\Interfaces\Stream\iFileStream``
      * representando os arquivos que foram submetidos durante a requisição.
      *
-     * Os arquivos são resgatados de ``$_FILES``.
-     *
      * @return      array
+     *              Os arquivos são resgatados de ``$_FILES``.
      */
     public function getRequestFiles() : array
     {
@@ -505,16 +519,53 @@ final class Server implements iServer
 
 
 
-
-
-
     /**
-     * Desabilita a função mágica ``__set``.
+     * Instância ``Config\iEngine`` a ser usada.
+     *
+     * @var         iEngineConfig
+     */
+    private iEngineConfig $engineConfig;
+    /**
+     * Inicia a instância ``Config\iEngine`` a ser usada.
      *
      * @codeCoverageIgnore
+     *
+     * @return      void
      */
-    public function __set($name, $value)
+    public function initiEngineConfig() : void
     {
-        // Não produz efeito
+        if (isset($this->engineConfig) === false) {
+            $engineConfig = new \AeonDigital\EnGarde\Config\Engine();
+
+            $engineConfig->setEnvironmentType(ENVIRONMENT);
+            $engineConfig->setIsDebugMode(DEBUG_MODE);
+            $engineConfig->setIsUpdateRoutes(UPDATE_ROUTES);
+            $engineConfig->setRootPath($this->getRootPath());
+            $engineConfig->setHostedApps(HOSTED_APPS);
+            $engineConfig->setDefaultApp(DEFAULT_APP);
+            $engineConfig->setDateTimeLocal(DATETIME_LOCAL);
+            $engineConfig->setTimeOut(REQUEST_TIMEOUT);
+            $engineConfig->setMaxFileSize(REQUEST_MAX_FILESIZE);
+            $engineConfig->setMaxPostSize(REQUEST_MAX_POSTSIZE);
+            $engineConfig->setApplicationClassName(APPLICATION_CLASSNAME);
+            $engineConfig->setPathToErrorView(DEFAULT_ERROR_VIEW);
+
+
+            $engineConfig->setPHPConfiguration();
+            $engineConfig->defineTargetApplication($this->getRequestPath());
+            $this->engineConfig = $engineConfig;
+        }
+    }
+    /**
+     * Retorna a instância ``Config\iEngine``.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      iEngineConfig
+     */
+    public function getEngineConfig() : iEngineConfig
+    {
+        $this->initiEngineConfig();
+        return $this->engineConfig;
     }
 }

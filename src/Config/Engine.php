@@ -3,9 +3,9 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
-use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomain;
-
-
+use AeonDigital\BObject as BObject;
+use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngine;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
 
 
 
@@ -13,36 +13,15 @@ use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomain;
 
 
 /**
- * Implementação de ``iDomain``.
+ * Implementação de "Config\iEngine".
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Domain implements iDomain
+final class Engine extends BObject implements iEngine
 {
-
-
-
-
-
-    /**
-     * Data e hora do momento em que a requisição chegou ao domínio.
-     * Nesta implementação este valor é definido junto com o construtor da classe.
-     *
-     * @var         \DateTime
-     */
-    private \DateTime $now;
-    /**
-     * Resgata a data e hora do momento em que a requisição chegou ao domínio.
-     *
-     * @return      \DateTime
-     */
-    public function getNow() : \DateTime
-    {
-        return $this->now;
-    }
 
 
 
@@ -53,7 +32,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private string $version = "";
+    private string $version = "v0.5.0-beta";
     /**
      * Resgata a versão atual do framework.
      *
@@ -62,20 +41,6 @@ final class Domain implements iDomain
     public function getVersion() : string
     {
         return $this->version;
-    }
-    /**
-     * Define a versão atual do framework.
-     *
-     * @param       string $version
-     *              Indique a versão do framework.
-     *
-     * @return      void
-     */
-    public function setVersion(string $version) : void
-    {
-        if ($this->version === "") {
-            $this->version = $version;
-        }
     }
 
 
@@ -235,7 +200,7 @@ final class Domain implements iDomain
                 // Verifica o diretório raiz da aplicação
                 $rootPath = \to_system_path($rootPath) . DS;
                 if (\file_exists($rootPath) === false) {
-                    $err = "The path to the root directory of the domain does not exist [ \"" . \trim($rootPath, DS) . "\" ].";
+                    $err = "The path to the root directory does not exist [ \"" . \trim($rootPath, DS) . "\" ].";
                 }
             }
 
@@ -285,7 +250,7 @@ final class Domain implements iDomain
         if ($this->hostedApps === []) {
             $err = null;
             if (\count($hostedApps) === 0) {
-                $err = "No application was set for domain configuration.";
+                $err = "No application was set for engine configuration.";
             } else {
                 foreach ($hostedApps as $app) {
                     $appPath = $this->rootPath . (string)$app;
@@ -336,10 +301,10 @@ final class Domain implements iDomain
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    public function setDefaultApp(string $defaultApp = "") : void
+    public function setDefaultApp(string $defaultApp) : void
     {
         if ($this->defaultApp === "") {
-            if ($defaultApp === null || $defaultApp === "") {
+            if ($defaultApp === "") {
                 $defaultApp = $this->hostedApps[0];
             }
 
@@ -359,8 +324,6 @@ final class Domain implements iDomain
     /**
      * Define o timezone do domínio.
      *
-     * [Lista de fusos horários suportados](http://php.net/manual/en/timezones.php)
-     *
      * @var         string
      */
     private string $dateTimeLocal = "";
@@ -378,6 +341,7 @@ final class Domain implements iDomain
      *
      * @param       string $dateTimeLocal
      *              Timezone que será definido.
+     *              [Lista de fusos horários suportados](http://php.net/manual/en/timezones.php)
      *
      * @return      void
      */
@@ -582,18 +546,6 @@ final class Domain implements iDomain
 
 
     /**
-     * Inicia uma nova instância de configurações para o domínio.
-     */
-    function __construct()
-    {
-        $this->now = new \DateTime();
-    }
-
-
-
-
-
-    /**
      * A partir da ``URL`` que está sendo executada infere qual das aplicações registradas para
      * o domínio deve ser executada.
      *
@@ -604,7 +556,7 @@ final class Domain implements iDomain
      *
      * @return      void
      */
-    public function defineTargetApplication(string $uriRelativePath) : void
+    public function defineTargetApplicationName(string $uriRelativePath) : void
     {
         if ($this->applicationName === "") {
             $applicationName = "";
@@ -628,7 +580,7 @@ final class Domain implements iDomain
                         $parts = \explode("/", \ltrim($uriRelativePath, "/"));
                         \array_shift($parts);
 
-                        $this->newLocation = "/" . $app . "/" . \implode("/", $parts);
+                        $this->newLocationPath = "/" . $app . "/" . \implode("/", $parts);
                     }
                 }
             }
@@ -683,7 +635,7 @@ final class Domain implements iDomain
     public function retrieveApplicationNS() : string
     {
         $r = "";
-        if ($this->applicationName !== null && $this->applicationClassName !== null) {
+        if ($this->applicationName !== "" && $this->applicationClassName !== "") {
             $r = "\\" . $this->applicationName . "\\" . $this->applicationClassName;
         }
         return $r;
@@ -698,7 +650,7 @@ final class Domain implements iDomain
      *
      * @var         string
      */
-    private string $newLocation = "";
+    private string $newLocationPath = "";
     /**
      * Pode retornar uma string para onde o UA deve ser redirecionado caso alguma das
      * configurações ou processamento dos presentes dados indique que tal redirecionamento
@@ -706,11 +658,11 @@ final class Domain implements iDomain
      *
      * Retorna ``''`` caso nenhum redirecionamento seja necessário.
      *
-     * @return      ?string
+     * @return      string
      */
     public function getNewLocationPath() : string
     {
-        return $this->newLocation;
+        return $this->newLocationPath;
     }
 
 
@@ -737,7 +689,7 @@ final class Domain implements iDomain
      *              Caso alguma propriedade obrigatória não tenha sido definida ou seja um valor
      *              inválido.
      */
-    public function setPHPDomainConfiguration() : void
+    public function setPHPConfiguration() : void
     {
         if ($this->isSetConfig === false) {
             $this->isSetConfig = true;
@@ -793,16 +745,38 @@ final class Domain implements iDomain
 
 
 
-
-
-
     /**
-     * Desabilita a função mágica ``__set``.
+     * Instância ``Config\iApplication`` a ser usada.
+     *
+     * @var         iApplicationConfig
+     */
+    private iApplicationConfig $applicationConfig;
+    /**
+     * Retorna a instância ``Config\iApplication``.
      *
      * @codeCoverageIgnore
+     *
+     * @return      iApplicationConfig
      */
-    public function __set($name, $value)
+    public function getApplicationConfig() : iApplicationConfig
     {
-        // Não produz efeito
+        $this->initiApplicationConfig();
+        return $this->applicationConfig;
+    }
+    /**
+     * Inicia a instância ``Config\iApplication`` a ser usada.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      void
+     */
+    public function initiApplicationConfig() : void
+    {
+        if (isset($this->applicationConfig) === false) {
+            $this->applicationConfig = new \AeonDigital\EnGarde\Config\Application(
+                $this->getApplicationName(),
+                $this->getRootPath()
+            );
+        }
     }
 }

@@ -3,9 +3,9 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
+use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-
+use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurityConfig;
 
 
 
@@ -20,7 +20,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Application implements iApplication
+final class Application extends BObject implements iApplication
 {
 
 
@@ -41,20 +41,6 @@ final class Application implements iApplication
     public function getName() : string
     {
         return $this->name;
-    }
-    /**
-     * Define o nome da aplicação.
-     *
-     * @param       string $name
-     *              Nome da aplicação.
-     *
-     * @return      void
-     */
-    public function setName(string $name) : void
-    {
-        if ($this->name === "") {
-            $this->name = $name;
-        }
     }
 
 
@@ -615,7 +601,7 @@ final class Application implements iApplication
      *
      * Neste momento da configuração apenas as seguintes propriedades podem ser definidas:
      *
-     * - setApplication     | - setAcceptMimes
+     * - setApplication     | - setAcceptMimes      | - setResponseHeaders
      * - setIsUseXHTML      | - setMiddlewares
      * - setDescription     | - setIsSecure
      * - setIsUseCache      | - setCacheTimeout
@@ -634,6 +620,7 @@ final class Application implements iApplication
 
             // Coleção de propriedades que podem ser definidas
             $allowedProperties = [
+                "application",
                 "acceptmimes",
                 "isusexhtml",
                 "middlewares",
@@ -711,34 +698,48 @@ final class Application implements iApplication
 
 
     /**
-     * Configurações de segurança da aplicação.
+     * Instância ``Config\iSecurity`` a ser usada.
      *
-     * @var         ?iSecurity
+     * @var         ?iSecurityConfig
      */
-    private ?iSecurity $securitySettings = null;
+    private ?iSecurityConfig $securityConfig = null;
     /**
-     * Retorna as configurações de segurança da aplicação.
+     * Retorna as configurações de segurança da aplicação se estas forem definidas.
      *
-     * @return      iSecurity
+     * @return      iSecurityConfig
      */
-    function getSecuritySettings() : ?iSecurity
+    public function getSecurityConfig() : ?iSecurityConfig
     {
-        return $this->securitySettings;
+        return $this->securityConfig;
     }
     /**
-     * Define as configurações de segurança para a aplicação.
+     * Inicia a instância ``Config\iSecurity`` a ser usada a partir das definições encontradas
+     * na constante ``ENVIRONMENT_SETTINGS`` para a aplicação atual.
      *
-     * @param       ?iSecurity $securitySettings
-     *              Instância das configurações de segurança que será definida para a aplicação.
+     * @codeCoverageIgnore
+     *
+     * @param       ?iSecurityConfig $securityConfig
+     *              Instância de configurações de segurança a serem usadas.
      *
      * @return      void
      */
-    function setSecuritySettings(?iSecurity $securitySettings) : void
+    public function initiSecurityConfig(?iSecurityConfig $securityConfig = null) : void
     {
-        if ($this->securitySettings === null) {
-            $this->securitySettings = $securitySettings;
+        if ($this->securityConfig === null) {
+            if ($securityConfig !== null) {
+                $this->securityConfig = $securityConfig;
+            }
+            elseif (defined("ENVIRONMENT_SETTINGS") === true &&
+                isset(ENVIRONMENT_SETTINGS[$this->getName()]) === true &&
+                isset(ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]) === true)
+            {
+                $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray(
+                    ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]
+                );
+            }
         }
     }
+
 
 
 
@@ -758,10 +759,6 @@ final class Application implements iApplication
      * @param       string $rootPath
      *              Caminho completo até o diretório raiz do domínio.
      *
-     * @param       ?array $securitySettings
-     *              Array associativo contendo os valores a serem definidos para a instância
-     *              de configurações de segurança.
-     *
      * @return      void
      *
      * @throws      \InvalidArgumentException
@@ -769,15 +766,14 @@ final class Application implements iApplication
      */
     function __construct(
         string $appName = "",
-        string $rootPath = "",
-        ?array $securitySettings = null
+        string $rootPath = ""
     ) {
         if ($appName !== "" && $rootPath !== "") {
             $this->autoSetProperties($appName, $rootPath);
         }
-
-        if ($securitySettings !== null) {
-            $this->securitySettings = \AeonDigital\EnGarde\Config\Security::fromArray($securitySettings);
+        else {
+            $this->name = $appName;
+            $this->appRootPath = $rootPath;
         }
     }
 
@@ -808,40 +804,21 @@ final class Application implements iApplication
     public function autoSetProperties(string $appName, string $rootPath) : void
     {
         if ($this->name === "" && $this->appRootPath === "") {
-            $this->setName($appName);
+            $this->name = $appName;
             $this->setAppRootPath($rootPath . DS . $appName . DS);
 
 
             $appRootPath = $this->getAppRootPath();
-            $this->setPathToAppRoutes($appRootPath . "AppRoutes.php");
-            $this->setPathToControllers($appRootPath . "controllers" . DS);
-            $this->setPathToViews($appRootPath . "views" . DS);
-            $this->setPathToViewsResources($appRootPath . "resources" . DS);
-            $this->setPathToLocales($appRootPath . "locales" . DS);
-            $this->setPathToCacheFiles($appRootPath . "cache" . DS);
+            $this->setPathToAppRoutes(      $appRootPath . "AppRoutes.php");
+            $this->setPathToControllers(    $appRootPath . "controllers" . DS);
+            $this->setPathToViews(          $appRootPath . "views" . DS);
+            $this->setPathToViewsResources( $appRootPath . "resources" . DS);
+            $this->setPathToLocales(        $appRootPath . "locales" . DS);
+            $this->setPathToCacheFiles(     $appRootPath . "cache" . DS);
 
 
             $this->setStartRoute("/");
             $this->setControllersNamespace("controllers");
         }
-    }
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Desabilita a função mágica ``__set``.
-     *
-     * @codeCoverageIgnore
-     */
-    public function __set($name, $value)
-    {
-        // Não produz efeito
     }
 }

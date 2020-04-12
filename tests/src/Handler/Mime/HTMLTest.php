@@ -20,7 +20,7 @@ class HTMLTest extends TestCase
     protected function createInstance()
     {
         $serverConfig       = prov_instanceOf_EnGarde_Config_Server();
-        $domainConfig       = prov_instanceOf_EnGarde_Config_Domain();
+        $domainConfig       = prov_instanceOf_EnGarde_Config_Engine();
         $applicationConfig  = prov_instanceOf_EnGarde_Config_Application();
         $serverRequest      = prov_instanceOf_Http_ServerRequest_01("GET", "/");
         $rawRouteConfig     = [];

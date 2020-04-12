@@ -20,7 +20,7 @@ namespace AeonDigital\EnGarde\Handler;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class ErrorListening
+class ErrorListening
 {
     use \AeonDigital\Http\Traits\HTTPRawStatusCode;
 

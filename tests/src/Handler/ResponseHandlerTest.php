@@ -184,7 +184,7 @@ class ResponseHandlerTest extends TestCase
 
         // Inicia e configura uma instância 'AeonDigital\EnGarde\Config\Domain'
         if ($domainConfig === null) {
-            $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
+            $domainConfig = prov_instanceOf_EnGarde_Config_Engine(
                 true, $specialSet, $environmentType, $debugMode, false, to_system_path($dirResources . "/apps")
             );
             $domainConfig->setPathToErrorView("errorView.phtml");

@@ -28,12 +28,7 @@ class ConfigApplicationTest extends TestCase
 
     public function test_method_getset_name()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Application_autoSet();
-        $nMock->setName("ApplicationName");
-
-        $this->assertSame("ApplicationName", $nMock->getName());
-        $nMock->setName("AnotherApplicationName");
-
+        $nMock = prov_instanceOf_EnGarde_Config_Application_autoSet("ApplicationName");
         $this->assertSame("ApplicationName", $nMock->getName());
     }
 
@@ -335,9 +330,8 @@ class ConfigApplicationTest extends TestCase
 
     public function test_method_getset_controller_namespace()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Application_autoSet();
+        $nMock = prov_instanceOf_EnGarde_Config_Application_autoSet("AppName");
 
-        $nMock->setName("AppName");
         $nMock->setControllersNamespace("controllers");
         $this->assertSame("\\AppName\\controllers", $nMock->getControllersNamespace());
     }
@@ -470,31 +464,9 @@ class ConfigApplicationTest extends TestCase
         $nMock = prov_instanceOf_EnGarde_Config_Application_autoSet();
         $ss = prov_instanceOf_EnGarde_Config_Security_autoSet();
 
-        $this->assertNull($nMock->getSecuritySettings());
-        $nMock->setSecuritySettings($ss);
-        $this->assertSame($ss, $nMock->getSecuritySettings());
-
-        $nMock02 = prov_instanceOf_EnGarde_Config_Application_autoSet(
-            "",
-            "",
-            [
-            "active"                => true,
-            "dataCookieName"        => "cname",
-            "securityCookieName"    => "sname",
-            "routeToLogin"          => "login",
-            "routeToStart"          => "start",
-            "routeToResetPassword"  => "reset",
-            "anonymousId"           => 1,
-            "sessionType"           => "local",
-            "sessionRenew"          => true,
-            "sessionTimeout"        => 11,
-            "allowedFaultByIP"      => 12,
-            "ipBlockTimeout"        => 13,
-            "allowedFaultByLogin"   => 14,
-            "loginBlockTimeout"     => 15
-        ]);
-        $this->assertNotNull($nMock02->getSecuritySettings());
-        $this->assertSame("cname", $nMock02->getSecuritySettings()->getDataCookieName());
+        $this->assertNull($nMock->getSecurityConfig());
+        $nMock->initiSecurityConfig($ss);
+        $this->assertSame($ss, $nMock->getSecurityConfig());
     }
 
 

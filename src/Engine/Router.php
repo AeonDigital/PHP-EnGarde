@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Http;
 
+use AeonDigital\EnGarde\Interfaces\Engine\iRoute as iRoute;
 use AeonDigital\EnGarde\Interfaces\Http\iRouter as iRouter;
-use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 
 
 
@@ -228,7 +228,7 @@ final class Router implements iRouter
      *
      * @var     array
      */
-    private $appRoutes = null;
+    private array $appRoutes = [];
     /**
      * Varre os arquivos de ``controllers`` da aplicação e remonta o arquivo de configuração de
      * rotas do mesmo.
@@ -291,7 +291,7 @@ final class Router implements iRouter
      */
     private function registerControllerRoutes(string $controllerName) : void
     {
-        $routesConfig = [];
+        $routesConfig       = [];
         $appName            = $this->applicationName;
         $controllersNS      = $this->controllersNamespace;
         $appRouteConfig     = $this->defaultRouteConfig;

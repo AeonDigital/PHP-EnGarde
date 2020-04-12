@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Config;
 
+use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-
 
 
 
@@ -20,7 +20,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Security implements iSecurity
+final class Security extends BObject implements iSecurity
 {
 
 

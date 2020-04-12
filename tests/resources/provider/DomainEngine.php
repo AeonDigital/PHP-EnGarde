@@ -26,7 +26,7 @@ function prov_instanceOf_EnGarde_Domain_Engine(
 
 
     if ($domainConfig === null) {
-        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Engine(
             true, $specialSet, $environmentType, $debugMode, false, $dirResources . "/apps"
         );
         $domainConfig->setPathToErrorView("errorView.phtml");

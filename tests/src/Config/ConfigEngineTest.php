@@ -2,7 +2,7 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\Config\Domain as Domain;
+use AeonDigital\EnGarde\Config\Engine as Engine;
 
 require_once __DIR__ . "/../../phpunit.php";
 
@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../phpunit.php";
 
 
 
-class ConfigDomainTest extends TestCase
+class ConfigEngineTest extends TestCase
 {
 
 
@@ -21,31 +21,21 @@ class ConfigDomainTest extends TestCase
 
     public function test_constructor_ok()
     {
-        $nMock = new Domain();
-        $this->assertTrue(is_a($nMock, Domain::class));
-    }
-
-
-    public function test_method_get_now()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
-
-        $now = new \DateTime();
-        $this->assertSame($now->format("Y-m-d H:i"), $nMock->getNow()->format("Y-m-d H:i"));
+        $nMock = new Engine();
+        $this->assertTrue(is_a($nMock, Engine::class));
     }
 
 
     public function test_methods_getset_version()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
-        $nMock->setVersion("1.1");
-        $this->assertSame("1.1", $nMock->getVersion());
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
+        $this->assertSame("v0.5.0-beta", $nMock->getVersion());
     }
 
 
     public function test_methods_getset_environment_type()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = "production";
 
         $nMock->setEnvironmentType($expected);
@@ -58,7 +48,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_debug_mode()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = true;
 
         $nMock->setIsDebugMode($expected);
@@ -71,7 +61,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_update_routes()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = true;
 
         $nMock->setIsUpdateRoutes($expected);
@@ -84,7 +74,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_set_root_path_empty_fails()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
 
         $fail = false;
         try {
@@ -103,7 +93,7 @@ class ConfigDomainTest extends TestCase
         $ds = DIRECTORY_SEPARATOR;
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $rootPath = $dirResources . $ds . "app";
 
         $fail = false;
@@ -111,7 +101,7 @@ class ConfigDomainTest extends TestCase
             $nMock->setRootPath($rootPath);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("The path to the root directory of the domain does not exist [ \"$rootPath\" ].", $ex->getMessage());
+            $this->assertSame("The path to the root directory does not exist [ \"$rootPath\" ].", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
@@ -123,7 +113,7 @@ class ConfigDomainTest extends TestCase
         $ds = DIRECTORY_SEPARATOR;
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = $dirResources . $ds . "apps" . $ds;
 
         $nMock->setRootPath($expected);
@@ -136,14 +126,14 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_hosted_apps_empty_fails()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
 
         $fail = false;
         try {
             $nMock->setHostedApps([]);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("No application was set for domain configuration.", $ex->getMessage());
+            $this->assertSame("No application was set for engine configuration.", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
@@ -151,7 +141,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_hosted_apps_non_exist_fails()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
 
         $fail = false;
         try {
@@ -170,7 +160,7 @@ class ConfigDomainTest extends TestCase
         $ds = DIRECTORY_SEPARATOR;
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $rootPath = $dirResources . $ds . "apps" . $ds;
         $expected = ["site", "blog"];
 
@@ -189,7 +179,7 @@ class ConfigDomainTest extends TestCase
         $ds = DIRECTORY_SEPARATOR;
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $rootPath = $dirResources . $ds . "apps";
         $applications = ["site", "blog"];
 
@@ -214,7 +204,7 @@ class ConfigDomainTest extends TestCase
         $ds = DIRECTORY_SEPARATOR;
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $rootPath = $dirResources . $ds . "apps" . $ds;
         $applications = ["site", "blog"];
         $expected = "site";
@@ -228,7 +218,7 @@ class ConfigDomainTest extends TestCase
         $this->assertSame($expected, $nMock->getDefaultApp());
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $nMock->setRootPath($rootPath);
         $nMock->setHostedApps($applications);
         $nMock->setDefaultApp("");
@@ -238,7 +228,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_datetime_local()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = "America/Sao_Paulo";
 
         $nMock->setDateTimeLocal($expected);
@@ -251,7 +241,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_timeout()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = 1200;
 
         $nMock->setTimeOut($expected);
@@ -264,7 +254,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_max_file_size()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = 100;
 
         $nMock->setMaxFileSize($expected);
@@ -277,7 +267,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_max_post_size()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = 100;
 
         $nMock->setMaxPostSize($expected);
@@ -290,7 +280,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_path_to_error_view()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = "viewError.phtml";
 
         $nMock->setPathToErrorView($expected);
@@ -304,7 +294,7 @@ class ConfigDomainTest extends TestCase
 
     public function test_methods_getset_application_className()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(false);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(false);
         $expected = "AppStart";
 
         $nMock->setApplicationClassName($expected);
@@ -317,8 +307,8 @@ class ConfigDomainTest extends TestCase
 
     public function test_method_define_target_application()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("/site/path/to/resource?qs1=v1");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("/site/path/to/resource?qs1=v1");
 
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(false, $nMock->isApplicationNameOmitted());
@@ -326,8 +316,8 @@ class ConfigDomainTest extends TestCase
 
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("/path/to/resource?qs1=v1");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("/path/to/resource?qs1=v1");
 
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->isApplicationNameOmitted());
@@ -335,8 +325,8 @@ class ConfigDomainTest extends TestCase
 
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("blog/path");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("blog/path");
 
         $this->assertSame("blog", $nMock->getApplicationName());
         $this->assertSame(false, $nMock->isApplicationNameOmitted());
@@ -344,16 +334,16 @@ class ConfigDomainTest extends TestCase
 
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("/");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("/");
 
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->isApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->retrieveApplicationNS());
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("");
 
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->isApplicationNameOmitted());
@@ -363,26 +353,26 @@ class ConfigDomainTest extends TestCase
 
     public function test_method_new_location_path()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("/site/path/to/resource?qs1=v1");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("/site/path/to/resource?qs1=v1");
 
         $this->assertSame("", $nMock->getNewLocationPath());
 
 
 
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
-        $nMock->defineTargetApplication("SITE/path/to/resource?qs1=v1");
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
+        $nMock->defineTargetApplicationName("SITE/path/to/resource?qs1=v1");
 
         $this->assertSame("/site/path/to/resource?qs1=v1", $nMock->getNewLocationPath());
     }
 
 
-    public function test_method_set_php_domain_configuration()
+    public function test_method_set_php_configuration()
     {
-        $nMock = prov_instanceOf_EnGarde_Config_Domain(true);
+        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
         $this->assertSame("1", ini_get("display_errors"));
 
-        $nMock->setPHPDomainConfiguration();
+        $nMock->setPHPConfiguration();
         $this->assertSame("0", ini_get("display_errors"));
     }
 }

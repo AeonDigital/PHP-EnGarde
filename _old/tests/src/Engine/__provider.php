@@ -84,7 +84,7 @@ function provider_PHPEnGarde_InstanceOf_Domain_Engine()
     $serverConfig->setHttpFactory($httpFactory);
 
 
-    $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
+    $domainConfig = prov_instanceOf_EnGarde_Config_Engine(
         true, "0.9.0 [alpha]", "test", false, false, to_system_path(__DIR__ . "/apps")
     );
     $domainConfig->setPathToErrorView("errorView.phtml");
@@ -113,7 +113,7 @@ function prov_instanceOf_EnGarde_Domain_Engine(
 
 
     if ($domainConfig === null) {
-        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Engine(
             true, $specialSet, $environmentType, $debugMode, false, to_system_path(__DIR__ . "/apps")
         );
         $domainConfig->setPathToErrorView("errorView.phtml");

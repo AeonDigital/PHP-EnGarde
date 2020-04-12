@@ -139,7 +139,7 @@ function prov_instanceOf_Http_RequestHandler(
     }
 
     if ($domainConfig === null) {
-        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Engine(
             true, $specialSet, $environmentType, $debugMode, false, to_system_path(dirname(__DIR__) . "/apps")
         );
         $domainConfig->setPathToErrorView("errorView.phtml");

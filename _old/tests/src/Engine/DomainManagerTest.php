@@ -26,7 +26,7 @@ class DomainEngineTest extends TestCase
         $serverConfig->setHttpFactory(
             prov_instanceOf_Http_Factory()
         );
-        $domainConfig = prov_instanceOf_EnGarde_Config_Domain(
+        $domainConfig = prov_instanceOf_EnGarde_Config_Engine(
             true, "0.9.0 [alpha]", "test", false, false, $dirResources . "/apps"
         );
         $domainConfig->setPathToErrorView("errorView.phtml");
