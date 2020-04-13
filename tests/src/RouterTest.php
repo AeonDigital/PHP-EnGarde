@@ -2,9 +2,9 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\Http\Router as Router;
+use AeonDigital\EnGarde\Engine\Router as Router;
 
-require_once __DIR__ . "/../../phpunit.php";
+require_once __DIR__ . "/../phpunit.php";
 
 
 
@@ -37,7 +37,7 @@ class RouterTest extends TestCase
 
     public function test_method_set_default_route_config()
     {
-        $nMock = prov_instanceOf_EnGarde_Http_Router();
+        $nMock = prov_instanceOf_EnGarde_Engine_Router();
         $nMock->setDefaultRouteConfig(["property" => "value"]);
         $this->assertTrue(is_a($nMock, Router::class));
     }
@@ -45,7 +45,7 @@ class RouterTest extends TestCase
 
     public function test_method_set_is_update_routes()
     {
-        $nMock = prov_instanceOf_EnGarde_Http_Router();
+        $nMock = prov_instanceOf_EnGarde_Engine_Router();
         $nMock->setIsUpdateRoutes(true);
         $this->assertTrue(is_a($nMock, Router::class));
     }
@@ -56,7 +56,7 @@ class RouterTest extends TestCase
         global $dirResources;
         $ds = DIRECTORY_SEPARATOR;
 
-        $nMock = prov_instanceOf_EnGarde_Http_Router();
+        $nMock = prov_instanceOf_EnGarde_Engine_Router();
 
         $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
         $appRoutes = $baseAppDirectory . "AppRoutes.php";
@@ -97,7 +97,7 @@ class RouterTest extends TestCase
 
 
 
-        $nMock = prov_instanceOf_EnGarde_Http_Router();
+        $nMock = prov_instanceOf_EnGarde_Engine_Router();
         $nMock->setIsUpdateRoutes(true);
         $this->assertTrue($nMock->checkForUpdateApplicationRoutes());
 
@@ -142,7 +142,7 @@ class RouterTest extends TestCase
 
 
         require_once($ctrlHome);
-        $nMock = prov_instanceOf_EnGarde_Http_Router();
+        $nMock = prov_instanceOf_EnGarde_Engine_Router();
         $nMock->updateApplicationRoutes();
         $this->assertTrue(file_exists($appRoutes));
     }
@@ -163,7 +163,7 @@ class RouterTest extends TestCase
 
 
         require_once($ctrlHome);
-        $nMock = prov_instanceOf_EnGarde_Http_Router();
+        $nMock = prov_instanceOf_EnGarde_Engine_Router();
         $nMock->updateApplicationRoutes();
         $this->assertTrue(file_exists($appRoutes));
 

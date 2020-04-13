@@ -5,11 +5,11 @@
 // ---
 // Geração de Instâncias de objetos.
 
-function prov_instanceOf_EnGarde_Http_Router()
+function prov_instanceOf_EnGarde_Engine_Router()
 {
     $applicationConfig = prov_instanceOf_EnGarde_Config_Application();
 
-    return new \AeonDigital\EnGarde\Http\Router(
+    return new \AeonDigital\EnGarde\Engine\Router(
         $applicationConfig->getName(),
         $applicationConfig->getPathToAppRoutes(),
         $applicationConfig->getPathToControllers(),

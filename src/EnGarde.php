@@ -36,9 +36,6 @@ final class EnGarde extends BObject
     private iServerConfig $serverConfig;
 
 
-
-
-
     /**
      * Inicia o motor de aplicações.
      *
@@ -56,9 +53,6 @@ final class EnGarde extends BObject
     }
 
 
-
-
-
     /**
      * Efetivamente roda a aplicação.
      *
@@ -66,6 +60,8 @@ final class EnGarde extends BObject
      */
     public function run() : void
     {
-        $this->serverConfig->getApplication()->run();
+        $this->serverConfig
+            ->getApplication()
+            ->run();
     }
 }

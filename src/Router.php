@@ -3,9 +3,9 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\Engine;
 
-use AeonDigital\EnGarde\Interfaces\Engine\iRoute as iRoute;
-use AeonDigital\EnGarde\Interfaces\Http\iRouter as iRouter;
-
+use AeonDigital\BObject as BObject;
+use AeonDigital\EnGarde\Interfaces\Engine\iRouter as iRouter;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 
 
 
@@ -20,7 +20,7 @@ use AeonDigital\EnGarde\Interfaces\Http\iRouter as iRouter;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Router implements iRouter
+final class Router extends BObject implements iRouter
 {
 
 
