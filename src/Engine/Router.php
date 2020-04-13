@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace AeonDigital\EnGarde\Http;
+namespace AeonDigital\EnGarde\Engine;
 
 use AeonDigital\EnGarde\Interfaces\Engine\iRoute as iRoute;
 use AeonDigital\EnGarde\Interfaces\Http\iRouter as iRouter;

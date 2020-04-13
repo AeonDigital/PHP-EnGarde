@@ -365,14 +365,4 @@ class ConfigEngineTest extends TestCase
 
         $this->assertSame("/site/path/to/resource?qs1=v1", $nMock->getNewLocationPath());
     }
-
-
-    public function test_method_set_php_configuration()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Engine(true);
-        $this->assertSame("1", ini_get("display_errors"));
-
-        $nMock->setPHPConfiguration();
-        $this->assertSame("0", ini_get("display_errors"));
-    }
 }

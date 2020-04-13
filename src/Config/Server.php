@@ -4,13 +4,11 @@ declare (strict_types=1);
 namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
-use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngineConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
+use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngine;
+use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
 use AeonDigital\Interfaces\Http\iFactory as iFactory;
-
-
-
-
+use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 
 
 
@@ -22,7 +20,7 @@ use AeonDigital\Interfaces\Http\iFactory as iFactory;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Server extends BObject implements iServerConfig
+final class Server extends BObject implements iServer
 {
 
 
@@ -53,13 +51,6 @@ final class Server extends BObject implements iServerConfig
      * @var         array[string => mixed]
      */
     private array $headers = [];
-    /**
-     * Objeto ``iFactory``.
-     *
-     * @var         iFactory
-     */
-    private iFactory $httpFactory;
-
     /**
      * Indica se está rodando em um ambiente de testes.
      *
@@ -140,35 +131,6 @@ final class Server extends BObject implements iServerConfig
             $this->SERVER = $oServer;
         }
     }
-
-
-
-
-
-    /**
-     * Retorna um objeto ``iFactory``.
-     *
-     * @return      iFactory
-     */
-    public function getHttpFactory() : iFactory
-    {
-        return $this->httpFactory;
-    }
-    /**
-     * Define uma instância ``iFactory`` para ser usada.
-     *
-     * @param       iFactory $httpFactory
-     *              Instância a ser definida.
-     *
-     * @return      void
-     */
-    public function setHttpFactory(iFactory $httpFactory) : void
-    {
-        if (isset($this->httpFactory) === false) {
-            $this->httpFactory = $httpFactory;
-        }
-    }
-
 
 
 
@@ -519,20 +481,58 @@ final class Server extends BObject implements iServerConfig
 
 
 
+
+
+
+    /**
+     * Objeto ``iFactory``.
+     *
+     * @var         iFactory
+     */
+    private iFactory $httpFactory;
     /**
      * Instância ``Config\iEngine`` a ser usada.
      *
-     * @var         iEngineConfig
+     * @var         iEngine
      */
-    private iEngineConfig $engineConfig;
+    private iEngine $engineConfig;
     /**
-     * Inicia a instância ``Config\iEngine`` a ser usada.
+     * Objeto ``iServerRequest``.
+     *
+     * @var         iServerRequest
+     */
+    private iServerRequest $serverRequest;
+    /**
+     * Objeto ``Engine\Application``.
+     *
+     * @var         iServerRequest
+     */
+    private iApplication $application;
+
+
+
+
+
+    /**
+     * Retorna um objeto ``iFactory``.
+     *
+     * @return      iFactory
+     */
+    public function getHttpFactory() : iFactory
+    {
+        if (isset($this->httpFactory) === false) {
+            $this->httpFactory = new \AeonDigital\Http\Factory();
+        }
+        return $this->httpFactory;
+    }
+    /**
+     * Retorna a instância ``Config\iEngine``.
      *
      * @codeCoverageIgnore
      *
-     * @return      void
+     * @return      iEngine
      */
-    public function initiEngineConfig() : void
+    public function getEngineConfig() : iEngine
     {
         if (isset($this->engineConfig) === false) {
             $engineConfig = new \AeonDigital\EnGarde\Config\Engine();
@@ -555,17 +555,114 @@ final class Server extends BObject implements iServerConfig
             $engineConfig->defineTargetApplication($this->getRequestPath());
             $this->engineConfig = $engineConfig;
         }
+        return $this->engineConfig;
     }
     /**
-     * Retorna a instância ``Config\iEngine``.
+     * Retorna a instância ``iServerRequest`` a ser usada.
      *
      * @codeCoverageIgnore
      *
-     * @return      iEngineConfig
+     * @return      iServerRequest
      */
-    public function getEngineConfig() : iEngineConfig
+    public function getServerRequest() : iServerRequest
     {
-        $this->initiEngineConfig();
-        return $this->engineConfig;
+        if (isset($this->serverRequest) === false) {
+            // Inicia a configuração da instância que representa a requisição que está sendo
+            // feita para este servidor.
+            $this->serverRequest = $this->getHttpFactory()
+                ->createServerRequest(
+                    $this->getRequestMethod(),
+                    $this->getCurrentURI(),
+                    $this->getRequestHTTPVersion(),
+                    $this->getHttpFactory()->createHeaderCollection($this->getRequestHeaders()),
+                    $this->getHttpFactory()->createStreamFromBodyRequest(),
+                    $this->getHttpFactory()->createCookieCollection($this->getRequestCookies()),
+                    $this->getHttpFactory()->createQueryStringCollection($this->getRequestQueryStrings()),
+                    $this->getHttpFactory()->createFileCollection($this->getRequestFiles()),
+                    $this->getServerVariables(),
+                    $this->getHttpFactory()->createCollection(),
+                    $this->getHttpFactory()->createCollection()
+            );
+        }
+        return $this->serverRequest;
+    }
+    /**
+     * Retorna a instância ``Engine\Application`` referente à aplicação
+     * que deve ser executada.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      iApplication
+     */
+    public function getApplication() : iApplication
+    {
+        if (isset($this->application) === false) {
+            $applicationNS = $this->getEngineConfig()->retrieveApplicationNS();
+            $this->application = new $applicationNS($this);
+        }
+        return $this->application;
+    }
+
+
+
+
+
+    /**
+     * Efetua as configurações necessárias para os manipuladores de exceptions e errors
+     * para as aplicações do domínio.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      void
+     */
+    public function setErrorListening() : void
+    {
+        // Define o contexto a ser usado para o ``listening`` de falhas..
+        \AeonDigital\EnGarde\Handler\ErrorListening::setContext(
+            $this->getEngineConfig()->getRootPath(),
+            $this->getEngineConfig()->getEnvironmentType(),
+            $this->getEngineConfig()->getIsDebugMode(),
+            $this->getRequestProtocol(),
+            $this->getServerRequest()->getMethod(),
+            $this->getEngineConfig()->getFullPathToErrorView()
+        );
+        set_exception_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,   "onException"]);
+        set_error_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,       "onError"], E_ALL);
+
+        // Se a Aplicação tem uma página própria para
+        // amostragem de erros, registra-a no manipulador de erros.
+        $fullPathToErrorView = $this
+            ->getEngineConfig()
+            ->getApplicationConfig()
+            ->getFullPathToErrorView();
+
+        if ($fullPathToErrorView !== "") {
+            \AeonDigital\EnGarde\Handler\ErrorListening::setPathToErrorView($fullPathToErrorView);
+        }
+
+    }
+    /**
+     * Inicia uma nova instância ``Config\iServer`` a partir dos dados da requisição atual.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      iServer
+     */
+    public static function autoSetServerConfig() : iServer
+    {
+        $serverConfig = new Server(
+            $_SERVER,
+            (
+                ENVIRONMENT === "test" ||
+                ENVIRONMENT === "testview" ||
+                ENVIRONMENT === "localtest"
+            )
+        );
+
+        $serverConfig->getEngineConfig();
+        $serverConfig->setErrorListening();
+        $serverConfig->getApplication();
+
+        return $serverConfig;
     }
 }

@@ -5,8 +5,8 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurityConfig;
-
+use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
+use AeonDigital\EnGarde\Interfaces\Engine\iRouter as iRouter;
 
 
 
@@ -697,47 +697,67 @@ final class Application extends BObject implements iApplication
 
 
 
+
+
+
+
+
     /**
      * Instância ``Config\iSecurity`` a ser usada.
      *
-     * @var         ?iSecurityConfig
+     * @var         ?iSecurity
      */
-    private ?iSecurityConfig $securityConfig = null;
+    private ?iSecurity $securityConfig = null;
+    /**
+     * Instância ``iRouter`` a ser usada.
+     *
+     * @var         iRouter
+     */
+    private iRouter $router;
+
+
+
+
+
     /**
      * Retorna as configurações de segurança da aplicação se estas forem definidas.
      *
-     * @return      iSecurityConfig
+     * @codeCoverageIgnore
+     *
+     * @return      iSecurity
      */
-    public function getSecurityConfig() : ?iSecurityConfig
+    public function getSecurityConfig() : ?iSecurity
     {
+        if ($this->securityConfig === null &&
+            defined("ENVIRONMENT_SETTINGS") === true &&
+            isset(ENVIRONMENT_SETTINGS[$this->getName()]) === true &&
+            isset(ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]) === true)
+        {
+            $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray(
+                ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]
+            );
+        }
         return $this->securityConfig;
     }
     /**
-     * Inicia a instância ``Config\iSecurity`` a ser usada a partir das definições encontradas
-     * na constante ``ENVIRONMENT_SETTINGS`` para a aplicação atual.
+     * Retorna a instância ``iRouter`` a ser usada.
      *
      * @codeCoverageIgnore
      *
-     * @param       ?iSecurityConfig $securityConfig
-     *              Instância de configurações de segurança a serem usadas.
-     *
-     * @return      void
+     * @return      iRouter
      */
-    public function initiSecurityConfig(?iSecurityConfig $securityConfig = null) : void
+    public function getRouter() : iRouter
     {
-        if ($this->securityConfig === null) {
-            if ($securityConfig !== null) {
-                $this->securityConfig = $securityConfig;
-            }
-            elseif (defined("ENVIRONMENT_SETTINGS") === true &&
-                isset(ENVIRONMENT_SETTINGS[$this->getName()]) === true &&
-                isset(ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]) === true)
-            {
-                $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray(
-                    ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]
-                );
-            }
+        if (isset($this->router) === false) {
+            $this->router = new \AeonDigital\EnGarde\Engine\Router(
+                $this->getName(),
+                $this->getPathToAppRoutes(),
+                $this->getPathToControllers(),
+                $this->getControllersNamespace(),
+                $this->getDefaultRouteConfig()
+            );
         }
+        return $this->router;
     }
 
 

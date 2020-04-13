@@ -459,15 +459,9 @@ class ConfigApplicationTest extends TestCase
     }
 
 
-    public function test_methods_getset_security_settings()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Application_autoSet();
-        $ss = prov_instanceOf_EnGarde_Config_Security_autoSet();
 
-        $this->assertNull($nMock->getSecurityConfig());
-        $nMock->initiSecurityConfig($ss);
-        $this->assertSame($ss, $nMock->getSecurityConfig());
-    }
+
+
 
 
     public function test_method_auto_set_properties()

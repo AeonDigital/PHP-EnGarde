@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngine;
-use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
 
 
 
@@ -685,6 +685,8 @@ final class Engine extends BObject implements iEngine
      *
      * Esta ação só tem efeito na primeira vez que é executada.
      *
+     * @codeCoverageIgnore
+     *
      * @throws      \RunTimeException
      *              Caso alguma propriedade obrigatória não tenha sido definida ou seja um valor
      *              inválido.
@@ -748,35 +750,25 @@ final class Engine extends BObject implements iEngine
     /**
      * Instância ``Config\iApplication`` a ser usada.
      *
-     * @var         iApplicationConfig
+     * @var         iApplication
      */
-    private iApplicationConfig $applicationConfig;
+    private iApplication $applicationConfig;
     /**
      * Retorna a instância ``Config\iApplication``.
      *
      * @codeCoverageIgnore
      *
-     * @return      iApplicationConfig
+     * @return      iApplication
      */
-    public function getApplicationConfig() : iApplicationConfig
-    {
-        $this->initiApplicationConfig();
-        return $this->applicationConfig;
-    }
-    /**
-     * Inicia a instância ``Config\iApplication`` a ser usada.
-     *
-     * @codeCoverageIgnore
-     *
-     * @return      void
-     */
-    public function initiApplicationConfig() : void
+    public function getApplicationConfig() : iApplication
     {
         if (isset($this->applicationConfig) === false) {
             $this->applicationConfig = new \AeonDigital\EnGarde\Config\Application(
                 $this->getApplicationName(),
                 $this->getRootPath()
             );
+            $this->applicationConfig->initiSecurityConfig();
         }
+        return $this->applicationConfig;
     }
 }

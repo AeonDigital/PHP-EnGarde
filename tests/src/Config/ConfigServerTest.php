@@ -37,16 +37,6 @@ class ConfigServerTest extends TestCase
     }
 
 
-    public function test_method_getset_httpfactory()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Server(true);
-        $nHttpFactory = prov_instanceOf_Http_Factory();
-
-        $nMock->setHttpFactory($nHttpFactory);
-        $this->assertSame($nHttpFactory, $nMock->getHttpFactory());
-    }
-
-
     public function test_method_set_rootpath_fail()
     {
         $nMock = prov_instanceOf_EnGarde_Config_Server(true);

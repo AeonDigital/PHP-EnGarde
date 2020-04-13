@@ -3,17 +3,18 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde;
 
+use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
-use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+
 
 
 
 
 
 /**
- * Classe abstrata que deve ser herdada pelas classes concretas em cada Aplicações ``EnGarde``.
+ * Classe abstrata que deve ser herdada pelas classes concretas em cada
+ * Aplicações ``EnGarde``.
  *
  * @codeCoverageIgnore
  *
@@ -22,7 +23,7 @@ use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-abstract class DomainApplication implements iApplication
+abstract class Application extends BObject implements iApplication
 {
 
 
@@ -30,118 +31,59 @@ abstract class DomainApplication implements iApplication
 
 
     /**
-     * Instância de configuração do Servidor.
+     * Configurações do Servidor.
      *
      * @var         iServerConfig
      */
     protected iServerConfig $serverConfig;
+
     /**
-     * Instância das configurações do Domínio.
+     * Indica se o método ``run()`` já foi ativado alguma vez.
      *
-     * @var         iDomainConfig
+     * @var         bool
      */
-    protected iDomainConfig $domainConfig;
-    /**
-     * Configuraçõs para a Aplicação corrente.
-     *
-     * @var         iApplicationConfig
-     */
-    protected iApplicationConfig $applicationConfig;
-    /**
-     * Objeto de configuração da Requisição atual.
-     *
-     * @var         iServerRequest
-     */
-    protected iServerRequest $serverRequest;
+    private bool $isRun = false;
+
     /**
      * Objeto que representa a configuração bruta da rota alvo.
      *
      * @var         array
-     */
+     *
     protected array $rawRouteConfig = [];
     /**
      * Objeto que representa a configuração da rota alvo.
      *
      * @var         iRouteConfig
-     */
+     *
     protected iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
      * @var         iResponse
-     */
+     *
     protected iResponse $response;
     /**
      * Guarda a parte relativa da URI que está sendo executada no momento
      *
      * @var         string
-     */
+     *
     protected string $executePath = "";
     /**
      * Nome do método que deve ser usado para resolver a rota que está ativa no momento.
      *
      * @var         string
-     */
-    protected string $runMethodName = "run";
+
+    protected string $runMethodName = "run";*/
 
 
 
 
 
-    /**
-     * Define o objeto ``iApplicationConfig`` para esta instância.
-     *
-     * @return      void
-     */
-    private function defineApplicationConfig() : void
-    {
-        // Identifica se há configurações de segurança a serem
-        // definidas para esta aplicação.
-        $securitySettings = [];
-        if (defined("ENVIRONMENT_SETTINGS") === true &&
-            isset(ENVIRONMENT_SETTINGS[$this->domainConfig->getApplicationName()]) === true)
-        {
-            $securitySettings = ENVIRONMENT_SETTINGS[$this->domainConfig->getApplicationName()]["securitySettings"];
-        }
-
-
-        $this->applicationConfig = new \AeonDigital\EnGarde\Config\Application(
-            $this->domainConfig->getApplicationName(),
-            $this->domainConfig->getRootPath(),
-            $securitySettings
-        );
-
-
-        // Aplica as configurações específicas de cada aplicação.
-        $this->configureApplication();
-
-        // Se a Aplicação tem uma página própria para
-        // amostragem de erros, registra-a no manipulador de erros.
-        $fullPathToErrorView = $this->applicationConfig->getFullPathToErrorView();
-        if ($fullPathToErrorView !== "") {
-            \AeonDigital\EnGarde\Config\ErrorListening::setPathToErrorView($fullPathToErrorView);
-        }
-    }
-    /**
-     * Define o objeto ``Router`` para esta instância.
-     *
-     * @return      void
-     */
-    private function defineRouter() : void
-    {
-        $this->applicationRouter = new \AeonDigital\EnGarde\Engine\Router(
-            $this->applicationConfig->getName(),
-            $this->applicationConfig->getPathToAppRoutes(),
-            $this->applicationConfig->getPathToControllers(),
-            $this->applicationConfig->getControllersNamespace(),
-            $this->applicationConfig->getDefaultRouteConfig()
-        );
-    }
     /**
      * Seleciona o objeto ``iRouteConfig`` para esta instância.
      *
      * @return      void
-     */
+     *
     private function selectTargetRouteConfig() : void
     {
         if ($this->routeConfig === null) {
@@ -211,16 +153,6 @@ abstract class DomainApplication implements iApplication
 
 
 
-    /**
-     * Permite configurar ou redefinir o objeto de configuração da aplicação na classe
-     * concreta da mesma.
-     */
-    abstract public function configureApplication() : void;
-
-
-
-
-
 
 
 
@@ -231,29 +163,20 @@ abstract class DomainApplication implements iApplication
      *
      * @param       iServerConfig $serverConfig
      *              Instância ``iServerConfig``.
-     *
-     * @param       iDomainConfig $domainConfig
-     *              Instância ``iDomainConfig``.
-     *
-     * @param       iServerRequest $serverRequest
-     *              Instância ``iServerRequest``.
      */
-    function __construct(
-        iServerConfig $serverConfig,
-        iDomainConfig $domainConfig,
-        iServerRequest $serverRequest
-    ) {
-        $this->serverConfig     = $serverConfig;
-        $this->domainConfig     = $domainConfig;
-        $this->serverRequest    = $serverRequest;
+    function __construct(iServerConfig $serverConfig)
+    {
+        $this->serverConfig = $serverConfig;
 
-        $this->defineApplicationConfig();
-        $this->defineRouter();
+
+
+
+        /*
         $this->selectTargetRouteConfig();
 
         if ($this->routeConfig !== null) {
             $this->executeContentNegotiation();
-        }
+        }*/
     }
 
 
@@ -270,7 +193,7 @@ abstract class DomainApplication implements iApplication
      * retornados ao ``UA``.
      *
      * @return      void
-     */
+     *
     private function executeContentNegotiation() : void
     {
         // Verifica qual locale deve ser usado para responder
@@ -355,80 +278,84 @@ abstract class DomainApplication implements iApplication
      */
     public function run() : void
     {
-        // Se este não for o método a ser executado para
-        // resolver esta rota, evoca o método alvo.
-        if ($this->runMethodName !== "run") {
-            $exec = $this->runMethodName;
-            $this->$exec();
-        }
-        else {
-            if ($this->checkRouteErrors() === true) {
-                $targetMethod = strtoupper($this->serverRequest->getMethod());
+        if ($this->isRun === false) {
+            $this->isRun = true;
+
+            // Se este não for o método a ser executado para
+            // resolver esta rota, evoca o método alvo.
+            if ($this->runMethodName !== "run") {
+                $exec = $this->runMethodName;
+                $this->$exec();
+            }
+            else {
+                if ($this->checkRouteErrors() === true) {
+                    $targetMethod = strtoupper($this->serverRequest->getMethod());
 
 
 
-                // Inicia uma instância "iRequestHandler" responsável
-                // por iniciar o controller alvo e executar o método correspondente a rota.
-                $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
-                    $this->serverConfig,
-                    $this->domainConfig,
-                    $this->applicationConfig,
-                    $this->serverRequest,
-                    $this->rawRouteConfig,
-                    $this->routeConfig
-                );
+                    // Inicia uma instância "iRequestHandler" responsável
+                    // por iniciar o controller alvo e executar o método correspondente a rota.
+                    $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
+                        $this->serverConfig,
+                        $this->domainConfig,
+                        $this->applicationConfig,
+                        $this->serverRequest,
+                        $this->rawRouteConfig,
+                        $this->routeConfig
+                    );
 
 
-                // Inicia a instância do manipulador da requisição.
-                // e passa para ele o resolver da rota para ser executado após
-                // os middlewares.
-                $requestHandler = new \AeonDigital\Http\Server\RequestHandler($resolver);
+                    // Inicia a instância do manipulador da requisição.
+                    // e passa para ele o resolver da rota para ser executado após
+                    // os middlewares.
+                    $requestHandler = new \AeonDigital\Http\Server\RequestHandler($resolver);
 
 
-                // Registra os middlewares caso existam
-                if ($this->routeConfig !== null) {
-                    $middlewares = $this->routeConfig->getMiddlewares();
-                    foreach ($middlewares as $callMiddleware) {
+                    // Registra os middlewares caso existam
+                    if ($this->routeConfig !== null) {
+                        $middlewares = $this->routeConfig->getMiddlewares();
+                        foreach ($middlewares as $callMiddleware) {
 
-                        // Se o middleware está registrado com seu nome completo
-                        if (class_exists($callMiddleware) === true) {
-                            $requestHandler->add(new $callMiddleware());
-                        }
-                        // Senão, o middleware registrado deve corresponder a um
-                        // método da aplicação atual.
-                        else {
-                            $requestHandler->add($this->{$callMiddleware}());
+                            // Se o middleware está registrado com seu nome completo
+                            if (class_exists($callMiddleware) === true) {
+                                $requestHandler->add(new $callMiddleware());
+                            }
+                            // Senão, o middleware registrado deve corresponder a um
+                            // método da aplicação atual.
+                            else {
+                                $requestHandler->add($this->{$callMiddleware}());
+                            }
                         }
                     }
+
+
+                    // Ocultará qualquer saida de dados dos middlewares
+                    // ou das actions quando estiver em um ambiente de produção
+                    // OU
+                    // quando o debug mode estiver ativo
+                    $hideAllOutputs = ( $this->domainConfig->getEnvironmentType() === "production" ||
+                                        $this->domainConfig->getIsDebugMode() === false);
+
+
+                    // Caso necessário, inicia o buffer
+                    // Com isso, esconderá todas as saídas explicitas originarias
+                    // dos middlewares e da action.
+                    if ($hideAllOutputs === true) { ob_start(); }
+
+
+                    // Executa os middlewares e action alvo retornando
+                    // um objeto "iResponse" contendo as informações
+                    // necessárias para a resposta ao UA.
+                    $this->response = $requestHandler->handle($this->serverRequest);
+
+
+                    // Caso necessário, esvazia o buffer e encerra-o
+                    if ($hideAllOutputs === true) { ob_end_clean(); }
+
+
+                    // Efetua o envio dos dados obtidos e processados para o UA.
+                    $this->sendResponse();
                 }
-
-
-                // Ocultará qualquer saida de dados dos middlewares
-                // ou das actions quando estiver em um ambiente de produção
-                // OU
-                // quando o debug mode estiver ativo
-                $hideAllOutputs = ( $this->domainConfig->getEnvironmentType() === "production" ||
-                                    $this->domainConfig->getIsDebugMode() === false);
-
-
-                // Caso necessário, inicia o buffer
-                // Com isso, esconderá todas as saídas explicitas originarias
-                // dos middlewares e da action.
-                if ($hideAllOutputs === true) { ob_start(); }
-
-
-                // Executa os middlewares e action alvo retornando
-                // um objeto "iResponse" contendo as informações
-                // necessárias para a resposta ao UA.
-                $this->response = $requestHandler->handle($this->serverRequest);
-
-
-                // Caso necessário, esvazia o buffer e encerra-o
-                if ($hideAllOutputs === true) { ob_end_clean(); }
-
-
-                // Efetua o envio dos dados obtidos e processados para o UA.
-                $this->sendResponse();
             }
         }
     }
@@ -441,7 +368,7 @@ abstract class DomainApplication implements iApplication
      * Verifica se há erros na seleção da configuração da rota alvo.
      *
      * @return      bool
-     */
+     *
     private function checkRouteErrors() : bool
     {
         $targetMethod       = strtoupper($this->serverRequest->getMethod());
@@ -492,7 +419,7 @@ abstract class DomainApplication implements iApplication
      * Efetivamente envia os dados para o ``UA``.
      *
      * @return      void
-     */
+     *
     private function sendResponse() : void
     {
         // Identifica se está em um ambiente de testes.
@@ -562,9 +489,9 @@ abstract class DomainApplication implements iApplication
      * Retorna um valor interno que poderá ser aferido em ambiente de testes.
      *
      * @return      mixed
-     */
+
     public function getTestViewDebug()
     {
         return $this->testViewDebug;
-    }
+    }*/
 }
