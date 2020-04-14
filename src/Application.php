@@ -5,7 +5,8 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Engine\iRouter as iRouter;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 
 
 
@@ -31,11 +32,18 @@ abstract class Application extends BObject implements iApplication
 
 
     /**
-     * Configurações do Servidor.
+     * Objeto ``Config\iServer``.
      *
-     * @var         iServerConfig
+     * @var         iServer
      */
-    protected iServerConfig $serverConfig;
+    protected iServer $serverConfig;
+
+    /**
+     * Objeto ``Engine\iRouter``.
+     *
+     * @var         iRouter
+     */
+    protected iRouter $router;
 
     /**
      * Indica se o método ``run()`` já foi ativado alguma vez.
@@ -50,12 +58,6 @@ abstract class Application extends BObject implements iApplication
      * @var         array
      *
     protected array $rawRouteConfig = [];
-    /**
-     * Objeto que representa a configuração da rota alvo.
-     *
-     * @var         iRouteConfig
-     *
-    protected iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
@@ -88,7 +90,7 @@ abstract class Application extends BObject implements iApplication
     {
         if ($this->routeConfig === null) {
             // P1 - Verifica necessidade de atualizar o arquivo de rotas da aplicação.
-            $this->applicationRouter->setIsUpdateRoutes($this->domainConfig->getIsUpdateRoutes());
+            $this->router->setIsUpdateRoutes($this->domainConfig->getIsUpdateRoutes());
 
             // Sendo para atualizar as rotas
             // E
@@ -104,12 +106,12 @@ abstract class Application extends BObject implements iApplication
                     $this->domainConfig->getEnvironmentType() === "localtest")
                 )
             {
-                $this->applicationRouter->forceUpdateRoutes();
+                $this->router->forceUpdateRoutes();
             }
 
             // Efetua a recomposição do arquivo de rotas caso
             // seja necessário
-            $this->applicationRouter->updateApplicationRoutes();
+            $this->router->updateApplicationRoutes();
 
 
 
@@ -127,12 +129,12 @@ abstract class Application extends BObject implements iApplication
 
 
             // Seleciona os dados da rota que deve ser executada.
-            $this->rawRouteConfig = $this->applicationRouter->selectTargetRawRoute($this->executePath);
+            $this->rawRouteConfig = $this->router->selectTargetRawRoute($this->executePath);
 
 
             // Adiciona os parametros definidos na própria URL, identificados pelo
             // roteador da Aplicação no objeto de requisição.
-            $useAttributes = $this->applicationRouter->getSelectedRouteParans() ?? [];
+            $useAttributes = $this->router->getSelectedRouteParans() ?? [];
             $this->serverRequest->setInitialAttributes($useAttributes);
 
 
@@ -168,16 +170,21 @@ abstract class Application extends BObject implements iApplication
     {
         $this->serverConfig = $serverConfig;
 
-
-
-
-        /*
-        $this->selectTargetRouteConfig();
-
-        if ($this->routeConfig !== null) {
-            $this->executeContentNegotiation();
-        }*/
+        $appConfig = $serverConfig->getEngineConfig()->getApplicationConfig();
+        $this->router = new \AeonDigital\EnGarde\Engine\Router(
+            $appConfig->getName(),
+            $appConfig->getPathToAppRoutes(),
+            $appConfig->getPathToControllers(),
+            $appConfig->getControllersNamespace(),
+            $appConfig->getDefaultRouteConfig()
+        );
     }
+    /*
+    $this->selectTargetRouteConfig();
+
+    if ($this->routeConfig !== null) {
+        $this->executeContentNegotiation();
+    }*
 
 
 

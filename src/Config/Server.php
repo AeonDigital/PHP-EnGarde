@@ -6,9 +6,9 @@ namespace AeonDigital\EnGarde\Config;
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngine;
-use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
 use AeonDigital\Interfaces\Http\iFactory as iFactory;
 use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
+
 
 
 
@@ -502,12 +502,6 @@ final class Server extends BObject implements iServer
      * @var         iServerRequest
      */
     private iServerRequest $serverRequest;
-    /**
-     * Objeto ``Engine\Application``.
-     *
-     * @var         iServerRequest
-     */
-    private iApplication $application;
 
 
 
@@ -586,22 +580,6 @@ final class Server extends BObject implements iServer
         }
         return $this->serverRequest;
     }
-    /**
-     * Retorna a instância ``Engine\Application`` referente à aplicação
-     * que deve ser executada.
-     *
-     * @codeCoverageIgnore
-     *
-     * @return      iApplication
-     */
-    public function getApplication() : iApplication
-    {
-        if (isset($this->application) === false) {
-            $applicationNS = $this->getEngineConfig()->retrieveApplicationNS();
-            $this->application = new $applicationNS($this);
-        }
-        return $this->application;
-    }
 
 
 
@@ -659,9 +637,13 @@ final class Server extends BObject implements iServer
             )
         );
 
-        $serverConfig->getEngineConfig();
+        // Inicia as instâncias de configuração para esta requisição
+        // - Config\Server
+        //   - Config\iEngine
+        //     - Config\iApplication
+        //       - Config\Security
+        $serverConfig->getEngineConfig()->getApplicationConfig();
         $serverConfig->setErrorListening();
-        $serverConfig->getApplication();
 
         return $serverConfig;
     }

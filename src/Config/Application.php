@@ -6,7 +6,7 @@ namespace AeonDigital\EnGarde\Config;
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-use AeonDigital\EnGarde\Interfaces\Engine\iRouter as iRouter;
+
 
 
 
@@ -703,72 +703,6 @@ final class Application extends BObject implements iApplication
 
 
     /**
-     * Instância ``Config\iSecurity`` a ser usada.
-     *
-     * @var         ?iSecurity
-     */
-    private ?iSecurity $securityConfig = null;
-    /**
-     * Instância ``iRouter`` a ser usada.
-     *
-     * @var         iRouter
-     */
-    private iRouter $router;
-
-
-
-
-
-    /**
-     * Retorna as configurações de segurança da aplicação se estas forem definidas.
-     *
-     * @codeCoverageIgnore
-     *
-     * @return      iSecurity
-     */
-    public function getSecurityConfig() : ?iSecurity
-    {
-        if ($this->securityConfig === null &&
-            defined("ENVIRONMENT_SETTINGS") === true &&
-            isset(ENVIRONMENT_SETTINGS[$this->getName()]) === true &&
-            isset(ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]) === true)
-        {
-            $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray(
-                ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]
-            );
-        }
-        return $this->securityConfig;
-    }
-    /**
-     * Retorna a instância ``iRouter`` a ser usada.
-     *
-     * @codeCoverageIgnore
-     *
-     * @return      iRouter
-     */
-    public function getRouter() : iRouter
-    {
-        if (isset($this->router) === false) {
-            $this->router = new \AeonDigital\EnGarde\Engine\Router(
-                $this->getName(),
-                $this->getPathToAppRoutes(),
-                $this->getPathToControllers(),
-                $this->getControllersNamespace(),
-                $this->getDefaultRouteConfig()
-            );
-        }
-        return $this->router;
-    }
-
-
-
-
-
-
-
-
-
-    /**
      * Inicia uma nova instância de configurações para a aplicação.
      *
      * Se ambos os parametros forem definidos o método ``autoSetProperties`` será executado.
@@ -807,6 +741,37 @@ final class Application extends BObject implements iApplication
 
 
     /**
+     * Instância ``Config\iSecurity`` a ser usada.
+     *
+     * @var         ?iSecurity
+     */
+    private ?iSecurity $securityConfig = null;
+    /**
+     * Retorna a instância ``Config\iSecurity`` a ser usada.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      iSecurity
+     */
+    public function getSecurityConfig() : ?iSecurity
+    {
+        if ($this->securityConfig === null &&
+            defined("ENVIRONMENT_SETTINGS") === true &&
+            isset(ENVIRONMENT_SETTINGS[$this->getName()]) === true &&
+            isset(ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]) === true)
+        {
+            $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray(
+                ENVIRONMENT_SETTINGS[$this->getName()]["securityConfig"]
+            );
+        }
+        return $this->securityConfig;
+    }
+
+
+
+
+
+    /**
      * Define as propriedades da aplicação que podem ser inferidas a partir do seu nome e
      * caminho até a raiz do domínio.
      *
@@ -839,6 +804,9 @@ final class Application extends BObject implements iApplication
 
             $this->setStartRoute("/");
             $this->setControllersNamespace("controllers");
+
+
+            $this->getSecurityConfig();
         }
     }
 }

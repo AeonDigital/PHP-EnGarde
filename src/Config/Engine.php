@@ -767,7 +767,6 @@ final class Engine extends BObject implements iEngine
                 $this->getApplicationName(),
                 $this->getRootPath()
             );
-            $this->applicationConfig->initiSecurityConfig();
         }
         return $this->applicationConfig;
     }

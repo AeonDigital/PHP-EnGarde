@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
-
+use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
 
 
 
@@ -34,6 +34,15 @@ final class EnGarde extends BObject
      * @var         iServerConfig
      */
     private iServerConfig $serverConfig;
+    /**
+     * Objeto ``Engine\iApplication``.
+     *
+     * @var         iApplication
+     */
+    private iApplication $application;
+
+
+
 
 
     /**
@@ -44,13 +53,33 @@ final class EnGarde extends BObject
      */
     function __construct(bool $autorun = true)
     {
+        // Inicia as instâncias de configuração
+        // - iServer | iEngine | iApplication | iSecurity
         $this->serverConfig = \AeonDigital\EnGarde\Config\Server::autoSetServerConfig();
+
+        // Identifica o nome da classe principal da aplicação alvo e inicia sua instância.
+        // Neste momento, se a aplicação possui alguma configuração especial, aplica-a.
+
+        // PROSSEGUIR DAQUI.
+        // MUDAR O MOMENTO EM QUE AS INSTÂNCIAS DE CONFIGURAÇÃO SÃO INICIADAS PARA PERMITIR
+        // QUE A APLICAÇÃO EFETUE SUAS PRÓPRIAS ALTERAÇÕES EM iApplication e iRoute
+        $applicationNS      = $this->serverConfig->getEngineConfig()->retrieveApplicationNS();
+        $this->application  = new $applicationNS($this);
+
 
         // Executa a aplicação
         if ($autorun === true) {
             $this->run();
         }
     }
+
+
+
+
+
+
+
+
 
 
     /**
@@ -60,8 +89,6 @@ final class EnGarde extends BObject
      */
     public function run() : void
     {
-        $this->serverConfig
-            ->getApplication()
-            ->run();
+        $this->application->run();
     }
 }
