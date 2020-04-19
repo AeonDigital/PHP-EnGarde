@@ -16,203 +16,245 @@ class ConfigSecurityTest extends TestCase
 {
 
 
+    public function test_constructor_ok()
+    {
+        global $defaultSecurity;
+        $obj = new Security(
+            $defaultSecurity["isActive"],
+            $defaultSecurity["dataCookieName"],
+            $defaultSecurity["securityCookieName"],
+            $defaultSecurity["routeToLogin"],
+            $defaultSecurity["routeToStart"],
+            $defaultSecurity["routeToResetPassword"],
+            $defaultSecurity["anonymousId"],
+            $defaultSecurity["sessionType"],
+            $defaultSecurity["isSessionRenew"],
+            $defaultSecurity["sessionTimeout"],
+            $defaultSecurity["allowedFaultByIP"],
+            $defaultSecurity["ipBlockTimeout"],
+            $defaultSecurity["allowedFaultByLogin"],
+            $defaultSecurity["loginBlockTimeout"]
+        );
+        $this->assertTrue(is_a($obj, Security::class));
+
+        $this->assertSame(true, $obj->getIsActive());
+        $this->assertSame("cname", $obj->getDataCookieName());
+        $this->assertSame("sname", $obj->getSecurityCookieName());
+        $this->assertSame("login", $obj->getRouteToLogin());
+        $this->assertSame("start", $obj->getRouteToStart());
+        $this->assertSame("reset", $obj->getRouteToResetPassword());
+        $this->assertSame(1, $obj->getAnonymousId());
+        $this->assertSame("local", $obj->getSessionType());
+        $this->assertSame(true, $obj->getIsSessionRenew());
+        $this->assertSame(40, $obj->getSessionTimeout());
+        $this->assertSame(50, $obj->getAllowedFaultByIP());
+        $this->assertSame(50, $obj->getIPBlockTimeout());
+        $this->assertSame(5, $obj->getAllowedFaultByLogin());
+        $this->assertSame(20, $obj->getLoginBlockTimeout());
+    }
+
+
+
     public function test_constructor_fail_datacookiename()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["dataCookieName"] = "";
+
         $fail = false;
         try {
-            $obj = new Security(true, "", "", "", "", "");
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"dataCookieName\" defined.", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_securitycookiename()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["securityCookieName"] = "";
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "", "", "", "");
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"securityCookieName\" defined.", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_routetologin()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["routeToLogin"] = "";
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "", "", "");
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"routeToLogin\" defined.", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_routetostart()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["routeToStart"] = "";
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "", "");
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"routeToStart\" defined.", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_routetoresetpassword()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["routeToResetPassword"] = "";
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "");
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame("An active secure session must have a \"routeToResetPassword\" defined.", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_anonymousid()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["anonymousId"] = -1;
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset", 0);
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("\"anonymousId\" must be a integer granther than zero.", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"anonymousId\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_invalid_sessiontype()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["sessionType"] = "invalid";
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset", 1, "invalid");
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("Session type must be \"local\" or \"database\".", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"sessionType\". Expected [ local, database ]. Given: [ invalid ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_sessiontimeout()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["sessionTimeout"] = -1;
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
-                                1, "local", true, -1);
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("\"sessionTimeout\" must be a integer equal or granther than zero.", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"sessionTimeout\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_allowedfaultbyip()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["allowedFaultByIP"] = -1;
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
-                                1, "local", true, 10, -1);
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("\"allowedFaultByIP\" must be a integer equal or granther than zero.", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"allowedFaultByIP\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_ipblocktimeout()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["ipBlockTimeout"] = -1;
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
-                                1, "local", true, 10, 10, -1);
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("\"ipBlockTimeout\" must be a integer equal or granther than zero.", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"ipBlockTimeout\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_allowedfaultbylogin()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["allowedFaultByLogin"] = -1;
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
-                                1, "local", true, 10, 10, 10, -1);
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("\"allowedFaultByLogin\" must be a integer equal or granther than zero.", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"allowedFaultByLogin\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }
+
+
     public function test_constructor_fail_loginblocktimeout()
     {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["loginBlockTimeout"] = -1;
+
         $fail = false;
         try {
-            $obj = new Security(true, "cname", "sname", "login", "start", "reset",
-                                1, "local", true, 10, 10, 10, 10, -1);
+            $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("\"loginBlockTimeout\" must be a integer equal or granther than zero.", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"loginBlockTimeout\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
-    }
-
-
-
-    public function test_constructor_ok()
-    {
-        $obj = new Security(true, "cname", "sname", "login", "start", "reset",
-                            1, "local", true, 11, 12, 13, 14, 15);
-        $this->assertTrue(is_a($obj, Security::class));
-
-        $this->assertSame(true, $obj->isActive());
-        $this->assertSame("cname", $obj->getDataCookieName());
-        $this->assertSame("sname", $obj->getSecurityCookieName());
-        $this->assertSame("login", $obj->getRouteToLogin());
-        $this->assertSame("start", $obj->getRouteToStart());
-        $this->assertSame("reset", $obj->getRouteToResetPassword());
-        $this->assertSame(1, $obj->getAnonymousId());
-        $this->assertSame("local", $obj->getSessionType());
-        $this->assertSame(true, $obj->isSessionRenew());
-        $this->assertSame(11, $obj->getSessionTimeout());
-        $this->assertSame(12, $obj->getAllowedFaultByIP());
-        $this->assertSame(13, $obj->getIPBlockTimeout());
-        $this->assertSame(14, $obj->getAllowedFaultByLogin());
-        $this->assertSame(15, $obj->getLoginBlockTimeout());
-    }
-
-
-
-    public function test_constructor_from_array()
-    {
-        $obj = Security::fromArray([
-            "active"                => true,
-            "dataCookieName"        => "cname",
-            "securityCookieName"    => "sname",
-            "routeToLogin"          => "login",
-            "routeToStart"          => "start",
-            "routeToResetPassword"  => "reset",
-            "anonymousId"           => 1,
-            "sessionType"           => "local",
-            "sessionRenew"          => true,
-            "sessionTimeout"        => 11,
-            "allowedFaultByIP"      => 12,
-            "ipBlockTimeout"        => 13,
-            "allowedFaultByLogin"   => 14,
-            "loginBlockTimeout"     => 15
-        ]);
-        $this->assertTrue(is_a($obj, Security::class));
-
-        $this->assertSame(true, $obj->isActive());
-        $this->assertSame("cname", $obj->getDataCookieName());
-        $this->assertSame("sname", $obj->getSecurityCookieName());
-        $this->assertSame("login", $obj->getRouteToLogin());
-        $this->assertSame("start", $obj->getRouteToStart());
-        $this->assertSame("reset", $obj->getRouteToResetPassword());
-        $this->assertSame(1, $obj->getAnonymousId());
-        $this->assertSame("local", $obj->getSessionType());
-        $this->assertSame(true, $obj->isSessionRenew());
-        $this->assertSame(11, $obj->getSessionTimeout());
-        $this->assertSame(12, $obj->getAllowedFaultByIP());
-        $this->assertSame(13, $obj->getIPBlockTimeout());
-        $this->assertSame(14, $obj->getAllowedFaultByLogin());
-        $this->assertSame(15, $obj->getLoginBlockTimeout());
     }
 }

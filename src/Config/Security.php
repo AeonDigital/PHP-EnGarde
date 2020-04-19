@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-
+use AeonDigital\Traits\MainCheckArgumentException as MainCheckArgumentException;
 
 
 
@@ -22,7 +22,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
  */
 final class Security extends BObject implements iSecurity
 {
-
+    use MainCheckArgumentException;
 
 
 
@@ -32,17 +32,30 @@ final class Security extends BObject implements iSecurity
      *
      * @var         bool
      */
-    private bool $active = false;
+    private bool $isActive = false;
     /**
      * Retornará ``true`` se a aplicação estiver configurada para usar as definições de segurança.
      * Quando ``false`` indica que a aplicação é pública.
      *
      * @return      bool
      */
-    public function isActive() : bool
+    public function getIsActive() : bool
     {
-        return $this->active;
+        return $this->isActive;
     }
+    /**
+     * Define se o modulo de segurança deve ou não estar ativado.
+     *
+     * @param       bool $isActive
+     *
+     * @return      void
+     */
+    private function setIsActive(bool $isActive) : void
+    {
+        $this->isActive = $isActive;
+    }
+
+
 
 
 
@@ -61,6 +74,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->dataCookieName;
     }
+    /**
+     * Define o nome do cookie que carrega informações da sessão atual do usuário.
+     *
+     * @param       string $dataCookieName
+     *
+     * @return      void
+     */
+    private function setDataCookieName(string $dataCookieName) : void
+    {
+        if ($this->isActive === true && $dataCookieName === "") {
+            throw new \InvalidArgumentException("An active secure session must have a \"dataCookieName\" defined.");
+        }
+        $this->dataCookieName = $dataCookieName;
+    }
+
+
 
 
 
@@ -79,6 +108,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->securityCookieName;
     }
+    /**
+     * Define o nome do cookie de autenticação.
+     *
+     * @param       string $securityCookieName
+     *
+     * @return      void
+     */
+    private function setSecurityCookieName(string $securityCookieName) : void
+    {
+        if ($this->isActive === true && $securityCookieName === "") {
+            throw new \InvalidArgumentException("An active secure session must have a \"securityCookieName\" defined.");
+        }
+        $this->securityCookieName = $securityCookieName;
+    }
+
+
 
 
 
@@ -97,6 +142,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->routeToLogin;
     }
+    /**
+     * Define a rota para o local onde o usuário faz login.
+     *
+     * @param       string $routeToLogin
+     *
+     * @return      void
+     */
+    private function setRouteToLogin(string $routeToLogin) : void
+    {
+        if ($this->isActive === true && $routeToLogin === "") {
+            throw new \InvalidArgumentException("An active secure session must have a \"routeToLogin\" defined.");
+        }
+        $this->routeToLogin = $routeToLogin;
+    }
+
+
 
 
 
@@ -115,6 +176,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->routeToStart;
     }
+    /**
+     * Define a rota para o local onde o usuário deve ser direcionado quando efetua o login.
+     *
+     * @param       string $routeToStart
+     *
+     * @return      void
+     */
+    private function setRouteToStart(string $routeToStart) : void
+    {
+        if ($this->isActive === true && $routeToStart === "") {
+            throw new \InvalidArgumentException("An active secure session must have a \"routeToStart\" defined.");
+        }
+        $this->routeToStart = $routeToStart;
+    }
+
+
 
 
 
@@ -133,6 +210,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->routeToResetPassword;
     }
+    /**
+     * Define a rota para o local onde o usuário pode ir para efetuar o reset de sua senha.
+     *
+     * @param       string $routeToResetPassword
+     *
+     * @return      void
+     */
+    private function setRouteToResetPassword(string $routeToResetPassword) : void
+    {
+        if ($this->isActive === true && $routeToResetPassword === "") {
+            throw new \InvalidArgumentException("An active secure session must have a \"routeToResetPassword\" defined.");
+        }
+        $this->routeToResetPassword = $routeToResetPassword;
+    }
+
+
 
 
 
@@ -151,6 +244,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->anonymousId;
     }
+    /**
+     * Define o Id do usuário anonimo da aplicação.
+     *
+     * @param       int $anonymousId
+     *
+     * @return      void
+     */
+    private function setAnonymousId(int $anonymousId) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "anonymousId", $anonymousId, ["is integer greather than zero"]
+        );
+        $this->anonymousId = $anonymousId;
+    }
+
+
 
 
 
@@ -174,6 +283,28 @@ final class Security extends BObject implements iSecurity
     {
         return $this->sessionType;
     }
+    /**
+     * Define o tipo de sessão/local onde ela é armazenada.
+     *
+     * @param       string $sessionType
+     *
+     * @return      void
+     */
+    private function setSessionType(string $sessionType) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "sessionType", $sessionType, [
+                [
+                    "validate" => "is allowed value",
+                    "allowedValues" => ["local", "database"],
+                    "caseInsensitive" => true,
+                ]
+            ]
+        );
+        $this->sessionType = \strtolower($sessionType);
+    }
+
+
 
 
 
@@ -182,17 +313,30 @@ final class Security extends BObject implements iSecurity
      *
      * @var         bool
      */
-    private bool $sessionRenew = true;
+    private bool $isSessionRenew = true;
     /**
      * Indica se as sessões devem ser renovar a cada iteração do usuário.
      * O padrão é ``true``.
      *
      * @return      bool
      */
-    public function isSessionRenew() : bool
+    public function getIsSessionRenew() : bool
     {
-        return $this->sessionRenew;
+        return $this->isSessionRenew;
     }
+    /**
+     * Define se as sessões devem ser renovadas a cada iteração do usuário.
+     *
+     * @param       bool $isSessionRenew
+     *
+     * @return      void
+     */
+    private function setIsSessionRenew(bool $isSessionRenew) : void
+    {
+        $this->isSessionRenew = $isSessionRenew;
+    }
+
+
 
 
 
@@ -212,6 +356,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->sessionTimeout;
     }
+    /**
+     * Define o tempo (em minutos) que cada sessão deve suportar de inatividade.
+     *
+     * @param       int $sessionTimeout
+     *
+     * @return      void
+     */
+    private function setSessionTimeout(int $sessionTimeout) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "sessionTimeout", $sessionTimeout, ["is integer greather than zero"]
+        );
+        $this->sessionTimeout = $sessionTimeout;
+    }
+
+
 
 
 
@@ -231,6 +391,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->allowedFaultByIP;
     }
+    /**
+     * Define o limite de falhas de login permitidas para um mesmo ``IP`` em um determinado periodo.
+     *
+     * @param       int $allowedFaultByIP
+     *
+     * @return      void
+     */
+    private function setAllowedFaultByIP(int $allowedFaultByIP) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "allowedFaultByIP", $allowedFaultByIP, ["is integer greather than zero"]
+        );
+        $this->allowedFaultByIP = $allowedFaultByIP;
+    }
+
+
 
 
 
@@ -250,6 +426,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->ipBlockTimeout;
     }
+    /**
+     * Define o tempo de bloqueio para um IP [em minutos].
+     *
+     * @param       int $ipBlockTimeout
+     *
+     * @return      void
+     */
+    private function setIPBlockTimeout(int $ipBlockTimeout) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "ipBlockTimeout", $ipBlockTimeout, ["is integer greather than zero"]
+        );
+        $this->ipBlockTimeout = $ipBlockTimeout;
+    }
+
+
 
 
 
@@ -269,6 +461,22 @@ final class Security extends BObject implements iSecurity
     {
         return $this->allowedFaultByLogin;
     }
+    /**
+     * Define o limite de falhas permitidas para erros sucessivos de senha para um mesmo login.
+     *
+     * @param       int $allowedFaultByLogin
+     *
+     * @return      void
+     */
+    private function setAllowedFaultByLogin(int $allowedFaultByLogin) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "allowedFaultByLogin", $allowedFaultByLogin, ["is integer greather than zero"]
+        );
+        $this->allowedFaultByLogin = $allowedFaultByLogin;
+    }
+
+
 
 
 
@@ -288,9 +496,20 @@ final class Security extends BObject implements iSecurity
     {
         return $this->loginBlockTimeout;
     }
-
-
-
+    /**
+     * Define o tempo de bloqueio para um Login [em minutos].
+     *
+     * @param       int $loginBlockTimeout
+     *
+     * @return      void
+     */
+    private function setLoginBlockTimeout(int $loginBlockTimeout) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "loginBlockTimeout", $loginBlockTimeout, ["is integer greather than zero"]
+        );
+        $this->loginBlockTimeout = $loginBlockTimeout;
+    }
 
 
 
@@ -304,7 +523,7 @@ final class Security extends BObject implements iSecurity
     /**
      * Inicia uma instância que armazena as configurações de segurança para uma aplicação.
      *
-     * @param       bool $active
+     * @param       bool $isActive
      *              Indica quando as configurações de segurança devem ou não serem usadas para
      *              a aplicação.
      *
@@ -329,7 +548,7 @@ final class Security extends BObject implements iSecurity
      * @param       string $sessionType
      *              Tipo de sessão/local onde ela é armazenada.
      *
-     * @param       bool $sessionRenew
+     * @param       bool $isSessionRenew
      *              Define se as sessões devem ser renovadas a cada iteração do usuário.
      *
      * @param       int $sessionTimeout
@@ -351,79 +570,35 @@ final class Security extends BObject implements iSecurity
      *              Caso seja definido um valor inválido.
      */
     function __construct(
-        bool $active,
+        bool $isActive,
         string $dataCookieName,
         string $securityCookieName,
         string $routeToLogin,
         string $routeToStart,
         string $routeToResetPassword,
-        int $anonymousId = 1,
-        string $sessionType = "local",
-        bool $sessionRenew = true,
-        int $sessionTimeout = 40,
-        int $allowedFaultByIP = 50,
-        int $ipBlockTimeout = 50,
-        int $allowedFaultByLogin = 5,
-        int $loginBlockTimeout = 20
+        int $anonymousId,
+        string $sessionType,
+        bool $isSessionRenew,
+        int $sessionTimeout,
+        int $allowedFaultByIP,
+        int $ipBlockTimeout,
+        int $allowedFaultByLogin,
+        int $loginBlockTimeout
     ) {
-        if ($active === true) {
-            if ($dataCookieName === "") {
-                throw new \InvalidArgumentException("An active secure session must have a \"dataCookieName\" defined.");
-            }
-            if ($securityCookieName === "") {
-                throw new \InvalidArgumentException("An active secure session must have a \"securityCookieName\" defined.");
-            }
-            if ($routeToLogin === "") {
-                throw new \InvalidArgumentException("An active secure session must have a \"routeToLogin\" defined.");
-            }
-            if ($routeToStart === "") {
-                throw new \InvalidArgumentException("An active secure session must have a \"routeToStart\" defined.");
-            }
-            if ($routeToResetPassword === "") {
-                throw new \InvalidArgumentException("An active secure session must have a \"routeToResetPassword\" defined.");
-            }
-        }
-
-        if ($anonymousId <= 0) {
-            throw new \InvalidArgumentException("\"anonymousId\" must be a integer granther than zero.");
-        }
-
-        $sessionType = strtolower($sessionType);
-        if (in_array($sessionType, ["local", "database"]) === false) {
-            throw new \InvalidArgumentException("Session type must be \"local\" or \"database\".");
-        }
-
-        if ($sessionTimeout < 0) {
-            throw new \InvalidArgumentException("\"sessionTimeout\" must be a integer equal or granther than zero.");
-        }
-        if ($allowedFaultByIP < 0) {
-            throw new \InvalidArgumentException("\"allowedFaultByIP\" must be a integer equal or granther than zero.");
-        }
-        if ($ipBlockTimeout < 0) {
-            throw new \InvalidArgumentException("\"ipBlockTimeout\" must be a integer equal or granther than zero.");
-        }
-        if ($allowedFaultByLogin < 0) {
-            throw new \InvalidArgumentException("\"allowedFaultByLogin\" must be a integer equal or granther than zero.");
-        }
-        if ($loginBlockTimeout < 0) {
-            throw new \InvalidArgumentException("\"loginBlockTimeout\" must be a integer equal or granther than zero.");
-        }
-
-
-        $this->active               = $active;
-        $this->dataCookieName       = $dataCookieName;
-        $this->securityCookieName   = $securityCookieName;
-        $this->routeToLogin         = $routeToLogin;
-        $this->routeToStart         = $routeToStart;
-        $this->routeToResetPassword = $routeToResetPassword;
-        $this->anonymousId          = $anonymousId;
-        $this->sessionType          = $sessionType;
-        $this->sessionRenew         = $sessionRenew;
-        $this->sessionTimeout       = $sessionTimeout;
-        $this->allowedFaultByIP     = $allowedFaultByIP;
-        $this->ipBlockTimeout       = $ipBlockTimeout;
-        $this->allowedFaultByLogin  = $allowedFaultByLogin;
-        $this->loginBlockTimeout    = $loginBlockTimeout;
+        $this->setIsActive($isActive);
+        $this->setDataCookieName($dataCookieName);
+        $this->setSecurityCookieName($securityCookieName);
+        $this->setRouteToLogin($routeToLogin);
+        $this->setRouteToStart($routeToStart);
+        $this->setRouteToResetPassword($routeToResetPassword);
+        $this->setAnonymousId($anonymousId);
+        $this->setSessionType($sessionType);
+        $this->setIsSessionRenew($isSessionRenew);
+        $this->setSessionTimeout($sessionTimeout);
+        $this->setAllowedFaultByIP($allowedFaultByIP);
+        $this->setIpBlockTimeout($ipBlockTimeout);
+        $this->setAllowedFaultByLogin($allowedFaultByLogin);
+        $this->setLoginBlockTimeout($loginBlockTimeout);
     }
 
 
@@ -444,15 +619,15 @@ final class Security extends BObject implements iSecurity
         // Define os valores padrões para a instância e
         // sobrescreve-os com os valores informados em $config
         $useValues = array_merge([
-            "active"                => false,
-            "dataCookieName"        => "",
-            "securityCookieName"    => "",
-            "routeToLogin"          => "",
-            "routeToStart"          => "",
-            "routeToResetPassword"  => "",
+            "isActive"              => false,
+            "dataCookieName"        => "dateg",
+            "securityCookieName"    => "seceg",
+            "routeToLogin"          => "/login",
+            "routeToStart"          => "/home",
+            "routeToResetPassword"  => "/resetpassword",
             "anonymousId"           => 1,
             "sessionType"           => "local",
-            "sessionRenew"          => true,
+            "isSessionRenew"        => true,
             "sessionTimeout"        => 40,
             "allowedFaultByIP"      => 50,
             "ipBlockTimeout"        => 50,
@@ -462,7 +637,7 @@ final class Security extends BObject implements iSecurity
         $config);
 
         return new Security(
-            $useValues["active"],
+            $useValues["isActive"],
             $useValues["dataCookieName"],
             $useValues["securityCookieName"],
             $useValues["routeToLogin"],
@@ -470,7 +645,7 @@ final class Security extends BObject implements iSecurity
             $useValues["routeToResetPassword"],
             $useValues["anonymousId"],
             $useValues["sessionType"],
-            $useValues["sessionRenew"],
+            $useValues["isSessionRenew"],
             $useValues["sessionTimeout"],
             $useValues["allowedFaultByIP"],
             $useValues["ipBlockTimeout"],

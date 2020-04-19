@@ -1,30 +1,43 @@
 <?php
 
+$defaultSecurity = [
+    "isActive"              => true,
+    "dataCookieName"        => "cname",
+    "securityCookieName"    => "sname",
+    "routeToLogin"          => "login",
+    "routeToStart"          => "start",
+    "routeToResetPassword"  => "reset",
+    "anonymousId"           => 1,
+    "sessionType"           => "local",
+    "isSessionRenew"        => true,
+    "sessionTimeout"        => 40,
+    "allowedFaultByIP"      => 50,
+    "ipBlockTimeout"        => 50,
+    "allowedFaultByLogin"   => 5,
+    "loginBlockTimeout"     => 20
+];
 
 
 // ---
 // Geração de Instâncias de objetos.
 
-function prov_instanceOf_EnGarde_Config_Security_autoSet(
-    $settings = null
+function prov_instanceOf_EnGarde_Config_Security(
+    $defaultSecurity = null
 ) {
-    if ($settings === null) {
-        $settings = [
-            "active"                => true,
-            "dataCookieName"        => "cname",
-            "securityCookieName"    => "sname",
-            "routeToLogin"          => "login",
-            "routeToStart"          => "start",
-            "routeToResetPassword"  => "reset",
-            "anonymousId"           => 1,
-            "sessionType"           => "local",
-            "sessionRenew"          => true,
-            "sessionTimeout"        => 11,
-            "allowedFaultByIP"      => 12,
-            "ipBlockTimeout"        => 13,
-            "allowedFaultByLogin"   => 14,
-            "loginBlockTimeout"     => 15
-        ];
-    }
-    return \AeonDigital\EnGarde\Config\Security::fromArray($settings);
+    return new \AeonDigital\EnGarde\Config\Security(
+        $defaultSecurity["isActive"],
+        $defaultSecurity["dataCookieName"],
+        $defaultSecurity["securityCookieName"],
+        $defaultSecurity["routeToLogin"],
+        $defaultSecurity["routeToStart"],
+        $defaultSecurity["routeToResetPassword"],
+        $defaultSecurity["anonymousId"],
+        $defaultSecurity["sessionType"],
+        $defaultSecurity["isSessionRenew"],
+        $defaultSecurity["sessionTimeout"],
+        $defaultSecurity["allowedFaultByIP"],
+        $defaultSecurity["ipBlockTimeout"],
+        $defaultSecurity["allowedFaultByLogin"],
+        $defaultSecurity["loginBlockTimeout"]
+    );
 }
