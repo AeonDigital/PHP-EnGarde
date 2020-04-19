@@ -491,7 +491,7 @@ final class Server extends BObject implements iServer
                     "validate"          => "is array not empty"
                 ],
                 [
-                    "validate"          => "check array childs",
+                    "validate"          => "foreach array child",
                     "foreachChild"      => [
                         [
                             "validate" => "closure",

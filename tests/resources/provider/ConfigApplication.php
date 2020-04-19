@@ -4,16 +4,16 @@
 $defaultApplication = [
     "appName"               => "site",
     "appRootPath"           => $dirResources . DS . "apps" . DS . "site",
-    "pathToAppRoutes"       => "",
+    "pathToAppRoutes"       => "/AppRoutes.php",
     "pathToControllers"     => "/controllers",
     "pathToViews"           => "/views",
     "pathToViewsResources"  => "/resources",
     "pathToLocales"         => "/locales",
     "pathToCacheFiles"      => "/cache",
-    "startRoute"            => "/",
-    "controllersNamespace"  => "site\\controllers",
+    "startRoute"            => "/home",
+    "controllersNamespace"  => "controllers",
     "locales"               => ["pt-BR", "en-US"],
-    "defaultLocale"         => ["pt-BR"],
+    "defaultLocale"         => "pt-BR",
     "isUseLabels"           => true,
     "defaultRouteConfig"    => [],
     "pathToErrorView"       => "/errorView.phtml"
@@ -44,7 +44,7 @@ function prov_instanceOf_EnGarde_Config_Application(
         $defaultApplication["defaultLocale"],
         $defaultApplication["isUseLabels"],
         $defaultApplication["defaultRouteConfig"],
-        $defaultApplication["pathToErrorView"],
+        $defaultApplication["pathToErrorView"]
     );
     /*
     $rootPath   = (($rootPath === "")   ? to_system_path(dirname(__DIR__) . "/apps"): $rootPath) . DIRECTORY_SEPARATOR;

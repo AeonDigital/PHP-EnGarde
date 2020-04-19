@@ -6,7 +6,7 @@ namespace AeonDigital\EnGarde\Config;
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-
+use AeonDigital\Traits\MainCheckArgumentException as MainCheckArgumentException;
 
 
 
@@ -22,7 +22,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
  */
 final class Application extends BObject implements iApplication
 {
-
+    use MainCheckArgumentException;
 
 
 
@@ -52,10 +52,13 @@ final class Application extends BObject implements iApplication
      */
     private function setAppName(string $appName) : void
     {
-        if ($appName === "") {
-            $err = "The application name is invalid. Empty string received.";
-            throw new \InvalidArgumentException($err);
-        }
+        $this->mainCheckForInvalidArgumentException(
+            "appName", $appName, [
+                [
+                    "validate"          => "is string not empty"
+                ]
+            ]
+        );
         $this->appName = $appName;
     }
 
@@ -95,27 +98,13 @@ final class Application extends BObject implements iApplication
      */
     private function setAppRootPath(string $appRootPath) : void
     {
-        if ($this->appRootPath === "") {
-            $err = null;
-
-            // Se nenhum caminho foi definido para o caminho da raiz da aplicação
-            if ($appRootPath === "") {
-                $err = "The path to the root directory is invalid. Empty string received.";
-            } else {
-                // Verifica o diretório raiz da aplicação
-                $appRootPath = \to_system_path($appRootPath) . DS;
-                if (\file_exists($appRootPath) === false) {
-                    $err = "The path to the root directory of the application does not exist [ \"$appRootPath\" ].";
-                }
-            }
-
-
-            if ($err === null) {
-                $this->appRootPath = $appRootPath;
-            } else {
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $this->mainCheckForInvalidArgumentException(
+            "appRootPath", $appRootPath, [
+                ["validate"          => "is string not empty"],
+                ["validate"          => "is dir exists"]
+            ]
+        );
+        $this->appRootPath = \to_system_path($appRootPath);
     }
 
 
@@ -149,15 +138,23 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToAppRoutes(string $pathToAppRoutes) : void
     {
-        if ($this->pathToAppRoutes === "") {
-            $this->pathToAppRoutes = \to_system_path($pathToAppRoutes);
-            $dir = \dirname($this->pathToAppRoutes);
-
-            if (\file_exists($dir) === false) {
-                $err = "The path to AppRoutes file does not exist [ \"" . $dir . "\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $path = (
+            ($pathToAppRoutes !== "") ?
+            \to_system_path($this->appRootPath . DS . $pathToAppRoutes) :
+            $pathToAppRoutes
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToAppRoutes", $path, [
+                ["validate"         => "is string not empty"],
+                [
+                    "executeBeforeValidate" => function($args) {
+                        return \dirname(\to_system_path($args["argValue"]));
+                    },
+                    "validate"      => "is dir exists"
+                ]
+            ]
+        );
+        $this->pathToAppRoutes = \to_system_path($pathToAppRoutes);
     }
 
 
@@ -193,14 +190,18 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToControllers(string $pathToControllers) : void
     {
-        if ($this->pathToControllers === "") {
-            $this->pathToControllers = \to_system_path($pathToControllers) . DS;
-
-            if (\file_exists($this->pathToControllers) === false) {
-                $err = "The path to controllers does not exist [ \"" . $this->pathToControllers . "\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $path = (
+            ($pathToControllers !== "") ?
+            \to_system_path($this->appRootPath . DS . $pathToControllers) :
+            $pathToControllers
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToControllers", $path, [
+                ["validate"         => "is string not empty"],
+                ["validate"         => "is dir exists"]
+            ]
+        );
+        $this->pathToControllers = \to_system_path($pathToControllers);
     }
 
 
@@ -236,14 +237,18 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToViews(string $pathToViews) : void
     {
-        if ($this->pathToViews === "") {
-            $this->pathToViews = \to_system_path($pathToViews) . DS;
-
-            if (\file_exists($this->pathToViews) === false) {
-                $err = "The path to views does not exist [ \"" . $this->pathToViews . "\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $path = (
+            ($pathToViews !== "") ?
+            \to_system_path($this->appRootPath . DS . $pathToViews) :
+            $pathToViews
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToViews", $path, [
+                ["validate"         => "is string not empty"],
+                ["validate"         => "is dir exists"]
+            ]
+        );
+        $this->pathToViews = \to_system_path($pathToViews);
     }
 
 
@@ -279,14 +284,18 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToViewsResources(string $pathToViewsResources) : void
     {
-        if ($this->pathToViewsResources === "") {
-            $this->pathToViewsResources = \to_system_path($pathToViewsResources) . DS;
-
-            if (\file_exists($this->pathToViewsResources) === false) {
-                $err = "The path to views resources does not exist [ \"" . $this->pathToViewsResources . "\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $path = (
+            ($pathToViewsResources !== "") ?
+            \to_system_path($this->appRootPath . DS . $pathToViewsResources) :
+            $pathToViewsResources
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToViewsResources", $path, [
+                ["validate"         => "is string not empty"],
+                ["validate"         => "is dir exists"]
+            ]
+        );
+        $this->pathToViewsResources = \to_system_path($pathToViewsResources);
     }
 
 
@@ -322,14 +331,20 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToLocales(string $pathToLocales) : void
     {
-        if ($this->pathToLocales === "" && $pathToLocales !== "") {
-            $this->pathToLocales = \to_system_path($pathToLocales) . DS;
-
-            if (\file_exists($this->pathToLocales) === false) {
-                $err = "The path to locales does not exist [ \"" . $this->pathToLocales . "\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $path = (
+            ($pathToLocales !== "") ?
+            \to_system_path($this->appRootPath . DS . $pathToLocales) :
+            $pathToLocales
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToLocales", $path, [
+                [
+                    "conditions"       => "is string not empty",
+                    "validate"         => "is dir exists"
+                ]
+            ]
+        );
+        $this->pathToLocales = \to_system_path($pathToLocales);
     }
 
 
@@ -365,14 +380,20 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToCacheFiles(string $pathToCacheFiles) : void
     {
-        if ($this->pathToCacheFiles === "" && $pathToCacheFiles !== "") {
-            $this->pathToCacheFiles = \to_system_path($pathToCacheFiles) . DS;
-
-            if (\file_exists($this->pathToCacheFiles) === false) {
-                $err = "The path to cache files does not exist [ \"" . $this->pathToCacheFiles . "\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-        }
+        $path = (
+            ($pathToCacheFiles !== "") ?
+            \to_system_path($this->appRootPath . DS . $pathToCacheFiles) :
+            $pathToCacheFiles
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToCacheFiles", $path, [
+                [
+                    "conditions"       => "is string not empty",
+                    "validate"         => "is dir exists"
+                ]
+            ]
+        );
+        $this->pathToCacheFiles = \to_system_path($pathToCacheFiles);
     }
 
 
@@ -412,9 +433,7 @@ final class Application extends BObject implements iApplication
      */
     private function setStartRoute(string $startRoute) : void
     {
-        if ($this->startRoute === "") {
-            $this->startRoute = $startRoute;
-        }
+        $this->startRoute = $startRoute;
     }
 
 
@@ -432,7 +451,7 @@ final class Application extends BObject implements iApplication
      */
     public function getControllersNamespace() : string
     {
-        return "\\" . $this->getAppName() . "\\" . $this->controllersNamespace;
+        return $this->controllersNamespace;
     }
     /**
      * Define a Namespace comum à todos os controllers da aplicação corrente.
@@ -447,9 +466,7 @@ final class Application extends BObject implements iApplication
      */
     private function setControllersNamespace(string $controllersNamespace) : void
     {
-        if ($this->controllersNamespace === "") {
-            $this->controllersNamespace = \trim($controllersNamespace, "\\");
-        }
+        $this->controllersNamespace = "\\" . $this->getAppName() . "\\" . \trim($controllersNamespace, "\\");
     }
 
 
@@ -482,25 +499,27 @@ final class Application extends BObject implements iApplication
      */
     private function setLocales(array $locales) : void
     {
-        if (\count($this->locales) === 0) {
-            if (\count($locales) === 0) {
-                $err = "It is not allowed to define an empty collection of locales.";
-                throw new \InvalidArgumentException($err);
-            } else {
-                foreach ($locales as $value) {
-                    if (\is_string($value) === false || \strlen($value) !== 5 || \strpos($value, "-") !== 2) {
-                        $err = "The value \"$value\" is not a valid locale.";
-                        throw new \InvalidArgumentException($err);
-                    } else {
-                        $this->locales[] = \strtolower($value);
-                    }
-                }
-
-                if ($this->defaultLocale === null) {
-                    $this->defaultLocale = $this->locales[0];
-                }
-            }
-        }
+        $this->mainCheckForInvalidArgumentException(
+            "locales", $locales, [
+                ["validate"      => "is array not empty"],
+                [
+                    "validate"   => "foreach array child",
+                    "foreachChild" => [
+                        [
+                            "validate" => "is string not empty"
+                        ],
+                        [
+                            "validate" => "closure",
+                            "closure" => function($arg) {
+                                return (\strlen($arg) === 5 && \strpos($arg, "-") === 2);
+                            }
+                        ]
+                    ]
+                ]
+            ]
+        );
+        $this->locales = \array_map("mb_strtolower", $locales);
+        $this->defaultLocale = $this->locales[0];
     }
 
 
@@ -533,13 +552,17 @@ final class Application extends BObject implements iApplication
      */
     private function setDefaultLocale(string $locale) : void
     {
-        if ($this->defaultLocale === "") {
-            if (\array_in_ci($locale, $this->locales) === false) {
-                $err = "The given locale is not defined in the application locale collection.";
-                throw new \InvalidArgumentException($err);
-            }
-            $this->defaultLocale = \strtolower($locale);
-        }
+        $this->mainCheckForInvalidArgumentException(
+            "locale", $locale, [
+                ["validate"      => "is string not empty"],
+                [
+                    "validate"          => "is allowed_value",
+                    "allowedValues"     => $this->locales,
+                    "caseInsensitive"   => true
+                ]
+            ]
+        );
+        $this->defaultLocale = \strtolower($locale);
     }
 
 
@@ -612,31 +635,27 @@ final class Application extends BObject implements iApplication
      */
     private function setDefaultRouteConfig(array $defaultRouteConfig) : void
     {
-        if (\count($this->defaultRouteConfig) === 0 && $defaultRouteConfig !== []) {
+        // Coleção de propriedades que podem ser definidas
+        $allowedProperties = [
+            "application",
+            "acceptmimes",
+            "responseheaders",
+            "isusexhtml",
+            "middlewares",
+            "description",
+            "issecure",
+            "isusecache",
+            "cachetimeout",
+            "masterpage",
+            "stylesheets",
+            "javascripts",
+            "metadata"
+        ];
 
 
-            // Coleção de propriedades que podem ser definidas
-            $allowedProperties = [
-                "application",
-                "acceptmimes",
-                "isusexhtml",
-                "middlewares",
-                "description",
-                "issecure",
-                "isusecache",
-                "cachetimeout",
-                "masterpage",
-                "stylesheets",
-                "javascripts",
-                "metadata",
-                "responseheaders"
-            ];
-
-
-            foreach ($defaultRouteConfig as $key => $value) {
-                if (\array_in_ci($key, $allowedProperties) === true && $value !== null) {
-                    $this->defaultRouteConfig[\strtolower($key)] = $value;
-                }
+        foreach ($defaultRouteConfig as $key => $value) {
+            if (\array_in_ci($key, $allowedProperties) === true && $value !== null) {
+                $this->defaultRouteConfig[\strtolower($key)] = $value;
             }
         }
     }
@@ -675,7 +694,11 @@ final class Application extends BObject implements iApplication
      */
     public function getFullPathToErrorView() : string
     {
-        return (($this->pathToErrorView === "") ? "" : $this->appRootPath . $this->pathToErrorView);
+        return (
+            ($this->appRootPath === "" || $this->pathToErrorView === "") ?
+            "" :
+            $this->appRootPath . DS . $this->pathToErrorView
+        );
     }
     /**
      * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros
@@ -693,20 +716,20 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToErrorView(string $pathToErrorView) : void
     {
-        if ($this->pathToErrorView === "" && $pathToErrorView !== "") {
-            $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
+        $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
+        $fullPathToErrorView = $this->getFullPathToErrorView();
 
-            $fullPathToErrorView = $this->getFullPathToErrorView();
-            if (\file_exists($fullPathToErrorView) === false) {
-                $err = "The application error view file does not exist [ \"$fullPathToErrorView\" ].";
-                throw new \InvalidArgumentException($err);
-            }
-            else {
-                \AeonDigital\EnGarde\Handler\ErrorListening::setPathToErrorView(
-                    $fullPathToErrorView
-                );
-            }
-        }
+        $this->mainCheckForInvalidArgumentException(
+            "pathToErrorView", $fullPathToErrorView, [
+                [
+                    "conditions" => "is string not empty",
+                    "validate" => "is file exists",
+                ]
+            ]
+        );
+        \AeonDigital\EnGarde\Handler\ErrorListening::setPathToErrorView(
+            $fullPathToErrorView
+        );
     }
 
 
@@ -795,7 +818,7 @@ final class Application extends BObject implements iApplication
         array $defaultRouteConfig,
         string $pathToErrorView
     ) {
-        $this->setName($appName);
+        $this->setAppName($appName);
         $this->setAppRootPath($appRootPath);
         $this->setPathToAppRoutes($pathToAppRoutes);
         $this->setPathToControllers($pathToControllers);
@@ -824,6 +847,8 @@ final class Application extends BObject implements iApplication
     /**
      * Inicia uma nova instância ``Config\iApplication``.
      *
+     * @codeCoverageIgnore
+     *
      * @param       array $config
      *              Array associativo contendo as configurações para esta instância.
      *
@@ -831,33 +856,40 @@ final class Application extends BObject implements iApplication
      */
     public static function fromArray(array $config) : iApplication
     {
-        $useAppRootPath = ((isset($config["appRootPath"]) === "") ? "" : \to_system_path($config["appRootPath"]) . DS);
+        $useAppRootPath = (
+            (\key_exists("appRootPath", $config) === true) ?
+            \to_system_path($config["appRootPath"]) :
+            ""
+        );
+
 
         // Define os valores padrões para a instância e
         // sobrescreve-os com os valores informados em $config
-        $useValues = array_merge([
-            "appName"               => "",
-            "appRootPath"           => $useAppRootPath,
-            "pathToAppRoutes"       => $useAppRootPath . "AppRoutes.php",
-            "pathToControllers"     => $useAppRootPath . "controllers" . DS,
-            "pathToViews"           => $useAppRootPath . "views" . DS,
-            "pathToViewsResources"  => $useAppRootPath . "resources" . DS,
-            "pathToLocales"         => $useAppRootPath . "locales" . DS,
-            "pathToCacheFiles"      => $useAppRootPath . "cache" . DS,
-            "startRoute"            => "/",
-            "controllersNamespace"  => "controllers",
-            "locales"               => ["pt-BR"],
-            "defaultLocale"         => "pt-BR",
-            "isUseLabels"           => false,
-            "defaultRouteConfig"    => [],
-            "pathToErrorView"       => ""
-        ],
-        $config);
+        $useValues = \array_merge(
+            [
+                "appName"               => "",
+                "appRootPath"           => $useAppRootPath,
+                "pathToAppRoutes"       => $useAppRootPath . DS . "AppRoutes.php",
+                "pathToControllers"     => $useAppRootPath . DS . "controllers",
+                "pathToViews"           => $useAppRootPath . DS . "views",
+                "pathToViewsResources"  => $useAppRootPath . DS . "resources",
+                "pathToLocales"         => $useAppRootPath . DS . "locales",
+                "pathToCacheFiles"      => $useAppRootPath . DS . "cache",
+                "startRoute"            => "/",
+                "controllersNamespace"  => "controllers",
+                "locales"               => ["pt-BR"],
+                "defaultLocale"         => "pt-BR",
+                "isUseLabels"           => false,
+                "defaultRouteConfig"    => [],
+                "pathToErrorView"       => ""
+            ],
+            $config
+        );
 
 
 
         // Inicia o novo objeto com as configurações definidas.
-        $applicationConfig = new Application(
+        return new Application(
             $useValues["appName"],
             $useValues["appRootPath"],
             $useValues["pathToAppRoutes"],
@@ -874,7 +906,5 @@ final class Application extends BObject implements iApplication
             $useValues["defaultRouteConfig"],
             $useValues["pathToErrorView"]
         );
-
-        return $applicationConfig;
     }
 }
