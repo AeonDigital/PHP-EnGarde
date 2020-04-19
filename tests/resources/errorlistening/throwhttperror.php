@@ -1,21 +1,21 @@
 <?php return array (
   'rootPath' => 'E:\\Projetos\\Open Source\\PHP-EnGarde\\tests\\resources\\apps\\',
-  'environmentType' => 'test',
+  'environmentType' => 'UTEST',
   'isDebugMode' => false,
-  'http' => 
+  'http' =>
   array (
     'code' => 501,
     'message' => 'Not Implemented',
     'protocol' => 'http',
     'method' => 'GET',
   ),
-  'debugLog' => 
+  'debugLog' =>
   array (
     'code' => 501,
     'message' => 'Not Implemented',
     'file' => '',
     'line' => 0,
-    'traceLog' => 
+    'traceLog' =>
     array (
     ),
   ),

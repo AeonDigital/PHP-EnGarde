@@ -34,12 +34,6 @@ final class EnGarde extends BObject
      * @var         iServerConfig
      */
     private iServerConfig $serverConfig;
-    /**
-     * Objeto ``Engine\iApplication``.
-     *
-     * @var         iApplication
-     */
-    private iApplication $application;
 
 
 
@@ -53,26 +47,42 @@ final class EnGarde extends BObject
      */
     function __construct(bool $autorun = true)
     {
-        // Inicia as instâncias de configuração
-        // - iServer | iEngine | iApplication | iSecurity
-        $this->serverConfig = \AeonDigital\EnGarde\Config\Server::autoSetServerConfig();
-
-        // Identifica o nome da classe principal da aplicação alvo e inicia sua instância.
-        // Neste momento, se a aplicação possui alguma configuração especial, aplica-a.
-
-        // PROSSEGUIR DAQUI.
-        // MUDAR O MOMENTO EM QUE AS INSTÂNCIAS DE CONFIGURAÇÃO SÃO INICIADAS PARA PERMITIR
-        // QUE A APLICAÇÃO EFETUE SUAS PRÓPRIAS ALTERAÇÕES EM iApplication e iRoute
-        $applicationNS      = $this->serverConfig->getEngineConfig()->retrieveApplicationNS();
-        $this->application  = new $applicationNS($this);
-
+        // Inicia as configurações do servidor.
+        $this->serverConfig = \AeonDigital\EnGarde\Config\Server::fromContext();
 
         // Executa a aplicação
+        $this->initiApplication();
         if ($autorun === true) {
             $this->run();
         }
     }
 
+
+
+
+
+    /**
+     * Objeto ``Engine\iApplication``.
+     *
+     * @var         iApplication
+     */
+    private iApplication $application;
+    /**
+     * Inicia a aplicação alvo.
+     *
+     * @return      void
+     */
+    private function initiApplication() : void
+    {
+        $applicationNS      = $this->serverConfig->retrieveApplicationNS();
+        $this->application  = new $applicationNS($this);
+
+        // PROSSEGUIR DAQUI. <---
+        // MUDAR O MOMENTO EM QUE AS INSTÂNCIAS DE CONFIGURAÇÃO SÃO INICIADAS PARA PERMITIR
+        // QUE A APLICAÇÃO EFETUE SUAS PRÓPRIAS ALTERAÇÕES EM iApplication e iRoute
+
+
+    }
 
 
 

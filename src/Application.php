@@ -102,7 +102,7 @@ abstract class Application extends BObject implements iApplication
             if ($this->domainConfig->getIsUpdateRoutes() === true &&
                 $this->domainConfig->getIsDebugMode() === true &&
                 (
-                    $this->domainConfig->getEnvironmentType() === "local" ||
+                    $this->domainConfig->getEnvironmentType() === "LCL" ||
                     $this->domainConfig->getEnvironmentType() === "localtest")
                 )
             {
@@ -340,7 +340,7 @@ abstract class Application extends BObject implements iApplication
                     // ou das actions quando estiver em um ambiente de produção
                     // OU
                     // quando o debug mode estiver ativo
-                    $hideAllOutputs = ( $this->domainConfig->getEnvironmentType() === "production" ||
+                    $hideAllOutputs = ( $this->domainConfig->getEnvironmentType() === "PRD" ||
                                         $this->domainConfig->getIsDebugMode() === false);
 
 
@@ -430,7 +430,7 @@ abstract class Application extends BObject implements iApplication
     private function sendResponse() : void
     {
         // Identifica se está em um ambiente de testes.
-        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "test" ||
+        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "UTEST" ||
                         $this->domainConfig->getEnvironmentType() === "testview" ||
                         $this->domainConfig->getEnvironmentType() === "localtest");
 

@@ -182,7 +182,7 @@ class ErrorListening
         string $pathToErrorView = ""
     ) : void {
         $isTestEnv = (  self::$environmentType === "" ||
-                        self::$environmentType === "test" ||
+                        self::$environmentType === "UTEST" ||
                         self::$environmentType === "testview" ||
                         self::$environmentType === "localtest");
 
@@ -222,7 +222,7 @@ class ErrorListening
     static public function clearContext() : void
     {
         $isTestEnv = (  self::$environmentType === "" ||
-                        self::$environmentType === "test" ||
+                        self::$environmentType === "UTEST" ||
                         self::$environmentType === "testview" ||
                         self::$environmentType === "localtest");
 
@@ -303,7 +303,7 @@ class ErrorListening
     {
         $str = "";
 
-        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "production") {
+        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
             $str = json_encode($viewData["debugLog"]);
         } else {
             $str = '{"HTTP": ' . $viewData["http"]["code"] . ', "Message": "' . $viewData["http"]["message"] . '"}';
@@ -324,7 +324,7 @@ class ErrorListening
     {
         $code       = $viewData["http"]["code"];
         $message    = $viewData["http"]["message"];
-        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "production") {
+        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
             // @codeCoverageIgnoreStart
             $message = $viewData["debugLog"]["message"];
             // @codeCoverageIgnoreEnd
@@ -344,7 +344,7 @@ class ErrorListening
             $str .= '        <h2>' . $message . '</h2>' . PHP_EOL;
         }
 
-        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "production") {
+        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
             // @codeCoverageIgnoreStart
             $str .= '        <pre>' . PHP_EOL . print_r($viewData["debugLog"], true) . '</pre>' . PHP_EOL;
             // @codeCoverageIgnoreEnd
@@ -429,7 +429,7 @@ class ErrorListening
         ];
 
 
-        if ($viewData["environmentType"] === "test") {
+        if ($viewData["environmentType"] === "UTEST") {
             return $viewData;
         }
         else {
@@ -516,7 +516,7 @@ class ErrorListening
         ];
 
 
-        if ($viewData["environmentType"] === "test") {
+        if ($viewData["environmentType"] === "UTEST") {
             return $viewData;
         }
         else {
@@ -575,7 +575,7 @@ class ErrorListening
         ];
 
 
-        if ($viewData["environmentType"] === "test") {
+        if ($viewData["environmentType"] === "UTEST") {
             return $viewData;
         }
         else {

@@ -441,6 +441,8 @@ final class Security extends BObject implements iSecurity
      */
     public static function fromArray(array $config) : iSecurity
     {
+        // Define os valores padrões para a instância e
+        // sobrescreve-os com os valores informados em $config
         $useValues = array_merge([
             "active"                => false,
             "dataCookieName"        => "",
@@ -459,7 +461,7 @@ final class Security extends BObject implements iSecurity
         ],
         $config);
 
-        return new \AeonDigital\EnGarde\Config\Security(
+        return new Security(
             $useValues["active"],
             $useValues["dataCookieName"],
             $useValues["securityCookieName"],

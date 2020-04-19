@@ -1,25 +1,52 @@
 <?php
 
+// Definição base para um objeto Config\Application
+$defaultApplication = [
+    "appName"               => "site",
+    "appRootPath"           => $dirResources . DS . "apps" . DS . "site",
+    "pathToAppRoutes"       => "",
+    "pathToControllers"     => "/controllers",
+    "pathToViews"           => "/views",
+    "pathToViewsResources"  => "/resources",
+    "pathToLocales"         => "/locales",
+    "pathToCacheFiles"      => "/cache",
+    "startRoute"            => "/",
+    "controllersNamespace"  => "site\\controllers",
+    "locales"               => ["pt-BR", "en-US"],
+    "defaultLocale"         => ["pt-BR"],
+    "isUseLabels"           => true,
+    "defaultRouteConfig"    => [],
+    "pathToErrorView"       => "/errorView.phtml"
+];
+
+
+
 
 
 // ---
 // Geração de Instâncias de objetos.
 
 function prov_instanceOf_EnGarde_Config_Application(
-    $autoSet = true,
-    $name = "site",
-    $rootPath = "",
-    $controllersNamespace = "site\\controllers",
-    $startRoute = "/",
-    $appRootPath = "",
-    $pathToControllers = "/controllers",
-    $pathToLocales = null,
-    $pathToCacheFiles = null,
-    $pathToViews = null,
-    $pathToAppRoutes = null,
-    $pathToTargetLocale = null,
-    $pathToMasterPage = null
+    $defaultApplication
 ) {
+    return new \AeonDigital\EnGarde\Config\Application(
+        $defaultApplication["appName"],
+        $defaultApplication["appRootPath"],
+        $defaultApplication["pathToAppRoutes"],
+        $defaultApplication["pathToControllers"],
+        $defaultApplication["pathToViews"],
+        $defaultApplication["pathToViewsResources"],
+        $defaultApplication["pathToLocales"],
+        $defaultApplication["pathToCacheFiles"],
+        $defaultApplication["startRoute"],
+        $defaultApplication["controllersNamespace"],
+        $defaultApplication["locales"],
+        $defaultApplication["defaultLocale"],
+        $defaultApplication["isUseLabels"],
+        $defaultApplication["defaultRouteConfig"],
+        $defaultApplication["pathToErrorView"],
+    );
+    /*
     $rootPath   = (($rootPath === "")   ? to_system_path(dirname(__DIR__) . "/apps"): $rootPath) . DIRECTORY_SEPARATOR;
     $appRootPath= (($appRootPath === "")? to_system_path($rootPath . "/" . $name)   : $appRootPath) . DIRECTORY_SEPARATOR;
 
@@ -53,15 +80,5 @@ function prov_instanceOf_EnGarde_Config_Application(
         ]
     ]);
 
-    return $applicationConfig;
-}
-
-
-
-function prov_instanceOf_EnGarde_Config_Application_autoSet(
-    $appName = "",
-    $rootPath = "",
-    $settings = null
-) {
-    return new \AeonDigital\EnGarde\Config\Application($appName, $rootPath, $settings);
+    return $applicationConfig;*/
 }

@@ -7,7 +7,6 @@
             $useMessage = $viewData->debugLog->message;
         }
     ?>
-
     <head>
         <meta charset="utf-8" />
         <title><?php echo $useCode; ?> - <?php echo $useMessage; ?></title>
@@ -30,11 +29,8 @@
         <?php
         if ($viewData->isDebugMode === true && $viewData->environmentType !== "PRD") {
             echo "<h3>rootPath: " . $viewData->rootPath . "</h3>";
-            echo "\n";
             print_html($viewData->debugLog);
-            echo "\n";
         }
         ?>
-
     </body>
 </html>

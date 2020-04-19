@@ -45,7 +45,7 @@ class ErrorListeningTest extends TestCase
     {
         $val = [
             "rootPath"          => "\\",
-            "environmentType"   => "test",
+            "environmentType"   => "UTEST",
             "isDebugMode"       => true,
             "protocol"          => "http",
             "method"            => "GET",

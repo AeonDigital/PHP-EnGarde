@@ -1,23 +1,23 @@
 <?php return array (
   'rootPath' => 'E:\\Projetos\\Open Source\\PHP-EnGarde\\tests\\resources\\apps\\',
-  'environmentType' => 'test',
+  'environmentType' => 'UTEST',
   'isDebugMode' => false,
-  'http' => 
+  'http' =>
   array (
     'code' => 500,
     'message' => 'Internal Server Error',
     'protocol' => 'http',
     'method' => 'GET',
   ),
-  'debugLog' => 
+  'debugLog' =>
   array (
     'code' => 2,
     'message' => 'Division by zero',
     'file' => 'E:\\Projetos\\Open Source\\PHP-EnGarde\\tests\\src\\Handler\\ErrorListeningTest.php',
     'line' => 160,
-    'traceLog' => 
+    'traceLog' =>
     array (
-      0 => 
+      0 =>
       array (
         'act' => 0,
         'file' => 'E:\\Projetos\\Open Source\\PHP-EnGarde\\tests\\src\\Handler\\ErrorListeningTest.php',
@@ -25,7 +25,7 @@
         'class' => 'AeonDigital\\EnGarde\\Handler\\ErrorListening',
         'function' => 'test_method_onerror',
       ),
-      1 => 
+      1 =>
       array (
         'act' => -1,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/Framework/TestCase.php',
@@ -33,7 +33,7 @@
         'class' => 'ErrorListeningTest',
         'function' => 'runTest',
       ),
-      2 => 
+      2 =>
       array (
         'act' => -2,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/Framework/TestCase.php',
@@ -41,7 +41,7 @@
         'class' => 'PHPUnit\\Framework\\TestCase',
         'function' => 'runBare',
       ),
-      3 => 
+      3 =>
       array (
         'act' => -3,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/Framework/TestResult.php',
@@ -49,7 +49,7 @@
         'class' => 'PHPUnit\\Framework\\TestCase',
         'function' => 'run',
       ),
-      4 => 
+      4 =>
       array (
         'act' => -4,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/Framework/TestCase.php',
@@ -57,7 +57,7 @@
         'class' => 'PHPUnit\\Framework\\TestResult',
         'function' => 'run',
       ),
-      5 => 
+      5 =>
       array (
         'act' => -5,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/Framework/TestSuite.php',
@@ -65,7 +65,7 @@
         'class' => 'PHPUnit\\Framework\\TestCase',
         'function' => 'run',
       ),
-      6 => 
+      6 =>
       array (
         'act' => -6,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/Framework/TestSuite.php',
@@ -73,7 +73,7 @@
         'class' => 'PHPUnit\\Framework\\TestSuite',
         'function' => 'run',
       ),
-      7 => 
+      7 =>
       array (
         'act' => -7,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/TextUI/TestRunner.php',
@@ -81,7 +81,7 @@
         'class' => 'PHPUnit\\Framework\\TestSuite',
         'function' => 'doRun',
       ),
-      8 => 
+      8 =>
       array (
         'act' => -8,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/TextUI/Command.php',
@@ -89,7 +89,7 @@
         'class' => 'PHPUnit\\TextUI\\TestRunner',
         'function' => 'run',
       ),
-      9 => 
+      9 =>
       array (
         'act' => -9,
         'file' => 'phar://E:/Commands/phpunit.phar/phpunit/TextUI/Command.php',
@@ -97,7 +97,7 @@
         'class' => 'PHPUnit\\TextUI\\Command',
         'function' => 'main',
       ),
-      10 => 
+      10 =>
       array (
         'act' => -10,
         'file' => 'E:\\Commands\\phpunit.phar',

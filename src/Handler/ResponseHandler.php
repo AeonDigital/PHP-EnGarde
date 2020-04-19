@@ -295,7 +295,7 @@ class ResponseHandler implements iResponseHandler
         $useBody        = $this->useHeaders;
         $showAllValues  = (
             $this->domainConfig->getIsDebugMode() === true &&
-            $this->domainConfig->getEnvironmentType() !== "production"
+            $this->domainConfig->getEnvironmentType() !== "PRD"
         );
         $allowedValues  = [
             "routes", "acceptMimes", "relationedRoutes", "description", "devDescription", "metaData"

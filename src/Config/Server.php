@@ -5,11 +5,12 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
-use AeonDigital\EnGarde\Interfaces\Config\iEngine as iEngine;
 use AeonDigital\Interfaces\Http\iFactory as iFactory;
 use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
-
-
+use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
+use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
+use AeonDigital\Traits\MainCheckArgumentException as MainCheckArgumentException;
 
 
 /**
@@ -22,7 +23,7 @@ use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
  */
 final class Server extends BObject implements iServer
 {
-
+    use MainCheckArgumentException;
 
 
 
@@ -34,62 +35,10 @@ final class Server extends BObject implements iServer
      */
     private \DateTime $now;
     /**
-     * Array associativo contendo todas as variáveis definidas para o servidor no momento atual.
-     *
-     * @var         array[string => mixed]
-     */
-    private array $SERVER = [];
-    /**
-     * Caminho completo até o diretório onde o domínio está sendo executado.
-     *
-     * @var         string
-     */
-    private string $rootPath = "";
-    /**
-     * Coleção de headers ``HTTP`` recebidas pela requisição.
-     *
-     * @var         array[string => mixed]
-     */
-    private array $headers = [];
-    /**
-     * Indica se está rodando em um ambiente de testes.
-     *
-     * @var         bool
-     */
-    private bool $testEnvironment = false;
-
-
-
-
-
-    /**
-     * Inicia uma instância com os dados de configuração atual para o servidor ``HTTP``.
-     *
-     * O valor ``$oServer`` apenas será definido se for em um ambiente de testes.
-     * Num ambiente de produção estes valores devem ser definidos automaticamente pelo construtor
-     * da classe (provavelmente baseado nos valores de ``$_SERVER`` ).
-     *
-     * @param       ?array $oServer
-     *              Array associativo com as configurações do servidor.
-     *
-     * @param       bool $testEnvironment
-     *              Quando ``true`` permite definir ativamente o valor das propriedades.
-     */
-    function __construct(array $oServer = [], bool $testEnvironment = false)
-    {
-        $this->testEnvironment = $testEnvironment;
-        $this->setServerVariables($oServer);
-
-        $this->now = new \DateTime();
-    }
-
-
-
-
-
-    /**
      * Data e hora do momento em que a requisição que ativou a aplicação
      * chegou ao domínio.
+     *
+     * @codeCoverageIgnore
      *
      * @return      \DateTime
      */
@@ -101,87 +50,215 @@ final class Server extends BObject implements iServer
 
 
     /**
+     * Resgata a versão atual do framework.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      string
+     */
+    public function getVersion() : string
+    {
+        return "v0.5.0-beta";
+    }
+
+
+
+
+
+    /**
+     * Array associativo contendo todas as variáveis definidas para o servidor no momento atual.
+     *
+     * @var         array[string => string|int]
+     */
+    private array $SERVER = [];
+    /**
+     * Array associativo contendo todas as variáveis definidas para o servidor no momento atual.
+     *
+     * @var         array[string => string|int]
+     */
+    private array $FILES = [];
+    /**
+     * Coleção de headers ``HTTP`` recebidas pela requisição.
+     *
+     * @var         array[string => mixed]
+     */
+    private array $HEADERS = [];
+    /**
      * Resgata um array associativo contendo todas as variáveis definidas para o servidor no
-     * momento atual.
+     * momento atual. Normalmente retorna o conteúdo de ``$_SERVER``.
      *
      * @return      array
      *              Será retornado ``[]`` caso nada tenha sido definido.
      */
     public function getServerVariables() : array
     {
-        return $this->SERVER;
+        return \array_merge([], $this->SERVER);
     }
+
+
+
     /**
-     * Permite definir a coleção de valores das variáveis do servidor que estão atualmente
-     * definidas.
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna uma coleção de headers ``HTTP`` definidos.
      *
-     * Este método apenas pode ser efetivo se for em um ambiente de testes.
-     * Num ambiente de produção estes valores devem ser definidos automaticamente pelo construtor
-     * da classe.
-     *
-     * @param       array $oServer
-     *              Array associativo com as variáveis do servidor.
-     *
-     * @return      void
+     * @return      array
+     *              Retornará ``[]`` caso nenhum seja encontrado.
      */
-    public function setServerVariables(array $oServer) : void
+    public function getRequestHeaders() : array
     {
-        $this->SERVER = $_SERVER;
-        if ($this->testEnvironment === true) {
-            $this->SERVER = $oServer;
-        }
+        return \array_merge([], $this->HEADERS);
     }
-
-
-
-
-
-
-
-
-
     /**
-     * Retorna o endereço completo do diretório onde o domínio está sendo executado.
-     * Normalmente este valor vem de ``$_SERVER`` mas ele pode também ser alterado e definido
-     * diretamente através do método ``setRootPath``.
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna a versão do protocolo ``HTTP``.
+     *
+     * @return      string
+     *              Caso não seja possível identificar a versão deve ser retornado o valor ``1.1``.
+     */
+    public function getRequestHTTPVersion() : string
+    {
+        return $this->SERVER["SERVER_PROTOCOL"];
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Indica se a requisição está exigindo o uso de ``HTTPS``.
+     *
+     * @return      bool
+     */
+    public function getRequestIsUseHTTPS() : bool
+    {
+        return (($this->SERVER["HTTPS"] === "on") || ($this->SERVER["SERVER_PORT"] == 443));
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna o método ``HTTP`` que está sendo usado.
      *
      * @return      string
      */
-    public function getRootPath() : string
+    public function getRequestMethod() : string
     {
-        if ($this->rootPath === "") {
-            $oServer = $this->getServerVariables();
-            $this->rootPath = $oServer["DOCUMENT_ROOT"];
-        }
-
-        return $this->rootPath;
+        return $this->SERVER["REQUEST_METHOD"];
     }
     /**
-     * Define o local onde o domínio está sendo executado.
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna ``http`` ou ``https`` conforme o protocolo que está sendo utilizado pela
+     * requisição.
      *
-     * @param       string $rootPath
-     *              Endereço completo do diretório.
-     *
-     * @return      void
-     *
-     * @throws      \InvalidArgumentException
-     *              Caso o caminho indicado seja inválido
+     * @return      string
      */
-    public function setRootPath(string $rootPath) : void
+    public function getRequestProtocol() : string
     {
-        if ($this->rootPath === "") {
-            $rootPath = \to_system_path($rootPath);
-
-            if (\file_exists($rootPath) === false || \is_dir($rootPath) === false) {
-                $err = "The given directory does not exist.";
-                throw new \InvalidArgumentException($err);
-            }
-
-            $this->rootPath = $rootPath;
-        }
+        return (($this->getRequestIsUseHTTPS() === true) ? "https" : "http");
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna o nome do domínio onde o servidor está operando.
+     *
+     * @return      string
+     */
+    public function getRequestDomainName() : string
+    {
+        return $this->SERVER["SERVER_NAME"];
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna a parte ``path`` da ``URI`` que está sendo executada.
+     *
+     * @return      string
+     */
+    public function getRequestPath() : string
+    {
+        return $this->SERVER["REQUEST_URI"];
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna a porta ``HTTP`` que está sendo evocada.
+     *
+     * @return      int
+     */
+    public function getRequestPort() : int
+    {
+        return $this->SERVER["SERVER_PORT"];
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna os cookies passados pelo ``UA`` em seu formato bruto.
+     *
+     * @return      string
+     */
+    public function getRequestCookies() : string
+    {
+        return $this->SERVER["HTTP_COOKIE"];
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna os querystrings definidos na ``URI`` em seu formato bruto.
+     *
+     * @return      string
+     */
+    public function getRequestQueryStrings() : string
+    {
+        return $this->SERVER["QUERY_STRING"];
+    }
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     *
+     * Retorna um array de objetos que implementam ``AeonDigital\Interfaces\Stream\iFileStream``
+     * representando os arquivos que foram submetidos durante a requisição.
+     *
+     * @return      array
+     *              Os arquivos são resgatados de ``$_FILES``.
+     */
+    public function getRequestFiles() : array
+    {
+        return $this->FILES;
     }
 
 
+
+
+
+
+
+
+
+
+    /**
+     * Baseado nos dados da requisição que está sendo executada.
+     * Retorna uma string que representa toda a ``URI`` que está sendo acessada no momento.
+     *
+     * O resultado será uma string com o seguinte formato:
+     *
+     * ```
+     *  [ scheme ":" ][ "//" authority ][ "/" path ][ "?" query ]
+     * ```
+     *
+     * Obs: A porção ``fragment``, iniciada pelo caractere ``#`` não é utilizada.
+     *
+     * @return      string
+     */
+    public function getCurrentURI() : string
+    {
+        $str = "";
+        $protocol   = $this->getRequestProtocol();
+        $domainName = $this->getRequestDomainName();
+        $requestURL = $this->getRequestPath();
+        $port       = $this->getRequestPort();
+
+        if ($domainName !== "" || $requestURL !== "") {
+            if (($protocol === "http" && $port === 80) || ($protocol === "https" && $port === 443)) {
+                $port = "";
+            }
+
+            $str = $protocol . "://" . $domainName;
+            if ($port != "") {
+                $str .= ":" . $port;
+            }
+            $str .= \rtrim($requestURL, "/");
+        }
+
+        return $str;
+    }
 
 
 
@@ -214,234 +291,6 @@ final class Server extends BObject implements iServer
 
 
 
-
-
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna uma coleção de headers ``HTTP`` definidos.
-     *
-     * @return      array
-     *              Retornará ``[]`` caso nenhum seja encontrado.
-     */
-    public function getRequestHeaders() : array
-    {
-        if ($this->headers === []) {
-            $oServer = $this->getServerVariables();
-
-            if ($oServer !== null) {
-                $sHeaders = [
-                    "CONTENT_TYPE", "CONTENT_LENGTH", "PHP_AUTH_USER",
-                    "PHP_AUTH_PW", "PHP_AUTH_DIGEST", "AUTH_TYPE"
-                ];
-
-                foreach ($oServer as $name => $value) {
-                    $upName = \strtoupper($name);
-
-                    if (\in_array($upName, $sHeaders) === true || \mb_substr($upName, 0, 5) === "HTTP_") {
-                        $key = \str_replace("HTTP_", "", $name);
-                        $this->headers[$key] = $value;
-                    }
-                }
-            }
-        }
-
-        return $this->headers;
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna a versão do protocolo ``HTTP``.
-     *
-     * @return      string
-     *              Caso não seja possível identificar a versão deve ser retornado o valor ``1.1``.
-     */
-    public function getRequestHTTPVersion() : string
-    {
-        $v = "1.1";
-
-        $oServer = $this->getServerVariables();
-        if (isset($oServer["SERVER_PROTOCOL"]) === true) {
-            $s = \explode("/", $oServer["SERVER_PROTOCOL"]);
-            if (\count($s) === 2) {
-                $v = $s[1];
-            }
-        }
-
-        return $v;
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Indica se a requisição está exigindo o uso de ``HTTPS``.
-     *
-     * @return      bool
-     */
-    public function getRequestIsUseHTTPS() : bool
-    {
-        $oServer = $this->getServerVariables();
-        return ((empty($oServer["HTTPS"]) === false && $oServer["HTTPS"] !== "off") || $oServer["SERVER_PORT"] == 443);
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna o método ``HTTP`` que está sendo usado.
-     *
-     * @return      string
-     */
-    public function getRequestMethod() : string
-    {
-        $oServer = $this->getServerVariables();
-        return ((isset($oServer["REQUEST_METHOD"]) === false) ? "GET" : \strtoupper($oServer["REQUEST_METHOD"]));
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna ``http`` ou ``https`` conforme o protocolo que está sendo utilizado pela
-     * requisição.
-     *
-     * @return      string
-     */
-    public function getRequestProtocol() : string
-    {
-        return (($this->getRequestIsUseHTTPS() === true) ? "https" : "http");
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna o nome do domínio onde o servidor está operando.
-     *
-     * @return      string
-     */
-    public function getRequestDomainName() : string
-    {
-        $oServer = $this->getServerVariables();
-        return (string)$oServer["SERVER_NAME"];
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna a parte ``path`` da ``URI`` que está sendo executada.
-     *
-     * @return      string
-     */
-    public function getRequestPath() : string
-    {
-        $oServer = $this->getServerVariables();
-        return (string)$oServer["REQUEST_URI"];
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna a porta ``HTTP`` que está sendo evocada.
-     *
-     * @return      int
-     */
-    public function getRequestPort() : int
-    {
-        $oServer = $this->getServerVariables();
-        return (int)$oServer["SERVER_PORT"];
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna os cookies passados pelo ``UA`` em seu formato bruto.
-     *
-     * @return      string
-     */
-    public function getRequestCookies() : string
-    {
-        $oServer = $this->getServerVariables();
-        return ((isset($oServer["HTTP_COOKIE"]) === false) ? "" : $oServer["HTTP_COOKIE"]);
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna os querystrings definidos na ``URI`` em seu formato bruto.
-     *
-     * @return      string
-     */
-    public function getRequestQueryStrings() : string
-    {
-        $oServer = $this->getServerVariables();
-        return ((isset($oServer["QUERY_STRING"]) === false) ? "" : $oServer["QUERY_STRING"]);
-    }
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     *
-     * Retorna um array de objetos que implementam ``AeonDigital\Interfaces\Stream\iFileStream``
-     * representando os arquivos que foram submetidos durante a requisição.
-     *
-     * @return      array
-     *              Os arquivos são resgatados de ``$_FILES``.
-     */
-    public function getRequestFiles() : array
-    {
-        $r = [];
-
-        if (isset($_FILES) === true && \count($_FILES) > 0) {
-            foreach ($_FILES as $fieldName => $fieldData) {
-                if (\is_array($fieldData["error"]) === false) {
-                    $r[$fieldName] = new \AeonDigital\Http\Data\File(
-                        new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"]),
-                        $fieldData["name"],
-                        $fieldData["error"]
-                    );
-                } else {
-                    $r[$fieldName] = [];
-
-                    foreach ($fieldData["name"] as $i => $v) {
-                        $r[$fieldName][] = new \AeonDigital\Http\Data\File(
-                            new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"][$i]),
-                            $fieldData["name"][$i],
-                            $fieldData["error"][$i]
-                        );
-                    }
-                }
-            }
-        }
-
-        return $r;
-    }
-
-
-
-
-
-    /**
-     * Baseado nos dados da requisição que está sendo executada.
-     * Retorna uma string que representa toda a ``URI`` que está sendo acessada no momento.
-     *
-     * O resultado será uma string com o seguinte formato:
-     *
-     * ```
-     *  [ scheme ":" ][ "//" authority ][ "/" path ][ "?" query ]
-     * ```
-     *
-     * Obs: A porção ``fragment``, iniciada pelo caractere ``#`` não é utilizada.
-     *
-     * @return      string
-     */
-    public function getCurrentURI() : string
-    {
-        $str = "";
-        $oServer = $this->getServerVariables();
-
-        if ($oServer !== []) {
-            $protocol = $this->getRequestProtocol();
-            $domainName = $this->getRequestDomainName();
-            $requestURL = $this->getRequestPath();
-            $port = $this->getRequestPort();
-
-
-            if (($protocol === "http" && $port === 80) || ($protocol === "https" && $port === 443)) {
-                $port = "";
-            }
-
-            $str = $protocol . "://" . $domainName;
-            if ($port != "") {
-                $str .= ":" . $port;
-            }
-            $str .= \rtrim($requestURL, "/");
-        }
-
-        return $str;
-    }
-
-
-
-
-
     /**
      * Resgata toda a coleção de informações passadas na requisição.
      * Sejam parametros via querystrings ou dados postados atravéz de formulários.
@@ -456,23 +305,873 @@ final class Server extends BObject implements iServer
         \parse_str(\file_get_contents("php://input"), $rawData);
         $parans = \array_merge($rawData, $_GET, $_POST);
 
-        $oServer = $this->getServerVariables();
+        return $parans;
+    }
 
-        // SE
-        // nenhum parametro foi resgatado
-        // E
-        // Está em um ambiente de testes ONDE um objeto $SERVER foi definido
-        // verifica se alguma informação foi passada via URL
-        if ($parans === [] && $this->testEnvironment === true) {
-            if ($oServer !== null && isset($oServer["REQUEST_URI"]) === true) {
-                $qs = \parse_url($oServer["REQUEST_URI"], PHP_URL_QUERY);
-                if ($qs !== null) {
-                    \parse_str($qs, $parans);
+
+
+
+
+
+
+
+
+
+    /**
+     * Caminho completo até o diretório onde o domínio está sendo executado.
+     *
+     * @var         string
+     */
+    private string $rootPath = "";
+    /**
+     * Retorna o endereço completo do diretório onde o domínio está sendo executado.
+     *
+     * @return      string
+     */
+    public function getRootPath() : string
+    {
+        return $this->rootPath;
+    }
+
+
+
+    /**
+     * Tipo de ambiente que o domínio está rodando no momento.
+     *
+     * @var         string
+     */
+    private string $environmentType = "";
+    /**
+     * Retorna o tipo de ambiente que o domínio está rodando no momento.
+     *
+     * Valores Esperados:
+     *  - ``PRD``   : Production
+     *  - ``HML``   : Homolog
+     *  - ``QA``    : Quality Assurance
+     *  - ``DEV``   : Development
+     *  - ``LCL``   : Local
+     *  - ``UTEST`` : Unit Test
+     *
+     * @return      string
+     */
+    public function getEnvironmentType() : string
+    {
+        return $this->environmentType;
+    }
+    /**
+     * Define o tipo de ambiente que o domínio está rodando no momento
+     *
+     * @param       string $environmentType
+     *              Tipo de ambiente.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso o valor indicado seja inválido
+     */
+    private function setEnvironmentType(string $environmentType) : void
+    {
+        $this->environmentType = $this->mainCheckForInvalidArgumentException(
+            "environmentType", $environmentType, [
+                [
+                    "validate"          => "is allowed value",
+                    "allowedValues"     => [
+                        "PRD",      // Production
+                        "HML",      // Homolog
+                        "QA",       // Quality Assurance
+                        "DEV",      // Development
+                        "LCL",      // Local
+                        "UTEST"     // Unit Test
+                    ],
+                    "caseInsensitive"   => true,
+                    "executeBeforeReturn"   => function($args) {
+                        return \strtoupper($args["argValue"]);
+                    }
+                ]
+            ]
+        );
+    }
+
+
+
+    /**
+     * Indica se o domínio está em modo de debug.
+     *
+     * @var         bool
+     */
+    private bool $isDebugMode = false;
+    /**
+     * Retorna ``true`` se o domínio está em modo de debug.
+     *
+     * @return      bool
+     */
+    public function getIsDebugMode() : bool
+    {
+        return $this->isDebugMode;
+    }
+    /**
+     * Define configuração para o modo de debug.
+     *
+     * @param       bool $isDebugMode
+     *              Indique ``true`` se o domínio estiver em modo de debug.
+     *
+     * @return      void
+     */
+    private function setIsDebugMode(bool $isDebugMode) : void
+    {
+        $this->isDebugMode = $isDebugMode;
+    }
+
+
+
+    /**
+     * Indica se a aplicação alvo da requisição deve atualizar suas respectivas rotas.
+     *
+     * @var         bool
+     */
+    private bool $isUpdateRoutes = false;
+    /**
+     * Retorna ``true`` se for para a aplicação alvo atualizar suas respectivas rotas.
+     *
+     * @return      bool
+     */
+    public function getIsUpdateRoutes() : bool
+    {
+        return $this->isUpdateRoutes;
+    }
+    /**
+     * Define configuração que indica para a aplicação algo que ela deve atualizar suas
+     * respectivas rotas.
+     *
+     * @param       bool $isUpdateRoutes
+     *              Indique ``true`` se for para a aplicação alvo atualizar suas rotas.
+     *
+     * @return      void
+     */
+    private function setIsUpdateRoutes(bool $isUpdateRoutes) : void
+    {
+        $this->isUpdateRoutes = $isUpdateRoutes;
+    }
+
+
+
+    /**
+     * Array contendo o nomes das aplicações que estão instaladas no domínio.
+     *
+     * @var         array
+     */
+    private array $hostedApps = [];
+    /**
+     * Retorna a coleção de nomes de aplicações instaladas no domínio
+     *
+     * @return      array
+     */
+    public function getHostedApps() : array
+    {
+        return $this->hostedApps;
+    }
+    /**
+     * Define a coleção de nomes das aplicações instaladas no domínio.
+     *
+     * @param       array $hostedApps
+     *              Array contendo o nome de cada uma das aplicações do domínio. Cada uma delas
+     *              precisa necessariamente corresponder ao nome de um diretório que fique na
+     *              raiz do domínio.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setHostedApps(array $hostedApps) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "hostedApps", $hostedApps, [
+                [
+                    "validate"          => "is array not empty"
+                ],
+                [
+                    "validate"          => "check array childs",
+                    "foreachChild"      => [
+                        [
+                            "validate" => "closure",
+                            "closure" => function($app) {
+                                $r = true;
+                                $appPath = $this->getRootPath() . DS . $app;
+                                if (\file_exists($appPath) === false) {
+                                    $r = false;
+                                    $this->customInvalidArgumentExceptionMessage = "The main directory of the application \"" . $app . "\" does not exist.";
+                                    $this->showArgumentInExceptionMessage = false;
+                                }
+                                return $r;
+                            },
+                            ""
+                        ]
+                    ],
+                ]
+            ]
+        );
+        $this->hostedApps = $hostedApps;
+    }
+
+
+
+    /**
+     * Nome da aplicação padrão do domínio.
+     *
+     * @var         string
+     */
+    private string $defaultApp = "";
+    /**
+     * Retorna o nome da aplicação padrão do domínio.
+     *
+     * @return      string
+     */
+    public function getDefaultApp() : string
+    {
+        return $this->defaultApp;
+    }
+    /**
+     * Define a aplicação padrão para o domínio.
+     * A aplicação apontada precisa estar definida em ``hostedApps``.
+     *
+     * @param       string $defaultApp
+     *              Nome da aplicação que será a padrão.
+     *              Caso ``''`` será definida a primeira aplicação definida em
+     *              ``hostedApps``.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setDefaultApp(string $defaultApp) : void
+    {
+        if ($defaultApp === "") {
+            $defaultApp = $this->hostedApps[0];
+        }
+        else {
+            $this->mainCheckForInvalidArgumentException(
+                "defaultApp", $defaultApp, [
+                    [
+                        "validate"          => "is allowed value",
+                        "allowedValues"     => $this->hostedApps
+                    ]
+                ]
+            );
+        }
+        $this->defaultApp = $defaultApp;
+    }
+
+
+
+    /**
+     * Define o timezone do domínio.
+     *
+     * @var         string
+     */
+    private string $dateTimeLocal = "";
+    /**
+     * Retorna o timezone do domínio.
+     * [Lista de fusos horários suportados](http://php.net/manual/en/timezones.php)
+     *
+     * @return      string
+     */
+    public function getDateTimeLocal() : string
+    {
+        return $this->dateTimeLocal;
+    }
+    /**
+     * Define o timezone do domínio.
+     *
+     * @param       string $dateTimeLocal
+     *              Timezone que será definido.
+     *              [Lista de fusos horários suportados](http://php.net/manual/en/timezones.php)
+     *
+     * @return      void
+     */
+    private function setDateTimeLocal(string $dateTimeLocal) : void
+    {
+        $this->dateTimeLocal = $dateTimeLocal;
+    }
+
+
+
+    /**
+     * Valor máximo (em segundos) para a execução das requisições.
+     *
+     * @var         int
+     */
+    private int $timeOut = 0;
+    /**
+     * Retorna o tempo máximo (em segundos) para a execução das requisições.
+     *
+     * @return      int
+     */
+    public function getTimeOut() : int
+    {
+        return $this->timeOut;
+    }
+    /**
+     * Define o tempo máximo (em segundos) para a execução das requisições.
+     *
+     * @param       int $timeOut
+     *              Timeout que será definido.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setTimeOut(int $timeOut) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "timeOut", $timeOut, ["is integer greather than zero"]
+        );
+        $this->timeOut = $timeOut;
+    }
+
+
+
+    /**
+     * Valor máximo (em Mb) para o upload de um arquivo.
+     *
+     * @var         int
+     */
+    private int $maxFileSize = 0;
+    /**
+     * Valor máximo (em Mb) para o upload de um arquivo.
+     *
+     * @return      int
+     */
+    public function getMaxFileSize() : int
+    {
+        return $this->maxFileSize;
+    }
+    /**
+     * Define o valor máximo (em Mb) para o upload de um arquivo.
+     *
+     * @param       int $maxFileSize
+     *              Tamanho máximo (em Mb).
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setMaxFileSize(int $maxFileSize) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "maxFileSize", $maxFileSize, ["is integer greather than zero"]
+        );
+        $this->maxFileSize = $maxFileSize;
+    }
+
+
+
+    /**
+     * Valor máximo (em Mb) para a postagem de dados.
+     *
+     * @var         int
+     */
+    private int $maxPostSize = 0;
+    /**
+     * Valor máximo (em Mb) para a postagem de dados.
+     *
+     * @return      int
+     */
+    public function getMaxPostSize() : int
+    {
+        return $this->maxPostSize;
+    }
+    /**
+     * Define o valor máximo (em Mb) para a postagem de dados.
+     *
+     * @param       int $maxPostSize
+     *              Tamanho máximo (em Mb).
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setMaxPostSize(int $maxPostSize) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "maxPostSize", $maxPostSize, ["is integer greather than zero"]
+        );
+        $this->maxPostSize = $maxPostSize;
+    }
+
+
+
+    /**
+     * Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no domínio.
+     *
+     * @var         string
+     */
+    private string $pathToErrorView = "";
+    /**
+     * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
+     * domínio.
+     *
+     * @return      string
+     */
+    public function getPathToErrorView() : string
+    {
+        return $this->pathToErrorView;
+    }
+    /**
+     * Resgata o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros no
+     * domínio.
+     *
+     * @return      ?string
+     */
+    public function getFullPathToErrorView() : string
+    {
+        return (
+            ($this->rootPath === "" || $this->pathToErrorView === "") ?
+            "" :
+            $this->rootPath . DS . $this->pathToErrorView
+        );
+    }
+    /**
+     * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
+     * domínio.
+     *
+     * O caminho deve ser definido a partir do diretório raiz do domínio.
+     *
+     * @param       string $pathToErrorView
+     *              Caminho até a view de erro padrão.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setPathToErrorView(string $pathToErrorView) : void
+    {
+        $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
+        $this->mainCheckForInvalidArgumentException(
+            "pathToErrorView", $this->getFullPathToErrorView(), [
+                [
+                    "conditions" => "is string not empty",
+                    "validate" => "is file exists",
+                ]
+            ]
+        );
+    }
+
+
+
+    /**
+     * Nome da classe responsável por iniciar a aplicação.
+     *
+     * @var         string
+     */
+    private string $applicationClassName = "";
+    /**
+     * Resgata o nome da classe responsável por iniciar a aplicação.
+     *
+     * @return      string
+     */
+    public function getApplicationClassName() : string
+    {
+        return $this->applicationClassName;
+    }
+    /**
+     * Define o nome da classe responsável por iniciar a aplicação.
+     *
+     * @param       string $applicationClassName
+     *              Nome da classe.
+     *
+     * @return      void
+     */
+    private function setApplicationClassName(string $applicationClassName) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "applicationClassName", $applicationClassName, ["is string not empty"]
+        );
+        $this->applicationClassName = $applicationClassName;
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Nome da aplicação que irá responder a requisição.
+     *
+     * @var         string
+     */
+    private string $applicationName = "";
+    /**
+     * Indica se o nome da aplicação foi omitido na ``URI`` da requisição.
+     *
+     * @var         bool
+     */
+    private bool $applicationNameOmitted = false;
+    /**
+     * Local para onde o ``UA`` deve ser redirecionado.
+     *
+     * @var         string
+     */
+    private string $newLocationPath = "";
+    /**
+     * Retorna o nome da aplicação que deve responder a requisição ``HTTP`` atual.
+     *
+     * @return      string
+     */
+    public function getApplicationName() : string
+    {
+        return $this->applicationName;
+    }
+    /**
+     * Indica quando na ``URI`` atual o nome da aplicação a ser executada está omitida. Nestes
+     * casos a aplicação padrão deve ser executada.
+     *
+     * @return      bool
+     */
+    public function getIsApplicationNameOmitted() : bool
+    {
+        return $this->applicationNameOmitted;
+    }
+    /**
+     * Retorna o nome completo da classe da aplicação que deve ser instanciada para responder
+     * a requisição atual.
+     *
+     * @return      string
+     */
+    public function getApplicationNamespace() : string
+    {
+        return "\\" . $this->applicationName . "\\" . $this->applicationClassName;
+    }
+    /**
+     * Pode retornar uma string para onde o UA deve ser redirecionado caso alguma das
+     * configurações ou processamento dos presentes dados indique que tal redirecionamento
+     * seja necessário.
+     *
+     * Retorna ``''`` caso nenhum redirecionamento seja necessário.
+     *
+     * @return      string
+     */
+    public function getNewLocationPath() : string
+    {
+        return $this->newLocationPath;
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Inicia uma instância com os dados de configuração atual para o servidor ``HTTP``.
+     *
+     * @param       array $serverVariables
+     *              Array associativo contendo todas as variáveis definidas para o servidor no
+     *              momento atual. Normalmente será o conteúdo de ``$_SERVER``.
+     *
+     * @param       array $uploadedFiles
+     *              Coleção de arquivos que estão sendo submetidos na requisição.
+     *              Deve ser um array compatível com a estrutura esperada do objeto $_FILES
+     *              padrão.
+     *
+     * @param       array $engineVariables
+     *              Array associativo contendo todas as variáveis de configuração para o
+     *              motor de aplicações que está sendo iniciado.
+     *              São esperados, obrigatoriamente os seguintes valores:
+     *
+     *              - string rootPath
+     *              Caminho completo até o diretório onde o domínio está sendo executado.
+     *              Se não for definido, irá pegar o valor existente em DOCUMENT_ROOT.
+     *
+     *              - string environmentType
+     *              Tipo de ambiente que o domínio está rodando no momento.
+     *
+     *              -bool isDebugMode
+     *              Indica se o domínio está em modo de debug.
+     *
+     *              - bool isUpdateRoutes
+     *              Indica se a aplicação alvo da requisição deve atualizar suas respectivas rotas.
+     *
+     *              - array hostedApps
+     *              Array contendo o nomes das aplicações que estão instaladas no domínio.
+     *
+     *              - string defaultApp
+     *              Nome da aplicação padrão do domínio.
+     *
+     *              - string dateTimeLocal
+     *              Define o timezone do domínio.
+     *
+     *              - int timeOut
+     *              Valor máximo (em segundos) para a execução das requisições.
+     *
+     *              - int maxFileSize
+     *              Valor máximo (em Mb) para o upload de um arquivo.
+     *
+     *              - int maxPostSize
+     *              Valor máximo (em Mb) para a postagem de dados.
+     *
+     *              - string pathToErrorView
+     *              Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no domínio.
+     *
+     *              - string applicationClassName
+     *              Nome da classe responsável por iniciar a aplicação.
+     *
+     */
+    function __construct(
+        array $serverVariables,
+        array $uploadedFiles,
+        array $engineVariables
+    ) {
+        $this->now = new \DateTime();
+
+
+
+        // Define os valores padrões para as variáveis de servidor.
+        $this->SERVER = \array_merge(
+            [
+                "DOCUMENT_ROOT"     => "",
+                "SERVER_PROTOCOL"   => "1.1",
+                "HTTPS"             => "",
+                "SERVER_PORT"       => 0,
+                "REQUEST_METHOD"    => "GET",
+                "SERVER_NAME"       => "",
+                "REQUEST_URI"       => "",
+                "HTTP_COOKIE"       => "",
+                "QUERY_STRING"      => ""
+            ],
+            $serverVariables
+        );
+
+
+
+
+        \extract($engineVariables);
+        // Efetua tratamento do valores iniciais
+        $s = \explode("/", $this->SERVER["SERVER_PROTOCOL"]);
+        if (\count($s) === 2) {
+            $this->SERVER["SERVER_PROTOCOL"] = $s[1];
+        }
+        $this->SERVER["REQUEST_METHOD"] = \strtoupper($this->SERVER["REQUEST_METHOD"]);
+        $this->SERVER["SERVER_PORT"] = (int)$this->SERVER["SERVER_PORT"];
+
+
+
+        // Define o diretório padrão até a raiz do domínio
+        $this->rootPath = (
+            (\key_exists("rootPath", $engineVariables) === false || $rootPath === "") ?
+            $this->SERVER["DOCUMENT_ROOT"] :
+            $rootPath
+        );
+        $this->rootPath = \to_system_path($this->rootPath);
+
+
+
+        // Identifica e gera os objetos referentes aos arquivos que estão sendo
+        // submetidos nesta requisição.
+        if (\count($uploadedFiles) > 0) {
+            foreach ($uploadedFiles as $fieldName => $fieldData) {
+                if (\is_array($fieldData["error"]) === false) {
+                    $this->FILES[$fieldName] = new \AeonDigital\Http\Data\File(
+                        new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"]),
+                        $fieldData["name"],
+                        $fieldData["error"]
+                    );
+                }
+                else {
+                    $this->FILES[$fieldName] = [];
+
+                    foreach ($fieldData["name"] as $i => $v) {
+                        $this->FILES[$fieldName][] = new \AeonDigital\Http\Data\File(
+                            new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"][$i]),
+                            $fieldData["name"][$i],
+                            $fieldData["error"][$i]
+                        );
+                    }
                 }
             }
         }
 
-        return $parans;
+
+
+        // Identifica os headers HTTP para ficarem disponíveis de forma
+        // separada dos demais valores enviados pelo server.
+        $sHeaders = [
+            "CONTENT_TYPE", "CONTENT_LENGTH", "PHP_AUTH_USER",
+            "PHP_AUTH_PW", "PHP_AUTH_DIGEST", "AUTH_TYPE"
+        ];
+
+        foreach ($this->SERVER as $name => $value) {
+            $upName = \strtoupper($name);
+
+            if (\in_array($upName, $sHeaders) === true || \mb_substr($upName, 0, 5) === "HTTP_") {
+                $key = \str_replace("HTTP_", "", $name);
+                $this->HEADERS[$key] = $value;
+            }
+        }
+        if ($this->HEADERS["COOKIE"] === "") { unset($this->HEADERS["COOKIE"]); }
+
+
+
+
+
+        // Define as demais variáveis relativas a configuração atual
+        // do servidor.
+        $this->setEnvironmentType($environmentType);
+        $this->setIsDebugMode($isDebugMode);
+        $this->setIsUpdateRoutes($isUpdateRoutes);
+        $this->setHostedApps($hostedApps);
+        $this->setDefaultApp($defaultApp);
+        $this->setDateTimeLocal($dateTimeLocal);
+        $this->setTimeOut($timeOut);
+        $this->setMaxFileSize($maxFileSize);
+        $this->setMaxPostSize($maxPostSize);
+        $this->setPathToErrorView($pathToErrorView);
+        $this->setApplicationClassName($applicationClassName);
+
+
+
+
+
+        // Identifica a aplicação que deve ser acionada a partir da requisição
+        // que está sendo feita.
+        $uriRelativePath = $this->getRequestPath();
+        $applicationName = "";
+
+
+        $this->applicationName = $this->getDefaultApp();
+        $this->applicationNameOmitted = true;
+
+        if ($uriRelativePath !== "" && $uriRelativePath !== "/") {
+            $applicationName = \strtok(\strtok(\ltrim($uriRelativePath, "/"), "?"), "/");
+        }
+
+
+        if (\in_array($applicationName, $this->getHostedApps()) === true) {
+            $this->applicationName = $applicationName;
+            $this->applicationNameOmitted = false;
+        } else {
+            foreach ($this->getHostedApps() as $i => $app) {
+                if (\strtolower($applicationName) === \strtolower($app)) {
+                    $this->applicationName = $app;
+                    $this->applicationNameOmitted = false;
+
+                    $parts = \explode("/", \ltrim($uriRelativePath, "/"));
+                    \array_shift($parts);
+
+                    $this->newLocationPath = "/" . $app . "/" . \implode("/", $parts);
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Indica quando a configuração do domínio já foi executada.
+     *
+     * @var         bool
+     */
+    private bool $isSetPHPConfig = false;
+    /**
+     * Efetua as configurações necessárias para os manipuladores de exceptions e errors
+     * para as aplicações do domínio.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      void
+     */
+    public function setErrorListening() : void
+    {
+        // Define o contexto a ser usado para o ``listening`` de falhas..
+        \AeonDigital\EnGarde\Handler\ErrorListening::setContext(
+            $this->getRootPath(),
+            $this->getEnvironmentType(),
+            $this->getIsDebugMode(),
+            $this->getRequestProtocol(),
+            $this->getRequestMethod(),
+            $this->getFullPathToErrorView()
+        );
+        set_exception_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,   "onException"]);
+        set_error_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,       "onError"], E_ALL);
+    }
+    /**
+     * Efetua configurações para o ``PHP`` conforme as propriedades definidas para esta classe.
+     *
+     * Esta ação só tem efeito na primeira vez que é executada.
+     *
+     * @codeCoverageIgnore
+     *
+     * @throws      \RunTimeException
+     *              Caso alguma propriedade obrigatória não tenha sido definida ou seja um valor
+     *              inválido.
+     */
+    public function setPHPConfiguration() : void
+    {
+        if ($this->isSetPHPConfig === false) {
+            $this->isSetPHPConfig = true;
+
+
+
+            //
+            // Por padrão irá ocultar quaisquer erros, alertas e
+            // notificações sempre que ocorrerem.
+            // Caberá ao manipulador de erros e exceções mostrar ou não
+            // detalhes sobre o que ocorre quando a aplicação falhar.
+            //
+            //
+            // Para que os erros sejam mostrados é preciso alterar os
+            // valores abaixo alem do arquivo "php.ini" para setar os
+            // seguintes atributos :
+            //      display_errors = 1
+            //      error_reporting = E_ALL
+            \error_reporting(0);
+            \ini_set("display_errors", "0");
+            if (\function_exists("xdebug_disable")) {
+                \xdebug_disable();
+            }
+
+
+
+
+
+            // Define o UTF-8 como o padrão para uso nos domínios
+            \mb_internal_encoding("UTF-8");
+            \mb_http_output("UTF-8");
+            \mb_http_input("UTF-8");
+            \mb_language("uni");
+            \mb_regex_encoding("UTF-8");
+
+
+            // Seta o timezone para o domínio
+            \date_default_timezone_set($this->getDateTimeLocal());
+
+
+            // - Define o valor máximo (em segundos) que um processamento pode durar.
+            \ini_set("max_execution_time",  (string)$this->getTimeOut());
+
+            // - Define os limites aceitáveis para o upload e a postagem de dados vindos do cliente.
+            \ini_set("upload_max_filesize", (string)$this->getMaxFileSize());
+            \ini_set("post_max_size",       (string)$this->getMaxPostSize());
+        }
     }
 
 
@@ -491,24 +1190,9 @@ final class Server extends BObject implements iServer
      */
     private iFactory $httpFactory;
     /**
-     * Instância ``Config\iEngine`` a ser usada.
-     *
-     * @var         iEngine
-     */
-    private iEngine $engineConfig;
-    /**
-     * Objeto ``iServerRequest``.
-     *
-     * @var         iServerRequest
-     */
-    private iServerRequest $serverRequest;
-
-
-
-
-
-    /**
      * Retorna um objeto ``iFactory``.
+     *
+     * @codeCoverageIgnore
      *
      * @return      iFactory
      */
@@ -519,38 +1203,15 @@ final class Server extends BObject implements iServer
         }
         return $this->httpFactory;
     }
+
+
+
     /**
-     * Retorna a instância ``Config\iEngine``.
+     * Objeto ``iServerRequest``.
      *
-     * @codeCoverageIgnore
-     *
-     * @return      iEngine
+     * @var         iServerRequest
      */
-    public function getEngineConfig() : iEngine
-    {
-        if (isset($this->engineConfig) === false) {
-            $engineConfig = new \AeonDigital\EnGarde\Config\Engine();
-
-            $engineConfig->setEnvironmentType(ENVIRONMENT);
-            $engineConfig->setIsDebugMode(DEBUG_MODE);
-            $engineConfig->setIsUpdateRoutes(UPDATE_ROUTES);
-            $engineConfig->setRootPath($this->getRootPath());
-            $engineConfig->setHostedApps(HOSTED_APPS);
-            $engineConfig->setDefaultApp(DEFAULT_APP);
-            $engineConfig->setDateTimeLocal(DATETIME_LOCAL);
-            $engineConfig->setTimeOut(REQUEST_TIMEOUT);
-            $engineConfig->setMaxFileSize(REQUEST_MAX_FILESIZE);
-            $engineConfig->setMaxPostSize(REQUEST_MAX_POSTSIZE);
-            $engineConfig->setApplicationClassName(APPLICATION_CLASSNAME);
-            $engineConfig->setPathToErrorView(DEFAULT_ERROR_VIEW);
-
-
-            $engineConfig->setPHPConfiguration();
-            $engineConfig->defineTargetApplication($this->getRequestPath());
-            $this->engineConfig = $engineConfig;
-        }
-        return $this->engineConfig;
-    }
+    private iServerRequest $serverRequest;
     /**
      * Retorna a instância ``iServerRequest`` a ser usada.
      *
@@ -583,67 +1244,122 @@ final class Server extends BObject implements iServer
 
 
 
-
-
     /**
-     * Efetua as configurações necessárias para os manipuladores de exceptions e errors
-     * para as aplicações do domínio.
+     * Instância ``Config\iApplication`` a ser usada.
+     *
+     * @var         iApplication
+     */
+    private iApplication $applicationConfig;
+    /**
+     * Retorna a instância ``Config\iApplication``.
      *
      * @codeCoverageIgnore
      *
-     * @return      void
+     * @param       array $config
+     *              Array associativo contendo as configurações para esta instância.
+     *
+     * @return      iApplication
      */
-    public function setErrorListening() : void
+    public function getApplicationConfig(array $config = []) : iApplication
     {
-        // Define o contexto a ser usado para o ``listening`` de falhas..
-        \AeonDigital\EnGarde\Handler\ErrorListening::setContext(
-            $this->getEngineConfig()->getRootPath(),
-            $this->getEngineConfig()->getEnvironmentType(),
-            $this->getEngineConfig()->getIsDebugMode(),
-            $this->getRequestProtocol(),
-            $this->getServerRequest()->getMethod(),
-            $this->getEngineConfig()->getFullPathToErrorView()
-        );
-        set_exception_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,   "onException"]);
-        set_error_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,       "onError"], E_ALL);
-
-        // Se a Aplicação tem uma página própria para
-        // amostragem de erros, registra-a no manipulador de erros.
-        $fullPathToErrorView = $this
-            ->getEngineConfig()
-            ->getApplicationConfig()
-            ->getFullPathToErrorView();
-
-        if ($fullPathToErrorView !== "") {
-            \AeonDigital\EnGarde\Handler\ErrorListening::setPathToErrorView($fullPathToErrorView);
+        if (isset($this->applicationConfig) === false) {
+            $this->applicationConfig = new \AeonDigital\EnGarde\Config\Application(
+                $this->getApplicationName(),
+                $this->getRootPath()
+            );
         }
+        return $this->applicationConfig;
+    }
+
+
+
+    /**
+     * Instância ``Config\iSecurity`` a ser usada.
+     *
+     * @var         ?iSecurity
+     */
+    private ?iSecurity $securityConfig = null;
+    /**
+     * Retorna a instância ``Config\iSecurity`` a ser usada.
+     *
+     * @codeCoverageIgnore
+     *
+     * @param       array $config
+     *              Array associativo contendo as configurações para esta instância.
+     *
+     * @return      ?iSecurity
+     */
+    public function getSecurityConfig(array $config = []) : ?iSecurity
+    {
+        if ($this->securityConfig === null && $config !== null) {
+            $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray($config);
+        }
+        return $this->securityConfig;
+    }
+
+
+
+    /**
+     * Instância ``Config\iRoute`` a ser usada.
+     *
+     * @var         ?iRoute
+     */
+    private ?iRoute $routeConfig = null;
+    /**
+     * Retorna a instância ``Config\iRoute`` a ser usada.
+     *
+     * @codeCoverageIgnore
+     *
+     * @param       array $config
+     *              Array associativo contendo as configurações para esta instância.
+     *
+     * @return      ?iRoute
+     */
+    public function getRouteConfig(array $config = []) : ?iRoute
+    {
 
     }
+
+
+
+
+
+
+
+
+
+
     /**
-     * Inicia uma nova instância ``Config\iServer`` a partir dos dados da requisição atual.
+     * Inicia uma nova instância ``Config\iServer``.
      *
      * @codeCoverageIgnore
+     *
+     * @param       array $config
+     *              Array associativo contendo as configurações para esta instância.
+     *              Esperado um array com 3 posições sendo:
+     *              "SERVER" => Equivalente ao valor de $_SERVER
+     *              "FILES"  => Equivalente ao valor de $_FILES
+     *              "ENGINE" => Contendo todos os valores obrigatórios para a configuração
+     *                          do motor da aplicação.
      *
      * @return      iServer
      */
-    public static function autoSetServerConfig() : iServer
+    public static function fromArray(array $config) : iServer
     {
         $serverConfig = new Server(
-            $_SERVER,
-            (
-                ENVIRONMENT === "test" ||
-                ENVIRONMENT === "testview" ||
-                ENVIRONMENT === "localtest"
-            )
+            $config["SERVER"],
+            $config["FILES"],
+            $config["ENGINE"]
         );
 
-        // Inicia as instâncias de configuração para esta requisição
-        // - Config\Server
-        //   - Config\iEngine
-        //     - Config\iApplication
-        //       - Config\Security
-        $serverConfig->getEngineConfig()->getApplicationConfig();
+        // Configura o gerenciador de erros do domínio.
         $serverConfig->setErrorListening();
+        // Ativa as configurações do PHP
+        $serverConfig->setPHPConfiguration();
+        // Inicia as demais instâncias necessárias para compor o contexto
+        // atual do servidor e esta respectiva requisição.
+        $serverConfig->getHttpFactory();
+        $serverConfig->getServerRequest();
 
         return $serverConfig;
     }
