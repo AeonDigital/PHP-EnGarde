@@ -16,9 +16,9 @@
             <!--
                 Defina aqui cada arquivo de testes que será utilizado.
             -->
-            <!--file>src/Config/ConfigServerTest.php</file>
+            <file>src/Config/ConfigServerTest.php</file>
             <file>src/Config/ConfigApplicationTest.php</file>
-            <file>src/Config/ConfigSecurityTest.php</file-->
+            <file>src/Config/ConfigSecurityTest.php</file>
             <file>src/Config/ConfigRouteTest.php</file>
 
             <!--file>src/RouterTest.php</file>

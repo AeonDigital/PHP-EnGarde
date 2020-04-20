@@ -14,7 +14,7 @@ $defaultRoute = [
         "/home"
     ],
     "isUseXHTML"                => true,
-    "runMethodName"             => "run",
+    "runMethodName"             => "",
     "customProperties"          => [],
     "description"               => "Teste",
     "devDescription"            => "Teste unitário",

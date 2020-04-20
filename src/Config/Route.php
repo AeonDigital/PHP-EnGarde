@@ -324,7 +324,6 @@ final class Route extends BObject implements iRoute
                         return $nArr;
                     }
                 ]
-
             ]
         );
     }
@@ -472,7 +471,7 @@ final class Route extends BObject implements iRoute
      *
      * @var         string
      */
-    private string $runMethodName = "";
+    private string $runMethodName = "run";
     /**
      * Retorna o nome do método que deve ser executado na classe da Aplicação para resolver a rota.
      * Se não for definido deve retornar ``run`` como valor padrão.
@@ -493,7 +492,9 @@ final class Route extends BObject implements iRoute
      */
     private function setRunMethodName(string $runMethodName) : void
     {
-        $this->runMethodName = $runMethodName;
+        if ($runMethodName !== "") {
+            $this->runMethodName = $runMethodName;
+        }
     }
 
 
@@ -1729,6 +1730,8 @@ final class Route extends BObject implements iRoute
      * Retorna uma instância configurada a partir de um array que contenha
      * as chaves correlacionadas a cada propriedade aqui definida.
      *
+     * @codeCoverageIgnore
+     *
      * @param       array $config
      *              Array associativo contendo os valores a serem definidos para a instância.
      *
@@ -1809,6 +1812,8 @@ final class Route extends BObject implements iRoute
      * Retorna uma instância configurada a partir de uma uma string estruturada de forma a
      * receber os valores mínimos a serem usados para as definições de uma rota.
      *
+     * @codeCoverageIgnore
+     *
      * @param       string $config
      *              String estruturada.
      *
@@ -1823,6 +1828,8 @@ final class Route extends BObject implements iRoute
     }
     /**
      * Converte as propriedades definidas neste objeto para um ``array associativo``.
+     *
+     * @codeCoverageIgnore
      *
      * @return      array
      */
