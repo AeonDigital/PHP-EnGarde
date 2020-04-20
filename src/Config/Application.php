@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
+
 
 
 

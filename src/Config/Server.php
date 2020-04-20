@@ -1262,10 +1262,7 @@ final class Server extends BObject implements iServer
     public function getApplicationConfig(array $config = []) : iApplication
     {
         if (isset($this->applicationConfig) === false) {
-            $this->applicationConfig = new \AeonDigital\EnGarde\Config\Application(
-                $this->getApplicationName(),
-                $this->getRootPath()
-            );
+            $this->applicationConfig = \AeonDigital\EnGarde\Config\Application::fromArray($config);
         }
         return $this->applicationConfig;
     }
@@ -1290,7 +1287,7 @@ final class Server extends BObject implements iServer
      */
     public function getSecurityConfig(array $config = []) : ?iSecurity
     {
-        if ($this->securityConfig === null && $config !== null) {
+        if ($this->securityConfig === null) {
             $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray($config);
         }
         return $this->securityConfig;

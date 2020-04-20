@@ -29,21 +29,41 @@ abstract class Application extends BObject implements iApplication
 
 
 
-
-
     /**
      * Objeto ``Config\iServer``.
      *
      * @var         iServer
      */
     protected iServer $serverConfig;
-
     /**
      * Objeto ``Engine\iRouter``.
      *
      * @var         iRouter
      */
     protected iRouter $router;
+
+
+
+    /**
+     * Configurações padrões para a aplicação.
+     *
+     * @var         array
+     */
+    protected array $applicationConfig = [];
+    /**
+     * Configurações padrões para a aplicação.
+     *
+     * @var         array
+     */
+    protected array $securityConfig = [];
+    /**
+     * Configurações padrões para as rotas da aplicação.
+     *
+     * @var         array
+     */
+    protected array $defaultRouteConfig = [];
+
+
 
     /**
      * Indica se o método ``run()`` já foi ativado alguma vez.
@@ -52,32 +72,59 @@ abstract class Application extends BObject implements iApplication
      */
     private bool $isRun = false;
 
-    /**
-     * Objeto que representa a configuração bruta da rota alvo.
-     *
-     * @var         array
-     *
-    protected array $rawRouteConfig = [];
-    /**
-     * Objeto ``iResponse``.
-     *
-     * @var         iResponse
-     *
-    protected iResponse $response;
-    /**
-     * Guarda a parte relativa da URI que está sendo executada no momento
-     *
-     * @var         string
-     *
-    protected string $executePath = "";
-    /**
-     * Nome do método que deve ser usado para resolver a rota que está ativa no momento.
-     *
-     * @var         string
-
-    protected string $runMethodName = "run";*/
 
 
+
+
+
+
+
+
+
+    /**
+     * Inicia uma Aplicação.
+     *
+     * @param       iServerConfig $serverConfig
+     *              Instância ``iServerConfig``.
+     */
+    function __construct(iServerConfig $serverConfig)
+    {
+        // Inicia o objeto de configuração da aplicação.
+        $serverConfig->getApplicationConfig(
+            \array_merge([
+                "appName"       => $serverConfig->getApplicationName(),
+                "appRootPath"   => $serverConfig->getRootPath() . DS . $serverConfig->getApplicationName()
+            ],
+            $this->applicationConfig
+        ));
+
+
+        // Inicia o objeto de configuração de segurança.
+        $serverConfig->getSecuritySettings($this->securityConfig);
+
+
+        /*
+        $this->router = new \AeonDigital\EnGarde\Engine\Router(
+            $appConfig->getName(),
+            $appConfig->getPathToAppRoutes(),
+            $appConfig->getPathToControllers(),
+            $appConfig->getControllersNamespace(),
+            $appConfig->getDefaultRouteConfig()
+        );*/
+
+
+        $this->serverConfig = $serverConfig;
+    }
+
+
+
+
+
+    /*
+    $this->selectTargetRouteConfig();
+    if ($this->routeConfig !== null) {
+        $this->executeContentNegotiation();
+    }*
 
 
 
@@ -150,44 +197,6 @@ abstract class Application extends BObject implements iApplication
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Inicia uma Aplicação.
-     *
-     * @param       iServerConfig $serverConfig
-     *              Instância ``iServerConfig``.
-     */
-    function __construct(iServerConfig $serverConfig)
-    {
-        $this->serverConfig = $serverConfig;
-
-        $appConfig = $serverConfig->getEngineConfig()->getApplicationConfig();
-        $this->router = new \AeonDigital\EnGarde\Engine\Router(
-            $appConfig->getName(),
-            $appConfig->getPathToAppRoutes(),
-            $appConfig->getPathToControllers(),
-            $appConfig->getControllersNamespace(),
-            $appConfig->getDefaultRouteConfig()
-        );
-    }
-    /*
-    $this->selectTargetRouteConfig();
-
-    if ($this->routeConfig !== null) {
-        $this->executeContentNegotiation();
-    }*
-
-
-
 
 
 
@@ -419,9 +428,6 @@ abstract class Application extends BObject implements iApplication
     }
 
 
-
-
-
     /**
      * Efetivamente envia os dados para o ``UA``.
      *
@@ -480,14 +486,6 @@ abstract class Application extends BObject implements iApplication
             }
         }
     }
-
-
-
-
-
-
-
-
 
 
     protected $testViewDebug = null;

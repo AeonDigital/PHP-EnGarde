@@ -34,6 +34,12 @@ final class EnGarde extends BObject
      * @var         iServerConfig
      */
     private iServerConfig $serverConfig;
+    /**
+     * Objeto ``Engine\iApplication``.
+     *
+     * @var         iApplication
+     */
+    private iApplication $application;
 
 
 
@@ -48,41 +54,32 @@ final class EnGarde extends BObject
     function __construct(bool $autorun = true)
     {
         // Inicia as configurações do servidor.
-        $this->serverConfig = \AeonDigital\EnGarde\Config\Server::fromContext();
+        $this->serverConfig = \AeonDigital\EnGarde\Config\Server::fromArray(
+            [
+                "SERVER"    => $_SERVER,
+                "FILES"     => $_FILES,
+                "ENGINE"    => [
+                    "environmentType"       => "UTEST",
+                    "isDebugMode"           => true,
+                    "isUpdateRoutes"        => true,
+                    "hostedApps"            => ["site", "blog"],
+                    "defaultApp"            => "site",
+                    "dateTimeLocal"         => "America/Sao_Paulo",
+                    "timeOut"               => 1200,
+                    "maxFileSize"           => 100,
+                    "maxPostSize"           => 100,
+                    "pathToErrorView"       => "errorView.phtml",
+                    "applicationClassName"  => "AppStart"
+                ]
+            ]
+        );
 
         // Executa a aplicação
-        $this->initiApplication();
         if ($autorun === true) {
             $this->run();
         }
     }
 
-
-
-
-
-    /**
-     * Objeto ``Engine\iApplication``.
-     *
-     * @var         iApplication
-     */
-    private iApplication $application;
-    /**
-     * Inicia a aplicação alvo.
-     *
-     * @return      void
-     */
-    private function initiApplication() : void
-    {
-        $applicationNS      = $this->serverConfig->retrieveApplicationNS();
-        $this->application  = new $applicationNS($this);
-
-        // PROSSEGUIR DAQUI. <---
-        // MUDAR O MOMENTO EM QUE AS INSTÂNCIAS DE CONFIGURAÇÃO SÃO INICIADAS PARA PERMITIR
-        // QUE A APLICAÇÃO EFETUE SUAS PRÓPRIAS ALTERAÇÕES EM iApplication e iRoute
-
-
-    }
 
 
 
@@ -99,6 +96,15 @@ final class EnGarde extends BObject
      */
     public function run() : void
     {
-        $this->application->run();
+        // Inicia o objeto da aplicação alvo.
+        $applicationNS      = $this->serverConfig->getApplicationNamespace();
+        $this->application  = new $applicationNS($this->serverConfig);
+
+        if ($this->serverConfig->getNewLocationPath() !== "") {
+            \redirect($this->serverConfig->getNewLocationPath());
+        }
+        else {
+            $this->application->run();
+        }
     }
 }
