@@ -141,7 +141,7 @@ class ConfigApplicationTest extends TestCase
 
 
 
-        $testApplication["pathToAppRoutes"] = "/dir/nonexist.php";
+        $testApplication["pathToAppRoutes"] = DS . "dir" . DS . "nonexist.php";
 
         $fail = false;
         try {
@@ -187,7 +187,7 @@ class ConfigApplicationTest extends TestCase
 
 
 
-        $testApplication["pathToControllers"] = "/nonexist";
+        $testApplication["pathToControllers"] = DS . "nonexist";
 
         $fail = false;
         try {
@@ -233,7 +233,7 @@ class ConfigApplicationTest extends TestCase
 
 
 
-        $testApplication["pathToViews"] = "/nonexist";
+        $testApplication["pathToViews"] = DS . "nonexist";
 
         $fail = false;
         try {
@@ -279,7 +279,7 @@ class ConfigApplicationTest extends TestCase
 
 
 
-        $testApplication["pathToViewsResources"] = "/nonexist";
+        $testApplication["pathToViewsResources"] = DS . "nonexist";
 
         $fail = false;
         try {
@@ -309,7 +309,7 @@ class ConfigApplicationTest extends TestCase
         global $defaultApplication;
         global $dirResources;
         $testApplication = array_merge([], $defaultApplication);
-        $testApplication["pathToLocales"] = "/nonexist";
+        $testApplication["pathToLocales"] = DS . "nonexist";
 
         $fail = false;
         try {
@@ -345,7 +345,7 @@ class ConfigApplicationTest extends TestCase
         global $defaultApplication;
         global $dirResources;
         $testApplication = array_merge([], $defaultApplication);
-        $testApplication["pathToCacheFiles"] = "/nonexist";
+        $testApplication["pathToCacheFiles"] = DS . "nonexist";
 
         $fail = false;
         try {

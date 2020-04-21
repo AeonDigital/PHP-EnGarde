@@ -148,7 +148,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToAppRoutes !== "") ?
-            \to_system_path($this->appRootPath . $pathToAppRoutes) :
+            $this->appRootPath . $pathToAppRoutes :
             $pathToAppRoutes
         );
         $this->mainCheckForInvalidArgumentException(
@@ -156,7 +156,7 @@ final class Application extends BObject implements iApplication
                 ["validate"         => "is string not empty"],
                 [
                     "executeBeforeValidate" => function($args) {
-                        return \dirname(\to_system_path($args["argValue"]));
+                        return \dirname($args["argValue"]);
                     },
                     "validate"      => "is dir exists"
                 ]
@@ -208,7 +208,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToControllers !== "") ?
-            \to_system_path($this->appRootPath . $pathToControllers) :
+            $this->appRootPath . $pathToControllers :
             $pathToControllers
         );
         $this->mainCheckForInvalidArgumentException(
@@ -263,7 +263,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToViews !== "") ?
-            \to_system_path($this->appRootPath . $pathToViews) :
+            $this->appRootPath . $pathToViews :
             $pathToViews
         );
         $this->mainCheckForInvalidArgumentException(
@@ -318,7 +318,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToViewsResources !== "") ?
-            \to_system_path($this->appRootPath . $pathToViewsResources) :
+            $this->appRootPath . $pathToViewsResources :
             $pathToViewsResources
         );
         $this->mainCheckForInvalidArgumentException(
@@ -373,7 +373,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToLocales !== "") ?
-            \to_system_path($this->appRootPath . $pathToLocales) :
+            $this->appRootPath . $pathToLocales :
             $pathToLocales
         );
         $this->mainCheckForInvalidArgumentException(
@@ -430,7 +430,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToCacheFiles !== "") ?
-            \to_system_path($this->appRootPath . $pathToCacheFiles) :
+            $this->appRootPath . $pathToCacheFiles :
             $pathToCacheFiles
         );
         $this->mainCheckForInvalidArgumentException(

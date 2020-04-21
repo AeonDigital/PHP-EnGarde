@@ -21,7 +21,7 @@
             <file>src/Config/ConfigSecurityTest.php</file>
             <file>src/Config/ConfigRouteTest.php</file>
 
-            <!--file>src/RouterTest.php</file-->
+            <file>src/RouterTest.php</file>
 
 
             <!--file>src/Handler/Mime/HTMLTest.php</file>
