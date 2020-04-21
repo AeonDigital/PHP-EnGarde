@@ -334,7 +334,7 @@ class ConfigServerTest extends TestCase
     {
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-        $this->assertSame(false, $nMock->getIsUpdateRoutes());
+        $this->assertSame(true, $nMock->getIsUpdateRoutes());
     }
 
 
@@ -525,7 +525,7 @@ class ConfigServerTest extends TestCase
         global $defaultServerVariables;
         global $defaultEngineVariables;
         $testEngineVariables = array_merge([], $defaultEngineVariables);
-        $testEngineVariables["pathToErrorView"] = "nonexists.php";
+        $testEngineVariables["pathToErrorView"] = DS . "nonexists.php";
 
         $fail = false;
         try {
@@ -549,7 +549,7 @@ class ConfigServerTest extends TestCase
         global $dirResources;
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-        $this->assertSame("errorView.phtml", $nMock->getPathToErrorView());
+        $this->assertSame(DS . "errorView.phtml", $nMock->getPathToErrorView());
         $this->assertSame(
             $dirResources . DS . "apps" . DS . "errorView.phtml",
             $nMock->getPathToErrorView(true)

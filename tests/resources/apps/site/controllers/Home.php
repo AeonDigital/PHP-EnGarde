@@ -19,12 +19,12 @@ class Home
 {
 
     const defaultRouteConfig = [
-        "description" => "Descrição genérica no controller.",
-        "acceptmimes" => ["xhtml", "html", "txt"],
-        "method" => "get",
-        "isusexhtml" => true,
-        "middlewares" => ["ctrl_mid_01", "ctrl_mid_02", "ctrl_mid_03"],
-        "metadata" => [
+        "description"       => "Descrição genérica no controller.",
+        "allowedMimeTypes"  => ["xhtml", "html", "txt"],
+        "allowedMethods"    => "get",
+        "isUseXHTML"        => true,
+        "middlewares"       => ["ctrl_mid_01", "ctrl_mid_02", "ctrl_mid_03"],
+        "metaData"          => [
             "Author" => "Aeon Digital",
             "CopyRight" => "20xx Aeon Digital",
             "FrameWork" => "PHP-AeonDigital\EnGarde 0.9.0 [alpha]"
@@ -46,9 +46,9 @@ class Home
      *                 /home
      */
     public static $registerRoute_GET_POST_default = [
-        "description" => "Página home da aplicação",
+        "description"       => "Página home da aplicação",
 
-        "method" => ["GET", "POST"],
+        "allowedMethods"    => ["GET", "POST"],
         "routes" => [
             "/",
             "/home"
@@ -58,7 +58,7 @@ class Home
         "relationedRoutes" => ["/list"],
 
         "isSecure" => false,
-        "acceptMimes" => ["xhtml", "html", "txt", "json", "xml", "csv", "xls"],
+        "allowedMimeTypes" => ["xhtml", "html", "txt", "json", "xml", "csv", "xls"],
 
         "isUseCache" => false,
         "cacheTimeout" => (2 * 60),
@@ -85,7 +85,7 @@ class Home
     public static $registerRoute_GET_list = [
         "description" => "Evoca a view de lista.",
 
-        "method" => "GET",
+        "allowedMethods" => "GET",
         "routes" => [
             "/list",
             "/list/orderby:[a-zA-Z]+",
@@ -93,7 +93,7 @@ class Home
             "/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+"
         ],
         "action" => "list",
-        "acceptMimes" => ["xhtml", "html"],
+        "allowedMimeTypes" => ["xhtml", "html"],
     ];
     public function list()
     {
@@ -112,14 +112,13 @@ class Home
     public static $registerRoute_GET_contact = [
         "description" => "Evoca a view para o formulário de contato.",
 
-        "method" => "GET",
+        "allowedMethods" => "GET",
         "routes" => [
             "/contact"
         ],
         "action" => "contact",
-        "acceptMimes" => ["xhtml", "html"],
+        "allowedMimeTypes" => ["xhtml", "html"],
         "isUseCache" => false,
-        //"form"              => "/Site/FormModels/contact.php"
     ];
     /**
      * [Methods]     : POST
@@ -130,13 +129,13 @@ class Home
     public static $registerRoute_POST_contact = [
         "description" => "Recebe os dados submetidos pelo formulário de contato, processa-os e retorna o resultado.",
 
-        "method" => "POST",
+        "allowedMethods" => "POST",
         "routes" => [
             "/contact"
         ],
         "action" => "contact",
 
-        "acceptMimes" => ["json", "xhtml", "html"],
+        "allowedMimeTypes" => ["json", "xhtml", "html"],
         "isUseCache" => false,
         //"form"              => "/Site/FormModels/contact.php"
     ];

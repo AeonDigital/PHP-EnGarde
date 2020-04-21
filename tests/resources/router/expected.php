@@ -1,4 +1,4 @@
-<?php return array (
+array (
   'simple' => 
   array (
     '/^\\/site\\/test\\//' => 
@@ -7,70 +7,63 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'test',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
         ),
-        'routes' => 
-        array (
-          0 => '/test',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
           'txt' => 'text/plain',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'GET',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => '/test',
         ),
-        'relationedRoutes' => 
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Descrição genérica no controller.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
     '/^\\/site\\//' => 
@@ -79,20 +72,14 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'default',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
           1 => 'POST',
         ),
-        'routes' => 
-        array (
-          0 => '/',
-          1 => '/home',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
@@ -102,76 +89,69 @@
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'GET',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => '/',
+          1 => '/home',
         ),
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
+        array (
+        ),
+        'description' => 'Página home da aplicação',
+        'devDescription' => '',
         'relationedRoutes' => 
         array (
           0 => '/list',
         ),
-        'description' => 'Página home da aplicação',
-        'devDescription' => '',
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => '',
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
-        'responseIsPrettyPrint' => false,
-        'responseIsDownload' => false,
-        'responseDownloadFileName' => 'bem_vindo',
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
       'POST' => 
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'default',
-        'method' => 'POST',
         'allowedMethods' => 
         array (
           0 => 'GET',
           1 => 'POST',
         ),
-        'routes' => 
-        array (
-          0 => '/',
-          1 => '/home',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
@@ -181,57 +161,56 @@
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'POST',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => '/',
+          1 => '/home',
         ),
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
+        array (
+        ),
+        'description' => 'Página home da aplicação',
+        'devDescription' => '',
         'relationedRoutes' => 
         array (
           0 => '/list',
         ),
-        'description' => 'Página home da aplicação',
-        'devDescription' => '',
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => '',
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
-        'responseIsPrettyPrint' => false,
-        'responseIsDownload' => false,
-        'responseDownloadFileName' => 'bem_vindo',
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
     '/^\\/site\\/home\\//' => 
@@ -240,20 +219,14 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'default',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
           1 => 'POST',
         ),
-        'routes' => 
-        array (
-          0 => '/',
-          1 => '/home',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
@@ -263,76 +236,69 @@
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'GET',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => '/',
+          1 => '/home',
         ),
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
+        array (
+        ),
+        'description' => 'Página home da aplicação',
+        'devDescription' => '',
         'relationedRoutes' => 
         array (
           0 => '/list',
         ),
-        'description' => 'Página home da aplicação',
-        'devDescription' => '',
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => '',
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
-        'responseIsPrettyPrint' => false,
-        'responseIsDownload' => false,
-        'responseDownloadFileName' => 'bem_vindo',
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
       'POST' => 
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'default',
-        'method' => 'POST',
         'allowedMethods' => 
         array (
           0 => 'GET',
           1 => 'POST',
         ),
-        'routes' => 
-        array (
-          0 => '/',
-          1 => '/home',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
@@ -342,57 +308,56 @@
           'csv' => 'text/csv',
           'xls' => 'application/vnd.ms-excel',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'POST',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-          6 => 'route_mid_01',
-          7 => 'route_mid_02',
-          8 => 'route_mid_03',
+          0 => '/',
+          1 => '/home',
         ),
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
+        array (
+        ),
+        'description' => 'Página home da aplicação',
+        'devDescription' => '',
         'relationedRoutes' => 
         array (
           0 => '/list',
         ),
-        'description' => 'Página home da aplicação',
-        'devDescription' => '',
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+          3 => 'route_mid_01',
+          4 => 'route_mid_02',
+          5 => 'route_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseIsPrettyPrint' => false,
+        'responseIsDownload' => false,
+        'responseDownloadFileName' => '',
         'responseHeaders' => 
         array (
         ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
-        'responseIsPrettyPrint' => false,
-        'responseIsDownload' => false,
-        'responseDownloadFileName' => 'bem_vindo',
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
     '/^\\/site\\/list\\//' => 
@@ -401,13 +366,18 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'list',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
         ),
+        'allowedMimeTypes' => 
+        array (
+          'xhtml' => 'application/xhtml+xml',
+          'html' => 'text/html',
+        ),
+        'method' => 'GET',
         'routes' => 
         array (
           0 => '/list',
@@ -415,58 +385,46 @@
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
-        'acceptMimes' => 
-        array (
-          'xhtml' => 'application/xhtml+xml',
-          'html' => 'text/html',
-        ),
         'isUseXHTML' => true,
-        'middlewares' => 
-        array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-        ),
-        'relationedRoutes' => 
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
     '/^\\/site\\/contact\\//' => 
@@ -475,138 +433,124 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'contact',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
         ),
-        'routes' => 
-        array (
-          0 => '/contact',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'GET',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => '/contact',
         ),
-        'relationedRoutes' => 
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Evoca a view para o formulário de contato.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
       'POST' => 
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'contact',
-        'method' => 'POST',
         'allowedMethods' => 
         array (
           0 => 'POST',
         ),
-        'routes' => 
-        array (
-          0 => '/contact',
-        ),
-        'acceptMimes' => 
+        'allowedMimeTypes' => 
         array (
           'json' => 'application/json',
           'xhtml' => 'application/xhtml+xml',
           'html' => 'text/html',
         ),
-        'isUseXHTML' => true,
-        'middlewares' => 
+        'method' => 'POST',
+        'routes' => 
         array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
+          0 => '/contact',
         ),
-        'relationedRoutes' => 
+        'isUseXHTML' => true,
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Recebe os dados submetidos pelo formulário de contato, processa-os e retorna o resultado.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
   ),
@@ -618,13 +562,18 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'list',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
         ),
+        'allowedMimeTypes' => 
+        array (
+          'xhtml' => 'application/xhtml+xml',
+          'html' => 'text/html',
+        ),
+        'method' => 'GET',
         'routes' => 
         array (
           0 => '/list',
@@ -632,58 +581,46 @@
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
-        'acceptMimes' => 
-        array (
-          'xhtml' => 'application/xhtml+xml',
-          'html' => 'text/html',
-        ),
         'isUseXHTML' => true,
-        'middlewares' => 
-        array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-        ),
-        'relationedRoutes' => 
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
     '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\/(?P<page>[0-9])\\//' => 
@@ -692,13 +629,18 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'list',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
         ),
+        'allowedMimeTypes' => 
+        array (
+          'xhtml' => 'application/xhtml+xml',
+          'html' => 'text/html',
+        ),
+        'method' => 'GET',
         'routes' => 
         array (
           0 => '/list',
@@ -706,58 +648,46 @@
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
-        'acceptMimes' => 
-        array (
-          'xhtml' => 'application/xhtml+xml',
-          'html' => 'text/html',
-        ),
         'isUseXHTML' => true,
-        'middlewares' => 
-        array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-        ),
-        'relationedRoutes' => 
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
     '/^\\/site\\/configurando-uma-rota\\/propriedades\\/(?P<propertie>[a-zA-Z]+)\\//' => 
@@ -766,13 +696,18 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => 'Home',
+        'controller' => '\\site\\controllers\\home',
         'action' => 'list',
-        'method' => 'GET',
         'allowedMethods' => 
         array (
           0 => 'GET',
         ),
+        'allowedMimeTypes' => 
+        array (
+          'xhtml' => 'application/xhtml+xml',
+          'html' => 'text/html',
+        ),
+        'method' => 'GET',
         'routes' => 
         array (
           0 => '/list',
@@ -780,59 +715,47 @@
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
-        'acceptMimes' => 
-        array (
-          'xhtml' => 'application/xhtml+xml',
-          'html' => 'text/html',
-        ),
         'isUseXHTML' => true,
-        'middlewares' => 
-        array (
-          0 => 'app_mid_01',
-          1 => 'app_mid_02',
-          2 => 'app_mid_03',
-          3 => 'ctrl_mid_01',
-          4 => 'ctrl_mid_02',
-          5 => 'ctrl_mid_03',
-        ),
-        'relationedRoutes' => 
+        'runMethodName' => 'run',
+        'customProperties' => 
         array (
         ),
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
+        'relationedRoutes' => 
+        array (
+        ),
+        'middlewares' => 
+        array (
+          0 => 'ctrl_mid_01',
+          1 => 'ctrl_mid_02',
+          2 => 'ctrl_mid_03',
+        ),
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
-        'responseHeaders' => 
-        array (
-        ),
-        'responseMime' => '',
-        'responseMimeType' => '',
-        'responseLocale' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
+        'responseHeaders' => 
+        array (
+        ),
         'masterPage' => '',
         'view' => '',
-        'form' => '',
         'styleSheets' => 
         array (
         ),
         'javaScripts' => 
         array (
         ),
-        'localeDictionary' => '',
         'metaData' => 
         array (
           'Author' => 'Aeon Digital',
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
-        'runMethodName' => 'run',
-        'customProperties' => 
-        array (
-        ),
+        'localeDictionary' => '',
       ),
     ),
   ),
-);
+)

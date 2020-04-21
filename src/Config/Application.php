@@ -130,7 +130,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToAppRoutes :
-            $this->appRootPath . DS . $this->pathToAppRoutes
+            $this->appRootPath . $this->pathToAppRoutes
         );
     }
     /**
@@ -148,7 +148,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToAppRoutes !== "") ?
-            \to_system_path($this->appRootPath . DS . $pathToAppRoutes) :
+            \to_system_path($this->appRootPath . $pathToAppRoutes) :
             $pathToAppRoutes
         );
         $this->mainCheckForInvalidArgumentException(
@@ -189,7 +189,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToControllers :
-            $this->appRootPath . DS . $this->pathToControllers
+            $this->appRootPath . $this->pathToControllers
         );
     }
     /**
@@ -208,7 +208,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToControllers !== "") ?
-            \to_system_path($this->appRootPath . DS . $pathToControllers) :
+            \to_system_path($this->appRootPath . $pathToControllers) :
             $pathToControllers
         );
         $this->mainCheckForInvalidArgumentException(
@@ -244,7 +244,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToViews :
-            $this->appRootPath . DS . $this->pathToViews
+            $this->appRootPath . $this->pathToViews
         );
     }
     /**
@@ -263,7 +263,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToViews !== "") ?
-            \to_system_path($this->appRootPath . DS . $pathToViews) :
+            \to_system_path($this->appRootPath . $pathToViews) :
             $pathToViews
         );
         $this->mainCheckForInvalidArgumentException(
@@ -299,7 +299,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToViewsResources :
-            $this->appRootPath . DS . $this->pathToViewsResources
+            $this->appRootPath . $this->pathToViewsResources
         );
     }
     /**
@@ -318,7 +318,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToViewsResources !== "") ?
-            \to_system_path($this->appRootPath . DS . $pathToViewsResources) :
+            \to_system_path($this->appRootPath . $pathToViewsResources) :
             $pathToViewsResources
         );
         $this->mainCheckForInvalidArgumentException(
@@ -354,7 +354,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToLocales :
-            $this->appRootPath . DS . $this->pathToLocales
+            $this->appRootPath . $this->pathToLocales
         );
     }
     /**
@@ -373,7 +373,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToLocales !== "") ?
-            \to_system_path($this->appRootPath . DS . $pathToLocales) :
+            \to_system_path($this->appRootPath . $pathToLocales) :
             $pathToLocales
         );
         $this->mainCheckForInvalidArgumentException(
@@ -411,7 +411,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToCacheFiles :
-            $this->appRootPath . DS . $this->pathToCacheFiles
+            $this->appRootPath . $this->pathToCacheFiles
         );
     }
     /**
@@ -430,7 +430,7 @@ final class Application extends BObject implements iApplication
     {
         $path = (
             ($pathToCacheFiles !== "") ?
-            \to_system_path($this->appRootPath . DS . $pathToCacheFiles) :
+            \to_system_path($this->appRootPath . $pathToCacheFiles) :
             $pathToCacheFiles
         );
         $this->mainCheckForInvalidArgumentException(
@@ -758,7 +758,7 @@ final class Application extends BObject implements iApplication
         return (
             ($fullPath === false) ?
             $this->pathToErrorView :
-            $this->appRootPath . DS . $this->pathToErrorView
+            $this->appRootPath . $this->pathToErrorView
         );
     }
     /**
@@ -777,7 +777,7 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToErrorView(string $pathToErrorView) : void
     {
-        $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
+        $this->pathToErrorView = \to_system_path($pathToErrorView);
         $fullPathToErrorView = $this->getPathToErrorView(true);
 
         $this->mainCheckForInvalidArgumentException(

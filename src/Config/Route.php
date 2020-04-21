@@ -1863,7 +1863,7 @@ final class Route extends BObject implements iRoute
             "styleSheets"               => $this->getStyleSheets(),
             "javaScripts"               => $this->getJavaScripts(),
             "metaData"                  => $this->getMetaData(),
-            "localeDictionary"          => $this-getLocaleDictionary()
+            "localeDictionary"          => $this->getLocaleDictionary()
         ];
     }
 }

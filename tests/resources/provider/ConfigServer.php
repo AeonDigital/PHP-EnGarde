@@ -43,14 +43,14 @@ $defaultServerVariables = [
 $defaultEngineVariables = [
     "environmentType"       => "UTEST",
     "isDebugMode"           => true,
-    "isUpdateRoutes"        => false,
+    "isUpdateRoutes"        => true,
     "hostedApps"            => ["site", "blog"],
     "defaultApp"            => "site",
     "dateTimeLocal"         => "America/Sao_Paulo",
     "timeout"               => 1200,
     "maxFileSize"           => 100,
     "maxPostSize"           => 100,
-    "pathToErrorView"       => "errorView.phtml",
+    "pathToErrorView"       => "/errorView.phtml",
     "applicationClassName"  => "AppStart"
 ];
 

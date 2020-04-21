@@ -100,6 +100,7 @@ class Router extends BObject implements iRouter
                 $r = true;
             }
             else {
+
                 // Se o arquivo de pre-processamento existe,
                 // E, SE
                 // O motor da aplicação está configurado para efetuar atualizações
@@ -112,13 +113,14 @@ class Router extends BObject implements iRouter
                     // Verifica cada um dos arquivos da pasta de controller
                     // para identificar seus timestamps e selecionar aquele que foi
                     // mais recentemente alterado/criado.
-                    $controllersFiles = \scandir($controllersPath);
+                    $controllersFiles = \scandir($appControllersPath);
+
                     foreach ($controllersFiles as $key => $fileName) {
                         if (\in_array($fileName, [".", ".."]) === false &&
                             \is_dir($fileName) === false &&
                             \mb_str_ends_with($fileName, ".php") === true)
                         {
-                            $fileMod = \filemtime($controllersPath . DS . $fileName);
+                            $fileMod = \filemtime($appControllersPath . DS . $fileName);
 
                             // Mantém o maior valor
                             $controllersLastMod = ($fileMod > $controllersLastMod) ? $fileMod : $controllersLastMod;
@@ -156,6 +158,8 @@ class Router extends BObject implements iRouter
      * Varre os arquivos de ``controllers`` da aplicação e efetua o processamento das mesmas.
      * Idealmente o resultado deve ser um arquivo de configuração contendo todos os dados necessários
      * para a execução de cada rota de forma individual.
+     *
+     * @codeCoverageIgnore
      *
      * @return      void
      *
@@ -224,11 +228,10 @@ class Router extends BObject implements iRouter
 
         // Apenas se houverem propriedades estáticas definidas...
         $staticProperties   = $controllerReflection->getStaticProperties();
-        if (\is_array($staticProperties) !== false && \count($staticProperties) > 0) {
+        if (\is_array($staticProperties) === true && \count($staticProperties) > 0) {
             foreach ($staticProperties as $propName => $value) {
                 // sendo uma propriedade de registro de rotas.
                 if (\mb_str_starts_with($propName, "registerRoute") === true)  {
-
                     // Extrai a configuração da rota individualmente
                     if (\is_string($value) === true) {
                         $actionRouteConfig = $this->mergeRouteConfigs(
@@ -432,18 +435,18 @@ class Router extends BObject implements iRouter
         else {
             $rConfig = [
                 "allowedMethods"    => ["GET"],
-                "route"             => "",
+                "routes"            => [""],
                 "action"            => ""
             ];
             $cParts = \count($configParts);
 
             if ($cParts === 2) {
-                $rConfig["route"]   = $configParts[0];
+                $rConfig["routes"]  = [$configParts[0]];
                 $rConfig["action"]  = $configParts[1];
             }
             else {
                 $rConfig["allowedMethods"]  = [$configParts[0]];
-                $rConfig["route"]           = $configParts[1];
+                $rConfig["routes"]          = [$configParts[1]];
                 $rConfig["action"]          = $configParts[2];
 
                 if ($cParts >= 4) {

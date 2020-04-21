@@ -601,7 +601,7 @@ class ConfigApplicationTest extends TestCase
         global $defaultApplication;
         global $dirResources;
         $testApplication = array_merge([], $defaultApplication);
-        $testApplication["pathToErrorView"] = "nonexist.php";
+        $testApplication["pathToErrorView"] = DS . "nonexist.php";
 
         $fail = false;
         try {
@@ -623,7 +623,7 @@ class ConfigApplicationTest extends TestCase
         global $dirResources;
         global $defaultApplication;
         $nMock = prov_instanceOf_EnGarde_Config_Application($defaultApplication);
-        $this->assertSame("errorView.phtml", $nMock->getPathToErrorView());
+        $this->assertSame(DS . "errorView.phtml", $nMock->getPathToErrorView());
 
         $path = $dirResources . DS . "apps" . DS . "site" . DS . "errorView.phtml";
         $this->assertSame($path, $nMock->getPathToErrorView(true));

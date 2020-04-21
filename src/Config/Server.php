@@ -725,7 +725,7 @@ final class Server extends BObject implements iServer
         return (
             ($fullPath === false) ?
             $this->pathToErrorView :
-            $this->rootPath . DS . $this->pathToErrorView
+            $this->rootPath . $this->pathToErrorView
         );
     }
     /**
@@ -744,7 +744,7 @@ final class Server extends BObject implements iServer
      */
     private function setPathToErrorView(string $pathToErrorView) : void
     {
-        $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
+        $this->pathToErrorView = \to_system_path($pathToErrorView);
         $this->mainCheckForInvalidArgumentException(
             "pathToErrorView", $this->getPathToErrorView(true), [
                 [

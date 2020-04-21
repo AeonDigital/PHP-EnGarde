@@ -37,7 +37,7 @@ class RouterTest extends TestCase
 
 
 
-
+    /*
     public function test_constructor_ok()
     {
         global $defaultServerVariables;
@@ -127,7 +127,7 @@ class RouterTest extends TestCase
         $input = "/home execHome";
         $output = [
             "allowedMethods"    => ["GET"],
-            "route"             => "/home",
+            "routes"            => ["/home"],
             "action"            => "execHome"
         ];
 
@@ -140,7 +140,7 @@ class RouterTest extends TestCase
         $input = "GET /home execHome secure";
         $output = [
             "allowedMethods"    => ["GET"],
-            "route"             => "/home",
+            "routes"            => ["/home"],
             "action"            => "execHome",
             "isSecure"          => true
         ];
@@ -155,7 +155,7 @@ class RouterTest extends TestCase
         $input = "GET /home execHome public";
         $output = [
             "allowedMethods"    => ["GET"],
-            "route"             => "/home",
+            "routes"            => ["/home"],
             "action"            => "execHome",
             "isSecure"          => false
         ];
@@ -170,7 +170,7 @@ class RouterTest extends TestCase
         $input = "GET /home execHome public no-cache";
         $output = [
             "allowedMethods"    => ["GET"],
-            "route"             => "/home",
+            "routes"            => ["/home"],
             "action"            => "execHome",
             "isSecure"          => false,
             "isUseCache"        => false
@@ -186,7 +186,7 @@ class RouterTest extends TestCase
         $input = "GET /home execHome public cache 1";
         $output = [
             "allowedMethods"    => ["GET"],
-            "route"             => "/home",
+            "routes"            => ["/home"],
             "action"            => "execHome",
             "isSecure"          => false,
             "isUseCache"        => true,
@@ -203,7 +203,7 @@ class RouterTest extends TestCase
         $input = "GET /home execHome - cache 1";
         $output = [
             "allowedMethods"    => ["GET"],
-            "route"             => "/home",
+            "routes"            => ["/home"],
             "action"            => "execHome",
             "isUseCache"        => true,
             "cacheTimeout"      => 1
@@ -319,15 +319,53 @@ class RouterTest extends TestCase
         $this->assertEquals($expected["localeDictionary"],  $mergeControllerAndRoute["localeDictionary"]);
     }
 
-    /*
-    public function test_method_set_default_route_config()
+
+
+    public function test_method_registerControllerRoutes()
     {
-        $nMock = prov_instanceOf_EnGarde_Engine_Router();
-        $nMock->setDefaultRouteConfig(["property" => "value"]);
-        $this->assertTrue(is_a($nMock, Router::class));
+        global $dirResources;
+        $nMock = $this->provideRouteMock();
+
+        include_once to_system_path($dirResources . "/apps/site/controllers/Home.php");
+        $targetFileResult   = to_system_path($dirResources . "/router/result.php");
+        $targetFileExpected = to_system_path($dirResources . "/router/expected.php");
+
+        $processed = $nMock->testRegisterControllerRoutes("home");
+        $resultProcessed = \var_export($nMock->getProcessedAppRoutes(), true);
+
+        if (is_file($targetFileExpected) === false) {
+            file_put_contents(
+                $targetFileExpected,
+                $resultProcessed
+            );
+        }
+
+        $expectedResult = file_get_contents($targetFileExpected);
+        $this->assertEquals($expectedResult, $resultProcessed);
+    }*/
+
+
+    public function test_method_isToProcessApplicationRoutes()
+    {
+        global $dirResources;
+        $nMock = $this->provideRouteMock();
+
+        $this->assertTrue($nMock->isToProcessApplicationRoutes());
+        //$resultProcessed = \var_export($nMock->getProcessedAppRoutes(), true);
+
+        //if (is_file($targetFileExpected) === false) {
+            //file_put_contents(
+                //$targetFileExpected,
+                //$resultProcessed
+            //);
+        //}
+
+        //$expectedResult = file_get_contents($targetFileExpected);
+        //$this->assertEquals($expectedResult, $resultProcessed);
     }
 
 
+    /*
     public function test_method_set_is_update_routes()
     {
         $nMock = prov_instanceOf_EnGarde_Engine_Router();
@@ -512,5 +550,9 @@ class MockRouterClass extends Router
 
     public function testRegisterControllerRoutes(string $controllerName) {
         $this->registerControllerRoutes($controllerName);
+    }
+    public function getProcessedAppRoutes() : array
+    {
+        return $this->appRoutes;
     }
 }
