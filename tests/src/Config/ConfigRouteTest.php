@@ -256,22 +256,6 @@ class ConfigRouteTest extends TestCase
     {
         global $defaultRoute;
         $testRoute = array_merge([], $defaultRoute);
-        $testRoute["method"] = "";
-
-        $fail = false;
-        try {
-            $nMock = prov_instanceOf_EnGarde_Config_Route($testRoute);
-        } catch (\Exception $ex) {
-            $fail = true;
-            $this->assertSame(
-                "Invalid value defined for \"method\". Expected non empty string.",
-                $ex->getMessage()
-            );
-        }
-        $this->assertTrue($fail, "Test must fail");
-
-
-
         $testRoute["method"] = "invalid";
 
         $fail = false;

@@ -510,34 +510,86 @@ class ConfigApplicationTest extends TestCase
         $testApplication = array_merge([], $defaultApplication);
         $testApplication["defaultRouteConfig"] = [];
 
+
+        $expected = array_merge(
+            [
+                "application"       => "site",
+                "namespace"         => "\\site\\controllers",
+                "controller"        => "",
+                "action"            => "",
+                "allowedMethods"    => [],
+                "allowedMimeTypes"  => [],
+                "method"            => "",
+                "isUseXHTML"        => false,
+                "routes"            => [],
+                "runMethodName"     => "",
+                "customProperties"  => [],
+                "description"       => "",
+                "devDescription"    => "",
+                "relationedRoutes"  => [],
+                "middlewares"       => [],
+                "isSecure"          => false,
+                "isUseCache"        => false,
+                "cacheTimeout"      => 0,
+                "responseHeaders"   => [],
+                "masterPage"        => "",
+                "view"              => "",
+                "styleSheets"       => [],
+                "javaScripts"       => [],
+                "metaData"          => [],
+                "localeDirectory"   => ""
+            ],
+            $testApplication["defaultRouteConfig"]
+        );
+
+
         $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
-        $this->assertSame([], $nMock->getDefaultRouteConfig());
+        $this->assertSame($expected, $nMock->getDefaultRouteConfig());
 
 
         $testApplication["defaultRouteConfig"] = [
-            "acceptMimes" => ["html", "xhtml", "txt"],
-            "isUseXHTML" => true,
-            "middlewares" => ["Mid_01", "Mid_02"],
-            "description" => "Default Route Description",
-            "isSecure" => true,
-            "isUseCache" => true,
-            "cacheTimeout" => 100,
-            "masterPage" => "null",
-            "styleSheets" => null,
-            "javaScripts" => null,
-            "metaData" => null
+            "allowedMimeTypes"  => ["html", "xhtml", "txt"],
+            "isUseXHTML"        => true,
+            "middlewares"       => ["Mid_01", "Mid_02"],
+            "description"       => "Default Route Description",
+            "isSecure"          => true,
+            "isUseCache"        => true,
+            "cacheTimeout"      => 100,
+            "masterPage"        => "null",
+            "styleSheets"       => [],
+            "javaScripts"       => [],
+            "metaData"          => []
         ];
 
-        $expected = [
-            "acceptmimes" => ["html", "xhtml", "txt"],
-            "isusexhtml" => true,
-            "middlewares" => ["Mid_01", "Mid_02"],
-            "description" => "Default Route Description",
-            "issecure" => true,
-            "isusecache" => true,
-            "cachetimeout" => 100,
-            "masterpage" => "null"
-        ];
+        $expected = array_merge(
+        [
+            "application"       => "site",
+            "namespace"         => "\\site\\controllers",
+            "controller"        => "",
+            "action"            => "",
+            "allowedMethods"    => [],
+            "allowedMimeTypes"  => [],
+            "method"            => "",
+            "isUseXHTML"        => false,
+            "routes"            => [],
+            "runMethodName"     => "",
+            "customProperties"  => [],
+            "description"       => "",
+            "devDescription"    => "",
+            "relationedRoutes"  => [],
+            "middlewares"       => [],
+            "isSecure"          => false,
+            "isUseCache"        => false,
+            "cacheTimeout"      => 0,
+            "responseHeaders"   => [],
+            "masterPage"        => "",
+            "view"              => "",
+            "styleSheets"       => [],
+            "javaScripts"       => [],
+            "metaData"          => [],
+            "localeDirectory"   => ""
+        ],
+        $testApplication["defaultRouteConfig"]);
 
         $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
         $this->assertSame($expected, $nMock->getDefaultRouteConfig());
@@ -574,6 +626,6 @@ class ConfigApplicationTest extends TestCase
         $this->assertSame("errorView.phtml", $nMock->getPathToErrorView());
 
         $path = $dirResources . DS . "apps" . DS . "site" . DS . "errorView.phtml";
-        $this->assertSame($path, $nMock->getFullPathToErrorView());
+        $this->assertSame($path, $nMock->getPathToErrorView(true));
     }
 }

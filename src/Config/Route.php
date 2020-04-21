@@ -13,7 +13,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 
 
 /**
- * Implementação de ``iRoute``.
+ * Implementação de ``Config\iRoute``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
@@ -362,8 +362,8 @@ final class Route extends BObject implements iRoute
     {
         $this->mainCheckForInvalidArgumentException(
             "method", $method, [
-                ["validate" => "is string not empty"],
                 [
+                    "conditions" => "is string not empty",
                     "validate" => "is allowed value",
                     "allowedValues" => $this->allowedMethods,
                     "caseInsensitive" => true
@@ -805,14 +805,14 @@ final class Route extends BObject implements iRoute
 
 
     /**
-     * Tempo (em segundos) pelo qual o documento em cache deve ser armazenado até
+     * Tempo (em minutos) pelo qual o documento em cache deve ser armazenado até
      * expirar.
      *
      * @var         int
      */
     private int $cacheTimeout = 0;
     /**
-     * Retorna o tempo (em segundos) pelo qual o documento em cache deve ser armazenado até
+     * Retorna o tempo (em minutos) pelo qual o documento em cache deve ser armazenado até
      * expirar.
      *
      * Um valor igual a ``0`` indica que o armazenamento não deve ser feito (tal qual se o sistema
@@ -827,11 +827,11 @@ final class Route extends BObject implements iRoute
         return $this->cacheTimeout;
     }
     /**
-     * Define o tempo (em segundos) pelo qual o documento em cache deve ser armazenado até
+     * Define o tempo (em minutos) pelo qual o documento em cache deve ser armazenado até
      * expirar.
      *
      * @param       int $cacheTimeout
-     *              Tempo (em segundos) para o timeout do documento em cache.
+     *              Tempo (em minutos) para o timeout do documento em cache.
      *
      * @return      void
      */
@@ -1618,7 +1618,7 @@ final class Route extends BObject implements iRoute
      *              Indica se a rota possui um conteúdo cacheável.
      *
      * @param       int $cacheTimeout
-     *              Tempo (em segundos) pelo qual o documento em cache deve ser armazenado até
+     *              Tempo (em minutos) pelo qual o documento em cache deve ser armazenado até
      *              expirar.
      *
      * @param       bool $responseIsPrettyPrint

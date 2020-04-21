@@ -49,19 +49,13 @@ abstract class Application extends BObject implements iApplication
      *
      * @var         array
      */
-    protected array $applicationConfig = [];
+    protected array $defaultApplicationConfig = [];
     /**
      * Configurações padrões para a aplicação.
      *
      * @var         array
      */
-    protected array $securityConfig = [];
-    /**
-     * Configurações padrões para as rotas da aplicação.
-     *
-     * @var         array
-     */
-    protected array $defaultRouteConfig = [];
+    protected array $defaultSecurityConfig = [];
 
 
 
@@ -95,24 +89,24 @@ abstract class Application extends BObject implements iApplication
                 "appName"       => $serverConfig->getApplicationName(),
                 "appRootPath"   => $serverConfig->getRootPath() . DS . $serverConfig->getApplicationName()
             ],
-            $this->applicationConfig
+            $this->defaultApplicationConfig
         ));
 
 
         // Inicia o objeto de configuração de segurança.
-        $serverConfig->getSecuritySettings($this->securityConfig);
+        $serverConfig->getSecuritySettings($this->defaultSecurityConfig);
 
 
-        /*
-        $this->router = new \AeonDigital\EnGarde\Engine\Router(
-            $appConfig->getName(),
-            $appConfig->getPathToAppRoutes(),
-            $appConfig->getPathToControllers(),
-            $appConfig->getControllersNamespace(),
-            $appConfig->getDefaultRouteConfig()
-        );*/
+        // Inicia o objeto roteador para que seja possível
+        // identificar qual rota está sendo requisitada.
+        $this->router = new \AeonDigital\EnGarde\Engine\Router($serverConfig);
+        if ($this->router->isToProcessApplicationRoutes() === true) {
+            $this->router->processApplicationRoutes();
+        }
 
 
+
+        // Define a propriedade de configuração que está sendo usada.
         $this->serverConfig = $serverConfig;
     }
 

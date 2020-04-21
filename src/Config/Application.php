@@ -13,7 +13,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
 
 
 /**
- * Implementação de ``iApplication``.
+ * Implementação de ``Config\iApplication``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
@@ -119,11 +119,19 @@ final class Application extends BObject implements iApplication
     /**
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o arquivo de rotas da aplicação.
      *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
      * @return      string
      */
-    public function getPathToAppRoutes() : string
+    public function getPathToAppRoutes(bool $fullPath = false) : string
     {
-        return $this->pathToAppRoutes;
+        return (
+            ($fullPath === false) ?
+            $this->pathToAppRoutes :
+            $this->appRootPath . DS . $this->pathToAppRoutes
+        );
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o arquivo de rotas da aplicação.
@@ -170,11 +178,19 @@ final class Application extends BObject implements iApplication
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório de controllers
      * da aplicação.
      *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
      * @return      string
      */
-    public function getPathToControllers() : string
+    public function getPathToControllers(bool $fullPath = false) : string
     {
-        return $this->pathToControllers;
+        return (
+            ($fullPath === false) ?
+            $this->pathToControllers :
+            $this->appRootPath . DS . $this->pathToControllers
+        );
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o diretório de controllers
@@ -217,11 +233,19 @@ final class Application extends BObject implements iApplication
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório das views
      * da aplicação.
      *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
      * @return      string
      */
-    public function getPathToViews() : string
+    public function getPathToViews(bool $fullPath = false) : string
     {
-        return $this->pathToViews;
+        return (
+            ($fullPath === false) ?
+            $this->pathToViews :
+            $this->appRootPath . DS . $this->pathToViews
+        );
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o diretório das views
@@ -264,11 +288,19 @@ final class Application extends BObject implements iApplication
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório que estarão
      * armazenados os recursos para as views (imagens, JS, CSS ...).
      *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
      * @return      string
      */
-    public function getPathToViewsResources() : string
+    public function getPathToViewsResources(bool $fullPath = false) : string
     {
-        return $this->pathToViewsResources;
+        return (
+            ($fullPath === false) ?
+            $this->pathToViewsResources :
+            $this->appRootPath . DS . $this->pathToViewsResources
+        );
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o diretório que estarão
@@ -311,11 +343,19 @@ final class Application extends BObject implements iApplication
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório que estarão
      * armazenados os documentos de configuração das legendas.
      *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
      * @return      string
      */
-    public function getPathToLocales() : string
+    public function getPathToLocales(bool $fullPath = false) : string
     {
-        return $this->pathToLocales;
+        return (
+            ($fullPath === false) ?
+            $this->pathToLocales :
+            $this->appRootPath . DS . $this->pathToLocales
+        );
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o diretório que estarão
@@ -360,11 +400,19 @@ final class Application extends BObject implements iApplication
      * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
      * para os arquivos de cache.
      *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
      * @return      string
      */
-    public function getPathToCacheFiles() : string
+    public function getPathToCacheFiles(bool $fullPath = false) : string
     {
-        return $this->pathToCacheFiles;
+        return (
+            ($fullPath === false) ?
+            $this->pathToCacheFiles :
+            $this->appRootPath . DS . $this->pathToCacheFiles
+        );
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
@@ -621,12 +669,9 @@ final class Application extends BObject implements iApplication
      *
      * Neste momento da configuração apenas as seguintes propriedades podem ser definidas:
      *
-     * - setApplication     | - setAcceptMimes      | - setResponseHeaders
-     * - setIsUseXHTML      | - setMiddlewares
-     * - setDescription     | - setIsSecure
-     * - setIsUseCache      | - setCacheTimeout
-     * - setMasterPage      | - setStyleSheets
-     * - setJavaScripts     | - setMetaData
+     * allowedMethods, allowedMimeTypes, isUseXHTML, runMethodName, customProperties,
+     * description, devDescription, middlewares, isSecure, isUseCache, cacheTimeout,
+     * responseHeaders, masterPage, view, styleSheets, javaScripts, metaData, localeDirectory
      *
      * @param       array $defaultRouteConfig
      *              Array associativo.
@@ -635,29 +680,51 @@ final class Application extends BObject implements iApplication
      */
     private function setDefaultRouteConfig(array $defaultRouteConfig) : void
     {
+        $baseRouteConfig = [
+            "application"       => $this->getAppName(),
+            "namespace"         => $this->getControllersNamespace(),
+            "controller"        => "",
+            "action"            => "",
+            "allowedMethods"    => [],
+            "allowedMimeTypes"  => [],
+            "method"            => "",
+            "isUseXHTML"        => false,
+            "routes"            => [],
+            "runMethodName"     => "",
+            "customProperties"  => [],
+            "description"       => "",
+            "devDescription"    => "",
+            "relationedRoutes"  => [],
+            "middlewares"       => [],
+            "isSecure"          => false,
+            "isUseCache"        => false,
+            "cacheTimeout"      => 0,
+            "responseHeaders"   => [],
+            "masterPage"        => "",
+            "view"              => "",
+            "styleSheets"       => [],
+            "javaScripts"       => [],
+            "metaData"          => [],
+            "localeDirectory"   => ""
+        ];
+
+
         // Coleção de propriedades que podem ser definidas
         $allowedProperties = [
-            "application",
-            "acceptmimes",
-            "responseheaders",
-            "isusexhtml",
-            "middlewares",
-            "description",
-            "issecure",
-            "isusecache",
-            "cachetimeout",
-            "masterpage",
-            "stylesheets",
-            "javascripts",
-            "metadata"
+            "allowedMethods", "allowedMimeTypes", "isUseXHTML", "runMethodName", "customProperties",
+            "description", "devDescription", "middlewares", "isSecure", "isUseCache",
+            "cacheTimeout", "responseHeaders", "masterPage", "view", "styleSheets",
+            "javaScripts", "metaData", "localeDirectory",
         ];
 
 
         foreach ($defaultRouteConfig as $key => $value) {
-            if (\array_in_ci($key, $allowedProperties) === true && $value !== null) {
-                $this->defaultRouteConfig[\strtolower($key)] = $value;
+            if (\in_array($key, $allowedProperties) === true) {
+                $baseRouteConfig[$key] = $value;
             }
         }
+
+        $this->defaultRouteConfig = $baseRouteConfig;
     }
 
 
@@ -680,23 +747,17 @@ final class Application extends BObject implements iApplication
      * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros
      * na aplicação.
      *
-     * @return      string
-     */
-    public function getPathToErrorView() : string
-    {
-        return $this->pathToErrorView;
-    }
-    /**
-     * Resgata o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros
-     * na aplicação.
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
      *
      * @return      string
      */
-    public function getFullPathToErrorView() : string
+    public function getPathToErrorView(bool $fullPath = false) : string
     {
         return (
-            ($this->appRootPath === "" || $this->pathToErrorView === "") ?
-            "" :
+            ($fullPath === false) ?
+            $this->pathToErrorView :
             $this->appRootPath . DS . $this->pathToErrorView
         );
     }
@@ -717,7 +778,7 @@ final class Application extends BObject implements iApplication
     private function setPathToErrorView(string $pathToErrorView) : void
     {
         $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
-        $fullPathToErrorView = $this->getFullPathToErrorView();
+        $fullPathToErrorView = $this->getPathToErrorView(true);
 
         $this->mainCheckForInvalidArgumentException(
             "pathToErrorView", $fullPathToErrorView, [

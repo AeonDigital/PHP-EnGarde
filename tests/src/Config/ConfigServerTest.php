@@ -432,7 +432,7 @@ class ConfigServerTest extends TestCase
         global $defaultServerVariables;
         global $defaultEngineVariables;
         $testEngineVariables = array_merge([], $defaultEngineVariables);
-        $testEngineVariables["timeOut"] = -1;
+        $testEngineVariables["timeout"] = -1;
 
         $fail = false;
         try {
@@ -442,7 +442,7 @@ class ConfigServerTest extends TestCase
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame(
-                "Invalid value defined for \"timeOut\". Expected integer greather than zero. Given: [ -1 ]",
+                "Invalid value defined for \"timeout\". Expected integer greather than zero. Given: [ -1 ]",
                 $ex->getMessage()
             );
         }
@@ -454,7 +454,7 @@ class ConfigServerTest extends TestCase
     {
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-        $this->assertSame(1200, $nMock->getTimeOut());
+        $this->assertSame(1200, $nMock->getTimeout());
     }
 
 
@@ -550,7 +550,10 @@ class ConfigServerTest extends TestCase
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
         $this->assertSame("errorView.phtml", $nMock->getPathToErrorView());
-        $this->assertSame($dirResources . DS . "apps" . DS . "errorView.phtml", $nMock->getFullPathToErrorView());
+        $this->assertSame(
+            $dirResources . DS . "apps" . DS . "errorView.phtml",
+            $nMock->getPathToErrorView(true)
+        );
     }
 
 

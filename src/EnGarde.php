@@ -65,7 +65,7 @@ final class EnGarde extends BObject
                     "hostedApps"            => ["site", "blog"],
                     "defaultApp"            => "site",
                     "dateTimeLocal"         => "America/Sao_Paulo",
-                    "timeOut"               => 1200,
+                    "timeout"               => 1200,
                     "maxFileSize"           => 100,
                     "maxPostSize"           => 100,
                     "pathToErrorView"       => "errorView.phtml",

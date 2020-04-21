@@ -13,7 +13,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 
 
 /**
- * Implementação de ``iSecurity``.
+ * Implementação de ``Config\iSecurity``.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>

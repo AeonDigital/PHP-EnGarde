@@ -7,7 +7,7 @@ use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 use AeonDigital\Interfaces\Http\iFactory as iFactory;
 use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
-use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
+use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 
@@ -601,20 +601,20 @@ final class Server extends BObject implements iServer
      *
      * @var         int
      */
-    private int $timeOut = 0;
+    private int $timeout = 0;
     /**
      * Retorna o tempo máximo (em segundos) para a execução das requisições.
      *
      * @return      int
      */
-    public function getTimeOut() : int
+    public function getTimeout() : int
     {
-        return $this->timeOut;
+        return $this->timeout;
     }
     /**
      * Define o tempo máximo (em segundos) para a execução das requisições.
      *
-     * @param       int $timeOut
+     * @param       int $timeout
      *              Timeout que será definido.
      *
      * @return      void
@@ -622,12 +622,12 @@ final class Server extends BObject implements iServer
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    private function setTimeOut(int $timeOut) : void
+    private function setTimeout(int $timeout) : void
     {
         $this->mainCheckForInvalidArgumentException(
-            "timeOut", $timeOut, ["is integer greather than zero"]
+            "timeout", $timeout, ["is integer greather than zero"]
         );
-        $this->timeOut = $timeOut;
+        $this->timeout = $timeout;
     }
 
 
@@ -711,26 +711,20 @@ final class Server extends BObject implements iServer
      */
     private string $pathToErrorView = "";
     /**
-     * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no
-     * domínio.
+     * Resgata o caminho até a view que deve ser enviada ao ``UA`` em caso de
+     * erros no domínio.
+     *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
      *
      * @return      string
      */
-    public function getPathToErrorView() : string
-    {
-        return $this->pathToErrorView;
-    }
-    /**
-     * Resgata o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros no
-     * domínio.
-     *
-     * @return      ?string
-     */
-    public function getFullPathToErrorView() : string
+    public function getPathToErrorView(bool $fullPath = false) : string
     {
         return (
-            ($this->rootPath === "" || $this->pathToErrorView === "") ?
-            "" :
+            ($fullPath === false) ?
+            $this->pathToErrorView :
             $this->rootPath . DS . $this->pathToErrorView
         );
     }
@@ -752,7 +746,7 @@ final class Server extends BObject implements iServer
     {
         $this->pathToErrorView = \to_system_path(\trim($pathToErrorView, "/\\"));
         $this->mainCheckForInvalidArgumentException(
-            "pathToErrorView", $this->getFullPathToErrorView(), [
+            "pathToErrorView", $this->getPathToErrorView(true), [
                 [
                     "conditions" => "is string not empty",
                     "validate" => "is file exists",
@@ -912,7 +906,7 @@ final class Server extends BObject implements iServer
      *              - string dateTimeLocal
      *              Define o timezone do domínio.
      *
-     *              - int timeOut
+     *              - int timeout
      *              Valor máximo (em segundos) para a execução das requisições.
      *
      *              - int maxFileSize
@@ -1033,7 +1027,7 @@ final class Server extends BObject implements iServer
         $this->setHostedApps($hostedApps);
         $this->setDefaultApp($defaultApp);
         $this->setDateTimeLocal($dateTimeLocal);
-        $this->setTimeOut($timeOut);
+        $this->setTimeout($timeout);
         $this->setMaxFileSize($maxFileSize);
         $this->setMaxPostSize($maxPostSize);
         $this->setPathToErrorView($pathToErrorView);
@@ -1107,7 +1101,7 @@ final class Server extends BObject implements iServer
             $this->getIsDebugMode(),
             $this->getRequestProtocol(),
             $this->getRequestMethod(),
-            $this->getFullPathToErrorView()
+            $this->getPathToErrorView(true)
         );
         set_exception_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,   "onException"]);
         set_error_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,       "onError"], E_ALL);
@@ -1165,7 +1159,7 @@ final class Server extends BObject implements iServer
 
 
             // - Define o valor máximo (em segundos) que um processamento pode durar.
-            \ini_set("max_execution_time",  (string)$this->getTimeOut());
+            \ini_set("max_execution_time",  (string)$this->getTimeout());
 
             // - Define os limites aceitáveis para o upload e a postagem de dados vindos do cliente.
             \ini_set("upload_max_filesize", (string)$this->getMaxFileSize());
@@ -1287,7 +1281,7 @@ final class Server extends BObject implements iServer
      */
     public function getSecurityConfig(array $config = []) : ?iSecurity
     {
-        if ($this->securityConfig === null) {
+        if (isset($this->securityConfig) === false && $config !== []) {
             $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray($config);
         }
         return $this->securityConfig;
@@ -1313,7 +1307,10 @@ final class Server extends BObject implements iServer
      */
     public function getRouteConfig(array $config = []) : ?iRoute
     {
-
+        if (isset($this->routeConfig) === false && $config !== []) {
+            $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+        }
+        return $this->routeConfig;
     }
 
 

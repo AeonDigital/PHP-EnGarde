@@ -6,7 +6,7 @@ namespace AeonDigital\EnGarde\Engine;
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iRouter as iRouter;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
-
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 
 
 
@@ -28,36 +28,12 @@ final class Router extends BObject implements iRouter
 
 
     /**
-     * Nome da aplicação onde as rotas estão sendo verificadas
+     * Configurações do servidor.
      *
-     * @var         string
+     * @var         iServer
      */
-    private string $applicationName = "";
-    /**
-     * Caminho relativo para o arquivo de rotas da aplicação.
-     *
-     * @var         string
-     */
-    private string $pathToAppRoutes = "";
-    /**
-     * Caminho relativo até o diretório de controllers da aplicação
-     *
-     * @var         string
-     */
-    private string $pathToControllers = "";
-    /**
-     * Namespaces usadas pelos controllers da aplicação.
-     *
-     * @var         string
-     */
-    private string $controllersNamespace = "";
-    /**
-     * Preenchido com a execução do método ``selectTargetRawRoute``, trará um array associativo
-     * contendo os parametros identificados na ``URL`` passada.
-     *
-     * @var         array
-     */
-    private array $selectedRouteParans = [];
+    private iServer $serverConfig;
+
 
 
 
@@ -66,56 +42,12 @@ final class Router extends BObject implements iRouter
     /**
      * Inicia um Roteador.
      *
-     * @param       string $applicationName
-     *              Nome da aplicação.
-     *
-     * @param       string $pathToAppRoutes
-     *              Caminho relativo até o arquivo de rotas.
-     *
-     * @param       string $pathToControllers
-     *              Caminho relativo até o diretório de controllers.
-     *
-     * @param       string $controllersNamespace
-     *              Namespaces dos controllers da aplicação alvo.
-     *
-     * @param       array $defaultRouteConfig
-     *              Configurações padrões para as rotas da aplicação.
+     * @param       iServer $serverConfig
+     *              Objeto de configuração do servidor.
      */
-    function __construct(
-        string $applicationName,
-        string $pathToAppRoutes,
-        string $pathToControllers,
-        string $controllersNamespace,
-        array $defaultRouteConfig = []
-    ) {
-        $this->applicationName      = $applicationName;
-        $this->pathToAppRoutes      = $pathToAppRoutes;
-        $this->pathToControllers    = $pathToControllers;
-        $this->controllersNamespace = $controllersNamespace;
-        $this->defaultRouteConfig   = $defaultRouteConfig;
-    }
-
-
-
-
-
-    /**
-     * Array associativo contendo os valores padrões para as rotas de toda a aplicação.
-     *
-     * @var         array
-     */
-    private array $defaultRouteConfig = [];
-    /**
-     * Define o valores padrões para as configurações de rotas de uma aplicação.
-     *
-     * @param       array $defaultRouteConfig
-     *              Configurações padrões para as rotas da aplicação.
-     *
-     * @return      void
-     */
-    public function setDefaultRouteConfig(array $defaultRouteConfig) : void
+    function __construct(iServer $serverConfig)
     {
-        $this->defaultRouteConfig = $defaultRouteConfig;
+        $this->serverConfig = $serverConfig;
     }
 
 
@@ -123,94 +55,90 @@ final class Router extends BObject implements iRouter
 
 
 
-    /**
-     * Indica se o roteador pode executar a atualização do arquivo de rotas.
-     *
-     * @var         bool
-     */
-    private bool $isUpdateRoutes = false;
-    /**
-     * Indica se é permitido efetuar a atualização do arquivo de rotas da aplicação.
-     *
-     * @param       bool $isUpdateRoutes
-     *              Quando ``true`` irá permitir a atualização do arquivo de rotas.
-     *
-     * @return      void
-     */
-    public function setIsUpdateRoutes(bool $isUpdateRoutes) : void
-    {
-        $this->isUpdateRoutes = $isUpdateRoutes;
-    }
-
 
 
 
 
     /**
-     * Quando executado este método irá excluir o atual arquivo de configuração de rotas da
-     * aplicação, forçando assim que ele seja refeito.
+     * Deve verificar quando a aplicação possui alterações que envolvam a necessidade de efetuar
+     * uma atualização nos dados das rotas.
      *
-     * @return      void
-     */
-    public function forceUpdateRoutes() : void
-    {
-        if (\file_exists($this->pathToAppRoutes) === true) {
-            \unlink($this->pathToAppRoutes);
-        }
-    }
-
-
-
-
-
-    /**
-     * Retornará ``true`` quando for identificado que é para redefinir o arquivo de configuração
-     * de rotas da aplicação.
+     * Idealmente verificará se os controllers da aplicação possuem alguma alteração posterior
+     * a data do último processamento, e, estando o sistema configurado para atualizar
+     * automaticamente as rotas, deverá retornar ``true``.
      *
-     * Apenas retornará ``true`` quando:
-     * - for  definido ``true`` em ``setIsUpdateRoutes``.
-     * - há algum arquivo ``controller`` com data de alteração posterior a data de criação do
-     *   arquivo de configuração de rotas da aplicação.
-     *
-     * Também retornará ``true`` quando não existir um arquivo de rotas no local indicado.
+     * Também deve retornar ``true`` quando, por qualquer motivo definido na implementação, o
+     * processamento anterior não existir ou for considerado como desatualizado.
      *
      * @return      bool
      */
-    public function checkForUpdateApplicationRoutes() : bool
+    public function isToProcessApplicationRoutes() : bool
     {
         $r = false;
-        $appRoutes          = $this->pathToAppRoutes;
-        $controllersPath    = $this->pathToControllers;
+        $appConfig          = $this->serverConfig->getApplicationConfig();
+        $appRoutes          = $appConfig->getPathToAppRoutes(true);
+        $appControllersPath = $appConfig->getPathToControllers(true);
 
 
-        if (\file_exists($appRoutes) === false) {
+        // SE,
+        // O domínio está configurado para atualização automática
+        // do arquivo de rotas das aplicações
+        // E
+        // O modo de Debug está ligado
+        // E
+        // Estando em um ambiente definido como LCL ou DEV
+        // Irá SEMPRE forçar a atualização do arquivo de rotas
+        if ($this->serverConfig->getIsUpdateRoutes() === true &&
+            $this->serverConfig->getIsDebugMode() === true &&
+            \in_array($this->serverConfig->getEnvironmentType(), ["LCL", "DEV"]))
+        {
             $r = true;
-        } else {
-            if ($this->isUpdateRoutes === true) {
-                $appRoutesFileLastMod = \filemtime($appRoutes);
-                $controllersLastMod = 0;
+        }
+        else {
+            // Caso o arquivo de pré-processamento não exista.
+            if (\file_exists($appRoutes) === false) {
+                $r = true;
+            }
+            else {
+                // Se o arquivo de pre-processamento existe,
+                // E, SE
+                // O motor da aplicação está configurado para efetuar atualizações
+                // de forma automática.
+                if ($this->serverConfig->getIsUpdateRoutes() === true) {
+                    // Identifica o timestamp da criação do arquivo de rotas atual
+                    $appRoutesFileLastMod = \filemtime($appRoutes);
+                    $controllersLastMod = 0;
 
-                // Verifica os arquivos da pasta de controller
-                $controllersFiles = \scandir($controllersPath);
-                foreach ($controllersFiles as $key => $fileName) {
-                    if (\in_array($fileName, [".", ".."]) === false &&
-                        \is_dir($fileName) === false &&
-                        \mb_str_ends_with($fileName, ".php") === true)
-                    {
-                        $fileMod = \filemtime($controllersPath . DS . $fileName);
+                    // Verifica cada um dos arquivos da pasta de controller
+                    // para identificar seus timestamps e selecionar aquele que foi
+                    // mais recentemente alterado/criado.
+                    $controllersFiles = \scandir($controllersPath);
+                    foreach ($controllersFiles as $key => $fileName) {
+                        if (\in_array($fileName, [".", ".."]) === false &&
+                            \is_dir($fileName) === false &&
+                            \mb_str_ends_with($fileName, ".php") === true)
+                        {
+                            $fileMod = \filemtime($controllersPath . DS . $fileName);
 
-                        // Mantém o maior valor
-                        $controllersLastMod = ($fileMod > $controllersLastMod) ? $fileMod : $controllersLastMod;
+                            // Mantém o maior valor
+                            $controllersLastMod = ($fileMod > $controllersLastMod) ? $fileMod : $controllersLastMod;
+                        }
                     }
-                }
 
-                if ($controllersLastMod > $appRoutesFileLastMod) {
-                    $r = true;
+                    // Se há algum controller adicionado/alterado após a data de criação
+                    // do arquivo de pré-processamento das rotas, então deverá ser feito um
+                    // novo reprocessamento.
+                    if ($controllersLastMod > $appRoutesFileLastMod) {
+                        $r = true;
+                    }
                 }
             }
         }
 
 
+        if ($r === true && \file_exists($appRoutes) === true) {
+            \unlink($appRoutes);
+        }
         return $r;
     }
 
@@ -218,61 +146,50 @@ final class Router extends BObject implements iRouter
 
 
 
-
-
-
-
-
     /**
-     * Aloca o novo valor para o documento ``AppRouter``.
+     * Aloca o novo valor para o documento ``AppRoutes``.
      *
      * @var     array
      */
     private array $appRoutes = [];
     /**
-     * Varre os arquivos de ``controllers`` da aplicação e remonta o arquivo de configuração de
-     * rotas do mesmo.
-     *
-     * Este método apenas pode ser executado quando o resultado de
-     * ``checkForUpdateApplicationRoutes`` for ``true``.
+     * Varre os arquivos de ``controllers`` da aplicação e efetua o processamento das mesmas.
+     * Idealmente o resultado deve ser um arquivo de configuração contendo todos os dados necessários
+     * para a execução de cada rota de forma individual.
      *
      * @return      void
-     *
-     * @throws      \InvalidArgumentException
-     *              Caso algum parametro interno esteja com um valor inválido.
      *
      * @throws      \RuntimeException
      *              Caso algum erro ocorra no processo.
      */
-    public function updateApplicationRoutes() : void
+    public function processApplicationRoutes() : void
     {
-        if ($this->checkForUpdateApplicationRoutes() === true) {
-            $this->appRoutes = [];
+        $appConfig          = $this->serverConfig->getApplicationConfig();
+        $appControllersPath = $appConfig->getPathToControllers(true);
+        $pathToAppRoutes    = $appConfig->getPathToAppRoutes(true);
+        $this->appRoutes    = [];
 
-            // Verifica os arquivos da pasta de controller
-            $controllersFiles = \scandir($this->pathToControllers);
-            foreach ($controllersFiles as $key => $fileName) {
-                if (\in_array($fileName, [".", ".."]) === false &&
-                    \is_dir($fileName) === false &&
-                    \mb_str_ends_with($fileName, ".php") === true)
-                {
-                    $controllerName = \str_replace(".php", "", $fileName);
-                    $this->registerControllerRoutes($controllerName);
-                }
+
+        // Verifica os arquivos da pasta de controller
+        $controllersFiles = \scandir($appControllersPath);
+        foreach ($controllersFiles as $key => $fileName) {
+            if (\in_array($fileName, [".", ".."]) === false &&
+                \is_dir($fileName) === false &&
+                \mb_str_ends_with($fileName, ".php") === true)
+            {
+                $controllerName = \str_replace(".php", "", $fileName);
+                $this->registerControllerRoutes($controllerName);
             }
-
-            \file_put_contents($this->pathToAppRoutes, "<?php return " . \var_export($this->appRoutes, true) . ";");
         }
+
+        \file_put_contents(
+            $pathToAppRoutes,
+            "<?php return " . \var_export($this->appRoutes, true) . ";"
+        );
     }
-    /**
-     * Cria uma instância de um objeto que implemente a interface ``iRoute``.
-     *
-     * @return      iRoute
-     */
-    private function createRouteConfig() : iRoute
-    {
-        return new \AeonDigital\EnGarde\Config\Route();
-    }
+
+
+
     /**
      * Percorre todas as rotas definidas no controller indicado para efetuar o registro de
      * cada uma delas.
@@ -283,84 +200,67 @@ final class Router extends BObject implements iRouter
      *
      * @return      void
      *
-     * @throws      \InvalidArgumentException
-     *              Caso algum parametro interno esteja com um valor inválido.
-     *
      * @throws      \RuntimeException
      *              Caso algum erro ocorra no processo.
      */
     private function registerControllerRoutes(string $controllerName) : void
     {
-        $routesConfig       = [];
-        $appName            = $this->applicationName;
-        $controllersNS      = $this->controllersNamespace;
-        $appRouteConfig     = $this->defaultRouteConfig;
-        $controllerFullName = $controllersNS . "\\" . $controllerName;
+        $appConfig              = $this->serverConfig->getApplicationConfig();
+        $appName                = $appConfig->getAppName();
+        $controllerFullName     = $appConfig->getControllersNamespace() . "\\" . $controllerName;
+        $controllerRoutes       = [];
 
+        // Efetua o merge das configurações de rotas que está vindo da
+        // aplicação com as definições básicas do próprio controller (caso esteja definido)
+        $applicationRouteConfig = $appConfig->getDefaultRouteConfig();
+        $applicationRouteConfig["controller"] = $controllerFullName;
 
-        $oCtrlReflection    = new \ReflectionClass($controllerFullName);
-        $staticProperties   = $oCtrlReflection->getStaticProperties();
-
-        $ctrlRouteConfig    = $oCtrlReflection->getConstant("defaultRouteConfig");
-        $ctrlRouteConfig    = (($ctrlRouteConfig === false) ? [] : $ctrlRouteConfig);
-        $envrRouteConfig    = $this->mergeRouteConfigs($appRouteConfig, $ctrlRouteConfig, true);
+        $controllerReflection   = new \ReflectionClass($controllerFullName);
+        $controllerRouteConfig  = $controllerReflection->getConstant("defaultRouteConfig");
+        $controllerRouteConfig  = (($controllerRouteConfig === false) ? [] : $controllerRouteConfig);
+        $controllerRouteConfig  = $this->mergeRouteConfigs($applicationRouteConfig, $controllerRouteConfig, true);
 
 
 
         // Apenas se houverem propriedades estáticas definidas...
+        $staticProperties   = $controllerReflection->getStaticProperties();
         if (\is_array($staticProperties) !== false && \count($staticProperties) > 0) {
             foreach ($staticProperties as $propName => $value) {
                 // sendo uma propriedade de registro de rotas.
-                if (\mb_strlen($propName) >= 13 && \substr($propName, 0, 13) === "registerRoute") {
+                if (\mb_str_starts_with($propName, "registerRoute") === true)  {
 
+                    // Extrai a configuração da rota individualmente
                     if (\is_string($value) === true) {
-                        $rConfig = $this->createRouteConfig();
-                        $rConfig->setApplication($appName);
-                        $rConfig->setNamespace($controllersNS);
-                        $rConfig->setController($controllerName);
+                        $actionRouteConfig = $this->mergeRouteConfigs(
+                            $controllerRouteConfig,
+                            $this->parseStringRouteConfiguration($value)
+                        );
+                    }
+                    else {
+                        $actionRouteConfig = $this->mergeRouteConfigs(
+                            $controllerRouteConfig,
+                            $value
+                        );
 
-                        $rConfig->setValues($value);
-                        $rConfig->setValues($envrRouteConfig);
-
-                        $routesConfig[] = $rConfig;
-                    } else {
-                        $baseRouteConfig = $this->mergeRouteConfigs($envrRouteConfig, $value);
-                        $useRouteConfig = [];
-                        $allowedMethods = null;
-
-                        if (isset($baseRouteConfig["method"]) === false) {
-                            // @codeCoverageIgnoreStart
-                            $err = "Invalid Route Register. Method HTTP is not defined.";
-                            throw new \RuntimeException($err);
-                            // @codeCoverageIgnoreEnd
-                        } else {
-                            if (\is_string($baseRouteConfig["method"]) === true) {
-                                $allowedMethods = [$baseRouteConfig["method"]];
-                                $useRouteConfig[] = $baseRouteConfig;
-                            } else {
-                                $allowedMethods = $baseRouteConfig["method"];
-
-                                foreach ($baseRouteConfig["method"] as $method) {
-                                    $cloneRouteConfig = \array_merge($baseRouteConfig, []);
-                                    $cloneRouteConfig["method"] = $method;
-                                    $useRouteConfig[] = $cloneRouteConfig;
-                                }
-                            }
-                        }
-
-
-                        foreach ($useRouteConfig as $rc) {
-                            $rConfig = $this->createRouteConfig();
-                            $rConfig->setApplication($appName);
-                            $rConfig->setNamespace($controllersNS);
-                            $rConfig->setController($controllerName);
-                            $rConfig->setAllowedMethods($allowedMethods);
-                            $rConfig->setValues($rc);
-
-                            $routesConfig[] = $rConfig;
+                        if (\is_string($actionRouteConfig["allowedMethods"]) === true) {
+                            $actionRouteConfig["allowedMethods"] = [$actionRouteConfig["allowedMethods"]];
                         }
                     }
 
+
+                    // Se não foram definidos os métodos HTTP com os quais
+                    // esta rota está apta a trabalhar...
+                    if ($actionRouteConfig["allowedMethods"] === []) {
+                        $err = "Invalid Route Register. ``allowedMethods`` is not defined.";
+                        throw new \RuntimeException($err);
+                    }
+                    else {
+                        foreach ($actionRouteConfig["allowedMethods"] as $method) {
+                            $cloneRouteConfig   = \array_merge([], $actionRouteConfig);
+                            $cloneRouteConfig["method"] = $method;
+                            $controllerRoutes[] = \AeonDigital\EnGarde\Config\Route::fromArray($cloneRouteConfig);
+                        }
+                    }
                 }
             }
         }
@@ -368,25 +268,21 @@ final class Router extends BObject implements iRouter
 
 
         // Apenas se houverem rotas definidas
-        if (\count($routesConfig) > 0) {
+        if (\count($controllerRoutes) > 0) {
 
             // Classifica as rotas
-            foreach ($routesConfig as $cfg) {
+            foreach ($controllerRoutes as $cfg) {
                 $method = $cfg->getMethod();
                 $routes = $cfg->getRoutes();
-
 
 
                 // Os métodos "HEAD", "OPTIONS", "TRACE" e "CONNECT" são
                 // automaticamente resolvidos pelo framework e não pelos controllers.
                 $invalidMethods = ["HEAD", "OPTIONS", "TRACE", "CONNECT"];
                 if (\array_in_ci($method, $invalidMethods) === true) {
-                    // @codeCoverageIgnoreStart
                     $err = "The Method HTTP \"" . $method . "\" is implemented by the framework and can not be set in route configuration.";
                     throw new \InvalidArgumentException($err);
-                    // @codeCoverageIgnoreEnd
                 }
-
 
 
                 // Para cada rota que executa esta mesma ação
@@ -404,8 +300,13 @@ final class Router extends BObject implements iRouter
             }
         }
     }
+
+
+
+
+
     /**
-     * Retorna a mescla de 2 arrays contendo as configurações brutas para rotas.
+     * Retorna a mescla de 2 arrays associativos contendo as configurações de rotas.
      *
      * @param       array $initialRouteConfig
      *              Configurações iniciais.
@@ -424,51 +325,157 @@ final class Router extends BObject implements iRouter
         array $newRouteConfig,
         bool $isController = false
     ) : array {
-
-        $rConfig = $initialRouteConfig;
+        $config = $initialRouteConfig;
 
         if (\count($newRouteConfig) > 0) {
+            // Coleção de propriedades que PODEM ser sobrescritas
+            // em nível de action.
+            $allowedProperties = [
+                "action",
+                "allowedMethods",
+                "allowedMimeTypes",
+                "isUseXHTML",
+                "routes",
+                "runMethodName",
+                "customProperties",
+                "description",
+                "devDescription",
+                "relationedRoutes",
+                "middlewares",
+                "isSecure",
+                "isUseCache",
+                "cacheTimeout",
+                "responseHeaders",
+                "masterPage",
+                "view",
+                "styleSheets",
+                "javaScripts",
+                "metaData",
+                "localeDirectory"
+            ];
 
-            $allowedProperties = null;
+
+            // Remove das propriedades os itens que NÃO podem ser definidos pelas
+            // regras gerais dos controllers.
             if ($isController === true) {
-                // Coleção de propriedades que podem ser definidas pelos controllers
-                $allowedProperties = [
-                    "acceptmimes",
-                    "isusexhtml",
-                    "middlewares",
-                    "description",
-                    "issecure",
-                    "isusecache",
-                    "cachetimeout",
-                    "masterpage",
-                    "stylesheets",
-                    "javascripts",
-                    "metadata",
-                    "responseheaders"
-                ];
+                unset($allowedProperties[\array_search("action", $allowedProperties)]);
+                unset($allowedProperties[\array_search("routes", $allowedProperties)]);
+                unset($allowedProperties[\array_search("relationedRoutes", $allowedProperties)]);
             }
 
 
-            $mergeArrays = ["middlewares", "stylesheets", "javascripts", "metadata", "responseheaders"];
+            // As seguintes propriedades devem ser SOMADAS
+            // aos valores pré-existentes.
+            $mergeArrays = ["middlewares", "responseHeaders", "styleSheets", "javaScripts", "metaData"];
 
 
+            // Para cada item na coleção que deve sobrescrever a inicial...
             foreach ($newRouteConfig as $key => $value) {
-                $k = \strtolower($key);
-
-                if ($allowedProperties === null || (\in_array($k, $allowedProperties) === true && $value !== null)) {
-                    $v = $value;
-
-                    if (isset($rConfig[$k]) === true && \in_array($k, $mergeArrays) === true) {
-                        $v = \array_merge($rConfig[$k], $value);
+                if (\in_array($key, $allowedProperties) === true) {
+                    if (\in_array($key, $mergeArrays) === true && isset($initialRouteConfig[$key]) === true) {
+                        $value = \array_merge($config[$key], $value);
                     }
-
-                    $rConfig[$k] = $v;
+                    $config[$key] = $value;
                 }
             }
         }
 
-        return $rConfig;
+        return $config;
     }
+
+
+
+
+
+    /**
+     * Efetua a analise da configuração de uma rota feita em formato de string.
+     *
+     * @param       string $config
+     *              String que será analisada.
+     *              Cada porção (separada por espaço) será verificada.
+     *              O formato esperado deve seguir o seguinte padrão:
+     *              [method] route action [secure|public|- [cache|no-cache [timeout]]]
+     *
+     *              **method**  equivale a propriedade ``allowedMethods``.
+     *              apenas pode ser omitido se for definido apenas os itens **route** e **action**.
+     *              Em caso de omissão será retornado o valor ``["GET"]``.
+     *
+     *              **secure|public|-** equivale a propriedade ``isSecure``.
+     *                  Para definir como ``true``, use **secure**.
+     *                  Para definir como ``false``, use **public**.
+     *                  Para herdar das definições hierarquicamente superiores use **-**.
+     *
+     *              **cache|no-cache** permite definir os valores de ``isUseCache``
+     *                  Para definir como ``true``, use **cache**
+     *                  Para definir como ``false``, use **no-cache**
+     *
+     *              **timeout** permite definir ``cacheTimeout``.
+     *                  Deve ser um valor inteiro maior que zero.
+     *                  É obrigatório quando a definição de cache existe.
+     *
+     * @return      array
+     *              Array associativo contendo os valores:
+     *              - ``allowedMethods``, ``route``, ``action``
+     *              As propriedades ``isSecure``, ``isUseCache``, ``cacheTimeout`` são
+     *              opcionais
+     *
+     * @throws      RuntimeException
+     *              Caso qualquer das partes da configuração seja inválida.
+     */
+    private function parseStringRouteConfiguration(string $config) : array
+    {
+        $configParts = \explode(" ", $config);
+        if (\count($configParts) <= 1) {
+            $msg = "Route configuration fail. Check documentation [ \"$config\" ].";
+            throw new \RuntimeException($msg);
+        }
+        else {
+            $rConfig = [
+                "allowedMethods"    => ["GET"],
+                "route"             => "",
+                "action"            => ""
+            ];
+
+            if (\count($configParts) === 2) {
+                $rConfig["route"]   = $configParts[0];
+                $rConfig["action"]  = $configParts[1];
+            }
+            else {
+                $rConfig["allowedMethods"]  = [$configParts[0]];
+                $rConfig["route"]           = $configParts[1];
+                $rConfig["action"]          = $configParts[2];
+
+                if (isset($configParts[4]) === true) {
+                    if ($configParts[4] === "secure") {
+                        $rConfig["isSecure"] = true;
+                    }
+                    elseif($configParts[4] === "public") {
+                        $rConfig["isSecure"] = false;
+                    }
+                }
+
+
+                if (isset($configParts[5]) === true) {
+                    if ($configParts[5] === "cache") {
+                        $rConfig["isUseCache"] = true;
+                        $rConfig["cacheTimeout"] = (int)$configParts[6];
+                        if ($rConfig["cacheTimeout"] <= 0) {
+                            $msg = "Route configuration fail. Cache timeout must be a integer greather than zero. Given: [ \"$config\" ].";
+                            throw new \RuntimeException($msg);
+                        }
+                    }
+                    elseif($configParts[5] === "no-cache") {
+                        $rConfig["isUseCache"] = false;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
     /**
      * Corrige a sintaxe de uma Rota ``HTTP`` transformando-a em uma Regex válida.
      *
@@ -512,9 +519,6 @@ final class Router extends BObject implements iRouter
 
 
 
-
-
-
     /**
      * Identifica se a rota passada correspondem a alguma rota que tenha sido previamente
      * registrada no ``AppRoutes``.
@@ -529,7 +533,7 @@ final class Router extends BObject implements iRouter
      *              ou ``fragment``.
      *
      * @return      ?array
-     */
+     *
     public function selectTargetRawRoute(string $targetRoute) : ?array
     {
         $targetRoute    = "/" . \trim($targetRoute, "/") . "/";
@@ -636,9 +640,10 @@ final class Router extends BObject implements iRouter
      * ``selectTargetRawRoute``.
      *
      * @return      ?array
-     */
+     *
     public function getSelectedRouteParans() : ?array
     {
         return $this->selectedRouteParans;
     }
+    */
 }
