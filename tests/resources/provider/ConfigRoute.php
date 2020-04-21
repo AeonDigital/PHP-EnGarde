@@ -1,5 +1,36 @@
 <?php
 
+$defaultApplicationRouteConfig = [
+    "application"               => "site",
+    "namespace"                 => "\\site\\controller",
+    "controller"                => "home",
+    "allowedMethods"            => ["GET", "POST"],
+    "allowedMimeTypes"          => ["HTML", "JSON"],
+    "isUseXHTML"                => false,
+    "description"               => "Aplicação",
+    "devDescription"            => "Aplicação - Teste unitário",
+    "runMethodName"             => "run",
+    "isSecure"                  => true,
+    "isUseCache"                => false,
+    "cacheTimeout"              => 0,
+    "middlewares"               => ["mid01", "mid02"],
+];
+
+
+$defaultControllerRouteConfig = [
+    "allowedMethods"            => ["GET", "POST", "PUT"],
+    "allowedMimeTypes"          => ["HTML", "JSON", "XML"],
+    "isUseXHTML"                => false,
+    "description"               => "Controller",
+    "devDescription"            => "Controller - Teste unitário",
+    "runMethodName"             => "run",
+    "isSecure"                  => true,
+    "isUseCache"                => false,
+    "cacheTimeout"              => 0,
+    "middlewares"               => ["mid03"],
+];
+
+
 $defaultRoute = [
     "application"               => "site",
     "namespace"                 => "\\site\\controller",
@@ -45,6 +76,10 @@ $defaultRoute = [
     ],
     "localeDictionary"          => "/locales/pt-br"
 ];
+
+
+
+
 
 // ---
 // Geração de Instâncias de objetos.

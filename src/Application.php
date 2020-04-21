@@ -104,6 +104,8 @@ abstract class Application extends BObject implements iApplication
             $this->router->processApplicationRoutes();
         }
 
+        // Prosseguir daqui... fazer testes para o 'Router'
+
 
 
         // Define a propriedade de configuração que está sendo usada.

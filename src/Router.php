@@ -20,7 +20,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Router extends BObject implements iRouter
+class Router extends BObject implements iRouter
 {
 
 
@@ -32,7 +32,7 @@ final class Router extends BObject implements iRouter
      *
      * @var         iServer
      */
-    private iServer $serverConfig;
+    protected iServer $serverConfig;
 
 
 
@@ -151,7 +151,7 @@ final class Router extends BObject implements iRouter
      *
      * @var     array
      */
-    private array $appRoutes = [];
+    protected array $appRoutes = [];
     /**
      * Varre os arquivos de ``controllers`` da aplicação e efetua o processamento das mesmas.
      * Idealmente o resultado deve ser um arquivo de configuração contendo todos os dados necessários
@@ -203,7 +203,7 @@ final class Router extends BObject implements iRouter
      * @throws      \RuntimeException
      *              Caso algum erro ocorra no processo.
      */
-    private function registerControllerRoutes(string $controllerName) : void
+    protected function registerControllerRoutes(string $controllerName) : void
     {
         $appConfig              = $this->serverConfig->getApplicationConfig();
         $appName                = $appConfig->getAppName();
@@ -320,7 +320,7 @@ final class Router extends BObject implements iRouter
      *
      * @return      array
      */
-    private function mergeRouteConfigs(
+    protected function mergeRouteConfigs(
         array $initialRouteConfig,
         array $newRouteConfig,
         bool $isController = false
@@ -351,7 +351,7 @@ final class Router extends BObject implements iRouter
                 "styleSheets",
                 "javaScripts",
                 "metaData",
-                "localeDirectory"
+                "localeDictionary"
             ];
 
 
@@ -422,12 +422,12 @@ final class Router extends BObject implements iRouter
      * @throws      RuntimeException
      *              Caso qualquer das partes da configuração seja inválida.
      */
-    private function parseStringRouteConfiguration(string $config) : array
+    protected function parseStringRouteConfiguration(string $config) : array
     {
-        $configParts = \explode(" ", $config);
+        $configParts = \array_map("trim", \explode(" ", $config));
         if (\count($configParts) <= 1) {
-            $msg = "Route configuration fail. Check documentation [ \"$config\" ].";
-            throw new \RuntimeException($msg);
+            $err = "Route configuration fail. Check documentation [ \"$config\" ].";
+            throw new \RuntimeException($err);
         }
         else {
             $rConfig = [
@@ -435,8 +435,9 @@ final class Router extends BObject implements iRouter
                 "route"             => "",
                 "action"            => ""
             ];
+            $cParts = \count($configParts);
 
-            if (\count($configParts) === 2) {
+            if ($cParts === 2) {
                 $rConfig["route"]   = $configParts[0];
                 $rConfig["action"]  = $configParts[1];
             }
@@ -445,30 +446,42 @@ final class Router extends BObject implements iRouter
                 $rConfig["route"]           = $configParts[1];
                 $rConfig["action"]          = $configParts[2];
 
-                if (isset($configParts[4]) === true) {
-                    if ($configParts[4] === "secure") {
+                if ($cParts >= 4) {
+                    if ($configParts[3] === "secure") {
                         $rConfig["isSecure"] = true;
                     }
-                    elseif($configParts[4] === "public") {
+                    elseif($configParts[3] === "public") {
                         $rConfig["isSecure"] = false;
                     }
                 }
 
 
-                if (isset($configParts[5]) === true) {
-                    if ($configParts[5] === "cache") {
+                if ($cParts >= 5) {
+                    if ($configParts[4] === "cache") {
                         $rConfig["isUseCache"] = true;
-                        $rConfig["cacheTimeout"] = (int)$configParts[6];
-                        if ($rConfig["cacheTimeout"] <= 0) {
-                            $msg = "Route configuration fail. Cache timeout must be a integer greather than zero. Given: [ \"$config\" ].";
-                            throw new \RuntimeException($msg);
+                        $rConfig["cacheTimeout"] = 0;
+                        $err = null;
+                        if ($cParts === 5) {
+                            $err = "Route configuration fail. Cache timeout must be a integer greather than zero. Given: [ \"$config\" ].";
+                        }
+                        else {
+                            $rConfig["cacheTimeout"] = (int)$configParts[5];
+                            if ($rConfig["cacheTimeout"] <= 0) {
+                                $err = "Route configuration fail. Cache timeout must be a integer greather than zero. Given: [ \"$config\" ].";
+                            }
+                        }
+
+                        if ($err !== null) {
+                            throw new \RuntimeException($err);
                         }
                     }
-                    elseif($configParts[5] === "no-cache") {
+                    elseif($configParts[4] === "no-cache") {
                         $rConfig["isUseCache"] = false;
                     }
                 }
             }
+
+            return $rConfig;
         }
     }
 
@@ -488,7 +501,7 @@ final class Router extends BObject implements iRouter
      *
      * @return      string
      */
-    private function normalizeRouteRegEx(string $route) : string
+    protected function normalizeRouteRegEx(string $route) : string
     {
         $str = "";
         if ($route !== "") {
@@ -518,7 +531,7 @@ final class Router extends BObject implements iRouter
 
 
 
-
+    public function selectTargetRawRoute(string $targetRoute) : ?array {}
     /**
      * Identifica se a rota passada correspondem a alguma rota que tenha sido previamente
      * registrada no ``AppRoutes``.
