@@ -138,9 +138,6 @@ class Router extends BObject implements iRouter
         }
 
 
-        if ($r === true && \file_exists($appRoutes) === true) {
-            \unlink($appRoutes);
-        }
         return $r;
     }
 
@@ -158,8 +155,6 @@ class Router extends BObject implements iRouter
      * Varre os arquivos de ``controllers`` da aplicação e efetua o processamento das mesmas.
      * Idealmente o resultado deve ser um arquivo de configuração contendo todos os dados necessários
      * para a execução de cada rota de forma individual.
-     *
-     * @codeCoverageIgnore
      *
      * @return      void
      *
@@ -533,43 +528,48 @@ class Router extends BObject implements iRouter
 
 
 
-
-    public function selectTargetRawRoute(string $targetRoute) : ?array {}
     /**
-     * Identifica se a rota passada correspondem a alguma rota que tenha sido previamente
-     * registrada no ``AppRoutes``.
-     * Uma vez identificada a rota alvo, retorna todas suas configurações.
+     * Identifica se a rota passada corresponde a alguma das rotas configuradas para a
+     * aplicação e retorna um array associativo contendo todos os dados correspondentes a mesma.
      *
      * Em caso de falha na identificação da rota será retornado ``null``.
      *
      * @param       string $targetRoute
      *              Porção relativa da ``URI`` que está sendo executada.
      *              É necessário constar na rota, como sua primeira parte, o nome da aplicação
-     *              que está sendo executada. Não deve constar quaisquer parametros ``querystring``
-     *              ou ``fragment``.
+     *              que está sendo executada.
+     *              Não deve constar quaisquer parametros ``querystring`` ou ``fragment``.
      *
      * @return      ?array
-     *
+     */
     public function selectTargetRawRoute(string $targetRoute) : ?array
     {
+        $matchRoute     = null;
         $targetRoute    = "/" . \trim($targetRoute, "/") . "/";
-        $appRoutes  = include($this->pathToAppRoutes);
-        $regexRoute = $this->normalizeRouteRegEx($targetRoute);
-        $rawRoute   = null;
-        $rawConfig  = null;
-        $urlParans  = null;
+        $regexRoute     = $this->normalizeRouteRegEx($targetRoute);
+        $appRoutes      = include(
+            $this->serverConfig->
+                getApplicationConfig()->
+                getPathToAppRoutes(true)
+        );
 
-        $this->selectedRouteParans = [];
 
-
-        // Se nenhuma rota está definida...
+        // Se há rotas definidas no arquivo de configuração
         if (\count($appRoutes) !== 0) {
-            if ($rawRoute === null && isset($appRoutes["simple"]) === true) {
+            $matchRoute = [
+                "route"     => null,
+                "config"    => null,
+                "parans"    => null
+            ];
+
+
+            // Havendo rotas simples, verifica entre elas em primeiro lugar
+            if (isset($appRoutes["simple"]) === true) {
                 // Verifica se há alguma rota com nome exato da atual URL
                 foreach ($appRoutes["simple"] as $route => $config) {
-                    if ($route === $regexRoute) {
-                        $rawRoute   = $route;
-                        $rawConfig  = $config;
+                    if ($regexRoute === $route) {
+                        $matchRoute["route"]    = $route;
+                        $matchRoute["config"]   = $config;
                         break;
                     }
                 }
@@ -577,17 +577,17 @@ class Router extends BObject implements iRouter
 
 
             // Se ainda não encontrou a rota certa pesquisa entre as rotas complexas
-            if ($rawRoute === null && isset($appRoutes["complex"]) === true) {
-                $matchRoutes = [];
-                $matchIndex = 0;
+            if ($matchRoute["route"] === null && isset($appRoutes["complex"]) === true) {
+                $matchIndex     = 0;
+                $matchRoutes    = [];
 
                 // Verifica apenas as rotas que ainda não foram conferidas
                 foreach ($appRoutes["complex"] as $route => $config) {
                     // Verifica se a URL atual é compativel com a rota informada.
                     if (\preg_match($route, $targetRoute, $urlParans) === 1) {
                         $matchRoutes[] = [
-                            "rawRoute"  => $route,
-                            "rawConfig" => $config,
+                            "route"     => $route,
+                            "config"    => $config,
                             "parans"    => $urlParans
                         ];
                     }
@@ -604,11 +604,11 @@ class Router extends BObject implements iRouter
                         // Verifica qual rota fechou mais partes
                         // significando assim que ela adequa-se mais idealmente ao
                         // definido.
-                        foreach ($matchRoutes as $k => $matchs) {
+                        foreach ($matchRoutes as $i => $matchs) {
                             $parts = \substr_count($matchs["rawRoute"], "/");
 
                             if ($parts > $countParts) {
-                                $matchIndex = $k;
+                                $matchIndex = $i;
                                 $countParts = $parts;
                             }
                         }
@@ -616,21 +616,14 @@ class Router extends BObject implements iRouter
 
 
                     // Recolhe as informações definidas
-                    $rawRoute   = $matchRoutes[$matchIndex]["rawRoute"];
-                    $rawConfig  = $matchRoutes[$matchIndex]["rawConfig"];
-                    $urlParans  = $matchRoutes[$matchIndex]["parans"];
+                    $matchRoute = $matchRoutes[$matchIndex];
 
 
                     // Remove as chaves numéricas do array de parametros resultante
-                    foreach ($urlParans as $key => $value) {
+                    foreach ($matchRoute["parans"] as $key => $value) {
                         if ($key === 0 || \intval($key)) {
-                            unset($urlParans[$key]);
+                            unset($matchRoute["parans"][$key]);
                         }
-                    }
-
-
-                    if (\count($urlParans) > 0) {
-                        $this->selectedRouteParans = $urlParans;
                     }
                 }
             }
@@ -638,28 +631,12 @@ class Router extends BObject implements iRouter
 
 
             // Se nenhuma rota for identificada como compatível.
-            if ($rawRoute === null) {
-                $rawConfig = null;
+            if ($matchRoute["route"] === null) {
+                $matchRoute = null;
             }
         }
 
 
-        return $rawConfig;
+        return $matchRoute;
     }
-
-
-
-
-
-    /**
-     * Retorna a coleção de parametros identificados na ``URL`` passada por último no método
-     * ``selectTargetRawRoute``.
-     *
-     * @return      ?array
-     *
-    public function getSelectedRouteParans() : ?array
-    {
-        return $this->selectedRouteParans;
-    }
-    */
 }

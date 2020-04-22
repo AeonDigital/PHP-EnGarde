@@ -31,13 +31,20 @@ class RouterTest extends TestCase
         $serverConfig->getSecurityConfig($defaultSecurity);
 
 
+        global $dirResources;
+        include_once to_system_path($dirResources . "/apps/site/controllers/Home.php");
+        if (is_file($dirResources . "/apps/site/controllers/Test.php") === true) {
+            include_once to_system_path($dirResources . "/apps/site/controllers/Test.php");
+        }
+
+
         return new MockRouterClass($serverConfig);
     }
 
 
 
 
-    /*
+
     public function test_constructor_ok()
     {
         global $defaultServerVariables;
@@ -320,7 +327,6 @@ class RouterTest extends TestCase
     }
 
 
-
     public function test_method_registerControllerRoutes()
     {
         global $dirResources;
@@ -342,153 +348,100 @@ class RouterTest extends TestCase
 
         $expectedResult = file_get_contents($targetFileExpected);
         $this->assertEquals($expectedResult, $resultProcessed);
-    }*/
+    }
 
 
     public function test_method_isToProcessApplicationRoutes()
     {
         global $dirResources;
+        global $defaultEngineVariables;
+        $oIsDebugMode       = $defaultEngineVariables["isDebugMode"];
+        $oIsUpdateRoutes    = $defaultEngineVariables["isUpdateRoutes"];
+        $oEnvironmentType   = $defaultEngineVariables["environmentType"];
+
+
+        // Retorno ``true`` por configurações do ambiente.
+        $defaultEngineVariables["isDebugMode"]      = true;
+        $defaultEngineVariables["isUpdateRoutes"]   = true;
+        $defaultEngineVariables["environmentType"]  = "LCL";
+
+
+        $nMock = $this->provideRouteMock();
+        $this->assertTrue($nMock->isToProcessApplicationRoutes());
+
+
+
+        // Retorna ``true`` devido a ausencia do arquivo de configuração
+        $defaultEngineVariables["isDebugMode"] = false;
+        $pathToAppRoutes = $nMock->getPathToAppRoutes();
+        if (is_file($pathToAppRoutes) === true) { unlink($pathToAppRoutes); }
+
+        $nMock = $this->provideRouteMock();
+        $this->assertTrue($nMock->isToProcessApplicationRoutes());
+
+
+
+        // Retorna ``false`` pois o arquivo existe, no entanto, não deve ser atualizado.
+        $defaultEngineVariables["isDebugMode"] = true;
+        $defaultEngineVariables["isUpdateRoutes"] = false;
+        if (is_file($pathToAppRoutes) === false) {
+            file_put_contents($pathToAppRoutes, "exists");
+        }
+
+        $nMock = $this->provideRouteMock();
+        $this->assertFalse($nMock->isToProcessApplicationRoutes());
+
+
+
+        // Retorna ``true`` pois o arquivo existe, no entanto, há uma atualização num controller
+        // posterior a data de criação.
+        $defaultEngineVariables["isDebugMode"] = false;
+        $defaultEngineVariables["isUpdateRoutes"] = true;
+        sleep(2);
+        file_put_contents(
+            $dirResources . "/apps/site/controllers/Test.php",
+            "<?php
+                declare (strict_types=1);
+
+                namespace site\controllers;
+
+                class Test {}"
+        );
+
         $nMock = $this->provideRouteMock();
 
-        $this->assertTrue($nMock->isToProcessApplicationRoutes());
-        //$resultProcessed = \var_export($nMock->getProcessedAppRoutes(), true);
 
-        //if (is_file($targetFileExpected) === false) {
-            //file_put_contents(
-                //$targetFileExpected,
-                //$resultProcessed
-            //);
-        //}
 
-        //$expectedResult = file_get_contents($targetFileExpected);
-        //$this->assertEquals($expectedResult, $resultProcessed);
+        $defaultEngineVariables["isDebugMode"]      = $oIsDebugMode;
+        $defaultEngineVariables["isUpdateRoutes"]   = $oIsUpdateRoutes;
+        $defaultEngineVariables["environmentType"]  = $oEnvironmentType;
     }
 
 
-    /*
-    public function test_method_set_is_update_routes()
+
+    public function test_method_processApplicationRoutes()
     {
-        $nMock = prov_instanceOf_EnGarde_Engine_Router();
-        $nMock->setIsUpdateRoutes(true);
-        $this->assertTrue(is_a($nMock, Router::class));
+        $nMock = $this->provideRouteMock();
+        $pathToAppRoutes = $nMock->getPathToAppRoutes();
+
+        if (is_file($pathToAppRoutes) === true) {
+            unlink($pathToAppRoutes);
+        }
+
+        $nMock->testProcessApplicationRoutes();
+        $this->assertTrue(is_file($pathToAppRoutes));
     }
 
 
-    public function test_method_force_update_routes()
-    {
-        global $dirResources;
-        $ds = DIRECTORY_SEPARATOR;
 
-        $nMock = prov_instanceOf_EnGarde_Engine_Router();
-
-        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
-        $appRoutes = $baseAppDirectory . "AppRoutes.php";
-        file_put_contents($appRoutes, "cfg-");
-
-        $this->assertTrue(file_exists($appRoutes));
-        $nMock->forceUpdateRoutes();
-        $this->assertFalse(file_exists($appRoutes));
-
-
-        file_put_contents($appRoutes, "cfg-");
-        $this->assertTrue(file_exists($appRoutes));
-    }
-
-
-    public function test_method_check_for_update_application_routes()
-    {
-        global $dirResources;
-        $ds = DIRECTORY_SEPARATOR;
-
-        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
-        $appRoutes = $baseAppDirectory . "AppRoutes.php";
-        $ctrlTest1 = $baseAppDirectory . "controllers" . $ds . "Test1.php";
-        $ctrlTest2 = $baseAppDirectory . "controllers" . $ds . "Test2.php";
-
-        if (file_exists($appRoutes)) {
-            unlink($appRoutes);
-        }
-        if (file_exists($ctrlTest1)) {
-            unlink($ctrlTest1);
-        }
-        if (file_exists($ctrlTest2)) {
-            unlink($ctrlTest2);
-        }
-
-        file_put_contents($ctrlTest1, "test1-");
-        file_put_contents($ctrlTest2, "test2-");
-
-
-
-        $nMock = prov_instanceOf_EnGarde_Engine_Router();
-        $nMock->setIsUpdateRoutes(true);
-        $this->assertTrue($nMock->checkForUpdateApplicationRoutes());
-
-
-        sleep(1);
-        // Readiciona o arquivo de configuração 2 segundos após o
-        // início do teste, fazendo com que ele seja mais recente que
-        // os arquivos dos controllers.
-        file_put_contents($appRoutes, "cfg-");
-        $this->assertFalse($nMock->checkForUpdateApplicationRoutes());
-
-
-        sleep(1);
-        // Altera um dos controllers 2 segundos após o arquivo de configuração
-        // ser alterado, para que assim, a atualização das rotas seja requerida.
-        file_put_contents($ctrlTest1, "test1-", FILE_APPEND);
-        $this->assertTrue($nMock->checkForUpdateApplicationRoutes(true));
-    }
-
-
-    public function test_method_update_application_routes()
-    {
-        global $dirResources;
-        $ds = DIRECTORY_SEPARATOR;
-
-        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
-        $appRoutes = $baseAppDirectory . "AppRoutes.php";
-        $ctrlTest1 = $baseAppDirectory . "controllers" . $ds . "Test1.php";
-        $ctrlTest2 = $baseAppDirectory . "controllers" . $ds . "Test2.php";
-        $ctrlHome = $baseAppDirectory . "controllers" . $ds . "Home.php";
-
-        if (file_exists($appRoutes)) {
-            unlink($appRoutes);
-        }
-        if (file_exists($ctrlTest1)) {
-            unlink($ctrlTest1);
-        }
-        if (file_exists($ctrlTest2)) {
-            unlink($ctrlTest2);
-        }
-
-
-
-        require_once($ctrlHome);
-        $nMock = prov_instanceOf_EnGarde_Engine_Router();
-        $nMock->updateApplicationRoutes();
-        $this->assertTrue(file_exists($appRoutes));
-    }
 
 
     public function test_method_select_target_raw_route()
     {
-        global $dirResources;
-        $ds = DIRECTORY_SEPARATOR;
+        $nMock = $this->provideRouteMock();
+        $pathToAppRoutes = $nMock->getPathToAppRoutes();
+        $nMock->testProcessApplicationRoutes();
 
-        $baseAppDirectory = $dirResources . $ds . "apps" . $ds . "site" . $ds;
-        $appRoutes = $baseAppDirectory . "AppRoutes.php";
-        $ctrlHome = $baseAppDirectory . "controllers" . $ds . "Home.php";
-
-        if (file_exists($appRoutes)) {
-            unlink($appRoutes);
-        }
-
-
-        require_once($ctrlHome);
-        $nMock = prov_instanceOf_EnGarde_Engine_Router();
-        $nMock->updateApplicationRoutes();
-        $this->assertTrue(file_exists($appRoutes));
 
 
         $r = $nMock->selectTargetRawRoute("/site");
@@ -506,9 +459,8 @@ class RouterTest extends TestCase
         $this->assertTrue(is_array($r));
 
         $expected = ["propertie" => "responseMime"];
-        $this->assertSame($expected, $nMock->getSelectedRouteParans());
+        $this->assertSame($expected, $r["parans"]);
     }
-    */
 }
 
 
@@ -521,6 +473,22 @@ class MockRouterClass extends Router
     {
         parent::__construct($serverConfig);
     }
+
+
+
+    public function getProcessedAppRoutes() : array
+    {
+        return $this->appRoutes;
+    }
+    public function getPathToAppRoutes() : string
+    {
+        return $this->serverConfig->
+            getApplicationConfig()->
+            getPathToAppRoutes(true);
+    }
+
+
+
 
 
     public function testNormalizeRouteRegEx(string $route) : string
@@ -548,11 +516,18 @@ class MockRouterClass extends Router
     }
 
 
-    public function testRegisterControllerRoutes(string $controllerName) {
+    public function testRegisterControllerRoutes(string $controllerName)
+    {
         $this->registerControllerRoutes($controllerName);
     }
-    public function getProcessedAppRoutes() : array
+
+
+
+
+    public function testProcessApplicationRoutes() : void
     {
-        return $this->appRoutes;
+        $this->processApplicationRoutes();
     }
+
+
 }
