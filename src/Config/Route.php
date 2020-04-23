@@ -1097,12 +1097,11 @@ final class Route extends BObject implements iRoute
     ) : bool {
 
         if ($this->responseMime === "") {
+            $allowedMimeTypes   = $this->getAllowedMimeTypes();
+            $isUseXhtml         = $this->getIsUseXHTML();
+
             $useAny             = false;
             $useMime            = null;
-            $useMimeType        = null;
-            $routeAcceptMimes   = $this->getAcceptMimes();
-            $isUseXhtml         = $this->getIsUseXHTML();
-            $validMimeSelection = false;
 
 
             // Se um dado mimetype está sendo forçado
@@ -1119,13 +1118,12 @@ final class Route extends BObject implements iRoute
                     ];
                 }
 
-
                 // Verifica se algum dos Mimes definidos pelos headers
                 // enviados pelo UA são fornecidos por esta rota.
                 foreach ($requestMimes as $headerMime) {
                     $rMime = $headerMime["mime"];
                     $useAny = (($rMime === "*/*") ? true : $useAny);
-                    if (isset($routeAcceptMimes[$rMime]) === true) {
+                    if (isset($allowedMimeTypes[$rMime]) === true) {
                         $useMime = $rMime;
                         break;
                     }
@@ -1137,34 +1135,24 @@ final class Route extends BObject implements iRoute
             // do UA é permitido usar qualquer um, seleciona o primeiro
             // que a rota disponibiliza
             if ($useMime === null && $useAny === true) {
-                $useMime = \key($routeAcceptMimes);
+                $useMime = \key($allowedMimeTypes);
             }
 
 
             // Sendo para retornar um documento "html" e
             // a aplicação estando configurada para forçar uma
             // saida "xhtml", identifica esta situação e força-a.
-            $forceValidXHTML = false;
             if ($useMime === "html" && $isUseXhtml === true) {
                 $useMime = "xhtml";
-                $forceValidXHTML = true;
             }
 
 
             // Tendo encontrado algum mime para ser usado,
             // preenche o mimetype
             if ($useMime !== null) {
-                $useMimeType = (
-                    (isset($this->responseMimeTypes[$useMime]) === true) ?
-                    $this->responseMimeTypes[$useMime] :
-                    null
-                );
+                $this->responseMime     = $useMime;
+                $this->responseMimeType = $this->responseMimeTypes[$useMime];
             }
-
-
-            // Encontrando a extenção e o mimetype a serem usados.
-            $this->responseMime     = $useMime;
-            $this->responseMimeType = $useMimeType;
         }
 
         return ($this->responseMime !== "");

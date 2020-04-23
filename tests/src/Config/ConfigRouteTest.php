@@ -330,11 +330,12 @@ class ConfigRouteTest extends TestCase
 
 
 
-    /*
+
     public function test_method_negotiate_locale()
     {
+        global $defaultRoute;
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
 
-        $nMock = prov_instanceOf_EnGarde_Config_Route();
 
         $requestLocales     = ["pt-BR", "en-us", "es-es"];
         $requestLanguages   = ["pt", "en", "es"];
@@ -346,14 +347,14 @@ class ConfigRouteTest extends TestCase
         $result = $nMock->negotiateLocale(
             $requestLocales, $requestLanguages, $applicationLocales, $defaultLocale, $forceLocale
         );
-
-        $this->assertSame($expected, $result);
+        $this->assertTrue($result);
+        $this->assertSame($expected, $nMock->getResponseLocale());
 
 
 
         // Força um locale ainda que ele não esteja definido entre aqueles
         // que a aplicação é capaz de prover.
-        $nMock = prov_instanceOf_EnGarde_Config_Route();
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
 
         $requestLocales     = ["pt-BR", "en-us", "es-es"];
         $requestLanguages   = ["pt", "en", "es"];
@@ -366,13 +367,14 @@ class ConfigRouteTest extends TestCase
             $requestLocales, $requestLanguages, $applicationLocales, $defaultLocale, $forceLocale
         );
 
-        $this->assertSame($expected, $result);
+        $this->assertTrue($result);
+        $this->assertSame($expected, $nMock->getResponseLocale());
 
 
 
         // Prioriza a seleção dos locales buscando aquele que primeiro responda
         // às opções de linguagens.
-        $nMock = prov_instanceOf_EnGarde_Config_Route();
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
 
         $requestLocales     = null;
         $requestLanguages   = ["ch", "en", "pt", "es"];
@@ -385,41 +387,41 @@ class ConfigRouteTest extends TestCase
             $requestLocales, $requestLanguages, $applicationLocales, $defaultLocale, $forceLocale
         );
 
-        $this->assertSame($expected, $result);
-
+        $this->assertTrue($result);
+        $this->assertSame($expected, $nMock->getResponseLocale());
     }
 
 
     public function test_method_negotiate_mimetype()
     {
+        global $defaultRoute;
+        $oAllowedMimeTypes  = $defaultRoute["allowedMimeTypes"];
+        $oIsUseXHTML        = $defaultRoute["isUseXHTML"];
 
         // Força um mimetype inválido
-        $nMock = prov_instanceOf_EnGarde_Config_Route([
-            "acceptMimes" => ["txt", "html", "pdf", "xml"]
-        ]);
+        $defaultRoute["allowedMimeTypes"] = ["txt", "html", "pdf", "xml"];
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
+        $defaultRoute["allowedMimeTypes"] = $oAllowedMimeTypes;
 
         $requestMimes     = [
             [ "mime" => "html",     "mimetype" => "text/html" ],
             [ "mime" => "xhtml",    "mimetype" => "application/xhtml+xml" ],
             [ "mime" => "xml",      "mimetype" => "application/xml" ],
-            [ "mime" => "* /*",      "mimetype" => "* /*" ]
+            [ "mime" => "*/*",      "mimetype" => "*/*" ]
         ];
         $forceMime = "jpge";
 
-        $expected = [
-            "valid"     => false,
-            "mime"      => null,
-            "mimetype"  => null
-        ];
         $result = $nMock->negotiateMimeType($requestMimes, $forceMime);
-        $this->assertSame($expected, $result);
+        $this->assertFalse($result);
+        $this->assertEquals("", $nMock->getResponseMime());
+        $this->assertEquals("", $nMock->getResponseMimeType());
 
 
 
         // Força um mimetype válido
-        $nMock = prov_instanceOf_EnGarde_Config_Route([
-            "acceptMimes" => ["txt", "html", "pdf", "xml"]
-        ]);
+        $defaultRoute["allowedMimeTypes"] = ["txt", "html", "pdf", "xml"];
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
+        $defaultRoute["allowedMimeTypes"] = $oAllowedMimeTypes;
 
         $requestMimes     = [
             [ "mime" => "html",     "mimetype" => "text/html" ],
@@ -429,111 +431,70 @@ class ConfigRouteTest extends TestCase
         ];
         $forceMime = "xml";
 
-        $expected = [
-            "valid"     => true,
-            "mime"      => "xml",
-            "mimetype"  => "application/xml"
-        ];
         $result = $nMock->negotiateMimeType($requestMimes, $forceMime);
-        $this->assertSame($expected, $result);
+        $this->assertTrue($result);
+        $this->assertEquals("xml", $nMock->getResponseMime());
+        $this->assertEquals("application/xml", $nMock->getResponseMimeType());
 
 
 
         // Seleciona o primeiro compatível com a definição do UA
-        $nMock = prov_instanceOf_EnGarde_Config_Route([
-            "acceptMimes" => ["txt", "html", "pdf", "xml"]
-        ]);
+        $defaultRoute["allowedMimeTypes"] = ["txt", "html", "pdf", "xml"];
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
+        $defaultRoute["allowedMimeTypes"] = $oAllowedMimeTypes;
 
         $requestMimes     = [
             [ "mime" => "xml",      "mimetype" => "application/xml" ],
             [ "mime" => "html",     "mimetype" => "text/html" ],
             [ "mime" => "xhtml",    "mimetype" => "application/xhtml+xml" ],
-            [ "mime" => "* /*",      "mimetype" => "* /*" ]
+            [ "mime" => "*/*",      "mimetype" => "*/*" ]
         ];
         $forceMime = null;
 
-        $expected = [
-            "valid"     => true,
-            "mime"      => "xml",
-            "mimetype"  => "application/xml"
-        ];
         $result = $nMock->negotiateMimeType($requestMimes, $forceMime);
-        $this->assertSame($expected, $result);
+        $this->assertTrue($result);
+        $this->assertEquals("xml", $nMock->getResponseMime());
+        $this->assertEquals("application/xml", $nMock->getResponseMimeType());
+
 
 
 
         // Seleciona o primeiro que a rota está apto a responder
-        $nMock = prov_instanceOf_EnGarde_Config_Route([
-            "acceptMimes" => ["txt", "html", "pdf", "xml"]
-        ]);
+        $defaultRoute["allowedMimeTypes"] = ["txt", "html", "pdf", "xml"];
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
+        $defaultRoute["allowedMimeTypes"] = $oAllowedMimeTypes;
 
         $requestMimes     = [
-            [ "mime" => "* /*",      "mimetype" => "* /*" ]
+            [ "mime" => "*/*",      "mimetype" => "*/*" ]
         ];
         $forceMime = null;
 
-        $expected = [
-            "valid"     => true,
-            "mime"      => "txt",
-            "mimetype"  => "text/plain"
-        ];
         $result = $nMock->negotiateMimeType($requestMimes, $forceMime);
-        $this->assertSame($expected, $result);
+        $this->assertTrue($result);
+        $this->assertEquals("txt", $nMock->getResponseMime());
+        $this->assertEquals("text/plain", $nMock->getResponseMimeType());
 
 
 
         // Verifica forçar usar XHTML
-        $nMock = prov_instanceOf_EnGarde_Config_Route([
-            "acceptMimes"   => ["txt", "html", "pdf", "xml"],
-            "isUseXHTML"    => true
-        ]);
+        $defaultRoute["allowedMimeTypes"] = ["txt", "html", "pdf", "xml"];
+        $defaultRoute["isUseXHTML"] = true;
+        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
+        $defaultRoute["allowedMimeTypes"] = $oAllowedMimeTypes;
+        $defaultRoute["isUseXHTML"] = $oIsUseXHTML;
 
         $requestMimes     = [
             [ "mime" => "html",     "mimetype" => "text/html" ],
             [ "mime" => "xml",      "mimetype" => "application/xml" ],
-            [ "mime" => "* /*",      "mimetype" => "* /*" ]
+            [ "mime" => "*/*",      "mimetype" => "*/*" ]
         ];
         $forceMime = null;
 
-        $expected = [
-            "valid"     => true,
-            "mime"      => "xhtml",
-            "mimetype"  => "application/xhtml+xml"
-        ];
         $result = $nMock->negotiateMimeType($requestMimes, $forceMime);
-        $this->assertSame($expected, $result);
-
+        $this->assertTrue($result);
+        $this->assertEquals("xhtml", $nMock->getResponseMime());
+        $this->assertEquals("application/xhtml+xml", $nMock->getResponseMimeType());
     }
-    public function test_method_getset_responsemime()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame("", $nMock->getResponseMime());
-
-        $nMock->setResponseMime("txt");
-        $this->assertSame("txt", $nMock->getResponseMime());
-    }
-
-
-    public function test_method_getset_responsemimetype()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame("", $nMock->getResponseMimeType());
-
-        $nMock->setResponseMimeType("text/plain");
-        $this->assertSame("text/plain", $nMock->getResponseMimeType());
-    }
-
-
-    public function test_method_getset_responselocale()
-    {
-        $nMock = prov_instanceOf_EnGarde_Config_Route();
-        $this->assertSame("", $nMock->getResponseLocale());
-
-        $nMock->setResponseLocale("pt-br");
-        $this->assertSame("pt-br", $nMock->getResponseLocale());
-    }
-
-    */
 
 
 
