@@ -5,7 +5,6 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Engine\iRouter as iRouter;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 
 
@@ -35,12 +34,6 @@ abstract class Application extends BObject implements iApplication
      * @var         iServer
      */
     protected iServer $serverConfig;
-    /**
-     * Objeto ``Engine\iRouter``.
-     *
-     * @var         iRouter
-     */
-    protected iRouter $router;
 
 
 
@@ -56,6 +49,12 @@ abstract class Application extends BObject implements iApplication
      * @var         array
      */
     protected array $defaultSecurityConfig = [];
+    /**
+     * Configuração bruta para a rota que está sendo executada neste momento.
+     *
+     * @var         array
+     */
+    protected array $rawRouteConfig = [];
 
 
 
@@ -99,99 +98,24 @@ abstract class Application extends BObject implements iApplication
 
         // Inicia o objeto roteador para que seja possível
         // identificar qual rota está sendo requisitada.
-        $this->router = new \AeonDigital\EnGarde\Engine\Router($serverConfig);
-        if ($this->router->isToProcessApplicationRoutes() === true) {
-            $this->router->processApplicationRoutes();
+        $router = new \AeonDigital\EnGarde\Engine\Router($serverConfig);
+        if ($router->isToProcessApplicationRoutes() === true) {
+            $router->processApplicationRoutes();
         }
 
-        // Define a propriedade de configuração que está sendo usada.
-        $this->serverConfig = $serverConfig;
-    }
 
-
-
-
-
-
-
-
-
-    /**
-     * A partir da rota que está sendo requisitada pelo UA, inicia o objeto de
-     * configuração da mesma e efetua a negociação de conteúdo
-     *
-     * @return      bool
-     */
-    private function initiSelectedTargetRoute() : bool
-    {
-        $r = false;
-
-        // Resgata as configurações da rota que está sendo executada.
-        $rawRouteConfig = $this->router->selectTargetRawRoute(
-            $this->serverConfig->getApplicationRequestUri()
+        // Identifica a rota e inicia o objeto de configuração da mesma
+        // baseado na URI que a aplicação deseja.
+        $serverConfig->getRouteConfig(
+            $router->selectTargetRawRoute(
+                $serverConfig->getApplicationRequestUri()
+            ),
+            true
         );
 
 
-        if ($rawRouteConfig !== null) {
-            // Existindo uma configuração da rota atual para o método HTTP
-            // que está sendo usado...
-            $targetMethod = $this->serverConfig->getServerRequest()->getMethod();
-            if (isset($rawRouteConfig[$targetMethod]) === true) {
-
-                // Identifica se a rota é "naturalmente" um download.
-                $isDownload_route = $rawRouteConfig[$targetMethod]["responseIsDownload"];
-
-                // Identifica se o ``UA`` está ou não forçando um download
-                $isDownload_param = $this->serverConfig->getServerRequest()->getParam("_download");
-                $isDownload_param = ($isDownload_param === "true" || $isDownload_param === "1");
-                $rawRouteConfig[$targetMethod]["responseIsDownload"] = (
-                    $isDownload_param === true || $isDownload_route === true
-                );
-
-                // Identifica se o ``UA`` está forçando o uso de pretty_print
-                $prettyPrint_param = $this->serverConfig->getServerRequest()->getParam("_pretty_print");
-                $prettyPrint_param = ($prettyPrint_param === "true" || $prettyPrint_param === "1");
-                $rawRouteConfig[$targetMethod]["responseIsPrettyPrint"] = $prettyPrint_param;
-
-
-                // Identifica exatamente a configuração da rota alvo
-                // e inicia seu objeto de configuração.
-                // Se o objeto de configuração da rota for corretamente iniciado então
-                // efetua a negociação de conteúdo para o objeto response que deve ser produzido.
-                $routeConfig = $this->serverConfig->getRouteConfig($rawRouteConfig[$targetMethod]);
-                if ($routeConfig !== null) {
-                    $isOk = $routeConfig->negotiateLocale(
-                        $this->serverConfig->getServerRequest()->getResponseLocales(),
-                        $this->serverConfig->getServerRequest()->getResponseLanguages(),
-                        $this->serverConfig->getApplicationConfig()->getLocales(),
-                        $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
-                        $this->serverConfig->getServerRequest()->getParam("_locale")
-                    );
-
-                    if ($isOk === false) {
-                        $err = "Locale \"$useLocale\" is not supported by this Application.";
-                        throw new \RuntimeException($err);
-                    }
-
-
-                    // Verifica qual mimetype deve ser usado para responder
-                    // esta requisição
-                    $isOk = $routeConfig->negotiateMimeType(
-                        $this->serverConfig->getServerRequest()->getResponseMimes(),
-                        $this->serverConfig->getServerRequest()->getParam("_mime")
-                    );
-
-
-                    if ($isOk === false) {
-                        $err = "Media type \"zz | zzzz\" is not supported by this URL.";
-                        throw new \RuntimeException($err);
-                    }
-                }
-            }
-        }
-
-
-        return $r;
+        // Define a propriedade de configuração que está sendo usada.
+        $this->serverConfig = $serverConfig;
     }
 
 

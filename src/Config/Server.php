@@ -1319,12 +1319,101 @@ final class Server extends BObject implements iServer
      * @param       array $config
      *              Array associativo contendo as configurações para esta instância.
      *
+     * @param       bool $isRaw
+     *              Quando ``true`` indica que o parametro passado em ``$config`` possui as
+     *              informações necessárias para a criação do objeto ``iRoute``, no entanto
+     *              este precisa de algum tratamento especial antes da criação da instância.
+     *
      * @return      ?iRoute
      */
-    public function getRouteConfig(array $config = []) : ?iRoute
+    public function getRouteConfig(?array $config = null, bool $isRaw = false) : ?iRoute
     {
-        if (isset($this->routeConfig) === false && $config !== []) {
-            $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+        if (isset($this->routeConfig) === false && $config !== null) {
+            if ($isRaw === false) {
+                $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+            }
+            else {
+                // Em caso de uma configuração em modo 'raw',
+                // é preciso identificar se a rota atualmente selecionada possui ou não
+                // uma configuração específica para o método HTTP que está sendo usado.
+                $method = $this->getServerRequest()->getMethod();
+                if (isset($config[$method]) === true) {
+                    $config = $config[$method];
+
+
+                    //
+                    // Identifica se a rota é "naturalmente" um download.
+                    // ou se o download está sendo forçado via parametro "_download".
+                    $isDownload_route = $config["responseIsDownload"];
+
+                    // Identifica se o ``UA`` está ou não forçando um download
+                    $isDownload_param = $this->getServerRequest()->getParam("_download");
+                    $isDownload_param = ($isDownload_param === "true" || $isDownload_param === "1");
+                    $config["responseIsDownload"] = (
+                        $isDownload_param === true || $isDownload_route === true
+                    );
+
+
+                    //
+                    // Identifica se o ``UA`` está forçando o uso de pretty_print
+                    // via parametro "_pretty_print".
+                    $prettyPrint_param = $this->getServerRequest()->getParam("_pretty_print");
+                    $prettyPrint_param = ($prettyPrint_param === "true" || $prettyPrint_param === "1");
+                    $config["responseIsPrettyPrint"] = $prettyPrint_param;
+
+
+                    //
+                    // Uma vez identificada exatamente qual é a rota alvo
+                    // e tendo todos seus atributos corretamente definidos, inicia seu objeto
+                    // de configuração e inicia a fase de negociação de conteúdo.
+                    $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+
+
+                    //
+                    // Primeiro negocia qual o Locale que deve ser usado para servir ao UA.
+                    $isOk = $this->routeConfig->negotiateLocale(
+                        $this->getServerRequest()->getResponseLocales(),
+                        $this->getServerRequest()->getResponseLanguages(),
+                        $this->getApplicationConfig()->getLocales(),
+                        $this->getApplicationConfig()->getDefaultLocale(),
+                        $this->getServerRequest()->getParam("_locale")
+                    );
+
+                    //
+                    // Só é capaz de falhar na negociação de locale caso o parametro "_locale"
+                    // esteja presente e não seja válido.
+                    //
+                    // Por que é necessário causar um erro neste caso?
+                    // Basicamente por que de outra forma, uma URL com um parametro "_locale" inválido
+                    // poderia ser usada causando erro de interpretação por parte do usuário e implicando
+                    // na desconfiança sobre a própria aplicação.
+                    if ($isOk === false) {
+                        $forceLocale = $this->getServerRequest()->getParam("_locale");
+                        $err = "Locale \"$forceLocale\" is not supported by this Application.";
+                        throw new \RuntimeException($err);
+                    }
+
+
+                    //
+                    // Verifica qual mimetype deve ser usado para responder esta requisição
+                    $isOk = $this->routeConfig->negotiateMimeType(
+                        $this->getServerRequest()->getResponseMimes(),
+                        $this->getServerRequest()->getParam("_mime")
+                    );
+
+
+                    //
+                    // Pode falhar nesta negociação em qualquer caso onde o UA especifique (seja via header
+                    // ou via querystring) que deseja receber um mimetype que não é suportado pela rota
+                    // em questão.
+                    if ($isOk === false) {
+                        $mime = $this->getServerRequest()->getParam("_mime");
+                        if ($mime === null) { $err = "Undefined media type."; }
+                        else { $err = "Media type \"$mime\" is not supported by this URL."; }
+                        throw new \RuntimeException($err);
+                    }
+                }
+            }
         }
         return $this->routeConfig;
     }
