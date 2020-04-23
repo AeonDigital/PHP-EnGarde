@@ -603,6 +603,7 @@ class ConfigServerTest extends TestCase
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(false, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
+        $this->assertSame("/site/path/to/resource", $nMock->getApplicationRequestUri());
 
 
 
@@ -611,14 +612,16 @@ class ConfigServerTest extends TestCase
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
+        $this->assertSame("/site/path/to/resource", $nMock->getApplicationRequestUri());
 
 
 
-        $testServerVariables["REQUEST_URI"] = "blog/path";
+        $testServerVariables["REQUEST_URI"] = "/blog/path";
         $nMock = prov_instanceOf_EnGarde_Config_Server($testServerVariables);
         $this->assertSame("blog", $nMock->getApplicationName());
         $this->assertSame(false, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\blog\\AppStart", $nMock->getApplicationNamespace());
+        $this->assertSame("/blog/path", $nMock->getApplicationRequestUri());
 
 
 
@@ -627,6 +630,8 @@ class ConfigServerTest extends TestCase
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
+        $this->assertSame("/site", $nMock->getApplicationRequestUri());
+
 
 
         $testServerVariables["REQUEST_URI"] = "";
@@ -634,6 +639,7 @@ class ConfigServerTest extends TestCase
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
+        $this->assertSame("/site", $nMock->getApplicationRequestUri());
     }
 
 }

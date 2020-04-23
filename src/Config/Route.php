@@ -1097,8 +1097,6 @@ final class Route extends BObject implements iRoute
     ) : bool {
 
         if ($this->responseMime === "") {
-            $r = null;
-
             $useAny             = false;
             $useMime            = null;
             $useMimeType        = null;
@@ -1165,7 +1163,7 @@ final class Route extends BObject implements iRoute
 
 
             // Encontrando a extenção e o mimetype a serem usados.
-            $this->responseMime = $useMime;
+            $this->responseMime     = $useMime;
             $this->responseMimeType = $useMimeType;
         }
 

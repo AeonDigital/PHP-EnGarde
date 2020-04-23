@@ -104,10 +104,6 @@ abstract class Application extends BObject implements iApplication
             $this->router->processApplicationRoutes();
         }
 
-        // Prosseguir daqui... fazer testes para o 'Router'
-
-
-
         // Define a propriedade de configuração que está sendo usada.
         $this->serverConfig = $serverConfig;
     }
@@ -116,163 +112,89 @@ abstract class Application extends BObject implements iApplication
 
 
 
-    /*
-    $this->selectTargetRouteConfig();
-    if ($this->routeConfig !== null) {
-        $this->executeContentNegotiation();
-    }*
-
-
-
-    /**
-     * Seleciona o objeto ``iRouteConfig`` para esta instância.
-     *
-     * @return      void
-     *
-    private function selectTargetRouteConfig() : void
-    {
-        if ($this->routeConfig === null) {
-            // P1 - Verifica necessidade de atualizar o arquivo de rotas da aplicação.
-            $this->router->setIsUpdateRoutes($this->domainConfig->getIsUpdateRoutes());
-
-            // Sendo para atualizar as rotas
-            // E
-            // Estando com o debug mode ligado...
-            // E
-            // Estando em um ambiente definido como "local" ou "localtest"
-            //
-            // força o update de rotas em toda requisição
-            if ($this->domainConfig->getIsUpdateRoutes() === true &&
-                $this->domainConfig->getIsDebugMode() === true &&
-                (
-                    $this->domainConfig->getEnvironmentType() === "LCL" ||
-                    $this->domainConfig->getEnvironmentType() === "localtest")
-                )
-            {
-                $this->router->forceUpdateRoutes();
-            }
-
-            // Efetua a recomposição do arquivo de rotas caso
-            // seja necessário
-            $this->router->updateApplicationRoutes();
-
-
-
-
-            // P2 - Identifica as configurações de execução da rota alvo.
-            $requestURIPath = $this->serverRequest->getUri()->getPath();
-
-            // Se o nome da aplicação não foi definido no caminho
-            // relativo da URI que está sendo executada, adiciona-o
-            $executePath = trim($requestURIPath, "/");
-            if ($this->domainConfig->isApplicationNameOmitted() === true) {
-                $executePath = $this->applicationConfig->getName() . "/" . $executePath;
-            }
-            $this->executePath = "/" . $executePath . "/";
-
-
-            // Seleciona os dados da rota que deve ser executada.
-            $this->rawRouteConfig = $this->router->selectTargetRawRoute($this->executePath);
-
-
-            // Adiciona os parametros definidos na própria URL, identificados pelo
-            // roteador da Aplicação no objeto de requisição.
-            $useAttributes = $this->router->getSelectedRouteParans() ?? [];
-            $this->serverRequest->setInitialAttributes($useAttributes);
-
-
-
-
-            // P3 - Identificando exatamente a configuração da rota alvo
-            $targetMethod = strtoupper($this->serverRequest->getMethod());
-            if ($this->rawRouteConfig !== [] && isset($this->rawRouteConfig[$targetMethod]) === true) {
-                $this->routeConfig = new \AeonDigital\EnGarde\Config\Route($this->rawRouteConfig[$targetMethod]);
-
-                // P4 - Identifica se deve executar um método próprio
-                $this->runMethodName = $this->routeConfig->getRunMethodName();
-            }
-        }
-    }
-
-
-
 
 
 
 
     /**
-     * Efetua a negociação de conteúdo para identificar de que forma os dados devem ser
-     * retornados ao ``UA``.
+     * A partir da rota que está sendo requisitada pelo UA, inicia o objeto de
+     * configuração da mesma e efetua a negociação de conteúdo
      *
-     * @return      void
-     *
-    private function executeContentNegotiation() : void
+     * @return      bool
+     */
+    private function initiSelectedTargetRoute() : bool
     {
-        // Verifica qual locale deve ser usado para responder
-        // esta requisição
-        $useLocale = $this->routeConfig->negotiateLocale(
-            $this->serverRequest->getResponseLocales(),
-            $this->serverRequest->getResponseLanguages(),
-            $this->applicationConfig->getLocales(),
-            $this->applicationConfig->getDefaultLocale(),
-            $this->serverRequest->getParam("_locale")
-        );
+        $r = false;
 
-        if ($useLocale === "") {
-            $msg = "Locale \"$useLocale\" is not supported by this Application.";
-            \AeonDigital\EnGarde\Config\ErrorListening::throwHTTPError(415, $msg);
-        } else {
-            $this->routeConfig->setResponseLocale($useLocale);
-        }
-
-
-        // Verifica qual mimetype deve ser usado para responder
-        // esta requisição
-        $routeMime = $this->routeConfig->negotiateMimeType(
-            $this->serverRequest->getResponseMimes(),
-            $this->serverRequest->getParam("_mime")
+        // Resgata as configurações da rota que está sendo executada.
+        $rawRouteConfig = $this->router->selectTargetRawRoute(
+            $this->serverConfig->getApplicationRequestUri()
         );
 
 
-        if ($routeMime["valid"] === false) {
-            $useMime        = $routeMime["mime"];
-            $useMimeType    = $routeMime["mimetype"];
+        if ($rawRouteConfig !== null) {
+            // Existindo uma configuração da rota atual para o método HTTP
+            // que está sendo usado...
+            $targetMethod = $this->serverConfig->getServerRequest()->getMethod();
+            if (isset($rawRouteConfig[$targetMethod]) === true) {
 
-            $msg            = "Media type \"$useMime | $useMimeType\" is not supported by this URL.";
-            \AeonDigital\EnGarde\Config\ErrorListening::throwHTTPError(415, $msg);
-        } else {
-            $this->routeConfig->setResponseMime($routeMime["mime"]);
-            $this->routeConfig->setResponseMimeType($routeMime["mimetype"]);
+                // Identifica se a rota é "naturalmente" um download.
+                $isDownload_route = $rawRouteConfig[$targetMethod]["responseIsDownload"];
+
+                // Identifica se o ``UA`` está ou não forçando um download
+                $isDownload_param = $this->serverConfig->getServerRequest()->getParam("_download");
+                $isDownload_param = ($isDownload_param === "true" || $isDownload_param === "1");
+                $rawRouteConfig[$targetMethod]["responseIsDownload"] = (
+                    $isDownload_param === true || $isDownload_route === true
+                );
+
+                // Identifica se o ``UA`` está forçando o uso de pretty_print
+                $prettyPrint_param = $this->serverConfig->getServerRequest()->getParam("_pretty_print");
+                $prettyPrint_param = ($prettyPrint_param === "true" || $prettyPrint_param === "1");
+                $rawRouteConfig[$targetMethod]["responseIsPrettyPrint"] = $prettyPrint_param;
+
+
+                // Identifica exatamente a configuração da rota alvo
+                // e inicia seu objeto de configuração.
+                // Se o objeto de configuração da rota for corretamente iniciado então
+                // efetua a negociação de conteúdo para o objeto response que deve ser produzido.
+                $routeConfig = $this->serverConfig->getRouteConfig($rawRouteConfig[$targetMethod]);
+                if ($routeConfig !== null) {
+                    $isOk = $routeConfig->negotiateLocale(
+                        $this->serverConfig->getServerRequest()->getResponseLocales(),
+                        $this->serverConfig->getServerRequest()->getResponseLanguages(),
+                        $this->serverConfig->getApplicationConfig()->getLocales(),
+                        $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
+                        $this->serverConfig->getServerRequest()->getParam("_locale")
+                    );
+
+                    if ($isOk === false) {
+                        $err = "Locale \"$useLocale\" is not supported by this Application.";
+                        throw new \RuntimeException($err);
+                    }
+
+
+                    // Verifica qual mimetype deve ser usado para responder
+                    // esta requisição
+                    $isOk = $routeConfig->negotiateMimeType(
+                        $this->serverConfig->getServerRequest()->getResponseMimes(),
+                        $this->serverConfig->getServerRequest()->getParam("_mime")
+                    );
+
+
+                    if ($isOk === false) {
+                        $err = "Media type \"zz | zzzz\" is not supported by this URL.";
+                        throw new \RuntimeException($err);
+                    }
+                }
+            }
         }
 
 
-        // Identifica se a rota é "naturalmente" um download.
-        $isDownload_route = $this->routeConfig->getResponseIsDownload();
-        // Identifica se há um parametro que force o download do resultado da rota.
-        $isDownload_param = $this->serverRequest->getParam("_download");
-        if ($isDownload_param !== null) {
-            $isDownload_param = ($isDownload_param === "true" || $isDownload_param === "1");
-        }
-        // Aplica a regra conforme as prioridades pré-estipuladas.
-        // O parametro encontrado na querystring é prioritário e pode ser usado para
-        // negar o download de uma rota cuja configuração seja naturalmente a obtenção
-        // de um documento.
-        $this->routeConfig->setResponseIsDownload(
-            (
-                $isDownload_param === true ||
-                (
-                    ($isDownload_param === null || $isDownload_param === true) &&
-                    $isDownload_route === true
-                )
-            )
-        );
-
-
-
-        // Identifica se é para usar "pretty print" no código fonte de retorno
-        $prettyPrint = $this->serverRequest->getParam("_pretty_print");
-        $this->routeConfig->setResponseIsPrettyPrint(($prettyPrint === "true" || $prettyPrint === "1"));
+        return $r;
     }
+
+
 
 
 
