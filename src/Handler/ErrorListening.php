@@ -109,28 +109,24 @@ class ErrorListening
     private static string $rootPath = "";
     /**
      * Tipo de ambiente que o domínio está rodando no momento.
-     * Esta propriedade deve ser imutável.
      *
      * @var         string
      */
     private static string $environmentType = "";
     /**
      * Indica se o domínio está em modo de debug.
-     * Esta propriedade deve ser imutável.
      *
      * @var         bool
      */
     private static bool $isDebugMode = false;
     /**
      * Protocolo HTTP/HTTPS.
-     * Esta propriedade deve ser imutável.
      *
      * @var         string
      */
     private static string $protocol = "";
     /**
      * Método HTTP usado.
-     * Esta propriedade deve ser imutável.
      *
      * @var         string
      */
@@ -182,17 +178,15 @@ class ErrorListening
         string $pathToErrorView = ""
     ) : void {
         $isTestEnv = (  self::$environmentType === "" ||
-                        self::$environmentType === "UTEST" ||
-                        self::$environmentType === "testview" ||
-                        self::$environmentType === "localtest");
+                        self::$environmentType === "UTEST");
 
         if ($isTestEnv === true)
         {
-            self::$rootPath         = to_system_path($rootPath) . DIRECTORY_SEPARATOR;
+            self::$rootPath         = \to_system_path($rootPath) . DIRECTORY_SEPARATOR;
             self::$environmentType  = $environmentType;
             self::$isDebugMode      = $isDebugMode;
-            self::$protocol         = strtolower($protocol);
-            self::$method           = strtoupper($method);
+            self::$protocol         = \strtolower($protocol);
+            self::$method           = \strtoupper($method);
             self::$pathToErrorView  = $pathToErrorView;
         }
     }
@@ -222,9 +216,7 @@ class ErrorListening
     static public function clearContext() : void
     {
         $isTestEnv = (  self::$environmentType === "" ||
-                        self::$environmentType === "UTEST" ||
-                        self::$environmentType === "testview" ||
-                        self::$environmentType === "localtest");
+                        self::$environmentType === "UTEST");
 
         if ($isTestEnv === true)
         {
@@ -254,106 +246,8 @@ class ErrorListening
     {
         self::$pathToErrorView = "";
         if ($pathToErrorView !== "") {
-            self::$pathToErrorView = to_system_path($pathToErrorView);
+            self::$pathToErrorView = \to_system_path($pathToErrorView);
         }
-    }
-
-
-
-
-
-    /**
-     * Prepara um documento ``X/HTML`` para ser enviado ao ``UA``.
-     *
-     * @param       array $viewData
-     *              Objeto de dados do processamento no momento atual.
-     *
-     * @return      string
-     */
-    static private function prepareXHTML(array $viewData) : string
-    {
-        $str = "";
-
-        if (self::$pathToErrorView === "" || file_exists(self::$pathToErrorView) === false) {
-            $str = self::createNonStyleErrorPage($viewData);
-        } else {
-            $viewData = (object)$viewData;
-
-            $viewData->http                 = (object)$viewData->http;
-            $viewData->debugLog             = (object)$viewData->debugLog;
-            $viewData->debugLog->traceLog   = (object)$viewData->debugLog->traceLog;
-
-            @ob_start("mb_output_handler");
-            require_once self::$pathToErrorView;
-            $str = @ob_get_contents();
-            @ob_end_clean();
-        }
-
-        return $str;
-    }
-    /**
-     * Prepara um documento ``JSON`` para ser enviado ao ``UA``.
-     *
-     * @param       array $viewData
-     *              Objeto de dados do processamento no momento atual.
-     *
-     * @return      string
-     */
-    static private function prepareJSON(array $viewData) : string
-    {
-        $str = "";
-
-        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
-            $str = json_encode($viewData["debugLog"]);
-        } else {
-            $str = '{"HTTP": ' . $viewData["http"]["code"] . ', "Message": "' . $viewData["http"]["message"] . '"}';
-        }
-
-        return $str;
-    }
-    /**
-     * Monta um ``HTML`` básico para retornar ao usuário uma página não estilizada de um erro
-     * disparado.
-     *
-     * @param       array $viewData
-     *              Objeto de dados do processamento no momento atual.
-     *
-     * @return      string
-     */
-    static private function createNonStyleErrorPage(array $viewData) : string
-    {
-        $code       = $viewData["http"]["code"];
-        $message    = $viewData["http"]["message"];
-        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
-            // @codeCoverageIgnoreStart
-            $message = $viewData["debugLog"]["message"];
-            // @codeCoverageIgnoreEnd
-        }
-
-
-        $str = '<!DOCTYPE html>' . PHP_EOL;
-        $str .= '<html>' . PHP_EOL;
-        $str .= '    <head>' . PHP_EOL;
-        $str .= '        <meta charset="utf-8" />' . PHP_EOL;
-        $str .= '        <title>' . $code . ' - ' . $message . '</title>' . PHP_EOL;
-        $str .= '    </head>' . PHP_EOL;
-        $str .= '    <body>' . PHP_EOL;
-        $str .= '        <h1>' . $code . '</h1>' . PHP_EOL;
-
-        if ($message !== "") {
-            $str .= '        <h2>' . $message . '</h2>' . PHP_EOL;
-        }
-
-        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
-            // @codeCoverageIgnoreStart
-            $str .= '        <pre>' . PHP_EOL . print_r($viewData["debugLog"], true) . '</pre>' . PHP_EOL;
-            // @codeCoverageIgnoreEnd
-        }
-
-        $str .= '    </body>' . PHP_EOL;
-        $str .= '</html>';
-
-        return $str;
     }
 
 
@@ -383,16 +277,22 @@ class ErrorListening
         $function = [];
         foreach ($errorTrace as $t) {
             if (isset($t["file"]) === true) {
-                $function[] = ((isset($t["function"]) === true &&
-                    $t["function"] !== "" &&
-                    $t["function"] !== "errorHandler") ? $t["function"] : "");
+                $function[] = (
+                    (
+                        isset($t["function"]) === true &&
+                        $t["function"] !== "" &&
+                        $t["function"] !== "errorHandler"
+                    ) ?
+                    $t["function"] :
+                    ""
+                );
 
                 $traceLog[] = [
-                    "act" => $count,
-                    "file" => str_replace(self::$rootPath, "", $t["file"]),
-                    "line" => (int)$t["line"],
-                    "class" => ((isset($t["class"]) === true && $t["class"] !== "") ? $t["class"] : ""),
-                    "function" => "",
+                    "act"       => $count,
+                    "file"      => \str_replace(self::$rootPath, "", $t["file"]),
+                    "line"      => (int)$t["line"],
+                    "class"     => ((isset($t["class"]) === true && $t["class"] !== "") ? $t["class"] : ""),
+                    "function"  => "",
                 ];
 
                 $count--;
@@ -402,7 +302,7 @@ class ErrorListening
 
         // Corrige os valores de "function"
         $function[] = "";
-        array_shift($function);
+        \array_shift($function);
         foreach ($traceLog as $k => $newTL) {
             $traceLog[$k]["function"] = $function[$k];
         }
@@ -422,21 +322,14 @@ class ErrorListening
             "debugLog"          => [
                 "code"              => $errorCode,
                 "message"           => $errorMessage,
-                "file"              => str_replace(self::$rootPath, "", $errorFile),
+                "file"              => \str_replace(self::$rootPath, "", $errorFile),
                 "line"              => $errorLine,
                 "traceLog"          => $traceLog
             ]
         ];
 
 
-        if ($viewData["environmentType"] === "UTEST") {
-            return $viewData;
-        }
-        else {
-            // @codeCoverageIgnoreStart
-            return self::sendToUA($viewData);
-            // @codeCoverageIgnoreEnd
-        }
+        return self::sendToUA($viewData);
     }
     /**
      * Manipulador padrão para os erros ocorridos.
@@ -462,7 +355,7 @@ class ErrorListening
         $errorLine
     ) {
         // Gera o TraceLog
-        $backTrace = debug_backtrace();
+        $backTrace = \debug_backtrace();
         $traceLog = [];
 
 
@@ -476,7 +369,7 @@ class ErrorListening
 
                 $traceLog[] = [
                     "act" => $count,
-                    "file" => str_replace(self::$rootPath, "", $t["file"]),
+                    "file" => \str_replace(self::$rootPath, "", $t["file"]),
                     "line" => (int)$t["line"],
                     "class" => ((isset($t["class"]) === true && $t["class"] !== "") ? $t["class"] : ""),
                     "function" => "",
@@ -489,7 +382,7 @@ class ErrorListening
 
         // Corrige os valores de "function"
         $function[] = "";
-        array_shift($function);
+        \array_shift($function);
         foreach ($traceLog as $k => $newTL) {
             $traceLog[$k]["function"] = $function[$k];
         }
@@ -509,21 +402,14 @@ class ErrorListening
             "debugLog"          => [
                 "code"              => $errorCode,
                 "message"           => $errorMessage,
-                "file"              => str_replace(self::$rootPath, "", $errorFile),
+                "file"              => \str_replace(self::$rootPath, "", $errorFile),
                 "line"              => $errorLine,
                 "traceLog"          => $traceLog
             ]
         ];
 
 
-        if ($viewData["environmentType"] === "UTEST") {
-            return $viewData;
-        }
-        else {
-            // @codeCoverageIgnoreStart
-            return self::sendToUA($viewData);
-            // @codeCoverageIgnoreEnd
-        }
+        return self::sendToUA($viewData);
     }
 
 
@@ -575,14 +461,7 @@ class ErrorListening
         ];
 
 
-        if ($viewData["environmentType"] === "UTEST") {
-            return $viewData;
-        }
-        else {
-            // @codeCoverageIgnoreStart
-            return self::sendToUA($viewData);
-            // @codeCoverageIgnoreEnd
-        }
+        return self::sendToUA($viewData);
     }
 
 
@@ -592,13 +471,13 @@ class ErrorListening
     /**
      * Prepara os dados coletados e envia-os ao ``UA``.
      *
-     * Em um ambiente de testes retornará um array associativo contendo os dados que seriam
-     * enviados ao ``UA``.
+     * Em um ambiente de testes retornará uma string contendo os dados brutos que
+     * devem ser enviados ao ``UA``.
      *
      * @param       array $viewData
      *              Objeto de dados do processamento no momento atual.
      *
-     * @return      void
+     * @return      void|string
      */
     static private function sendToUA(array $viewData)
     {
@@ -615,19 +494,111 @@ class ErrorListening
         }
 
 
-        if ($viewData["environmentType"] === "testview" || $viewData["environmentType"] === "localtest") {
+        if ($viewData["environmentType"] === "UTEST") {
             return $str;
         } else {
-            // @codeCoverageIgnoreStart
             $strHeader = $http["protocol"] . " " . $http["code"] . " " . $http["message"];
-            header("Cache-Control: no-cache, must-revalidate");
-            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-            header("Content-Type: $cType; charset=utf-8");
-            header($strHeader, true, $http["code"]);
+            \header("Cache-Control: no-cache, must-revalidate");
+            \header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            \header("Content-Type: $cType; charset=utf-8");
+            \header($strHeader, true, $http["code"]);
 
             echo $str;
             exit();
-            // @codeCoverageIgnoreEnd
         }
+    }
+
+
+
+
+
+    /**
+     * Prepara um documento ``X/HTML`` para ser enviado ao ``UA``.
+     *
+     * @param       array $viewData
+     *              Objeto de dados do processamento no momento atual.
+     *
+     * @return      string
+     */
+    static private function prepareXHTML(array $viewData) : string
+    {
+        $str = "";
+
+        if (self::$pathToErrorView === "" || \file_exists(self::$pathToErrorView) === false) {
+            $str = self::createNonStyleErrorPage($viewData);
+        } else {
+            $viewData = (object)$viewData;
+
+            $viewData->http                 = (object)$viewData->http;
+            $viewData->debugLog             = (object)$viewData->debugLog;
+            $viewData->debugLog->traceLog   = (object)$viewData->debugLog->traceLog;
+
+            \ob_start();
+            require_once self::$pathToErrorView;
+            $str = \ob_get_contents();
+            \ob_end_clean();
+        }
+
+        return $str;
+    }
+    /**
+     * Prepara um documento ``JSON`` para ser enviado ao ``UA``.
+     *
+     * @param       array $viewData
+     *              Objeto de dados do processamento no momento atual.
+     *
+     * @return      string
+     */
+    static private function prepareJSON(array $viewData) : string
+    {
+        $str = "";
+
+        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
+            $str = \json_encode($viewData["debugLog"]);
+        } else {
+            $str = '{"HTTP": ' . $viewData["http"]["code"] . ', "Message": "' . $viewData["http"]["message"] . '"}';
+        }
+
+        return $str;
+    }
+    /**
+     * Monta um ``HTML`` básico para retornar ao usuário uma página não estilizada de um erro
+     * disparado.
+     *
+     * @param       array $viewData
+     *              Objeto de dados do processamento no momento atual.
+     *
+     * @return      string
+     */
+    static private function createNonStyleErrorPage(array $viewData) : string
+    {
+        $code       = $viewData["http"]["code"];
+        $message    = $viewData["http"]["message"];
+        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
+            $message = $viewData["debugLog"]["message"];
+        }
+
+
+        $str = '<!DOCTYPE html>' . PHP_EOL;
+        $str .= '<html>' . PHP_EOL;
+        $str .= '    <head>' . PHP_EOL;
+        $str .= '        <meta charset="utf-8" />' . PHP_EOL;
+        $str .= '        <title>' . $code . ' - ' . $message . '</title>' . PHP_EOL;
+        $str .= '    </head>' . PHP_EOL;
+        $str .= '    <body>' . PHP_EOL;
+        $str .= '        <h1>' . $code . '</h1>' . PHP_EOL;
+
+        if ($message !== "") {
+            $str .= '        <h2>' . $message . '</h2>' . PHP_EOL;
+        }
+
+        if ($viewData["isDebugMode"] === true && $viewData["environmentType"] !== "PRD") {
+            $str .= '        <pre>' . PHP_EOL . \print_r($viewData["debugLog"], true) . '</pre>' . PHP_EOL;
+        }
+
+        $str .= '    </body>' . PHP_EOL;
+        $str .= '</html>';
+
+        return $str;
     }
 }

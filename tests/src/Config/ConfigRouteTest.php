@@ -58,6 +58,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("site", $nMock->getApplication());
         $this->assertSame("\\site\\controller", $nMock->getNamespace());
         $this->assertSame("home", $nMock->getController());
+        $this->assertSame("\\site\\controller\\home", $nMock->getControllerNamespace());
         $this->assertSame("index", $nMock->getAction());
         $this->assertSame(["GET", "POST"], $nMock->getAllowedMethods());
         $this->assertSame(

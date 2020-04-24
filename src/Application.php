@@ -39,25 +39,18 @@ abstract class Application extends BObject implements iApplication
 
     /**
      * Configurações padrões para a aplicação.
+     * Pode ser extendido na classe final da aplicação alvo.
      *
      * @var         array
      */
     protected array $defaultApplicationConfig = [];
     /**
      * Configurações padrões para a aplicação.
+     * Pode ser extendido na classe final da aplicação alvo.
      *
      * @var         array
      */
     protected array $defaultSecurityConfig = [];
-    /**
-     * Configuração bruta para a rota que está sendo executada neste momento.
-     *
-     * @var         array
-     */
-    protected array $rawRouteConfig = [];
-
-
-
     /**
      * Indica se o método ``run()`` já foi ativado alguma vez.
      *
@@ -121,6 +114,31 @@ abstract class Application extends BObject implements iApplication
 
 
 
+    /**
+     * Inicia o processamento da rota selecionada.
+     *
+     * @return      void
+     */
+    public function run() : void
+    {
+        if ($this->isRun === false) {
+            $this->isRun = true;
+
+
+            // Se este não for o método a ser executado para
+            // resolver esta rota, evoca o método alvo.
+            if ($this->serverConfig->getRouteConfig()->getRunMethodName() !== "run") {
+                $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
+                $this->$exec();
+            }
+            else {
+
+            }
+        }
+    }
+
+
+
 
 
 
@@ -133,7 +151,7 @@ abstract class Application extends BObject implements iApplication
      * Inicia o processamento da rota selecionada.
      *
      * @return      void
-     */
+     *
     public function run() : void
     {
         if ($this->isRun === false) {
@@ -154,12 +172,7 @@ abstract class Application extends BObject implements iApplication
                     // Inicia uma instância "iRequestHandler" responsável
                     // por iniciar o controller alvo e executar o método correspondente a rota.
                     $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
-                        $this->serverConfig,
-                        $this->domainConfig,
-                        $this->applicationConfig,
-                        $this->serverRequest,
-                        $this->rawRouteConfig,
-                        $this->routeConfig
+                        $this->serverConfig
                     );
 
 
@@ -277,15 +290,10 @@ abstract class Application extends BObject implements iApplication
      *
     private function sendResponse() : void
     {
-        // Identifica se está em um ambiente de testes.
-        $isTestEnv = (  $this->domainConfig->getEnvironmentType() === "UTEST" ||
-                        $this->domainConfig->getEnvironmentType() === "testview" ||
-                        $this->domainConfig->getEnvironmentType() === "localtest");
-
 
         // Quando NÃO se trata de um ambiente de testes,
         // efetua o envio dos dados processados para o UA.
-        if ($isTestEnv === false) {
+        if ($this->domainConfig->getEnvironmentType() === "UTEST") {
 
             // Se o sistema de segurança está ativo os seguintes
             // headers serão adicionados

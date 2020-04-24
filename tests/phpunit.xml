@@ -23,6 +23,7 @@
 
             <file>src/RouterTest.php</file>
 
+            <file>src/Handler/ErrorListeningTest.php</file>
 
             <!--file>src/Handler/Mime/HTMLTest.php</file>
             <file>src/Handler/Mime/XHTMLTest.php</file>
@@ -36,6 +37,7 @@
 
             <file>src/Handler/ErrorListeningTest.php</file>
             <file>src/Handler/ResponseHandlerTest.php</file-->
+
         </testsuite>
     </testsuites>
     <filter>

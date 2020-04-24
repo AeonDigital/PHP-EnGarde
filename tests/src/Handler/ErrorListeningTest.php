@@ -20,7 +20,7 @@ class ErrorListeningTest extends TestCase
 
 
     function configureErrorListening(
-        $env = "test",
+        $env = "UTEST",
         $debugMode = false,
         $method = "get",
         $pathToErrorView = ""
@@ -77,7 +77,7 @@ class ErrorListeningTest extends TestCase
 
         $val = [
             "rootPath"          => "\\",
-            "environmentType"   => "testview",
+            "environmentType"   => "UTEST",
             "isDebugMode"       => true,
             "protocol"          => "http",
             "method"            => "GET",
@@ -113,12 +113,14 @@ class ErrorListeningTest extends TestCase
     public function test_method_onexception()
     {
         global $dirResources;
+        // GET | DebugMode-OFF
         $this->configureErrorListening();
 
-        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onexception.php");
+        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onexception-get-debugmodeoff.php");
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
-            $expected = include($tgtPathToExpected);
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
         }
 
 
@@ -130,14 +132,47 @@ class ErrorListeningTest extends TestCase
             $r = ErrorListening::onException($ex);
 
             if ($expected === null) {
-                file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
-                $expected = $r;
+                $expected = str_replace(["\r", "\n"], "", $r);
+                file_put_contents($tgtPathToExpected, $expected);
             }
 
-            $this->assertSame($expected["rootPath"], $r["rootPath"]);
-            $this->assertSame($expected["environmentType"], $r["environmentType"]);
-            $this->assertSame($expected["isDebugMode"], $r["isDebugMode"]);
-            $this->assertSame($expected["http"], $r["http"]);
+            $this->assertSame(
+                $expected,
+                str_replace(["\r", "\n"], "", $r),
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+
+
+
+        // GET | DebugMode-ON
+        $this->configureErrorListening("UTEST", true);
+
+
+        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onexception-get-debugmodeon.php");
+        $expected = null;
+        if (file_exists($tgtPathToExpected) === true) {
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
+        }
+
+
+        $fail = false;
+        try {
+            $val = 1 / 0;
+        } catch (\Exception $ex) {
+            $fail = true;
+            $r = ErrorListening::onException($ex);
+
+            if ($expected === null) {
+                $expected = str_replace(["\r", "\n"], "", $r);
+                file_put_contents($tgtPathToExpected, $expected);
+            }
+
+            $this->assertSame(
+                $expected,
+                str_replace(["\r", "\n"], "", $r),
+            );
         }
         $this->assertTrue($fail, "Test must fail");
     }
@@ -147,12 +182,14 @@ class ErrorListeningTest extends TestCase
     public function test_method_onerror()
     {
         global $dirResources;
-        $this->configureErrorListening();
+        // POST | DebugMode-OFF
+        $this->configureErrorListening("UTEST", false, "POST");
 
-        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onerror.php");
+        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onerror-get-debugmodeoff.php");
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
-            $expected = include($tgtPathToExpected);
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
         }
 
 
@@ -169,14 +206,51 @@ class ErrorListeningTest extends TestCase
             );
 
             if ($expected === null) {
-                file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
-                $expected = $r;
+                $expected = str_replace(["\r", "\n"], "", $r);
+                file_put_contents($tgtPathToExpected, $expected);
             }
 
-            $this->assertSame($expected["rootPath"], $r["rootPath"]);
-            $this->assertSame($expected["environmentType"], $r["environmentType"]);
-            $this->assertSame($expected["isDebugMode"], $r["isDebugMode"]);
-            $this->assertSame($expected["http"], $r["http"]);
+            $this->assertSame(
+                $expected,
+                str_replace(["\r", "\n"], "", $r),
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+
+
+
+        // POST | DebugMode-ON
+        $this->configureErrorListening("UTEST", true, "POST");
+
+        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onerror-get-debugmodeon.php");
+        $expected = null;
+        if (file_exists($tgtPathToExpected) === true) {
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
+        }
+
+
+        $fail = false;
+        try {
+            $val = 1 / 0;
+        } catch (\Exception $ex) {
+            $fail = true;
+            $r = ErrorListening::onError(
+                $ex->getCode(),
+                $ex->getMessage(),
+                $ex->getFile(),
+                (int)$ex->getLine()
+            );
+
+            if ($expected === null) {
+                $expected = str_replace(["\r", "\n"], "", $r);
+                file_put_contents($tgtPathToExpected, $expected);
+            }
+
+            $this->assertSame(
+                $expected,
+                str_replace(["\r", "\n"], "", $r),
+            );
         }
         $this->assertTrue($fail, "Test must fail");
     }
@@ -191,164 +265,33 @@ class ErrorListeningTest extends TestCase
         $tgtPathToExpected  = $dirResources . "/errorlistening/throwhttperror-custom.php";
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
-            $expected = include($tgtPathToExpected);
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
         }
 
 
         $r = ErrorListening::throwHTTPError(501, "custom reason phrase");
         if ($expected === null) {
-            file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
-            $expected = $r;
+            $expected = str_replace(["\r", "\n"], "", $r);
+            file_put_contents($tgtPathToExpected, $expected);
         }
-        $rStr           = var_export($r, true);
-        $expectedStr    = var_export($expected, true);
-        $this->assertSame($expectedStr, $rStr);
+        $this->assertSame($expected, str_replace(["\r", "\n"], "", $r));
 
 
 
         $tgtPathToExpected  = $dirResources . "/errorlistening/throwhttperror.php";
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
-            $expected = include($tgtPathToExpected);
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
         }
+
 
         $r = ErrorListening::throwHTTPError(501);
         if ($expected === null) {
-            file_put_contents($tgtPathToExpected, "<?php return " . var_export($r, true) . ";");
-            $expected = $r;
+            $expected = str_replace(["\r", "\n"], "", $r);
+            file_put_contents($tgtPathToExpected, $expected);
         }
-        $rStr           = var_export($r, true);
-        $expectedStr    = var_export($expected, true);
-        $this->assertSame($expectedStr, $rStr);
-    }
-
-
-
-    public function test_method_testview_json_fail()
-    {
-        global $dirResources;
-        $this->configureErrorListening("testview", false, "POST");
-
-        $tgtPathToExpected  = $dirResources . "/errorlistening/testview.json";
-        $expected = null;
-        if (file_exists($tgtPathToExpected) === true) {
-            $expected = file_get_contents($tgtPathToExpected);
-        }
-
-
-        $fail = false;
-        try {
-            $val = 1 / 0;
-        } catch (\Exception $ex) {
-            $fail = true;
-            $r = ErrorListening::onException($ex);
-
-            if ($expected === null) {
-                file_put_contents($tgtPathToExpected, $r);
-                $expected = $r;
-            }
-            $this->assertSame($expected, $r);
-        }
-        $this->assertTrue($fail, "Test must fail");
-        $this->assertTrue(true);
-    }
-
-
-
-
-    public function test_method_testview_json_debug()
-    {
-        global $dirResources;
-        $this->configureErrorListening("testview", true, "POST");
-
-        $tgtPathToExpected  = $dirResources . "/errorlistening/testview-debug.json";
-        $expected = null;
-        if (file_exists($tgtPathToExpected) === true) {
-            $expected = file_get_contents($tgtPathToExpected);
-        }
-
-
-        $fail = false;
-        try {
-            $val = 1 / 0;
-        } catch (\Exception $ex) {
-            $fail = true;
-            $r = ErrorListening::onException($ex);
-
-            if ($expected === null) {
-                file_put_contents($tgtPathToExpected, $r);
-                $expected = $r;
-            }
-            $rJSON          = json_decode($r);
-            $expectedJSON   = json_decode($expected);
-
-            $this->assertSame($expectedJSON->code,      $rJSON->code);
-            $this->assertSame($expectedJSON->message,   $rJSON->message);
-            $this->assertSame($expectedJSON->file,      $rJSON->file);
-
-            $this->assertSame($expected, $r);
-        }
-        $this->assertTrue($fail, "Test must fail");
-    }
-
-
-
-    public function test_method_return_testview_nonstyled()
-    {
-        global $dirResources;
-        $this->configureErrorListening("testview", false, "GET");
-
-        $tgtPathToExpected  = $dirResources . "/errorlistening/nonstyled.html";
-        $expected = null;
-        if (file_exists($tgtPathToExpected) === true) {
-            $expected = file_get_contents($tgtPathToExpected);
-        }
-
-
-        $fail = false;
-        try {
-            $val = 1 / 0;
-        } catch (\Exception $ex) {
-            $fail = true;
-            $r = ErrorListening::onException($ex);
-
-            if ($expected === null) {
-                file_put_contents($tgtPathToExpected, $r);
-                $expected = $r;
-            }
-            $this->assertSame($expected, $r);
-        }
-        $this->assertTrue($fail, "Test must fail");
-    }
-
-
-
-    public function test_method_return_testview_custom()
-    {
-        global $dirResources;
-        $tgtCustomTemplate = $dirResources . "/errorlistening/customErrorView.phtml";
-        $this->configureErrorListening("testview", false, "GET", $tgtCustomTemplate);
-
-        $tgtPathToExpected  = $dirResources . "/errorlistening/custom.html";
-        $expected = null;
-        if (file_exists($tgtPathToExpected) === true) {
-            $expected = file_get_contents($tgtPathToExpected);
-        }
-
-
-        $fail = false;
-        try {
-            $val = 1 / 0;
-        } catch (\Exception $ex) {
-            $fail = true;
-            $r = ErrorListening::onException($ex);
-
-            if ($expected === null) {
-                file_put_contents($tgtPathToExpected, $r);
-                $expected = $r;
-            }
-            $this->assertSame($expected, $r);
-        }
-        $this->assertTrue($fail, "Test must fail");
+        $this->assertSame($expected, str_replace(["\r", "\n"], "", $r));
     }
 }

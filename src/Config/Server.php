@@ -1390,7 +1390,7 @@ final class Server extends BObject implements iServer
                     if ($isOk === false) {
                         $forceLocale = $this->getServerRequest()->getParam("_locale");
                         $err = "Locale \"$forceLocale\" is not supported by this Application.";
-                        throw new \RuntimeException($err);
+                        \AeonDigital\EnGarde\Handler\ErrorListening::throwHTTPError(415, $err);
                     }
 
 
@@ -1408,9 +1408,9 @@ final class Server extends BObject implements iServer
                     // em questão.
                     if ($isOk === false) {
                         $mime = $this->getServerRequest()->getParam("_mime");
-                        if ($mime === null) { $err = "Undefined media type."; }
+                        if ($mime === null) { $err = "Unsupported media type."; }
                         else { $err = "Media type \"$mime\" is not supported by this URL."; }
-                        throw new \RuntimeException($err);
+                        \AeonDigital\EnGarde\Handler\ErrorListening::throwHTTPError(415, $err);
                     }
                 }
             }

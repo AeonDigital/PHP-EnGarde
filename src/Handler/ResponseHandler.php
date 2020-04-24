@@ -4,12 +4,11 @@ declare (strict_types=1);
 namespace AeonDigital\EnGarde\Handler;
 
 use AeonDigital\Interfaces\Http\Server\iResponseHandler as iResponseHandler;
-use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+
+
+
 
 
 /**
@@ -33,36 +32,6 @@ class ResponseHandler implements iResponseHandler
      * @var         iServerConfig
      */
     private iServerConfig $serverConfig;
-    /**
-     * Instância das configurações do Domínio.
-     *
-     * @var         iDomainConfig
-     */
-    private iDomainConfig $domainConfig;
-    /**
-     * Configuraçõs para a Aplicação corrente.
-     *
-     * @var         iApplicationConfig
-     */
-    private iApplicationConfig $applicationConfig;
-    /**
-     * Objeto de configuração da Requisição atual.
-     *
-     * @var         iServerRequest
-     */
-    private iServerRequest $serverRequest;
-    /**
-     * Objeto que representa a configuração bruta da rota alvo.
-     *
-     * @var         array
-     */
-    private array $rawRouteConfig = [];
-    /**
-     * Objeto que representa a configuração da rota alvo.
-     *
-     * @var         iRouteConfig
-     */
-    private iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
@@ -90,42 +59,15 @@ class ResponseHandler implements iResponseHandler
      * @param       iServerConfig $serverConfig
      *              Instância ``iServerConfig``.
      *
-     * @param       iDomainConfig $domainConfig
-     *              Instância ``iDomainConfig``.
-     *
-     * @param       iApplicationConfig $applicationConfig
-     *              Instância ``iApplicationConfig``.
-     *
-     * @param       iServerRequest $serverRequest
-     *              Instância ``iServerRequest``.
-     *
-     * @param       array $rawRouteConfig
-     *              Instância ``iServerConfig``.
-     *
-     * @param       ?iRouteConfig $routeConfig
-     *              Instância ``iRouteConfig``.
-     *
      * @param       iResponse $response
      *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
-        iDomainConfig $domainConfig,
-        iApplicationConfig $applicationConfig,
-        iServerRequest $serverRequest,
-        array $rawRouteConfig,
-        ?iRouteConfig $routeConfig,
         iResponse $response
     ) {
-        $this->serverConfig         = $serverConfig;
-        $this->domainConfig         = $domainConfig;
-        $this->applicationConfig    = $applicationConfig;
-        $this->serverRequest        = $serverRequest;
-        $this->rawRouteConfig       = $rawRouteConfig;
-        if ($routeConfig !== null) {
-            $this->routeConfig      = $routeConfig;
-        }
-        $this->response             = $response;
+        $this->serverConfig = $serverConfig;
+        $this->response     = $response;
     }
 
 
@@ -163,11 +105,6 @@ class ResponseHandler implements iResponseHandler
 
             $mimeHandler = new $mimeNS(
                 $this->serverConfig,
-                $this->domainConfig,
-                $this->applicationConfig,
-                $this->serverRequest,
-                $this->rawRouteConfig,
-                $this->routeConfig,
                 $this->response
             );
 

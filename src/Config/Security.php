@@ -84,7 +84,9 @@ final class Security extends BObject implements iSecurity
     private function setDataCookieName(string $dataCookieName) : void
     {
         if ($this->isActive === true && $dataCookieName === "") {
-            throw new \InvalidArgumentException("An active secure session must have a \"dataCookieName\" defined.");
+            throw new \InvalidArgumentException(
+                "An active secure session must have a \"dataCookieName\" defined."
+            );
         }
         $this->dataCookieName = $dataCookieName;
     }
@@ -118,7 +120,9 @@ final class Security extends BObject implements iSecurity
     private function setSecurityCookieName(string $securityCookieName) : void
     {
         if ($this->isActive === true && $securityCookieName === "") {
-            throw new \InvalidArgumentException("An active secure session must have a \"securityCookieName\" defined.");
+            throw new \InvalidArgumentException(
+                "An active secure session must have a \"securityCookieName\" defined."
+            );
         }
         $this->securityCookieName = $securityCookieName;
     }
@@ -152,7 +156,9 @@ final class Security extends BObject implements iSecurity
     private function setRouteToLogin(string $routeToLogin) : void
     {
         if ($this->isActive === true && $routeToLogin === "") {
-            throw new \InvalidArgumentException("An active secure session must have a \"routeToLogin\" defined.");
+            throw new \InvalidArgumentException(
+                "An active secure session must have a \"routeToLogin\" defined."
+            );
         }
         $this->routeToLogin = $routeToLogin;
     }
@@ -186,7 +192,9 @@ final class Security extends BObject implements iSecurity
     private function setRouteToStart(string $routeToStart) : void
     {
         if ($this->isActive === true && $routeToStart === "") {
-            throw new \InvalidArgumentException("An active secure session must have a \"routeToStart\" defined.");
+            throw new \InvalidArgumentException(
+                "An active secure session must have a \"routeToStart\" defined."
+            );
         }
         $this->routeToStart = $routeToStart;
     }
@@ -220,7 +228,9 @@ final class Security extends BObject implements iSecurity
     private function setRouteToResetPassword(string $routeToResetPassword) : void
     {
         if ($this->isActive === true && $routeToResetPassword === "") {
-            throw new \InvalidArgumentException("An active secure session must have a \"routeToResetPassword\" defined.");
+            throw new \InvalidArgumentException(
+                "An active secure session must have a \"routeToResetPassword\" defined."
+            );
         }
         $this->routeToResetPassword = $routeToResetPassword;
     }

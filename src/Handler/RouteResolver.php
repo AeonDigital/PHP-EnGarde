@@ -7,18 +7,19 @@ use AeonDigital\Interfaces\Http\Server\iRequestHandler as iRequestHandler;
 use AeonDigital\Interfaces\Http\Server\iResponseHandler as iResponseHandler;
 use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
 use AeonDigital\EnGarde\Interfaces\Engine\iController as iController;
 
 
 
-
-
 /**
  * Manipulador padrão para resolução das rotas.
+ *
+ * Trata-se de uma classe ``iRequestHandler`` que tem por função iniciar e executar o
+ * ``controller`` e ``action`` alvo da requisição e, ao final, entregar o objeto ``iResponse``
+ * resultante para ser usado por uma implementação de ``iResponseHandler``.
+ *
+ * Deve ser executada após todos os ``Middlewares`` terem sido acionados.
  *
  * @codeCoverageIgnore
  *
@@ -32,8 +33,12 @@ class RouteResolver implements iRequestHandler
 
 
 
-
-
+    /**
+     * Objeto responsável por preparar o ``iResponseHandler`` para ser servido ao ``UA``.
+     *
+     * @var         iResponseHandler
+     */
+    private iResponseHandler $responseHandler;
     /**
      * Instância de configuração do Servidor.
      *
@@ -41,41 +46,11 @@ class RouteResolver implements iRequestHandler
      */
     private iServerConfig $serverConfig;
     /**
-     * Instância das configurações do Domínio.
+     * Instância do controller que será executado.
      *
-     * @var         iDomainConfig
+     * @var         iController
      */
-    private iDomainConfig $domainConfig;
-    /**
-     * Configuraçõs para a Aplicação corrente.
-     *
-     * @var         iApplicationConfig
-     */
-    private iApplicationConfig $applicationConfig;
-    /**
-     * Objeto de configuração da Requisição atual.
-     *
-     * @var         iServerRequest
-     */
-    private iServerRequest $serverRequest;
-    /**
-     * Objeto que representa a configuração bruta da rota alvo.
-     *
-     * @var         array
-     */
-    private array $rawRouteConfig = [];
-    /**
-     * Objeto que representa a configuração da rota alvo.
-     *
-     * @var         iRouteConfig
-     */
-    private iRouteConfig $routeConfig;
-    /**
-     * Objeto responsável por preparar o ``iResponseHandler`` para ser servido ao ``UA``.
-     *
-     * @var         iResponseHandler
-     */
-    private iResponseHandler $responseHandler;
+    private iController $controller;
 
 
 
@@ -86,65 +61,11 @@ class RouteResolver implements iRequestHandler
      *
      * @param       iServerConfig $serverConfig
      *              Instância ``iServerConfig``.
-     *
-     * @param       iDomainConfig $domainConfig
-     *              Instância ``iDomainConfig``.
-     *
-     * @param       iApplicationConfig $applicationConfig
-     *              Instância ``iApplicationConfig``.
-     *
-     * @param       iServerRequest $serverRequest
-     *              Instância ``iServerRequest``.
-     *
-     * @param       array $rawRouteConfig
-     *              Instância ``iServerConfig``.
-     *
-     * @param       ?iRouteConfig $routeConfig
-     *              Instância ``iRouteConfig``.
      */
     function __construct(
-        iServerConfig $serverConfig,
-        iDomainConfig $domainConfig,
-        iApplicationConfig $applicationConfig,
-        iServerRequest $serverRequest,
-        array $rawRouteConfig,
-        ?iRouteConfig $routeConfig = null
+        iServerConfig $serverConfig
     ) {
-        $this->serverConfig         = $serverConfig;
-        $this->domainConfig         = $domainConfig;
-        $this->applicationConfig    = $applicationConfig;
-        $this->serverRequest        = $serverRequest;
-        $this->rawRouteConfig       = $rawRouteConfig;
-        if ($routeConfig !== null) {
-            $this->routeConfig = $routeConfig;
-        }
-    }
-
-
-
-
-
-    /**
-     * A partir das configurações da rota atualmente selecionada, gera uma instância do
-     * controller alvo e retorna-o.
-     *
-     * @param       iResponse $response
-     *              Objeto ``iResponse`` a ser passado para o controller.
-     *
-     * @return      iController
-     */
-    private function createController(iResponse $response) : iController
-    {
-        $ctrl = $this->routeConfig->getNamespace() . "\\" . $this->routeConfig->getController();
-        return new $ctrl(
-            $this->serverConfig,
-            $this->domainConfig,
-            $this->applicationConfig,
-            $this->serverRequest,
-            $this->rawRouteConfig,
-            $this->routeConfig,
-            $response
-        );
+        $this->serverConfig = $serverConfig;
     }
 
 
@@ -172,7 +93,11 @@ class RouteResolver implements iRequestHandler
             $this->routeConfig->lockProperties();
 
             // Inicia uma nova instância do controller alvo
-            $tgtController = $this->createController($resultResponse);
+            $controllerNS = $this->serverConfig->getRouteConfig()->getControllerNamespace();
+            $tgtController = new $controllerNS(
+                $this->serverConfig,
+                $resultResponse
+            );
 
             // Executa a action alvo
             $action = $this->routeConfig->getAction();
@@ -188,11 +113,6 @@ class RouteResolver implements iRequestHandler
         // gera a view a ser enviada para o UA.
         $this->responseHandler = new \AeonDigital\EnGarde\Handler\ResponseHandler(
             $this->serverConfig,
-            $this->domainConfig,
-            $this->applicationConfig,
-            $this->serverRequest,
-            $this->rawRouteConfig,
-            $this->routeConfig,
             $resultResponse
         );
 

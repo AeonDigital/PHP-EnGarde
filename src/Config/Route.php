@@ -151,6 +151,21 @@ final class Route extends BObject implements iRoute
 
 
     /**
+     * Retorna a namespace completa do controller que deve responder a esta
+     * requisição.
+     *
+     * @return      string
+     */
+    function getControllerNamespace() : string
+    {
+        return $this->namespace . "\\" . $this->controller;
+    }
+
+
+
+
+
+    /**
      * Nome da action que resolve a rota.
      *
      * @var         string
