@@ -533,7 +533,7 @@ class ErrorListening
             $viewData->debugLog             = (object)$viewData->debugLog;
             $viewData->debugLog->traceLog   = (object)$viewData->debugLog->traceLog;
 
-            \ob_start();
+            \ob_start("mb_output_handler");
             require_once self::$pathToErrorView;
             $str = \ob_get_contents();
             \ob_end_clean();

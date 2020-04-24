@@ -4,12 +4,12 @@ declare (strict_types=1);
 namespace AeonDigital\EnGarde\Handler\Mime;
 
 use AeonDigital\Interfaces\Http\Server\iMimeHandler as iMimeHandler;
-use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+
+
+
+
 
 
 /**
@@ -24,9 +24,6 @@ abstract class aMime implements iMimeHandler
 {
 
 
-
-
-
     /**
      * Instância de configuração do Servidor.
      *
@@ -34,51 +31,18 @@ abstract class aMime implements iMimeHandler
      */
     protected iServerConfig $serverConfig;
     /**
-     * Instância das configurações do Domínio.
-     *
-     * @var         iDomainConfig
-     */
-    protected iDomainConfig $domainConfig;
-    /**
-     * Configuraçõs para a Aplicação corrente.
-     *
-     * @var         iApplicationConfig
-     */
-    protected iApplicationConfig $applicationConfig;
-    /**
-     * Objeto de configuração da Requisição atual.
-     *
-     * @var         iServerRequest
-     */
-    protected iServerRequest $serverRequest;
-    /**
-     * Objeto que representa a configuração bruta da rota alvo.
-     *
-     * @var         array
-     */
-    private array $rawRouteConfig = [];
-    /**
-     * Objeto que representa a configuração da rota alvo.
-     *
-     * @var         iRouteConfig
-     */
-    protected iRouteConfig $routeConfig;
-    /**
      * Objeto "iResponse".
      *
      * @var         iResponse
      */
     protected iResponse $response;
     /**
-     * Caminho relativo a ser usado pelos recursos CSS e Javascript de documentos X/HTML.
+     * Caminho relativo (a partir da URL raiz) até o local onde a aplicação
+     * armazena seus recursos públicos.
      *
      * @var         string
      */
     protected string $resourcesBasePath = "";
-
-
-
-
 
 
 
@@ -90,46 +54,22 @@ abstract class aMime implements iMimeHandler
      * @param       iServerConfig $serverConfig
      *              Instância ``iServerConfig``.
      *
-     * @param       iDomainConfig $domainConfig
-     *              Instância ``iDomainConfig``.
-     *
-     * @param       iApplicationConfig $applicationConfig
-     *              Instância ``iApplicationConfig``.
-     *
-     * @param       iServerRequest $serverRequest
-     *              Instância ``iServerRequest``.
-     *
-     * @param       array $rawRouteConfig
-     *              Instância ``iServerConfig``.
-     *
-     * @param       iRouteConfig $routeConfig
-     *              Instância ``iRouteConfig``.
-     *
      * @param       iResponse $response
      *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
-        iDomainConfig $domainConfig,
-        iApplicationConfig $applicationConfig,
-        iServerRequest $serverRequest,
-        array $rawRouteConfig,
-        iRouteConfig $routeConfig,
         iResponse $response
     ) {
-        $this->serverConfig         = $serverConfig;
-        $this->domainConfig         = $domainConfig;
-        $this->applicationConfig    = $applicationConfig;
-        $this->serverRequest        = $serverRequest;
-        $this->rawRouteConfig       = $rawRouteConfig;
-        $this->routeConfig          = $routeConfig;
-        $this->response             = $response;
+        $this->serverConfig = $serverConfig;
+        $this->response     = $response;
+
+
 
         $resourcesBasePath = \str_replace(
-                                [$this->domainConfig->getRootPath(), "\\"],
-                                ["", "/"],
-                                $this->applicationConfig->getPathToViewsResources()
-                            );
+            [$this->serverConfig->getRootPath(), "\\"], ["", "/"],
+            $this->serverConfig->getApplicationConfig()->getPathToViewsResources(true)
+        );
         $this->resourcesBasePath = "/" . \trim($resourcesBasePath, "/") . "/";
     }
 
@@ -152,18 +92,18 @@ abstract class aMime implements iMimeHandler
         $str = "";
 
         // Apenas se há uma view definida...
-        if ($this->routeConfig->getView() !== "") {
-            $viewData = $this->response->getViewData();
+        if ($this->serverConfig->getRouteConfig()->getView() !== "") {
+            $viewData   = $this->response->getViewData();
             $viewConfig = $this->response->getViewConfig();
 
             $viewPath = \to_system_path(
-                $this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getView()
+                $this->serverConfig->getApplicationConfig()->getPathToViews(true) .
+                "/" . $this->serverConfig->getRouteConfig()->getView()
             );
 
-            \ob_start("mb_output_handler");
-            require $viewPath;
-
-            $str = "\n" . \ob_get_contents();
+            @\ob_start("mb_output_handler");
+            @require $viewPath;
+            $str = @\ob_get_contents();
             @\ob_end_clean();
         }
 
@@ -179,15 +119,18 @@ abstract class aMime implements iMimeHandler
         $str = "";
 
         // Apenas se há uma masterpage definida...
-        if ($this->routeConfig->getMasterPage() !== "") {
-            $viewData = $this->response->getViewData();
+        if ($this->serverConfig->getRouteConfig()->getMasterPage() !== "") {
+            $viewData   = $this->response->getViewData();
             $viewConfig = $this->response->getViewConfig();
 
-            $viewMaster = \to_system_path($this->applicationConfig->getPathToViews() . "/" . $this->routeConfig->getMasterPage());
-            \ob_start("mb_output_handler");
-            require $viewMaster;
+            $viewMaster = \to_system_path(
+                $this->serverConfig->getApplicationConfig()->getPathToViews(true) .
+                "/" . $this->serverConfig->getRouteConfig()->getMasterPage()
+            );
 
-            $str = \ob_get_contents();
+            @\ob_start("mb_output_handler");
+            @require $viewMaster;
+            $str = @\ob_get_contents();
             @\ob_end_clean();
         }
 
@@ -201,8 +144,8 @@ abstract class aMime implements iMimeHandler
      */
     protected function processXHTMLMetaData() : string
     {
-        $allMetas = $this->routeConfig->getMetaData();
         $strMetas = [];
+        $allMetas = $this->serverConfig->getRouteConfig()->getMetaData();
 
         foreach ($allMetas as $key => $value) {
             $strMetas[] = "<meta name=\"$key\" content=\"". \htmlspecialchars($value) ."\" />";
@@ -218,15 +161,15 @@ abstract class aMime implements iMimeHandler
      */
     protected function processXHTMLStyleSheets() : string
     {
-        $allCSSs = $this->routeConfig->getStyleSheets();
-        $strCSSs = [];
+        $str    = [];
+        $recs   = $this->serverConfig->getRouteConfig()->getStyleSheets();
 
-        foreach ($allCSSs as $css) {
-            $cssPath = $this->resourcesBasePath . \trim($css, "/");
-            $strCSSs[] = "<link rel=\"stylesheet\" href=\"$cssPath\" />";
+        foreach ($recs as $rec) {
+            $rPath = $this->resourcesBasePath . \trim($rec, "/\\");
+            $str[] = "<link rel=\"stylesheet\" href=\"$rPath\" />";
         }
 
-        return ((\count($strCSSs) > 0) ? "\n" . \implode("\n", $strCSSs) : "");
+        return ((\count($str) > 0) ? "\n" . \implode("\n", $str) : "");
     }
     /**
      * Efetua o processamento dos recursos JavaScript a serem incorporados a um documento
@@ -236,15 +179,15 @@ abstract class aMime implements iMimeHandler
      */
     protected function processXHTMLJavaScripts() : string
     {
-        $allJSs = $this->routeConfig->getJavaScripts();
-        $strJSs = [];
+        $str    = [];
+        $recs   = $this->serverConfig->getRouteConfig()->getJavaScripts();
 
-        foreach ($allJSs as $js) {
-            $jsPath = $this->resourcesBasePath . \trim($js, "/");
-            $strJSs[] = "<script src=\"$jsPath\"></script>";
+        foreach ($recs as $rec) {
+            $rPath = $this->resourcesBasePath . \trim($rec, "/\\");
+            $str[] = "<script src=\"$rPath\"></script>";
         }
 
-        return ((\count($strJSs) > 0) ? "\n" . \implode("\n", $strJSs) : "");
+        return ((\count($str) > 0) ? "\n" . \implode("\n", $str) : "");
     }
 
 

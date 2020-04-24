@@ -211,7 +211,7 @@ abstract class Application extends BObject implements iApplication
                     // Caso necessário, inicia o buffer
                     // Com isso, esconderá todas as saídas explicitas originarias
                     // dos middlewares e da action.
-                    if ($hideAllOutputs === true) { ob_start(); }
+                    if ($hideAllOutputs === true) { ob_start("mb_output_handler); }
 
 
                     // Executa os middlewares e action alvo retornando

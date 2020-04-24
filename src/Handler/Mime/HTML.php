@@ -4,12 +4,12 @@ declare (strict_types=1);
 namespace AeonDigital\EnGarde\Handler\Mime;
 
 use AeonDigital\EnGarde\Handler\Mime\aMime as aMime;
-use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplicationConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iDomain as iDomainConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+
+
+
+
 
 
 /**
@@ -33,40 +33,15 @@ final class HTML extends aMime
      * @param       iServerConfig $serverConfig
      *              Instância ``iServerConfig``.
      *
-     * @param       iDomainConfig $domainConfig
-     *              Instância ``iDomainConfig``.
-     *
-     * @param       iApplicationConfig $applicationConfig
-     *              Instância ``iApplicationConfig``.
-     *
-     * @param       iServerRequest $serverRequest
-     *              Instância ``iServerRequest``.
-     *
-     * @param       array $rawRouteConfig
-     *              Instância ``iServerConfig``.
-     *
-     * @param       iRouteConfig $routeConfig
-     *              Instância ``iRouteConfig``.
-     *
      * @param       iResponse $response
      *              Instância ``iResponse``.
      */
     function __construct(
         iServerConfig $serverConfig,
-        iDomainConfig $domainConfig,
-        iApplicationConfig $applicationConfig,
-        iServerRequest $serverRequest,
-        array $rawRouteConfig,
-        iRouteConfig $routeConfig,
         iResponse $response
     ) {
         parent::__construct(
             $serverConfig,
-            $domainConfig,
-            $applicationConfig,
-            $serverRequest,
-            $rawRouteConfig,
-            $routeConfig,
             $response
         );
     }
@@ -84,6 +59,7 @@ final class HTML extends aMime
     public function createResponseBody() : string
     {
         $body = "";
+
         $viewContent    = $this->processViewContent();
         $masterContent  = $this->processMasterPageContent();
         $strMetaData    = $this->processXHTMLMetaData();
@@ -100,12 +76,13 @@ final class HTML extends aMime
         $body = \str_replace("<stylesheets />",   $strStyleSheet, $body);
         $body = \str_replace("<javascripts />",   $strJavaScript, $body);
 
-        $htmlProp = "lang=\"".$this->routeConfig->getResponseLocale()."\"";
+        $locale = $this->serverConfig->getRouteConfig()->getResponseLocale();
+        $htmlProp = "lang=\"$locale\"";
         $body = \str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
 
 
         // Aplica "prettyPrint" caso seja requisitado
-        if ($this->routeConfig->getResponseIsPrettyPrint() === true) {
+        if ($this->serverConfig->getRouteConfig()->getResponseIsPrettyPrint() === true) {
             $body = $this->prettyPrintXHTMLDocument($body, "html");
         }
 

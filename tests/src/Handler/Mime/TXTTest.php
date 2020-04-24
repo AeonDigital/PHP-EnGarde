@@ -19,58 +19,69 @@ class TXTTest extends TestCase
 
     protected function createInstance()
     {
-        $serverConfig       = prov_instanceOf_EnGarde_Config_Server();
-        $domainConfig       = prov_instanceOf_EnGarde_Config_Engine();
-        $applicationConfig  = prov_instanceOf_EnGarde_Config_Application();
-        $serverRequest      = prov_instanceOf_Http_ServerRequest_01("GET", "/");
-        $rawRouteConfig     = [];
-        $response           = prov_instanceOf_Http_Response();
+        global $defaultServerVariables;
+        global $defaultEngineVariables;
+        global $defaultApplication;
+
+        $serverConfig = prov_instanceOf_EnGarde_Config_Server(
+            $defaultServerVariables, [], $defaultEngineVariables
+        );
+        $serverConfig->getApplicationConfig($defaultApplication);
 
 
-        $initialRouteConfigData = [
-            "application"       => "Application",
-            "namespace"         => "Use\\Namespace",
-            "controller"        => "ControllerName",
-            "action"            => "ActionName",
-            "method"            => "get",
-
-            "allowedMethods"    => ["get"],
-            "routes"            => ["/", "/another/route"],
-            "acceptMimes"       => ["txt", "html", "xhtml"],
-            "isUseXHTML"        => true,
-            "middlewares"       => ["MiddlewareName_One", "MiddlewareName_Two", "MiddlewareName_Tree"],
-
-            "relationedRoutes"  => ["/services/routes"],
-            "description"       => "Text about this route.",
-            "devDescription"    => "Text to developers about this route.",
-            "isSecure"          => false,
-            "isUseCache"        => true,
-
-            "cacheTimeout"      => 0,
-            "responseHeaders"   => [],
-            "responseMime"      => "html",
-            "responseMimeType"  => "text/html",
-            "responseLocale"    => "pt-br",
-
-            "responseIsPrettyPrint"     => false,
+        $serverConfig->getRouteConfig([
+            "application"               => "site",
+            "namespace"                 => "\\site\\controller",
+            "controller"                => "home",
+            "action"                    => "index",
+            "allowedMethods"            => ["GET", "POST"],
+            "allowedMimeTypes"          => ["HTML", "JSON", "TXT"],
+            "method"                    => "GET",
+            "routes"                    => [
+                "/",
+                "/index",
+                "/home"
+            ],
+            "isUseXHTML"                => true,
+            "runMethodName"             => "",
+            "customProperties"          => ["prop1" => "val1", "prop2" => "val2"],
+            "description"               => "Text about this route.",
+            "devDescription"            => "Text to developers about this route.",
+            "relationedRoutes"          => [
+                "/unit-test"
+            ],
+            "middlewares"               => [
+                "MiddlewareName_One", "MiddlewareName_Two", "MiddlewareName_Tree"
+            ],
+            "isSecure"                  => false,
+            "isUseCache"                => true,
+            "cacheTimeout"              => (60*60*24*7),
+            "responseIsPrettyPrint"     => true,
             "responseIsDownload"        => false,
-            "responseDownloadFileName"  => "autocreateDownloadFileName",
+            "responseDownloadFileName"  => "",
+            "responseHeaders"           => [],
             "masterPage"                => "masterPage.phtml",
-            "view"                      => "home/index.phtml",
+            "view"                      => "/home/index.phtml",
+            "styleSheets"               => [
+                "/css/main.css",
+                "/css/index.css"
+            ],
+            "javaScripts"               => [
+                "/js/main.js",
+                "/js/index.js"
+            ],
+            "metaData"                  => [
+                "Framework" => "EnGarde!",
+                "Copyright" => "Aeon Digital"
+            ],
+            "localeDictionary"          => "/locales/pt-br"
+        ]);
+        $serverConfig->getRouteConfig()->setMasterPage("");
+        $serverConfig->getRouteConfig()->setView("");
 
-            "form"              => "form.php",
-            "styleSheets"       => ["style_01", "style_02"],
-            "javaScripts"       => ["script_01", "script_02"],
-            "localeDictionary"  => "path/to/pt-br.php",
-            "metaData"          => ["author" => "Aeon Digital"],
-
-            "runMethodName"     => "anotherRunMethod",
-            "customProperties"  => ["prop1" => "val1", "prop2" => "val2"]
-        ];
-        $routeConfig        = prov_instanceOf_EnGarde_Config_Route($initialRouteConfigData);
-        $routeConfig->setResponseIsPrettyPrint(true);
 
 
+        $response = prov_instanceOf_Http_Response();
         $response = $response->withViewData((object)[
             "viewTitle" => "Página de teste",
             "prop1" => true,
@@ -89,22 +100,11 @@ class TXTTest extends TestCase
         ]);
 
 
-        $routeConfig->setMasterPage("");
-        $routeConfig->setView("");
         return new TXT(
             $serverConfig,
-            $domainConfig,
-            $applicationConfig,
-            $serverRequest,
-            $rawRouteConfig,
-            $routeConfig,
             $response
         );
     }
-
-
-
-
 
 
 
@@ -113,6 +113,7 @@ class TXTTest extends TestCase
         $obj = $this->createInstance();
         $this->assertTrue(is_a($obj, TXT::class));
     }
+
 
 
     public function test_createResponseBody()

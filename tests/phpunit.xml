@@ -21,23 +21,23 @@
             <file>src/Config/ConfigSecurityTest.php</file>
             <file>src/Config/ConfigRouteTest.php</file>
 
-            <file>src/RouterTest.php</file>
 
-            <file>src/Handler/ErrorListeningTest.php</file>
-
-            <!--file>src/Handler/Mime/HTMLTest.php</file>
+            <file>src/Handler/Mime/HTMLTest.php</file>
             <file>src/Handler/Mime/XHTMLTest.php</file>
             <file>src/Handler/Mime/XMLTest.php</file>
             <file>src/Handler/Mime/CSVTest.php</file>
             <file>src/Handler/Mime/JSONTest.php</file>
             <file>src/Handler/Mime/TXTTest.php</file>
+            <file>src/Handler/Mime/PDFTest.php</file>
             <file>src/Handler/Mime/XLSTest.php</file>
             <file>src/Handler/Mime/XLSXTest.php</file>
-            <file>src/Handler/Mime/PDFTest.php</file>
+
 
             <file>src/Handler/ErrorListeningTest.php</file>
-            <file>src/Handler/ResponseHandlerTest.php</file-->
+            <!--file>src/Handler/ResponseHandlerTest.php</file-->
 
+
+            <file>src/RouterTest.php</file>
         </testsuite>
     </testsuites>
     <filter>
