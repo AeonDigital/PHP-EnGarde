@@ -39,6 +39,12 @@ final class EnGarde extends BObject
      * @var         iApplication
      */
     private iApplication $application;
+    /**
+     * Indica se o método ``run()`` já foi ativado alguma vez.
+     *
+     * @var         bool
+     */
+    private bool $isRun = false;
 
 
 
@@ -95,15 +101,19 @@ final class EnGarde extends BObject
      */
     public function run() : void
     {
-        // Inicia o objeto da aplicação alvo.
-        $applicationNS      = $this->serverConfig->getApplicationNamespace();
-        $this->application  = new $applicationNS($this->serverConfig);
+        if ($this->isRun === false) {
+            $this->isRun = true;
 
-        if ($this->serverConfig->getNewLocationPath() !== "") {
-            \redirect($this->serverConfig->getNewLocationPath());
-        }
-        else {
-            $this->application->run();
+            // Inicia o objeto da aplicação alvo.
+            $applicationNS      = $this->serverConfig->getApplicationNamespace();
+            $this->application  = new $applicationNS($this->serverConfig);
+
+            if ($this->serverConfig->getNewLocationPath() !== "") {
+                \redirect($this->serverConfig->getNewLocationPath());
+            }
+            else {
+                $this->application->run();
+            }
         }
     }
 }

@@ -50,12 +50,6 @@ abstract class MainApplication extends BObject implements iApplication
      * @var         array
      */
     protected array $defaultSecurityConfig = [];
-    /**
-     * Indica se o método ``run()`` já foi ativado alguma vez.
-     *
-     * @var         bool
-     */
-    private bool $isRun = false;
 
 
 
@@ -120,19 +114,14 @@ abstract class MainApplication extends BObject implements iApplication
      */
     public function run() : void
     {
-        if ($this->isRun === false) {
-            $this->isRun = true;
+        // Se este não for o método a ser executado para
+        // resolver esta rota, evoca o método alvo.
+        if ($this->serverConfig->getRouteConfig()->getRunMethodName() !== "run") {
+            $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
+            $this->$exec();
+        }
+        else {
 
-
-            // Se este não for o método a ser executado para
-            // resolver esta rota, evoca o método alvo.
-            if ($this->serverConfig->getRouteConfig()->getRunMethodName() !== "run") {
-                $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
-                $this->$exec();
-            }
-            else {
-
-            }
         }
     }
 
