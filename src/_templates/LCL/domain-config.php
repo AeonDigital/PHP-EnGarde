@@ -105,7 +105,7 @@ const REQUEST_MAX_POSTSIZE = 100;
  *
  * @var     string
  */
-const DEFAULT_ERROR_VIEW = "site/views/shared/errorView.phtml";
+const DEFAULT_ERROR_VIEW = "/domain-error.phtml";
 
 
 

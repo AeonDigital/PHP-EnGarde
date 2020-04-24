@@ -924,18 +924,19 @@ final class Application extends BObject implements iApplication
         );
 
 
+
         // Define os valores padrões para a instância e
         // sobrescreve-os com os valores informados em $config
         $useValues = \array_merge(
             [
                 "appName"               => "",
                 "appRootPath"           => $useAppRootPath,
-                "pathToAppRoutes"       => $useAppRootPath . DS . "AppRoutes.php",
-                "pathToControllers"     => $useAppRootPath . DS . "controllers",
-                "pathToViews"           => $useAppRootPath . DS . "views",
-                "pathToViewsResources"  => $useAppRootPath . DS . "resources",
-                "pathToLocales"         => $useAppRootPath . DS . "locales",
-                "pathToCacheFiles"      => $useAppRootPath . DS . "cache",
+                "pathToAppRoutes"       => DS . "AppRoutes.php",
+                "pathToControllers"     => DS . "controllers",
+                "pathToViews"           => DS . "views",
+                "pathToViewsResources"  => DS . "resources",
+                "pathToLocales"         => DS . "locales",
+                "pathToCacheFiles"      => DS . "cache",
                 "startRoute"            => "/",
                 "controllersNamespace"  => "controllers",
                 "locales"               => ["pt-BR"],

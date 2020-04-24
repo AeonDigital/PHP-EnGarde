@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
-use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
+use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
 
 
 
@@ -30,9 +30,9 @@ abstract class MainApplication extends BObject implements iApplication
     /**
      * Objeto ``Config\iServer``.
      *
-     * @var         iServer
+     * @var         iServerConfig
      */
-    protected iServer $serverConfig;
+    protected iServerConfig $serverConfig;
 
 
 
@@ -85,7 +85,7 @@ abstract class MainApplication extends BObject implements iApplication
 
 
         // Inicia o objeto de configuração de segurança.
-        $serverConfig->getSecuritySettings($this->defaultSecurityConfig);
+        $serverConfig->getSecurityConfig($this->defaultSecurityConfig);
 
 
         // Inicia o objeto roteador para que seja possível
