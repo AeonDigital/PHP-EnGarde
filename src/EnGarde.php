@@ -12,7 +12,6 @@ use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
 
 
 
-
 /**
  * Motor das aplicações do domínio.
  *
@@ -59,17 +58,17 @@ final class EnGarde extends BObject
                 "SERVER"    => $_SERVER,
                 "FILES"     => $_FILES,
                 "ENGINE"    => [
-                    "environmentType"       => "UTEST",
-                    "isDebugMode"           => true,
-                    "isUpdateRoutes"        => true,
-                    "hostedApps"            => ["site", "blog"],
-                    "defaultApp"            => "site",
-                    "dateTimeLocal"         => "America/Sao_Paulo",
-                    "timeout"               => 1200,
-                    "maxFileSize"           => 100,
-                    "maxPostSize"           => 100,
-                    "pathToErrorView"       => "errorView.phtml",
-                    "applicationClassName"  => "AppStart"
+                    "environmentType"       => ENVIRONMENT,
+                    "isDebugMode"           => DEBUG_MODE,
+                    "isUpdateRoutes"        => UPDATE_ROUTES,
+                    "hostedApps"            => HOSTED_APPS,
+                    "defaultApp"            => DEFAULT_APP,
+                    "dateTimeLocal"         => DATETIME_LOCAL,
+                    "timeout"               => REQUEST_TIMEOUT,
+                    "maxFileSize"           => REQUEST_MAX_FILESIZE,
+                    "maxPostSize"           => REQUEST_MAX_POSTSIZE,
+                    "pathToErrorView"       => DEFAULT_ERROR_VIEW,
+                    "applicationClassName"  => APPLICATION_CLASSNAME
                 ]
             ]
         );

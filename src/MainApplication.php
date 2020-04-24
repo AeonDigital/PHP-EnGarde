@@ -13,8 +13,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 
 
 /**
- * Classe abstrata que deve ser herdada pelas classes concretas em cada
- * Aplicações ``EnGarde``.
+ * Classe abstrata que deve ser herdada pelas classes concretas em cada Aplicações.
  *
  * @codeCoverageIgnore
  *
@@ -23,7 +22,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-abstract class Application extends BObject implements iApplication
+abstract class MainApplication extends BObject implements iApplication
 {
 
 
