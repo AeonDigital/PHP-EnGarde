@@ -116,13 +116,13 @@ abstract class MainApplication extends BObject implements iApplication
     {
         // Se este não for o método a ser executado para
         // resolver esta rota, evoca o método alvo.
-        if ($this->serverConfig->getRouteConfig()->getRunMethodName() !== "run") {
+        /*if ($this->serverConfig->getRouteConfig()->getRunMethodName() !== "run") {
             $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
             $this->$exec();
         }
         else {
 
-        }
+        }*/
     }
 
 
