@@ -10,7 +10,7 @@ use AeonDigital\EnGarde\MainController as MainController;
 /**
  * Controller
  */
-class Home extends MainController
+class Documentation extends MainController
 {
 
     const defaultRouteConfig = [
@@ -77,7 +77,7 @@ class Home extends MainController
 
 
 
-    public static $registerRoute_GET_first = "/ first";
+    public static $registerRoute_GET_first = "/documentation first";
     public function first() {
         $this->routeConfig->setMasterPage("masterPage.phtml");
         $this->routeConfig->setView("/home/index.phtml");

@@ -2,11 +2,6 @@
 declare (strict_types=1);
 
 
-/**
- * Carrega o AutoLoader do Composer
- */
-$loader = require "vendor/autoload.php";
-
 
 
 
@@ -116,3 +111,19 @@ const DEFAULT_ERROR_VIEW = "/domain-error.phtml";
  * @var     string
  */
 const APPLICATION_CLASSNAME = "AppStart";
+
+
+
+
+
+/**
+ * Carrega o AutoLoader do Composer
+ * Registra os namespaces das aplicações do domínio.
+ */
+$loader = require "vendor/autoload.php";
+foreach (HOSTED_APPS as $appName) {
+    $appPath = __DIR__ . DS . $appName . DS;
+    $loader->addPsr4("$appName\\", $appPath);
+    $loader->addPsr4("$appName\\controllers\\", $appPath . "controllers" . DS);
+    $loader->addPsr4("$appName\\middlewares\\", $appPath . "middlewares" . DS);
+}

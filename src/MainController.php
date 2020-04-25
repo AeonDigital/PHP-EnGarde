@@ -5,8 +5,8 @@ namespace AeonDigital\EnGarde;
 
 use AeonDigital\EnGarde\Interfaces\Engine\iController as iController;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-
 
 
 
@@ -35,6 +35,12 @@ abstract class MainController implements iController
      * @var         iServerConfig
      */
     protected iServerConfig $serverConfig;
+    /**
+     * Instância de configuração da rota.
+     *
+     * @var         iRouteConfig
+     */
+    protected iRouteConfig $routeConfig;
     /**
      * Objeto ``iResponse``.
      *
@@ -84,6 +90,7 @@ abstract class MainController implements iController
         iResponse $response
     ) {
         $this->serverConfig = $serverConfig;
+        $this->routeConfig  = $serverConfig->getRouteConfig();
         $this->response     = $response;
 
         $this->viewData     = new \stdClass();
