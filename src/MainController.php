@@ -96,27 +96,18 @@ abstract class MainController implements iController
 
     /**
      * Retorna a instância ``iResponse``.
-     * Aplica no objeto ``iResponse`` as propriedades ``viewData`` (obtido do resultado da
-     * execução da action);
-     * ``viewConfig`` (obtido com a manipulação das propriedades variáveis do objeto
-     * **routeConfig**);
-     * ``headers`` (padrões + os definidos pela action)
+     *
+     * Aplica no objeto ``iResponse`` as propriedades ``viewData``, ``viewConfig`` e
+     * ``headers``. Todos manipuláveis durante a execução da action.
      *
      * @return      iResponse
      */
     public function getResponse() : iResponse
     {
-        $useViewConfig = $this->serverConfig->getRouteConfig()->getActionAttributes();
-        foreach ($this->viewConfig as $key => $value) {
-            if (isset($useViewConfig[$key]) === false) {
-                $useViewConfig[$key] = $value;
-            }
-        }
-
         return $this->response->withActionProperties(
             $this->viewData,
-            (object)$useViewConfig,
-            $this->routeConfig->getResponseHeaders()
+            $this->viewConfig,
+            $this->serverConfig->getRouteConfig()->getResponseHeaders()
         );
     }
 }

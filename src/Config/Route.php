@@ -1031,11 +1031,12 @@ final class Route extends BObject implements iRoute
         if ($this->responseLocale === "") {
             // Havendo um locale que deve ser usado de forma forçada.
             if ($forceLocale !== null) {
-                $useLocale = $forceLocale;
+                if (\array_in_ci($forceLocale, $applicationLocales) === true) {
+                    $useLocale = $forceLocale;
+                }
             }
             // Senão, negocia o locale que deve ser usado
             else {
-
                 // Verifica se algum dos Locales definidos pelos headers
                 // enviados pelo UA são também fornecidos pela aplicação.
                 if ($requestLocales === null) { $requestLocales = []; }
@@ -1157,7 +1158,7 @@ final class Route extends BObject implements iRoute
             // Sendo para retornar um documento "html" e
             // a aplicação estando configurada para forçar uma
             // saida "xhtml", identifica esta situação e força-a.
-            if ($useMime === "html" && $isUseXhtml === true) {
+            if ($useMime === "html" && $isUseXhtml === true && $forceMime !== "html") {
                 $useMime = "xhtml";
             }
 
@@ -1840,6 +1841,7 @@ final class Route extends BObject implements iRoute
             "application"               => $this->getApplication(),
             "namespace"                 => $this->getNamespace(),
             "controller"                => $this->getController(),
+            "controllerNamespace"       => $this->getControllerNamespace(),
             "action"                    => $this->getAction(),
             "allowedMethods"            => $this->getAllowedMethods(),
             "allowedMimeTypes"          => $this->getAllowedMimeTypes(),
@@ -1855,6 +1857,9 @@ final class Route extends BObject implements iRoute
             "isSecure"                  => $this->getIsSecure(),
             "isUseCache"                => $this->getIsUseCache(),
             "cacheTimeout"              => $this->getCacheTimeout(),
+            "responseLocale"            => $this->getResponseLocale(),
+            "responseMime"              => $this->getResponseMime(),
+            "responseMimeType"          => $this->getResponseMimeType(),
             "responseIsPrettyPrint"     => $this->getResponseIsPrettyPrint(),
             "responseIsDownload"        => $this->getResponseIsDownload(),
             "responseDownloadFileName"  => $this->getResponseDownloadFileName(),

@@ -291,8 +291,25 @@ final class Server extends BObject implements iServer
 
 
     /**
+     * Coleção de parametros identificados na URI da requisição.
+     *
+     * @var         array
+     */
+    private array $requestRouteParans = [];
+    /**
      * Resgata toda a coleção de informações passadas na requisição.
-     * Sejam parametros via querystrings ou dados postados atravéz de formulários.
+     *
+     * Concatena neste resultado as informações submetidas pelo UA.
+     * Em caso de colisão de chaves de valores a ordem de prioridade de prevalencia será:
+     *
+     * - requestRouteParans
+     *   Parametros nomeados na própria rota e identificados pelo processamento da mesma.
+     * - $_POST
+     *   Parametros passados por POST.
+     * - $_GET
+     *   Parametros passados por GET.
+     * - "php://input"
+     *   Dados obtidos do stream bruto.
      *
      * Não inclui valores passados via cookies.
      *
@@ -302,7 +319,7 @@ final class Server extends BObject implements iServer
     {
         $rawData = [];
         \parse_str(\file_get_contents("php://input"), $rawData);
-        $parans = \array_merge($rawData, $_GET, $_POST);
+        $parans = \array_merge($rawData, $_GET, $_POST, $this->requestRouteParans);
 
         return $parans;
     }
@@ -1071,6 +1088,8 @@ final class Server extends BObject implements iServer
             $this->applicationName = $applicationName;
             $this->applicationNameOmitted = false;
         } else {
+            // Permite normalizar a URL mantendo o nome da aplicação conforme
+            // foi definida.
             foreach ($this->getHostedApps() as $i => $app) {
                 if (\strtolower($applicationName) === \strtolower($app)) {
                     $this->applicationName = $app;
@@ -1310,7 +1329,13 @@ final class Server extends BObject implements iServer
      *
      * @var         ?iRoute
      */
-    private ?iRoute $routeConfig = null;
+    protected ?iRoute $routeConfig = null;
+    /**
+     * Array de dados brutos que formaram o objeto ``Config\iRoute``.
+     *
+     * @var         ?array
+     */
+    protected ?array $rawRouteConfig = null;
     /**
      * Retorna a instância ``Config\iRoute`` a ser usada.
      *
@@ -1328,28 +1353,36 @@ final class Server extends BObject implements iServer
      */
     public function getRouteConfig(?array $config = null, bool $isRaw = false) : ?iRoute
     {
-        if (isset($this->routeConfig) === false && $config !== null) {
+        if ($this->routeConfig === null) {
             if ($isRaw === false) {
-                $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+                if ($config !== null) {
+                    $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+                }
             }
             else {
+                // Identifica se há alguma falha na definição desta rota.
+                $this->checkRouteConfigError($config, $isRaw);
+                $this->rawRouteConfig = $config;
+
+
                 // Em caso de uma configuração em modo 'raw',
                 // é preciso identificar se a rota atualmente selecionada possui ou não
                 // uma configuração específica para o método HTTP que está sendo usado.
-                $method = $this->getServerRequest()->getMethod();
-                if (isset($config[$method]) === true) {
-                    $config = $config[$method];
+                $httpMethod = $this->getServerRequest()->getMethod();
+                if ($config !== null && isset($this->rawRouteConfig["config"][$httpMethod]) === true) {
+                    $this->requestRouteParans   = $config["parans"] ?? [];
+                    $selectedMethodConfig       = $this->rawRouteConfig["config"][$httpMethod];
 
 
                     //
                     // Identifica se a rota é "naturalmente" um download.
                     // ou se o download está sendo forçado via parametro "_download".
-                    $isDownload_route = $config["responseIsDownload"];
+                    $isDownload_route = $selectedMethodConfig["responseIsDownload"];
 
                     // Identifica se o ``UA`` está ou não forçando um download
                     $isDownload_param = $this->getServerRequest()->getParam("_download");
                     $isDownload_param = ($isDownload_param === "true" || $isDownload_param === "1");
-                    $config["responseIsDownload"] = (
+                    $selectedMethodConfig["responseIsDownload"] = (
                         $isDownload_param === true || $isDownload_route === true
                     );
 
@@ -1359,14 +1392,14 @@ final class Server extends BObject implements iServer
                     // via parametro "_pretty_print".
                     $prettyPrint_param = $this->getServerRequest()->getParam("_pretty_print");
                     $prettyPrint_param = ($prettyPrint_param === "true" || $prettyPrint_param === "1");
-                    $config["responseIsPrettyPrint"] = $prettyPrint_param;
+                    $selectedMethodConfig["responseIsPrettyPrint"] = $prettyPrint_param;
 
 
                     //
                     // Uma vez identificada exatamente qual é a rota alvo
                     // e tendo todos seus atributos corretamente definidos, inicia seu objeto
                     // de configuração e inicia a fase de negociação de conteúdo.
-                    $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($config);
+                    $this->routeConfig = \AeonDigital\EnGarde\Config\Route::fromArray($selectedMethodConfig);
 
 
                     //
@@ -1415,7 +1448,76 @@ final class Server extends BObject implements iServer
                 }
             }
         }
+
         return $this->routeConfig;
+    }
+    /**
+     * Retorna os dados brutos referentes a rota que está sendo executada no momento.
+     *
+     * @codeCoverageIgnore
+     *
+     * @return      ?array
+     */
+    public function getRawRouteConfig() : ?array
+    {
+        return $this->rawRouteConfig;
+    }
+
+
+
+
+
+    /**
+     * Verifica a os dados da rota identificada são válidos.
+     * - Se ela foi encontrada e se o método HTTP indicado é compatível.
+     *
+     * @codeCoverageIgnore
+     *
+     * @param       array $config
+     *              Array associativo contendo as configurações para esta instância.
+     *
+     * @param       bool $isRaw
+     *              Quando ``true`` indica que o parametro passado em ``$config`` possui as
+     *              informações necessárias para a criação do objeto ``iRoute``, no entanto
+     *              este precisa de algum tratamento especial antes da criação da instância.
+     *
+     * @return      void
+     */
+    private function checkRouteConfigError(?array $config = null, bool $isRaw = false) : void
+    {
+        $httpMethod         = $this->getServerRequest()->getMethod();
+        $httpErrorCode      = null;
+        $httpErrorMessage   = null;
+
+
+        // Apenas se o método HTTP informado for diferente de OPTIONS e TRACE
+        if ($httpMethod !== "OPTIONS" && $httpMethod !== "TRACE") {
+            // Se a rota acessada não foi encontrada...
+            if ($config === null) {
+                $httpErrorCode      = 404;
+                $httpErrorMessage   = "Not Found";
+            }
+            // Senão, se
+            // A rota a ser acessada está configurada
+            else {
+                $config = (($isRaw === true) ? $config["config"] : $config);
+
+                // Se a rota não está preparada para servir
+                // a uma requisição com o método especificado...
+                if (isset($config[$httpMethod]) === false) {
+                    $httpErrorCode      = 501;
+                    $httpErrorMessage   = "Method \"$httpMethod\" is not implemented in this route.";
+                }
+            }
+
+
+            // Havendo capturado alguma falha que não pode ser
+            // resolvida e precisa entregar ao UA uma mensagem
+            // do que ocorreu...
+            if ($httpErrorCode !== null) {
+                \AeonDigital\EnGarde\Handler\ErrorListening::throwHTTPError($httpErrorCode, $httpErrorMessage);
+            }
+        }
     }
 
 

@@ -29,7 +29,7 @@
         <?php
         if ($viewData->isDebugMode === true && $viewData->environmentType !== "PRD") {
             echo "<h3>rootPath: " . $viewData->rootPath . "</h3>";
-            print_html($viewData->debugLog);
+            html_print($viewData->debugLog);
         }
         ?>
     </body>

@@ -7,7 +7,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'test',
         'allowedMethods' => 
         array (
@@ -43,6 +44,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -72,7 +76,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -118,6 +123,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -144,7 +152,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -190,6 +199,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -219,7 +231,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -265,6 +278,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -291,7 +307,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -337,6 +354,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 120,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -366,7 +386,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -404,6 +425,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -433,7 +457,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'contact',
         'allowedMethods' => 
         array (
@@ -468,6 +493,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -494,7 +522,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'contact',
         'allowedMethods' => 
         array (
@@ -530,6 +559,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -562,7 +594,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -600,6 +633,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -629,7 +665,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -667,6 +704,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',
@@ -696,7 +736,8 @@
       array (
         'application' => 'site',
         'namespace' => '\\site\\controllers',
-        'controller' => '\\site\\controllers\\Home',
+        'controller' => 'Home',
+        'controllerNamespace' => '\\site\\controllers\\Home',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -734,6 +775,9 @@
         'isSecure' => false,
         'isUseCache' => false,
         'cacheTimeout' => 0,
+        'responseLocale' => '',
+        'responseMime' => '',
+        'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
         'responseDownloadFileName' => '',

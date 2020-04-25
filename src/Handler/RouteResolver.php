@@ -88,24 +88,22 @@ class RouteResolver implements iRequestHandler
         // NÃO sendo uma requisição que use um método
         // do tipo "TRACE" ou "OPTIONS"
         if ($request->getMethod() !== "TRACE" && $request->getMethod() !== "OPTIONS") {
-            // Bloqueia qualquer alteração das propriedades protegidas
-            // de configuração da rota.
-            $this->routeConfig->lockProperties();
 
-            // Inicia uma nova instância do controller alvo
-            $controllerNS = $this->serverConfig->getRouteConfig()->getControllerNamespace();
-            $tgtController = new $controllerNS(
+            // Identifica o controller e a action que devem ser executadas.
+            $targetController   = $this->serverConfig->getRouteConfig()->getControllerNamespace();
+            $targetAction       = $this->serverConfig->getRouteConfig()->getAction();
+
+
+            // Inicia o controller alvo e executa a action
+            $this->controller = new $targetController(
                 $this->serverConfig,
                 $resultResponse
             );
-
-            // Executa a action alvo
-            $action = $this->routeConfig->getAction();
-            $tgtController->{$action}();
+            $this->controller->{$targetAction}();
 
             // Retorna o objeto "iResponse" modificado pela
             // execução da action.
-            $resultResponse = $tgtController->getResponse();
+            $resultResponse = $this->controller->getResponse();
         }
 
 

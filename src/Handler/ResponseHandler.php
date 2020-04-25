@@ -21,7 +21,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
  */
 class ResponseHandler implements iResponseHandler
 {
-    use \AeonDigital\Http\Traits\MimeTypeData;
+
 
 
 
@@ -87,12 +87,14 @@ class ResponseHandler implements iResponseHandler
      */
     public function prepareResponse() : iResponse
     {
+        $httpMethod = $this->serverConfig->getServerRequest()->getMethod();
+
         // Sendo uma requisição que utiliza o método HTTP OPTIONS
-        if ($this->serverRequest->getMethod() === "OPTIONS") {
+        if ($httpMethod === "OPTIONS") {
             $this->prepareResponseToOPTIONS();
         }
         // Sendo uma requisição que utiliza o método HTTP TRACE
-        elseif ($this->serverRequest->getMethod() === "TRACE") {
+        elseif ($httpMethod === "TRACE") {
             $this->prepareResponseToTRACE();
         }
         // Sendo uma requisição que utiliza um método HTTP
@@ -100,7 +102,7 @@ class ResponseHandler implements iResponseHandler
         else {
 
             // Inicia o manipulador do mimetype alvo
-            $useMime = \strtoupper($this->routeConfig->getResponseMime());
+            $useMime = \strtoupper($this->serverConfig->getRouteConfig()->getResponseMime());
             $mimeNS = "\\AeonDigital\\EnGarde\\Handler\\Mime\\$useMime";
 
             $mimeHandler = new $mimeNS(
@@ -118,13 +120,12 @@ class ResponseHandler implements iResponseHandler
 
             // Prepara os Headers para o envio
             $this->prepareResponseHeaders(
-                $this->routeConfig->getResponseMimeType(),
-                $this->routeConfig->getResponseLocale(),
+                $this->serverConfig->getRouteConfig()->getResponseMimeType(),
+                $this->serverConfig->getRouteConfig()->getResponseLocale(),
                 $this->response->getHeaders(),
-                $this->routeConfig->getResponseIsDownload(),
-                $this->routeConfig->getResponseDownloadFileName()
+                $this->serverConfig->getRouteConfig()->getResponseIsDownload(),
+                $this->serverConfig->getRouteConfig()->getResponseDownloadFileName()
             );
-
         }
 
         return $this->response;
@@ -171,13 +172,31 @@ class ResponseHandler implements iResponseHandler
                 // Prepara os headers que serão enviados.
         $this->useHeaders = [
             "$http"                 => "",
-            "Framework"             => "EnGarde!; version=" . $this->domainConfig->getVersion(),
-            "Application"           => $this->applicationConfig->getName(),
+            "Framework"             => "EnGarde!; version=" . $this->serverConfig->getVersion(),
+            "Application"           => $this->serverConfig->getApplicationConfig()->getAppName(),
             "Content-Type"          => $useMimeType . "; charset=utf-8",
             "Content-Language"      => $useLocale,
-            "RequestDate"           => $this->serverRequest->getNow()->format("D, d M Y H:i:s"),
+            "RequestDate"           => $this->serverConfig->getNow()->format("D, d M Y H:i:s"),
             "ResponseDate"          => $now->format("D, d M Y H:i:s")
         ];
+
+
+        // Se o sistema de segurança está ativo, os seguintes
+        // headers serão adicionados
+        if ($this->serverConfig->getSecurityConfig() !== null &&
+            $this->serverConfig->getSecurityConfig()->getIsActive() === true)
+        {
+            $this->useHeaders = \array_merge(
+                $this->useHeaders,
+                [
+                    "Expires"       => "Tue, 01 Jan 2000 00:00:00 UTC",
+                    "Last-Modified" => $this->serverConfig->getNow()->format("D, d M Y H:i:s") . " UTC",
+                    "Cache-Control" => "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
+                    "Pragma"        => "no-cache"
+                ],
+            );
+        }
+
 
 
         // Adiciona os headers definidos na action mas não substitui
@@ -216,14 +235,16 @@ class ResponseHandler implements iResponseHandler
      */
     private function prepareResponseToOPTIONS() : void
     {
+        $rawRouteConfig = $this->serverConfig->getRawRouteConfig();
+
+
         // Prepara os Headers a serem utilizados
-        $now = new \DateTime();
         $this->prepareResponseHeaders(
-            $this->responseMimeTypes["json"],
-            $this->applicationConfig->getDefaultLocale(),
+            "application/json",
+            $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow"             => \array_merge(\array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
-                "Allow-Languages"   => $this->applicationConfig->getLocales()
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), ["OPTIONS", "TRACE"]),
+                "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
 
@@ -231,14 +252,14 @@ class ResponseHandler implements iResponseHandler
         // Prepara o Body a ser enviado
         $useBody        = $this->useHeaders;
         $showAllValues  = (
-            $this->domainConfig->getIsDebugMode() === true &&
-            $this->domainConfig->getEnvironmentType() !== "PRD"
+            $this->serverConfig->getIsDebugMode() === true &&
+            $this->serverConfig->getEnvironmentType() !== "PRD"
         );
         $allowedValues  = [
             "routes", "acceptMimes", "relationedRoutes", "description", "devDescription", "metaData"
         ];
 
-        foreach ($this->rawRouteConfig as $method => $config) {
+        foreach ($rawRouteConfig["config"] as $method => $config) {
             $cfg = [];
 
             foreach ($config as $k => $v) {
@@ -262,20 +283,23 @@ class ResponseHandler implements iResponseHandler
      */
     private function prepareResponseToTRACE() : void
     {
-        // Prepara os Headers a serem utilizados
         $now = new \DateTime();
+        $rawRouteConfig = $this->serverConfig->getRawRouteConfig();
+
+
+        // Prepara os Headers a serem utilizados
         $this->prepareResponseHeaders(
-            $this->responseMimeTypes["json"],
-            $this->applicationConfig->getDefaultLocale(),
+            "application/json",
+            $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow"             => \array_merge(\array_keys($this->rawRouteConfig), ["OPTIONS", "TRACE"]),
-                "Allow-Languages"   => $this->applicationConfig->getLocales()
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), ["OPTIONS", "TRACE"]),
+                "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
 
 
         // Prepara o Body a ser enviado
-        $uFiles = $this->serverRequest->getUploadedFiles();
+        $uFiles = $this->serverConfig->getServerRequest()->getUploadedFiles();
         $postedFiles = [];
         foreach ($uFiles as $file) {
             $postedFiles[] = $file->getClientFilename();
@@ -284,24 +308,24 @@ class ResponseHandler implements iResponseHandler
 
 
         $useBody = [
-            "requestDate"   => $this->serverRequest->getNow()->format("D, d M Y H:i:s"),
+            "requestDate"   => $this->serverConfig->getNow()->format("D, d M Y H:i:s"),
             "responseDate"  => $now->format("D, d M Y H:i:s"),
             "requestIP"     => $this->serverConfig->getClientIP(),
             "requestURI"       => [
-                "protocol"          => $this->serverRequest->getUri()->getScheme(),
+                "protocol"          => $this->serverConfig->getServerRequest()->getUri()->getScheme(),
                 "version"           => $this->serverConfig->getRequestHTTPVersion(),
                 "port"              => $this->serverConfig->getRequestPort(),
                 "method"            => $this->serverConfig->getRequestMethod(),
-                "domain"            => $this->serverRequest->getUri()->getHost(),
-                "path"              => $this->serverRequest->getUri()->getPath(),
-                "query"             => $this->serverRequest->getUri()->getQuery(),
-                "fragment"          => $this->serverRequest->getUri()->getFragment()
+                "domain"            => $this->serverConfig->getServerRequest()->getUri()->getHost(),
+                "path"              => $this->serverConfig->getServerRequest()->getUri()->getPath(),
+                "query"             => $this->serverConfig->getServerRequest()->getUri()->getQuery(),
+                "fragment"          => $this->serverConfig->getServerRequest()->getUri()->getFragment()
             ],
             "headers"       => $this->serverConfig->getRequestHeaders(),
             "requestData" => [
-                "queryString"       => $this->serverRequest->getQueryParams(),
-                "cookies"           => $this->serverRequest->getCookieParams(),
-                "postedData"        => $this->serverRequest->getParsedBody(),
+                "queryString"       => $this->serverConfig->getServerRequest()->getQueryParams(),
+                "cookies"           => $this->serverConfig->getServerRequest()->getCookieParams(),
+                "postedData"        => $this->serverConfig->getServerRequest()->getParsedBody(),
                 "postedFiles"       => $postedFiles
             ]
         ];

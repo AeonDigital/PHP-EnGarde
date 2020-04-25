@@ -353,26 +353,6 @@ class ConfigRouteTest extends TestCase
 
 
 
-        // Força um locale ainda que ele não esteja definido entre aqueles
-        // que a aplicação é capaz de prover.
-        $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);
-
-        $requestLocales     = ["pt-BR", "en-us", "es-es"];
-        $requestLanguages   = ["pt", "en", "es"];
-        $applicationLocales = ["pt-br", "en-US"];
-        $defaultLocale      = "pt-br";
-        $forceLocale        = "pt-pt";
-
-        $expected = "pt-pt";
-        $result = $nMock->negotiateLocale(
-            $requestLocales, $requestLanguages, $applicationLocales, $defaultLocale, $forceLocale
-        );
-
-        $this->assertTrue($result);
-        $this->assertSame($expected, $nMock->getResponseLocale());
-
-
-
         // Prioriza a seleção dos locales buscando aquele que primeiro responda
         // às opções de linguagens.
         $nMock = prov_instanceOf_EnGarde_Config_Route($defaultRoute);

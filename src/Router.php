@@ -212,7 +212,7 @@ class Router extends BObject implements iRouter
         // Efetua o merge das configurações de rotas que está vindo da
         // aplicação com as definições básicas do próprio controller (caso esteja definido)
         $applicationRouteConfig = $appConfig->getDefaultRouteConfig();
-        $applicationRouteConfig["controller"] = $controllerFullName;
+        $applicationRouteConfig["controller"] = $controllerName;
 
         $controllerReflection   = new \ReflectionClass($controllerFullName);
         $controllerRouteConfig  = $controllerReflection->getConstant("defaultRouteConfig");
