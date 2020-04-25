@@ -55,4 +55,11 @@ class AppStart extends MainApplication
         "allowedFaultByLogin"   => 5,
         "loginBlockTimeout"     => 20
     ];
+
+
+
+
+    protected function alternateRun() {
+        echo "Alternate RUN.";
+    }
 }
