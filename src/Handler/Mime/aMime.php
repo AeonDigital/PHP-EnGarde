@@ -6,7 +6,7 @@ namespace AeonDigital\EnGarde\Handler\Mime;
 use AeonDigital\Interfaces\Http\Server\iMimeHandler as iMimeHandler;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
-
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
 
 
 
@@ -30,6 +30,12 @@ abstract class aMime implements iMimeHandler
      * @var         iServerConfig
      */
     protected iServerConfig $serverConfig;
+    /**
+     * Instância de configuração da rota.
+     *
+     * @var         iRouteConfig
+     */
+    protected iRouteConfig $routeConfig;
     /**
      * Objeto "iResponse".
      *
@@ -62,6 +68,7 @@ abstract class aMime implements iMimeHandler
         iResponse $response
     ) {
         $this->serverConfig = $serverConfig;
+        $this->routeConfig  = $serverConfig->getRouteConfig();
         $this->response     = $response;
 
 

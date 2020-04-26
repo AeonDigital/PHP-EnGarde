@@ -210,7 +210,15 @@ class ResponseHandler implements iResponseHandler
 
         // Tratando-se de um download...
         if ($isDownload === true) {
+            if ($downloadFileName === "") {
+                $downloadFileName = $now->format("Y-m-d_H-i-s") . "_" .
+                    str_replace(
+                        "/", "_", trim($this->serverConfig->getApplicationRequestUri(), "/")
+                    ) .
+                    "." . $this->serverConfig->getRouteConfig()->getResponseMime();
+            }
             $this->useHeaders["Content-Disposition"] = "inline; filename=\"$downloadFileName\"";
+            $this->useHeaders["Content-Type"] = "application/octet-stream";
         }
 
 

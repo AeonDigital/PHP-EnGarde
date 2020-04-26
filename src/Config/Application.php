@@ -938,9 +938,9 @@ final class Application extends BObject implements iApplication
                 "pathToLocales"         => DS . "locales",
                 "pathToCacheFiles"      => DS . "cache",
                 "startRoute"            => "/",
-                "controllersNamespace"  => "controllers",
-                "locales"               => ["pt-BR"],
-                "defaultLocale"         => "pt-BR",
+                "controllersNamespace"  => "",
+                "locales"               => [],
+                "defaultLocale"         => "",
                 "isUseLabels"           => false,
                 "defaultRouteConfig"    => [],
                 "pathToErrorView"       => ""

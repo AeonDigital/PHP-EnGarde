@@ -304,7 +304,7 @@ final class Route extends BObject implements iRoute
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
-    public function setAllowedMimeTypes(array $allowedMimeTypes) : void
+    private function setAllowedMimeTypes(array $allowedMimeTypes) : void
     {
         $this->allowedMimeTypes = $this->mainCheckForInvalidArgumentException(
             "allowedMimeTypes", $allowedMimeTypes, [
@@ -850,7 +850,7 @@ final class Route extends BObject implements iRoute
      *
      * @return      void
      */
-    public function setCacheTimeout(int $cacheTimeout) : void
+    private function setCacheTimeout(int $cacheTimeout) : void
     {
         $this->cacheTimeout = (($cacheTimeout < 0) ? 0 : $cacheTimeout);
     }
@@ -1809,24 +1809,6 @@ final class Route extends BObject implements iRoute
             $useConfig["metaData"],
             $useConfig["localeDictionary"]
         );
-    }
-    /**
-     * Retorna uma instância configurada a partir de uma uma string estruturada de forma a
-     * receber os valores mínimos a serem usados para as definições de uma rota.
-     *
-     * @codeCoverageIgnore
-     *
-     * @param       string $config
-     *              String estruturada.
-     *
-     * @return      iRoute
-     *
-     * @throws      \InvalidArgumentException
-     *              Caso seja definido um valor inválido.
-     */
-    public static function fromString(string $config) : iRoute
-    {
-
     }
     /**
      * Converte as propriedades definidas neste objeto para um ``array associativo``.

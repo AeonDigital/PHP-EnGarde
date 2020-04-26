@@ -128,7 +128,7 @@ array (
         'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => '',
+        'responseDownloadFileName' => 'bem_vindo',
         'responseHeaders' => 
         array (
         ),
@@ -204,7 +204,7 @@ array (
         'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => '',
+        'responseDownloadFileName' => 'bem_vindo',
         'responseHeaders' => 
         array (
         ),
@@ -283,7 +283,7 @@ array (
         'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => '',
+        'responseDownloadFileName' => 'bem_vindo',
         'responseHeaders' => 
         array (
         ),
@@ -359,7 +359,7 @@ array (
         'responseMimeType' => '',
         'responseIsPrettyPrint' => false,
         'responseIsDownload' => false,
-        'responseDownloadFileName' => '',
+        'responseDownloadFileName' => 'bem_vindo',
         'responseHeaders' => 
         array (
         ),

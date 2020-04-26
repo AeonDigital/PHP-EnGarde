@@ -343,6 +343,8 @@ class Router extends BObject implements iRouter
                 "isSecure",
                 "isUseCache",
                 "cacheTimeout",
+                "responseIsDownload",
+                "responseDownloadFileName",
                 "responseHeaders",
                 "masterPage",
                 "view",
