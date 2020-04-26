@@ -1,13 +1,13 @@
 <h1><?php echo $viewData->viewTitle; ?></h1>
-<p>Wellcome to homepage.</p>
+<p>
+    Locale: <?php echo $this->routeConfig->getResponseLocale(); ?><br />
+    Mime: <?php echo $this->routeConfig->getResponseMime(); ?><br />
+    MimeType: <?php echo $this->routeConfig->getResponseMimeType(); ?><br />
+</p>
 
-<ul>
-<?php
-    foreach ($viewData as $prop => $value) {
-        if (is_a($value, "\DateTime") === true) {
-            $value = $value->format("Y-m-d H:i:s");
-        }
-?>
-    <li><?php echo $prop; ?> = <?php echo $value; ?></li>
-<?php } ?>
-</ul>
+
+<hr />
+
+<h2>Tutorial de desenvolvimento:</h2>
+
+<?php include "site/views/shared/menu.phtml"; ?>

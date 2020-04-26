@@ -31,7 +31,7 @@ class AppStart extends MainApplication
         "defaultLocale"         => "pt-BR",
         "isUseLabels"           => true,
         "defaultRouteConfig"    => [],
-        "pathToErrorView"       => "/errorView.phtml"
+        "pathToErrorView"       => "/app-error.phtml"
     ];
     /**
      * Configurações padrões para a aplicação.
@@ -55,11 +55,4 @@ class AppStart extends MainApplication
         "allowedFaultByLogin"   => 5,
         "loginBlockTimeout"     => 20
     ];
-
-
-
-
-    protected function alternateRun() {
-        echo "Alternate RUN.";
-    }
 }
