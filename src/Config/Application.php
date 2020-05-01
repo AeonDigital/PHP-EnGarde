@@ -514,7 +514,7 @@ final class Application extends BObject implements iApplication
      */
     private function setControllersNamespace(string $controllersNamespace) : void
     {
-        $this->controllersNamespace = "\\" . $this->getAppName() . "\\" . \trim($controllersNamespace, "\\");
+        $this->controllersNamespace = "\\" . \trim($controllersNamespace, "\\");
     }
 
 
@@ -927,7 +927,8 @@ final class Application extends BObject implements iApplication
 
         // Define os valores padrões para a instância e
         // sobrescreve-os com os valores informados em $config
-        $useValues = \array_merge(
+        $appName    = ((\key_exists("appName", $config) === true) ? $config["appName"] : "");
+        $useValues  = \array_merge(
             [
                 "appName"               => "",
                 "appRootPath"           => $useAppRootPath,
@@ -938,7 +939,7 @@ final class Application extends BObject implements iApplication
                 "pathToLocales"         => DS . "locales",
                 "pathToCacheFiles"      => DS . "cache",
                 "startRoute"            => "/",
-                "controllersNamespace"  => "",
+                "controllersNamespace"  => "\\$appName\\controllers",
                 "locales"               => [],
                 "defaultLocale"         => "",
                 "isUseLabels"           => false,
