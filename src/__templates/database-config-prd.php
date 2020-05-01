@@ -24,7 +24,7 @@
  *  ]
  */
 const ENV_DATABASE = [
-    "LCL" => [
+    "PRD" => [
         "site" => [
             "ANONYMOUS" => [
                 "dbType"            => "mysql",
