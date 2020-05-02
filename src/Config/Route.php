@@ -651,13 +651,7 @@ final class Route extends BObject implements iRoute
      */
     private function setRelationedRoutes(array $relationedRoutes) : void
     {
-        $nrroutes = [];
-        foreach ($relationedRoutes as $i => $r) {
-            if (\is_string($r) === true && $r !== "") {
-                $nrroutes[] = "/" . \trim($r, " /");
-            }
-        }
-        $this->relationedRoutes = $nrroutes;
+        $this->relationedRoutes = $relationedRoutes;
     }
 
 
