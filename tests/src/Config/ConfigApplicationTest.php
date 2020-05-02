@@ -37,7 +37,8 @@ class ConfigApplicationTest extends TestCase
             $defaultApplication["defaultLocale"],
             $defaultApplication["isUseLabels"],
             $defaultApplication["defaultRouteConfig"],
-            $defaultApplication["pathToErrorView"]
+            $defaultApplication["pathToErrorView"],
+            $defaultApplication["httpSubSystemNamespaces"]
         );
         $this->assertTrue(is_a($nMock, Application::class));
     }
@@ -627,5 +628,53 @@ class ConfigApplicationTest extends TestCase
 
         $path = $dirResources . DS . "apps" . DS . "site" . DS . "errorView.phtml";
         $this->assertSame($path, $nMock->getPathToErrorView(true));
+    }
+
+
+
+
+
+    public function test_method_getset_http_subsystem_namespaces_fails()
+    {
+        global $defaultApplication;
+        global $dirResources;
+        $testApplication = array_merge([], $defaultApplication);
+        $testApplication["httpSubSystemNamespaces"] = [
+            "invalid" => ""
+        ];
+
+        $fail = false;
+        try {
+            $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        } catch (\Exception $ex) {
+            $fail = true;
+            $this->assertSame(
+                "Invalid key defined for \"httpSubSystemNamespaces\". Expected keys [ HEAD, OPTIONS, TRACE, DEV, CONNECT ]. Given: [ invalid ].",
+                $ex->getMessage()
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+
+
+
+        global $defaultApplication;
+        global $dirResources;
+        $testApplication = array_merge([], $defaultApplication);
+        $testApplication["httpSubSystemNamespaces"] = [
+            "HEAD" => "\\namespace\\to\\class",
+            "DEV" => ""
+        ];
+
+        $fail = false;
+        try {
+            $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        } catch (\Exception $ex) {
+            $fail = true;
+            $this->assertSame(
+                "Invalid value defined for \"httpSubSystemNamespaces['DEV']\". Expected non empty string.",
+                $ex->getMessage()
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
     }
 }

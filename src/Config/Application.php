@@ -797,6 +797,72 @@ final class Application extends BObject implements iApplication
 
 
 
+    /**
+     * Array associativo contendo a correlação entre os métodos HTTP
+     * e suas respectivas classes de resolução.
+     *
+     * @var         array
+     */
+    private array $httpSubSystemNamespaces = [];
+    /**
+     * Resgata um array associativo contendo a correlação entre os métodos HTTP
+     * e suas respectivas classes de resolução.
+     *
+     * Tais classes serão usadas exclusivamente para resolver os métodos HTTP que
+     * originalmente devem ser processados pelo framework.
+     *
+     * Originalmente estes:
+     * "HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"
+     *
+     * ```
+     * // ex:
+     * $arr = [
+     *  "HEAD"  => "full\\qualified\\namespace\\classnameHead",
+     *  "DEV"   => "full\\qualified\\namespace\\classnameDEV"
+     * ]
+     * ```
+     *
+     * @return      array
+     */
+    public function getHTTPSubSystemNamespaces() : array
+    {
+        return $this->httpSubSystemNamespaces;
+    }
+    /**
+     * Define um array associativo contendo a correlação entre os métodos HTTP
+     * e suas respectivas classes de resolução.
+     *
+     * @param       array $httpSubSystemNamespaces
+     *              Array contendo a correlação entre os métodos e as classes
+     *              que devem ser usadas para resolver tais requisições.
+     *
+     * @return      void
+     */
+    private function setHTTPSubSystemNamespaces(array $httpSubSystemNamespaces) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "httpSubSystemNamespaces", $httpSubSystemNamespaces, [
+                [
+                    "condition" => "is array not empty",
+                    "validate"  => "is array assoc",
+                ],
+                [
+                    "validate"  => "is allowed key",
+                    "allowedValues" => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"],
+                ],
+                [
+                    "validate"  => "foreach array child",
+                    "foreachChild" => ["is string not empty"]
+                ]
+            ]
+        );
+        $this->httpSubSystemNamespaces = $httpSubSystemNamespaces;
+    }
+
+
+
+
+
 
 
 
@@ -857,6 +923,10 @@ final class Application extends BObject implements iApplication
      *              Caminho relativo até a view que deve ser enviada ao UA em caso de erros
      *              na aplicação.
      *
+     * @param       array $httpSubSystemNamespaces
+     *              Coleção de métodos HTTP que devem ser resolvidos pelo framework e as
+     *              respectivas classes que devem resolver cada qual.
+     *
      * @return      void
      *
      * @throws      \InvalidArgumentException
@@ -877,7 +947,8 @@ final class Application extends BObject implements iApplication
         string $defaultLocale,
         bool $isUseLabels,
         array $defaultRouteConfig,
-        string $pathToErrorView
+        string $pathToErrorView,
+        array $httpSubSystemNamespaces
     ) {
         $this->setAppName($appName);
         $this->setAppRootPath($appRootPath);
@@ -894,6 +965,7 @@ final class Application extends BObject implements iApplication
         $this->setIsUseLabels($isUseLabels);
         $this->setDefaultRouteConfig($defaultRouteConfig);
         $this->setPathToErrorView($pathToErrorView);
+        $this->setHTTPSubSystemNamespaces($httpSubSystemNamespaces);
     }
 
 
@@ -930,21 +1002,22 @@ final class Application extends BObject implements iApplication
         $appName    = ((\key_exists("appName", $config) === true) ? $config["appName"] : "");
         $useValues  = \array_merge(
             [
-                "appName"               => "",
-                "appRootPath"           => $useAppRootPath,
-                "pathToAppRoutes"       => DS . "AppRoutes.php",
-                "pathToControllers"     => DS . "controllers",
-                "pathToViews"           => DS . "views",
-                "pathToViewsResources"  => DS . "resources",
-                "pathToLocales"         => DS . "locales",
-                "pathToCacheFiles"      => DS . "cache",
-                "startRoute"            => "/",
-                "controllersNamespace"  => "\\$appName\\controllers",
-                "locales"               => [],
-                "defaultLocale"         => "",
-                "isUseLabels"           => false,
-                "defaultRouteConfig"    => [],
-                "pathToErrorView"       => ""
+                "appName"                   => "",
+                "appRootPath"               => $useAppRootPath,
+                "pathToAppRoutes"           => DS . "AppRoutes.php",
+                "pathToControllers"         => DS . "controllers",
+                "pathToViews"               => DS . "views",
+                "pathToViewsResources"      => DS . "resources",
+                "pathToLocales"             => DS . "locales",
+                "pathToCacheFiles"          => DS . "cache",
+                "startRoute"                => "/",
+                "controllersNamespace"      => "\\$appName\\controllers",
+                "locales"                   => [],
+                "defaultLocale"             => "",
+                "isUseLabels"               => false,
+                "defaultRouteConfig"        => [],
+                "pathToErrorView"           => "",
+                "httpSubSystemNamespaces"   => []
             ],
             $config
         );
@@ -967,7 +1040,8 @@ final class Application extends BObject implements iApplication
             $useValues["defaultLocale"],
             $useValues["isUseLabels"],
             $useValues["defaultRouteConfig"],
-            $useValues["pathToErrorView"]
+            $useValues["pathToErrorView"],
+            $useValues["httpSubSystemNamespaces"]
         );
     }
 }

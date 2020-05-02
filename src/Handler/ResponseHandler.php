@@ -93,8 +93,19 @@ class ResponseHandler implements iResponseHandler
         // SE
         // o método HTTP que está sendo evocado deve ser executado pelo framework...
         if (\array_in_ci($httpMethod, $this->serverConfig->getFrameworkHTTPMethods()) === true) {
-            $fn = "prepareResponseTo$httpMethod";
-            $this->$fn();
+            // Verifica se existe na aplicação atual algum subsistema definido para responder
+            // a este tipo de requisição.
+            $httpSubSystem = $this->serverConfig->getApplicationConfig()->getHTTPSubSystemNamespaces();
+            if (\key_exists($httpMethod, $httpSubSystem) === true &&
+                \class_exists($httpSubSystem[$httpMethod]) === true) {
+                $nsSubSystem = $httpSubSystem[$httpMethod];
+                $objSubSystem = new $nsSubSystem($this->serverConfig);
+            }
+            // Caso contrário, executa a ação padrão para o método.
+            else {
+                $fn = "prepareResponseTo$httpMethod";
+                $this->$fn();
+            }
         }
         // SENÃO
         // Sendo uma requisição que utiliza um método HTTP
@@ -232,6 +243,7 @@ class ResponseHandler implements iResponseHandler
         // Aplica os headers no objeto response.
         $this->response = $this->response->withHeaders($this->useHeaders, false);
     }
+
 
 
 
@@ -388,52 +400,7 @@ class ResponseHandler implements iResponseHandler
      */
     private function prepareResponseToDEV() : void
     {
-        $useRawRouteConfig = [
-            "application"               => "Flow",
-            "namespace"                 => "EnGarde",
-            "controller"                => "\\EnGarde\\Flow",
-            "action"                    => "flow",
-            "allowedMethods"            => ["GET"],
-            "allowedMimeTypes"          => ["html", "xhtml"],
-            "method"                    => "GET",
-            "routes"                    => ["/"],
-            "isUseXHTML"                => true,
-            "runMethodName"             => "run",
-            "responseIsPrettyPrint"     => true,
-            "masterPage"                => "",
-            "view"                      => "/__flow/index.phtml",
-            "metaData"                  => [
-                "EnGarde! Flow" => "Beta"
-            ]
-        ];
-        $this->serverConfig->getRouteConfig($useRawRouteConfig, false);
-
-
-
-        // Inicia o manipulador do mimetype alvo
-        $mimeNS = "\\AeonDigital\\EnGarde\\Handler\\Mime\\XHTML";
-        $mimeHandler = new $mimeNS(
-            $this->serverConfig,
-            $this->response
-        );
-
-
-
-        // Define o novo corpo para o objeto Response
-        $useBody = $mimeHandler->createResponseBody();
-        $body = $this->response->getBody();
-        $body->write($useBody);
-        $this->response = $this->response->withBody($body);
-
-
-        // Prepara os Headers para o envio
-        $this->prepareResponseHeaders(
-            "application/xhtml+xml",
-            "pt-BR",
-            $this->response->getHeaders(),
-            false,
-            ""
-        );
+        throw new \RuntimeException("The \"DEV\" method was not implemented.");
     }
 
 
