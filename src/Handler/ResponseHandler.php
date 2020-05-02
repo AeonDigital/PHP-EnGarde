@@ -388,7 +388,52 @@ class ResponseHandler implements iResponseHandler
      */
     private function prepareResponseToDEV() : void
     {
+        $useRawRouteConfig = [
+            "application"               => "Flow",
+            "namespace"                 => "EnGarde",
+            "controller"                => "\\EnGarde\\Flow",
+            "action"                    => "flow",
+            "allowedMethods"            => ["GET"],
+            "allowedMimeTypes"          => ["html", "xhtml"],
+            "method"                    => "GET",
+            "routes"                    => ["/"],
+            "isUseXHTML"                => true,
+            "runMethodName"             => "run",
+            "responseIsPrettyPrint"     => true,
+            "masterPage"                => "",
+            "view"                      => "/__flow/index.phtml",
+            "metaData"                  => [
+                "EnGarde! Flow" => "Beta"
+            ]
+        ];
+        $this->serverConfig->getRouteConfig($useRawRouteConfig, false);
 
+
+
+        // Inicia o manipulador do mimetype alvo
+        $mimeNS = "\\AeonDigital\\EnGarde\\Handler\\Mime\\XHTML";
+        $mimeHandler = new $mimeNS(
+            $this->serverConfig,
+            $this->response
+        );
+
+
+
+        // Define o novo corpo para o objeto Response
+        $useBody = $mimeHandler->createResponseBody();
+        $body = $this->response->getBody();
+        $body->write($useBody);
+        $this->response = $this->response->withBody($body);
+
+
+        // Prepara os Headers para o envio
+        $this->prepareResponseHeaders(
+            "application/xhtml+xml",
+            "pt-BR",
+            $this->response->getHeaders(),
+            false,
+            ""
+        );
     }
 
 
