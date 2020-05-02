@@ -359,13 +359,14 @@ class Router extends BObject implements iRouter
             if ($isController === true) {
                 unset($allowedProperties[\array_search("action", $allowedProperties)]);
                 unset($allowedProperties[\array_search("routes", $allowedProperties)]);
-                unset($allowedProperties[\array_search("relationedRoutes", $allowedProperties)]);
             }
 
 
             // As seguintes propriedades devem ser SOMADAS
             // aos valores pré-existentes.
-            $mergeArrays = ["middlewares", "responseHeaders", "styleSheets", "javaScripts", "metaData"];
+            $mergeArrays = [
+                "relationedRoutes", "middlewares", "responseHeaders", "styleSheets", "javaScripts", "metaData"
+            ];
 
 
             // Para cada item na coleção que deve sobrescrever a inicial...
