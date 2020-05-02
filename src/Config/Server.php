@@ -895,6 +895,79 @@ final class Server extends BObject implements iServer
 
 
 
+    /**
+     * Coleção de Métodos HTTP que podem ser usados pelos desenvolvedores ao
+     * criar suas actions dentro da aplicação.
+     *
+     * @var         array
+     */
+    private array $developerHTTPMethods = [];
+    /**
+     * Retorna a coleção de métodos HTTP que devem poder ser usados pelas actions.
+     * Ou seja, aqueles que os desenvolvedores terão acesso de configurar.
+     *
+     * Originalmente estes:
+     * "GET", "POST", "PUT", "PATCH", "DELETE"
+     *
+     * @return      array
+     */
+    public function getDeveloperHTTPMethods() : array
+    {
+        return $this->developerHTTPMethods;
+    }
+    /**
+     * Define a coleção de métodos HTTP que os desenvolvedores devem ter acesso
+     * de configurar.
+     *
+     * @param       array $developerHTTPMethods
+     *              Coleção de métodos HTTP.
+     *
+     * @return      void
+     */
+    private function setDeveloperHTTPMethods(array $developerHTTPMethods) : void
+    {
+        $this->developerHTTPMethods = $developerHTTPMethods;
+    }
+
+
+
+    /**
+     * Coleção de Métodos HTTP que devem ser usados exclusivamente pelo próprio
+     * framework.
+     *
+     * @var         array
+     */
+    private array $frameworkHTTPMethods = [];
+    /**
+     * Retorna a coleção de métodos HTTP que devem poder ser controlados exclusivamente
+     * pelo próprio framework.
+     *
+     * Originalmente estes:
+     * "HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"
+     *
+     * @return      array
+     */
+    public function getFrameworkHTTPMethods() : array
+    {
+        return $this->frameworkHTTPMethods;
+    }
+    /**
+     * Define a coleção de métodos HTTP que o framework devem ter acesso exclusivo
+     * para resolver.
+     *
+     * @param       array $frameworkHTTPMethods
+     *              Coleção de métodos HTTP.
+     *
+     * @return      void
+     */
+    private function setFrameworkHTTPMethods(array $frameworkHTTPMethods) : void
+    {
+        $this->frameworkHTTPMethods = $frameworkHTTPMethods;
+    }
+
+
+
+
 
 
 
@@ -1065,6 +1138,8 @@ final class Server extends BObject implements iServer
         $this->setMaxPostSize($maxPostSize);
         $this->setPathToErrorView($pathToErrorView);
         $this->setApplicationClassName($applicationClassName);
+        $this->setDeveloperHTTPMethods($developerHTTPMethods);
+        $this->setFrameworkHTTPMethods($frameworkHTTPMethods);
 
 
 
@@ -1329,13 +1404,13 @@ final class Server extends BObject implements iServer
      *
      * @var         ?iRoute
      */
-    protected ?iRoute $routeConfig = null;
+    private ?iRoute $routeConfig = null;
     /**
      * Array de dados brutos que formaram o objeto ``Config\iRoute``.
      *
      * @var         ?array
      */
-    protected ?array $rawRouteConfig = null;
+    private ?array $rawRouteConfig = null;
     /**
      * Retorna a instância ``Config\iRoute`` a ser usada.
      *
@@ -1467,6 +1542,11 @@ final class Server extends BObject implements iServer
 
 
 
+
+
+
+
+
     /**
      * Verifica a os dados da rota identificada são válidos.
      * - Se ela foi encontrada e se o método HTTP indicado é compatível.
@@ -1489,9 +1569,10 @@ final class Server extends BObject implements iServer
         $httpErrorCode      = null;
         $httpErrorMessage   = null;
 
-
-        // Apenas se o método HTTP informado for diferente de OPTIONS e TRACE
-        if ($httpMethod !== "OPTIONS" && $httpMethod !== "TRACE") {
+        // SE
+        // o método HTTP que está sendo evocado deve ser executado pelo desenvolvedor...
+        if (\in_array($httpMethod, $this->getDeveloperHTTPMethods()) === true)
+        {
             // Se a rota acessada não foi encontrada...
             if ($config === null) {
                 $httpErrorCode      = 404;

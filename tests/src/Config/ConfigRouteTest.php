@@ -193,7 +193,7 @@ class ConfigRouteTest extends TestCase
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame(
-                "Invalid value defined for \"allowedMethods['0']\". Expected [ GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE ].",
+                "Invalid value defined for \"allowedMethods['0']\". Expected [ GET, POST, PUT, PATCH, DELETE ].",
                 $ex->getMessage()
             );
         }
@@ -209,7 +209,7 @@ class ConfigRouteTest extends TestCase
         } catch (\Exception $ex) {
             $fail = true;
             $this->assertSame(
-                "Invalid value defined for \"allowedMethods['0']\". Expected [ GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE ]. Given: [ INVALID ]",
+                "Invalid value defined for \"allowedMethods['0']\". Expected [ GET, POST, PUT, PATCH, DELETE ]. Given: [ INVALID ]",
                 $ex->getMessage()
             );
         }

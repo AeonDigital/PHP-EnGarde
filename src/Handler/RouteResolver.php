@@ -85,10 +85,10 @@ class RouteResolver implements iRequestHandler
         $resultResponse = $this->serverConfig->getHttpFactory()->createResponse();
 
 
-        // NÃO sendo uma requisição que use um método
-        // do tipo "TRACE" ou "OPTIONS"
-        if ($request->getMethod() !== "TRACE" && $request->getMethod() !== "OPTIONS") {
-
+        // SE
+        // o método HTTP que está sendo evocado deve ser executado pelo desenvolvedor...
+        if (\in_array($request->getMethod(), $this->serverConfig->getDeveloperHTTPMethods()) === true)
+        {
             // Identifica o controller e a action que devem ser executadas.
             $targetController   = $this->serverConfig->getRouteConfig()->getControllerNamespace();
             $targetAction       = $this->serverConfig->getRouteConfig()->getAction();

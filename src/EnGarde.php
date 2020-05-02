@@ -74,7 +74,9 @@ final class EnGarde extends BObject
                     "maxFileSize"           => REQUEST_MAX_FILESIZE,
                     "maxPostSize"           => REQUEST_MAX_POSTSIZE,
                     "pathToErrorView"       => DEFAULT_ERROR_VIEW,
-                    "applicationClassName"  => APPLICATION_CLASSNAME
+                    "applicationClassName"  => APPLICATION_CLASSNAME,
+                    "developerHTTPMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                    "frameworkHTTPMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
                 ]
             ]
         );
@@ -104,14 +106,12 @@ final class EnGarde extends BObject
         if ($this->isRun === false) {
             $this->isRun = true;
 
-            // Inicia o objeto da aplicação alvo.
-            $applicationNS      = $this->serverConfig->getApplicationNamespace();
-            $this->application  = new $applicationNS($this->serverConfig);
-
             if ($this->serverConfig->getNewLocationPath() !== "") {
                 \redirect($this->serverConfig->getNewLocationPath());
             }
             else {
+                $applicationNS      = $this->serverConfig->getApplicationNamespace();
+                $this->application  = new $applicationNS($this->serverConfig);
                 $this->application->run();
             }
         }

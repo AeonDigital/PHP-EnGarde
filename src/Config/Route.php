@@ -240,8 +240,7 @@ final class Route extends BObject implements iRoute
                         [
                             "validate" => "is allowed value",
                             "allowedValues" => [
-                                "GET", "HEAD", "POST", "PUT", "PATCH", "DELETE",
-                                "CONNECT", "OPTIONS", "TRACE"
+                                "GET", "POST", "PUT", "PATCH", "DELETE"
                             ],
                             "caseInsensitive" => true
                         ]

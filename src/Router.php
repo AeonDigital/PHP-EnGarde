@@ -274,10 +274,9 @@ class Router extends BObject implements iRouter
                 $routes = $cfg->getRoutes();
 
 
-                // Os métodos "HEAD", "OPTIONS", "TRACE" e "CONNECT" são
-                // automaticamente resolvidos pelo framework e não pelos controllers.
-                $invalidMethods = ["HEAD", "OPTIONS", "TRACE", "CONNECT"];
-                if (\array_in_ci($method, $invalidMethods) === true) {
+                // SE
+                // o método HTTP que está sendo evocado deve ser executado pelo framework...
+                if (\array_in_ci($method, $this->serverConfig->getFrameworkHTTPMethods()) === true) {
                     $err = "The Method HTTP \"" . $method . "\" is implemented by the framework and can not be set in route configuration.";
                     throw new \InvalidArgumentException($err);
                 }

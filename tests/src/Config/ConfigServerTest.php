@@ -642,4 +642,20 @@ class ConfigServerTest extends TestCase
         $this->assertSame("/site", $nMock->getApplicationRequestUri());
     }
 
+
+    public function test_methods_getset_developer_HTTP_methods()
+    {
+        global $defaultServerVariables;
+        $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
+        $this->assertSame(["GET", "POST", "PUT", "PATCH", "DELETE"], $nMock->getDeveloperHTTPMethods());
+    }
+
+
+    public function test_methods_getset_framework_HTTP_methods()
+    {
+        global $defaultServerVariables;
+        $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
+        $this->assertSame(["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"], $nMock->getFrameworkHTTPMethods());
+    }
+
 }

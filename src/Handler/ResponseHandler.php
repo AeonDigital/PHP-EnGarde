@@ -89,14 +89,14 @@ class ResponseHandler implements iResponseHandler
     {
         $httpMethod = $this->serverConfig->getServerRequest()->getMethod();
 
-        // Sendo uma requisição que utiliza o método HTTP OPTIONS
-        if ($httpMethod === "OPTIONS") {
-            $this->prepareResponseToOPTIONS();
+
+        // SE
+        // o método HTTP que está sendo evocado deve ser executado pelo framework...
+        if (\array_in_ci($httpMethod, $this->serverConfig->getFrameworkHTTPMethods()) === true) {
+            $fn = "prepareResponseTo$httpMethod";
+            $this->$fn();
         }
-        // Sendo uma requisição que utiliza o método HTTP TRACE
-        elseif ($httpMethod === "TRACE") {
-            $this->prepareResponseToTRACE();
-        }
+        // SENÃO
         // Sendo uma requisição que utiliza um método HTTP
         // que pode ser controlado pelos controllers das aplicações.
         else {
@@ -181,10 +181,17 @@ class ResponseHandler implements iResponseHandler
         ];
 
 
-        // Se o sistema de segurança está ativo, os seguintes
-        // headers serão adicionados
-        if ($this->serverConfig->getSecurityConfig() !== null &&
-            $this->serverConfig->getSecurityConfig()->getIsActive() === true)
+        //
+        // Nestes casos em especial não é indicado que seja feito o
+        // cache dos resultado da requisição, portanto, incluirá
+        // os headers que informam ao UA para que não o faça.
+        //
+        // Caso 1: O sistema de segurança está ativo.
+        // Caso 2: O método HTTP sendo usado não é "cacheable"
+        //         [Todos que NÃO forem GET e HEAD]
+        if (($this->serverConfig->getSecurityConfig() !== null &&
+            $this->serverConfig->getSecurityConfig()->getIsActive() === true) ||
+            \in_array($this->serverConfig->getRequestMethod(), ["GET", "HEAD"]) === false)
         {
             $this->useHeaders = \array_merge(
                 $this->useHeaders,
@@ -237,21 +244,45 @@ class ResponseHandler implements iResponseHandler
 
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
-     * método ``HTTP OPTIONS``.
+     * método ``HTTP HEAD``.
      *
      * @return      void
      */
-    private function prepareResponseToOPTIONS() : void
+    private function prepareResponseToHEAD() : void
     {
-        $rawRouteConfig = $this->serverConfig->getRawRouteConfig();
-
+        $rawRouteConfig         = $this->serverConfig->getRawRouteConfig();
+        $frameworkHTTPMethods   = $this->serverConfig->getFrameworkHTTPMethods();
 
         // Prepara os Headers a serem utilizados
         $this->prepareResponseHeaders(
             "application/json",
             $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), ["OPTIONS", "TRACE"]),
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHTTPMethods),
+                "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
+            ]
+        );
+    }
+
+
+
+    /**
+     * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
+     * método ``HTTP OPTIONS``.
+     *
+     * @return      void
+     */
+    private function prepareResponseToOPTIONS() : void
+    {
+        $rawRouteConfig         = $this->serverConfig->getRawRouteConfig();
+        $frameworkHTTPMethods   = $this->serverConfig->getFrameworkHTTPMethods();
+
+        // Prepara os Headers a serem utilizados
+        $this->prepareResponseHeaders(
+            "application/json",
+            $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
+            [
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHTTPMethods),
                 "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
@@ -283,6 +314,9 @@ class ResponseHandler implements iResponseHandler
         $body->write(\json_encode($useBody));
         $this->response = $this->response->withBody($body);
     }
+
+
+
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
      * método ``HTTP TRACE``.
@@ -291,8 +325,9 @@ class ResponseHandler implements iResponseHandler
      */
     private function prepareResponseToTRACE() : void
     {
-        $now = new \DateTime();
-        $rawRouteConfig = $this->serverConfig->getRawRouteConfig();
+        $now                    = new \DateTime();
+        $rawRouteConfig         = $this->serverConfig->getRawRouteConfig();
+        $frameworkHTTPMethods   = $this->serverConfig->getFrameworkHTTPMethods();
 
 
         // Prepara os Headers a serem utilizados
@@ -300,7 +335,7 @@ class ResponseHandler implements iResponseHandler
             "application/json",
             $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), ["OPTIONS", "TRACE"]),
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHTTPMethods),
                 "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
@@ -341,5 +376,31 @@ class ResponseHandler implements iResponseHandler
         $body = $this->response->getBody();
         $body->write(\json_encode($useBody));
         $this->response = $this->response->withBody($body);
+    }
+
+
+
+    /**
+     * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
+     * método ``HTTP DEV``.
+     *
+     * @return      void
+     */
+    private function prepareResponseToDEV() : void
+    {
+
+    }
+
+
+
+    /**
+     * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
+     * método ``HTTP CONNECT``.
+     *
+     * @return      void
+     */
+    private function prepareResponseToCONNECT() : void
+    {
+        throw new \RuntimeException("The \"CONNECT\" method was not implemented.");
     }
 }

@@ -51,7 +51,9 @@ $defaultEngineVariables = [
     "maxFileSize"           => 100,
     "maxPostSize"           => 100,
     "pathToErrorView"       => "/errorView.phtml",
-    "applicationClassName"  => "AppStart"
+    "applicationClassName"  => "AppStart",
+    "developerHTTPMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    "frameworkHTTPMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
 ];
 
 
