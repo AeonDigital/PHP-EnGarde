@@ -843,7 +843,7 @@ final class Application extends BObject implements iApplication
         $this->mainCheckForInvalidArgumentException(
             "httpSubSystemNamespaces", $httpSubSystemNamespaces, [
                 [
-                    "condition" => "is array not empty",
+                    "conditions" => "is array not empty",
                     "validate"  => "is array assoc",
                 ],
                 [
