@@ -11,6 +11,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
 
 
 
+
 /**
  * Permite produzir uma view a partir das informações coletadas pelo processamento da rota alvo.
  *
@@ -44,6 +45,14 @@ class ResponseHandler implements iResponseHandler
      * @var         array
      */
     private array $useHeaders = [];
+    /**
+     * Instância opcional que utilizará um subsistema
+     * que tem como objetivo responder aos métodos HTTP especiais
+     * que são originalmente reservados para o framework.
+     *
+     * @var         iResponseHandler
+     */
+    private iResponseHandler $httpSubSystem;
 
 
 
@@ -95,11 +104,16 @@ class ResponseHandler implements iResponseHandler
         if (\array_in_ci($httpMethod, $this->serverConfig->getFrameworkHTTPMethods()) === true) {
             // Verifica se existe na aplicação atual algum subsistema definido para responder
             // a este tipo de requisição.
-            $httpSubSystem = $this->serverConfig->getApplicationConfig()->getHTTPSubSystemNamespaces();
-            if (\key_exists($httpMethod, $httpSubSystem) === true &&
-                \class_exists($httpSubSystem[$httpMethod]) === true) {
-                $nsSubSystem = $httpSubSystem[$httpMethod];
-                $objSubSystem = new $nsSubSystem($this->serverConfig);
+            $allowedHTTPSubSystem = $this->serverConfig->getApplicationConfig()->getHTTPSubSystemNamespaces();
+            if (\key_exists($httpMethod, $allowedHTTPSubSystem) === true &&
+                \class_exists($allowedHTTPSubSystem[$httpMethod]) === true)
+            {
+                $httpSubSystemNamespace = $allowedHTTPSubSystem[$httpMethod];
+                $this->httpSubSystem    = new $httpSubSystemNamespace(
+                    $this->serverConfig,
+                    $this->response
+                );
+                $this->response = $this->httpSubSystem->prepareResponse();
             }
             // Caso contrário, executa a ação padrão para o método.
             else {
@@ -166,7 +180,7 @@ class ResponseHandler implements iResponseHandler
      *
      * @return      void
      */
-    private function prepareResponseHeaders(
+    protected function prepareResponseHeaders(
         string $useMimeType,
         string $useLocale,
         array $useHeaders,
