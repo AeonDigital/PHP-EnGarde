@@ -136,7 +136,11 @@ final class Server extends BObject implements iServer
      */
     public function getRequestMethod() : string
     {
-        return $this->SERVER["REQUEST_METHOD"];
+        return (
+            (isset($this->serverRequest) === false) ?
+            $this->SERVER["REQUEST_METHOD"] :
+            $this->getServerRequest()->getMethod()
+        );
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
