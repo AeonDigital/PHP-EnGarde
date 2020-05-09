@@ -239,8 +239,16 @@ abstract class aMime implements iMimeHandler
                 "alt-text"          => "-",     // Adiciona o atributo "alt" nas imagens que não o possuem.
                 "break-before-br"   => true,    // Indica quando deve inserir um \n imediatamente antes de um <br />
 
-                "char-encoding"     => "utf8"   // Encoding do código de saida.
+                "char-encoding"     => "utf8",  // Encoding do código de saida.
+
+                // Coleção de novas tags do tipo "bloco"
+                "new-blocklevel-tags" => "article aside audio bdi canvas details dialog figcaption figure footer header hgroup main menu menuitem nav section source summary template track video",
+                // Coleção de novas tags do tipo "empty"
+                "new-empty-tags"    => "command embed keygen source track wbr",
+                // Coleção de novas tags do tipo "inline"
+                "new-inline-tags"   => "command datalist embed keygen mark meter output progress time wbr"
             ];
+
 
             if ($mime === "html") {
                 $configOutput["output-html"] = true;
