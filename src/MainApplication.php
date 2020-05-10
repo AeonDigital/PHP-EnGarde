@@ -123,78 +123,114 @@ abstract class MainApplication implements iApplication
      */
     public function run() : void
     {
-        // Se este não for o método a ser executado para
-        // resolver esta rota, evoca o método alvo.
-        if ($this->serverConfig->getRouteConfig() !== null &&
-            $this->serverConfig->getRouteConfig()->getRunMethodName() !== "run")
-        {
-            $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
-            $this->$exec();
-        }
-        else {
+        $hasValidCache = false;
+
+        // Identifica se o resultado desta rota é cacheável e, se existe um resultado pronto
+        // para ser entregue.
+        if ($this->hasValidResponseCacheFile() === true) {
+            $responseCacheFileContents = \file_get_contents($this->getCacheFileName());
+
+            // Identifica os headers a serem enviados para o UA.
+            $useRegex = "/(@headers)([\s\S]*)(@headers)/";
+            \preg_match_all($useRegex, $responseCacheFileContents, $headers);
+            //$this->response = $this->response->withHeaders(\json_decode($headers[2]));
+
+            // Remove do corpo da mensagem os dados referentes aos headers
+            $responseCacheFileContents = \trim(\str_replace($headers[2], "", $responseCacheFileContents));
+            // Redefine o body
+            //$body = $this->response->getBody();
+            //$body->write($responseCacheFileContents);
+            //$this->response = $this->response->withBody($body);
+            //$this->response = new \AeonDigital\Http\Message\Response(
+                //200,
+                //"Ok",
+                //"1.1",
+                //iHeaderCollection $headers,
+                //iStream $body
+            //);
             // Inicia uma instância "RouteResolver" (trata-se de um iRequestHandler) responsável
             // por iniciar o controller alvo e executar o método correspondente a rota.
             $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
                 $this->serverConfig
             );
-
-
             // Inicia a instância do manipulador da requisição.
             // e passa para ele o resolver da rota para ser executado após
             // os middlewares.
             $requestHandler = new \AeonDigital\Http\Server\RequestHandler($resolver);
+        }
+        else {
+            // Se este não for o método a ser executado para
+            // resolver esta rota, evoca o método alvo.
+            if ($this->serverConfig->getRouteConfig() !== null &&
+                $this->serverConfig->getRouteConfig()->getRunMethodName() !== "run")
+            {
+                $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
+                $this->$exec();
+            }
+            else {
+                // Inicia uma instância "RouteResolver" (trata-se de um iRequestHandler) responsável
+                // por iniciar o controller alvo e executar o método correspondente a rota.
+                $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
+                    $this->serverConfig
+                );
 
 
-            // Registra os middlewares caso existam
-            if ($this->serverConfig->getRouteConfig() !== null) {
-                $middlewares = $this->serverConfig->getRouteConfig()->getMiddlewares();
-                foreach ($middlewares as $callMiddleware) {
+                // Inicia a instância do manipulador da requisição.
+                // e passa para ele o resolver da rota para ser executado após
+                // os middlewares.
+                $requestHandler = new \AeonDigital\Http\Server\RequestHandler($resolver);
 
-                    // Se o middleware está registrado com seu nome completo
-                    if (class_exists($callMiddleware) === true) {
-                        $requestHandler->add(new $callMiddleware());
-                    }
-                    // Senão, o middleware registrado deve corresponder a um
-                    // método da aplicação atual.
-                    else {
-                        $requestHandler->add($this->{$callMiddleware}());
+
+                // Registra os middlewares caso existam
+                if ($this->serverConfig->getRouteConfig() !== null) {
+                    $middlewares = $this->serverConfig->getRouteConfig()->getMiddlewares();
+                    foreach ($middlewares as $callMiddleware) {
+
+                        // Se o middleware está registrado com seu nome completo
+                        if (class_exists($callMiddleware) === true) {
+                            $requestHandler->add(new $callMiddleware());
+                        }
+                        // Senão, o middleware registrado deve corresponder a um
+                        // método da aplicação atual.
+                        else {
+                            $requestHandler->add($this->{$callMiddleware}());
+                        }
                     }
                 }
+
+
+
+                // Ocultará qualquer saida de dados dos middlewares
+                // ou das actions quando estiver em um ambiente de produção
+                // OU
+                // quando o debug mode estiver ativo
+                $hideAllOutputs = ( $this->serverConfig->getEnvironmentType() === "PRD" ||
+                                    $this->serverConfig->getIsDebugMode() === false);
+
+
+                // Caso necessário, inicia o buffer
+                // Com isso, esconderá todas as saídas explicitas originarias
+                // dos middlewares e da action.
+                if ($hideAllOutputs === true) { ob_start("mb_output_handler"); }
+
+
+                // Executa os middlewares e action alvo retornando
+                // um objeto "iResponse" contendo as informações
+                // necessárias para a resposta ao UA.
+                $this->response = $requestHandler->handle(
+                    $this->serverConfig->getServerRequest()
+                );
+
+
+                // Caso necessário, esvazia o buffer e encerra-o
+                if ($hideAllOutputs === true) { ob_end_clean(); }
+
+
+                // Efetua o envio dos dados obtidos e processados para o UA.
+                $this->sendResponse();
             }
-
-
-
-            // Ocultará qualquer saida de dados dos middlewares
-            // ou das actions quando estiver em um ambiente de produção
-            // OU
-            // quando o debug mode estiver ativo
-            $hideAllOutputs = ( $this->serverConfig->getEnvironmentType() === "PRD" ||
-                                $this->serverConfig->getIsDebugMode() === false);
-
-
-            // Caso necessário, inicia o buffer
-            // Com isso, esconderá todas as saídas explicitas originarias
-            // dos middlewares e da action.
-            if ($hideAllOutputs === true) { ob_start("mb_output_handler"); }
-
-
-            // Executa os middlewares e action alvo retornando
-            // um objeto "iResponse" contendo as informações
-            // necessárias para a resposta ao UA.
-            $this->response = $requestHandler->handle(
-                $this->serverConfig->getServerRequest()
-            );
-
-
-            // Caso necessário, esvazia o buffer e encerra-o
-            if ($hideAllOutputs === true) { ob_end_clean(); }
-
-
-            // Efetua o envio dos dados obtidos e processados para o UA.
-            $this->sendResponse();
         }
     }
-
 
 
 
@@ -211,7 +247,12 @@ abstract class MainApplication implements iApplication
         if ($this->serverConfig->getEnvironmentType() !== "UTEST") {
             // Envia os Headers para o UA
             foreach ($this->response->getHeaders() as $name => $value) {
-                if ($value === "") { \header($name); }
+                $useVal = "";
+
+                if (\is_string($value) === true) { $useVal = \trim($value); }
+                elseif (\is_array($value) === true) { $useVal = \trim(\implode(", ", $value)); }
+
+                if ($useVal === "") { \header($name); }
                 else { \header($name . ": " . \implode(", ", $value)); }
             }
 
@@ -234,6 +275,107 @@ abstract class MainApplication implements iApplication
 
                 $haveToSend -= $partLength;
             }
+
+
+            // Cria o arquivo de cache, se for possível.
+            $this->saveOrUpdateResponseCache();
+        }
+    }
+
+
+
+
+
+
+
+
+
+    private string $cacheFileName = "";
+    /**
+     * Identifica quando a rota atualmente definida possui instrução de que deva ser
+     * cacheada.
+     *
+     * @return      bool
+     */
+    private function isRouteCacheable() : bool
+    {
+        return ($this->serverConfig->getRouteConfig() !== null &&
+                $this->serverConfig->getRouteConfig()->getIsUseCache() === true);
+    }
+    /**
+     * Monta o caminho completo do arquivo de cache correspondente a rota que está sendo executada
+     * neste momento.
+     *
+     * @return      string
+     */
+    private function getCacheFileName() : string
+    {
+        if ($this->cacheFileName === "") {
+            // Monta o nome base do arquivo de cache
+            $baseCacheFileName = \str_replace("/", "_",
+                $this->serverConfig->getRequestMethod() . "_" .
+                \mb_str_replace_once(
+                    "/" . $this->serverConfig->getApplicationName() . "/",
+                    "",
+                    $this->serverConfig->getApplicationRequestUri()
+                )
+            );
+
+            // Existindo querystrings, cria um hash para identificar tal conjunto de valores
+            $qs = "";
+            if ($this->serverConfig->getServerRequest()->getQueryParams() !== []) {
+                $qs = "_" . \sha1(\http_build_query($this->serverConfig->getServerRequest()->getQueryParams()));
+            }
+
+            $this->serverConfig->getApplicationConfig()->getPathToCacheFiles(true);
+            $this->cacheFileName = \to_system_path(
+                $this->serverConfig->getApplicationConfig()->getPathToCacheFiles(true) .
+                DS .
+                $baseCacheFileName . $qs . "." . $this->serverConfig->getRouteConfig()->getResponseMime()
+            );
+        }
+        return $this->cacheFileName;
+    }
+    /**
+     * Identifica se o arquivo de cache de nome passado existe e se ele ainda é válido.
+     *
+     * @return      bool
+     *              Retornará ``true`` se o arquivo existir e sua data de criação estiver dentro do período
+     *              definido como aceitável (cacheTimeout).
+     *              Retornará ``false``se o arquivo não existir ou se sua data de criação está além do
+     *              período de vida útil.
+     */
+    private function hasValidResponseCacheFile() : bool
+    {
+        $r = false;
+
+        if ($this->isRouteCacheable() === true) {
+            $cacheFileName = $this->getCacheFileName();
+            if (\is_file($cacheFileName) === true) {
+                // Identifica se o arquivo existente ainda está dentro do período de validade.
+                $fileLastMod = new \DateTime();
+                $fileLastMod->setTimestamp(\filemtime($cacheFileName));
+
+                $diff = $fileLastMod->diff($this->serverConfig->getNow());
+                $r = ($diff->format("%i") < $this->serverConfig->getRouteConfig()->getCacheTimeout());
+            }
+        }
+
+        return $r;
+    }
+    /**
+     * Caso esta seja uma rota cacheável e, seu arquivo de cache não exista, ou exista mas esteja
+     * expirado, cria/atualiza o arquivo de cache alvo.
+     *
+     * @return      void
+     */
+    private function saveOrUpdateResponseCache() : void
+    {
+        if ($this->isRouteCacheable() === true && $this->hasValidResponseCacheFile() === false) {
+            $cacheFileName = $this->getCacheFileName();
+
+            $strHeaders = "@headers\n" . json_encode($this->response->getHeaders()) . "\n@headers\n";
+            \file_put_contents($cacheFileName, $strHeaders . (string)$this->response->getBody());
         }
     }
 }

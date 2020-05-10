@@ -207,16 +207,12 @@ class ResponseHandler implements iResponseHandler
 
 
         //
-        // Nestes casos em especial não é indicado que seja feito o
-        // cache dos resultado da requisição, portanto, incluirá
-        // os headers que informam ao UA para que não o faça.
-        //
-        // Caso 1: O sistema de segurança está ativo.
-        // Caso 2: O método HTTP sendo usado não é "cacheable"
-        //         [Todos que NÃO forem GET e HEAD]
-        if (($this->serverConfig->getSecurityConfig() !== null &&
-            $this->serverConfig->getSecurityConfig()->getIsActive() === true) ||
-            \in_array($this->serverConfig->getRequestMethod(), ["GET", "HEAD"]) === false)
+        // Verifica se a configuração da rota indica que a mesma não é cacheavel.
+        // Nestes casos adiciona os headers HTTP que forçarão os navegadores a não
+        // salvarem uma cópia desta resposta.
+        // Lembrando: apenas os métodos HTTP "GET" e "HEAD" são cacheáveis
+        if (\in_array($this->serverConfig->getRequestMethod(), ["GET", "HEAD"]) === true &&
+            $this->serverConfig->getRouteConfig()->getIsUseCache() === false)
         {
             $this->useHeaders = \array_merge(
                 $this->useHeaders,
