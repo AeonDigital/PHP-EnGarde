@@ -128,35 +128,23 @@ abstract class MainApplication implements iApplication
         // Identifica se o resultado desta rota é cacheável e, se existe um resultado pronto
         // para ser entregue.
         if ($this->hasValidResponseCacheFile() === true) {
+            $this->response = $this->serverConfig->getHttpFactory()->createResponse();
             $responseCacheFileContents = \file_get_contents($this->getCacheFileName());
 
-            // Identifica os headers a serem enviados para o UA.
-            $useRegex = "/(@headers)([\s\S]*)(@headers)/";
-            \preg_match_all($useRegex, $responseCacheFileContents, $headers);
-            //$this->response = $this->response->withHeaders(\json_decode($headers[2]));
+            // Resgata os headers a serem usados para o envio.
+            $headers = strtok($responseCacheFileContents, "\n");
+            $this->response = $this->response->withHeaders(\json_decode($headers, true));
+
 
             // Remove do corpo da mensagem os dados referentes aos headers
-            $responseCacheFileContents = \trim(\str_replace($headers[2], "", $responseCacheFileContents));
+            $responseCacheFileContents = \trim(\str_replace($headers, "", $responseCacheFileContents));
             // Redefine o body
-            //$body = $this->response->getBody();
-            //$body->write($responseCacheFileContents);
-            //$this->response = $this->response->withBody($body);
-            //$this->response = new \AeonDigital\Http\Message\Response(
-                //200,
-                //"Ok",
-                //"1.1",
-                //iHeaderCollection $headers,
-                //iStream $body
-            //);
-            // Inicia uma instância "RouteResolver" (trata-se de um iRequestHandler) responsável
-            // por iniciar o controller alvo e executar o método correspondente a rota.
-            $resolver = new \AeonDigital\EnGarde\Handler\RouteResolver(
-                $this->serverConfig
-            );
-            // Inicia a instância do manipulador da requisição.
-            // e passa para ele o resolver da rota para ser executado após
-            // os middlewares.
-            $requestHandler = new \AeonDigital\Http\Server\RequestHandler($resolver);
+            $body = $this->response->getBody();
+            $body->write($responseCacheFileContents);
+            $this->response = $this->response->withBody($body);
+
+            // Efetua o envio dos dados obtidos e processados para o UA.
+            $this->sendResponse();
         }
         else {
             // Se este não for o método a ser executado para
@@ -228,6 +216,9 @@ abstract class MainApplication implements iApplication
 
                 // Efetua o envio dos dados obtidos e processados para o UA.
                 $this->sendResponse();
+
+                // Cria o arquivo de cache, se for necessário.
+                $this->saveOrUpdateResponseCache();
             }
         }
     }
@@ -275,10 +266,6 @@ abstract class MainApplication implements iApplication
 
                 $haveToSend -= $partLength;
             }
-
-
-            // Cria o arquivo de cache, se for possível.
-            $this->saveOrUpdateResponseCache();
         }
     }
 
@@ -337,6 +324,21 @@ abstract class MainApplication implements iApplication
         return $this->cacheFileName;
     }
     /**
+     * Caso esta seja uma rota cacheável e, seu arquivo de cache não exista, ou exista mas esteja
+     * expirado, cria/atualiza o arquivo de cache alvo.
+     *
+     * @return      void
+     */
+    private function saveOrUpdateResponseCache() : void
+    {
+        if ($this->isRouteCacheable() === true) {
+            $cacheFileName = $this->getCacheFileName();
+
+            $strHeaders = json_encode($this->response->getHeaders()) . "\n";
+            \file_put_contents($cacheFileName, $strHeaders . (string)$this->response->getBody());
+        }
+    }
+    /**
      * Identifica se o arquivo de cache de nome passado existe e se ele ainda é válido.
      *
      * @return      bool
@@ -362,20 +364,5 @@ abstract class MainApplication implements iApplication
         }
 
         return $r;
-    }
-    /**
-     * Caso esta seja uma rota cacheável e, seu arquivo de cache não exista, ou exista mas esteja
-     * expirado, cria/atualiza o arquivo de cache alvo.
-     *
-     * @return      void
-     */
-    private function saveOrUpdateResponseCache() : void
-    {
-        if ($this->isRouteCacheable() === true && $this->hasValidResponseCacheFile() === false) {
-            $cacheFileName = $this->getCacheFileName();
-
-            $strHeaders = "@headers\n" . json_encode($this->response->getHeaders()) . "\n@headers\n";
-            \file_put_contents($cacheFileName, $strHeaders . (string)$this->response->getBody());
-        }
     }
 }
