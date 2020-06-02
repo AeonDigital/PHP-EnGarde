@@ -14,7 +14,11 @@ $defaultSecurity = [
     "allowedFaultByIP"      => 50,
     "ipBlockTimeout"        => 50,
     "allowedFaultByLogin"   => 5,
-    "loginBlockTimeout"     => 20
+    "loginBlockTimeout"     => 20,
+    "allowedIPRanges"       => [],
+    "deniedIPRanges"        => [],
+    "dbCredentials"         => [],
+    "authUserInfo"          => ""
 ];
 
 
@@ -38,6 +42,10 @@ function prov_instanceOf_EnGarde_Config_Security(
         $defaultSecurity["allowedFaultByIP"],
         $defaultSecurity["ipBlockTimeout"],
         $defaultSecurity["allowedFaultByLogin"],
-        $defaultSecurity["loginBlockTimeout"]
+        $defaultSecurity["loginBlockTimeout"],
+        $defaultSecurity["allowedIPRanges"],
+        $defaultSecurity["deniedIPRanges"],
+        $defaultSecurity["dbCredentials"],
+        $defaultSecurity["authUserInfo"]
     );
 }

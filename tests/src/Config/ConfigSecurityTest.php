@@ -33,7 +33,11 @@ class ConfigSecurityTest extends TestCase
             $defaultSecurity["allowedFaultByIP"],
             $defaultSecurity["ipBlockTimeout"],
             $defaultSecurity["allowedFaultByLogin"],
-            $defaultSecurity["loginBlockTimeout"]
+            $defaultSecurity["loginBlockTimeout"],
+            $defaultSecurity["allowedIPRanges"],
+            $defaultSecurity["deniedIPRanges"],
+            $defaultSecurity["dbCredentials"],
+            $defaultSecurity["authUserInfo"]
         );
         $this->assertTrue(is_a($obj, Security::class));
 
@@ -51,6 +55,10 @@ class ConfigSecurityTest extends TestCase
         $this->assertSame(50, $obj->getIPBlockTimeout());
         $this->assertSame(5, $obj->getAllowedFaultByLogin());
         $this->assertSame(20, $obj->getLoginBlockTimeout());
+        $this->assertSame([], $obj->getAllowedIPRanges());
+        $this->assertSame([], $obj->getDeniedIPRanges());
+        $this->assertSame([], $obj->getDBCredentials());
+        $this->assertSame("", $obj->getAuthUserInfo());
     }
 
 
@@ -256,5 +264,96 @@ class ConfigSecurityTest extends TestCase
             $this->assertSame("Invalid value defined for \"loginBlockTimeout\". Expected integer greather than zero. Given: [ -1 ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
+    }
+
+
+
+
+
+    public function test_isallowedip()
+    {
+        global $defaultSecurity;
+        $testSecurity = array_merge([], $defaultSecurity);
+        $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
+
+        $this->assertTrue($obj->isAllowedIP("10.0.0.0"));
+        $this->assertTrue($obj->isAllowedIP("10.0.0.1"));
+        $this->assertTrue($obj->isAllowedIP("10.0.5.128"));
+        $this->assertTrue($obj->isAllowedIP("10.0.10.0"));
+        $this->assertTrue($obj->isAllowedIP("10.0.10.1"));
+
+
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:000E:FFFF"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:000F:0000"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:0ABC:6666"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0000"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0001"));
+
+
+
+
+
+        // -----
+        $testSecurity["allowedIPRanges"] = [
+            ["10.0.0.1", "10.0.10.0"],
+            ["0000:0000:0000:0000:0000:0000:000F:0000", "0000:0000:0000:0000:0000:0000:F000:0000"]
+        ];
+
+
+        $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
+        $this->assertEquals(
+            [
+                ["10.0.0.1", "10.0.10.0"],
+                ["0000:0000:0000:0000:0000:0000:000F:0000", "0000:0000:0000:0000:0000:0000:F000:0000"]
+            ],
+            $obj->getAllowedIPRanges()
+        );
+
+        $this->assertFalse($obj->isAllowedIP("10.0.0.0"));
+        $this->assertTrue($obj->isAllowedIP("10.0.0.1"));
+        $this->assertTrue($obj->isAllowedIP("10.0.5.128"));
+        $this->assertTrue($obj->isAllowedIP("10.0.10.0"));
+        $this->assertFalse($obj->isAllowedIP("10.0.10.1"));
+
+
+        $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:000E:FFFF"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:000F:0000"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:0ABC:6666"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0000"));
+        $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0001"));
+
+
+
+
+
+        // -----
+        $testSecurity = array_merge([], $defaultSecurity);
+        $testSecurity["deniedIPRanges"] = [
+            ["10.0.0.1", "10.0.10.0"],
+            ["0000:0000:0000:0000:0000:0000:000F:0000", "0000:0000:0000:0000:0000:0000:F000:0000"]
+        ];
+
+
+        $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
+        $this->assertEquals(
+            [
+                ["10.0.0.1", "10.0.10.0"],
+                ["0000:0000:0000:0000:0000:0000:000F:0000", "0000:0000:0000:0000:0000:0000:F000:0000"]
+            ],
+            $obj->getDeniedIPRanges()
+        );
+
+        $this->assertTrue($obj->isAllowedIP("10.0.0.0"));
+        $this->assertFalse($obj->isAllowedIP("10.0.0.1"));
+        $this->assertFalse($obj->isAllowedIP("10.0.5.128"));
+        $this->assertFalse($obj->isAllowedIP("10.0.10.0"));
+        $this->assertTrue($obj->isAllowedIP("10.0.10.1"));
+
+
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:000E:FFFF"));
+        $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:000F:0000"));
+        $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:0ABC:6666"));
+        $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0000"));
+        $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0001"));
     }
 }

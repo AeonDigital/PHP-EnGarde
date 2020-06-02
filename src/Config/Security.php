@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-
+use AeonDigital\Interfaces\DAL\iDAL;
 
 
 
@@ -525,6 +525,283 @@ final class Security extends BObject implements iSecurity
 
 
 
+    /**
+     * Coleção de intervalos de IPs que tem permissão de acessar a aplicação.
+     *
+     * @var         array
+     */
+    private array $allowedIPRanges = [];
+    /**
+     * Retorna uma coleção de intervalos de IPs que tem permissão de acessar a aplicação.
+     *
+     * Isto implica em dizer que a regra de segurança excluirá de acesso toda requisição que
+     * venha de um IP que não esteja na lista previamente definida.
+     * [tudo é proibido até que seja liberado]
+     *
+     * @return      array
+     */
+    public function getAllowedIPRanges() : array
+    {
+        return $this->allowedIPRanges;
+    }
+    /**
+     * Define uma coleção de intervalos de IPs que tem permissão de acessar a aplicação.
+     *
+     * @param       array $allowedIPRanges
+     *              Coleção de IPs válidos.
+     *
+     * @return      void
+     */
+    private function setAllowedIPRanges(array $allowedIPRanges) : void
+    {
+        $this->allowedIPRanges = $allowedIPRanges;
+    }
+
+
+
+    /**
+     * Coleção de intervalos de IPs que estão bloqueados de acessar a aplicação.
+     *
+     * @var         array
+     */
+    private array $deniedIPRanges = [];
+    /**
+     * Retorna uma coleção de intervalos de IPs que estão bloqueados de acessar a aplicação.
+     *
+     * Isto implica em dizer que a regra de segurança permitirá o acesso de toda requisição que
+     * venha de um IP que não esteja na lista previamente definida.
+     * [tudo é permitido até que seja bloqueado]
+     *
+     * @return      array
+     */
+    public function getDeniedIPRanges() : array
+    {
+        return $this->deniedIPRanges;
+    }
+    /**
+     * Define uma coleção de intervalos de IPs que estão bloqueados de acessar a aplicação.
+     *
+     * @param       array $deniedIPRanges
+     *              Coleção de IPs válidos.
+     *
+     * @return      void
+     */
+    private function setDeniedIPRanges(array $deniedIPRanges) : void
+    {
+        $this->deniedIPRanges = $deniedIPRanges;
+    }
+
+
+
+
+
+    /**
+     * Identifia se o IP informado está dentro dos ranges definidos como válidos para o
+     * acesso a esta aplicação.
+     *
+     * As regras ``AllowedIPRanges`` e ``DeniedIPRanges`` são auto-excludentes, ou seja, apenas
+     * uma delas pode estar valendo e, na presença de ambos conjuntos existirem, a regra
+     * ``AllowedIPRanges`` (que é mais restritiva) é que prevalecerá para este teste.
+     *
+     * Se nenhuma das regras estiver definido, todas as requisições serão aceitas.
+     *
+     * @param       string $ip
+     *              IP que será testado em seu formato ``human readable``.
+     *
+     * @return      bool
+     */
+    public function isAllowedIP(string $ip) : bool
+    {
+        $addrIP = inet_pton($ip);
+        $allowedIPRanges = $this->getAllowedIPRanges();
+        $deniedIPRanges = $this->getDeniedIPRanges();
+
+
+        if ($allowedIPRanges !== []) {
+            $matchRange = false;
+
+            foreach ($allowedIPRanges as $range) {
+                if ($matchRange === false) {
+                    $matchRange = ($addrIP >= inet_pton($range[0]) && $addrIP <= inet_pton($range[1]));
+                }
+            }
+            return $matchRange;
+        }
+        elseif ($deniedIPRanges !== []) {
+            $matchRange = false;
+
+            foreach ($deniedIPRanges as $range) {
+                if ($matchRange === false) {
+                    $matchRange = ($addrIP >= inet_pton($range[0]) && $addrIP <= inet_pton($range[1]));
+                }
+            }
+            return !$matchRange;
+        }
+
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Código de autenticação para o UA.
+     *
+     * @var         string
+     */
+    private string $authUserInfo = "";
+    /**
+     * Retorna o código de autenticação para o UA.
+     *
+     * @return      string
+     */
+    public function getAuthUserInfo() : string
+    {
+        return $this->authUserInfo;
+    }
+    /**
+     * Define o código de autenticação para o UA.
+     *
+     * @param       string $authUserInfo
+     *              Código de identificação do UA.
+     *
+     * @return      void
+     */
+    private function setAuthUserInfo(string $authUserInfo) : void
+    {
+        $this->authUserInfo = $authUserInfo;
+    }
+
+
+
+    /**
+     * Nome do perfil de usuário que o UA atualmente está utilizando.
+     *
+     * @var         string
+     */
+    private string $userProfile = "";
+    /**
+     * Retorna o perfil do usuário atualmente reconhecido pelo sistema de segurança.
+     *
+     * O sistema deve procurar primeiro no cookie de segurança que, se definido deverá conter
+     * o ``username`` atualmente autorizado e um ``hash`` da sessão atual.
+     *
+     * @return      string
+     */
+    public function getUserProfile() : string
+    {
+        return "";
+    }
+
+
+
+    /**
+     * Coleção de credenciais de acesso ao banco de dados.
+     *
+     * @var         array
+     */
+    private array $dbCredentials;
+    /**
+     * Retorna um array associativo contendo os nomes de perfils de usuário e
+     * respectivas credenciais de acesso ao banco de dados.
+     *
+     * @param       string $userProfile
+     *              Se definido, retornará exclusivamente os dados referentes
+     *              a este próprio perfil.
+     *              Se o perfil indicado não existir, deverá retornar ``[]``.
+     *
+     * @return      array
+     */
+    public function getDBCredentials(string $userProfile = "") : array
+    {
+        $r = [];
+        if ($userProfile === "") { $r = \array_merge($this->dbCredentials, []); }
+        elseif (\key_exists($userProfile, $this->dbCredentials) === true) {
+            $r = \array_merge($this->dbCredentials[$userProfile], []);
+        }
+        return $r;
+    }
+    /**
+     * Define a coleção de perfils de usuários e suas respectivas credenciais de acesso
+     * ao banco de dados.
+     *
+     * @param       array $dbCredentials
+     *              Coleção de credenciais de acesso ao banco de dados.
+     *
+     * @return      void
+     */
+    private function setDBCredentials(array $dbCredentials) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "dbCredentials", $dbCredentials,
+            [
+                [
+                    "conditions"    => "is array not empty",
+                    "validate"      => "is array assoc"
+                ],
+                [
+                    "conditions"    => "is array not empty",
+                    "validate"      => "foreach array child",
+                    "foreachChild"  => [
+                        [
+                            "validate"      => "has array assoc required keys",
+                            "requiredKeys"  => [
+                                "dbType" => null,
+                                "dbHost" => null,
+                                "dbName" => null,
+                                "dbUserName" => null,
+                                "dbUserName" => null
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
+        $this->dbCredentials = $dbCredentials;
+    }
+
+
+
+    /**
+     * Objeto de conexão com o banco de dados para o UA atual.
+     *
+     * @var         iDAL
+     */
+    private iDAL $DAL;
+    /**
+     * Retorna um objeto ``iDAL`` configurado com as credenciais correlacionadas
+     * ao atual perfil de usuário sendo usado pelo UA.
+     *
+     * @return      iDAL
+     */
+    public function getDAL() : iDAL
+    {
+        if (isset($this->DAL) === false) {
+            $dbCredentials = $this->getDBCredentials($this->getUserProfile());
+            $this->DAL = new \AeonDigital\DAL\DAL(
+                $dbCredentials["dbType"],
+                $dbCredentials["dbHost"],
+                $dbCredentials["dbName"],
+                $dbCredentials["dbUserName"],
+                $dbCredentials["dbUserName"],
+                ($dbCredentials["dbSSLCA"] ?? null),
+                ($dbCredentials["dbConnectionString"] ?? null)
+            );
+        }
+        return $this->DAL;
+    }
+
+
+
+
+
+
 
 
 
@@ -576,6 +853,18 @@ final class Security extends BObject implements iSecurity
      * @param       int $loginBlockTimeout
      *              Tempo de bloqueio para um Login [em minutos].
      *
+     * @param       array $allowedIPRanges
+     *              Coleção de intervalos de Ips que tem acesso a aplicação.
+     *
+     * @param       array $deniedIPRanges
+     *              Coleção de intervalos de Ips que devem ser bloqueados de acesso.
+     *
+     * @param       array $dbCredentials
+     *              Coleção de informações de conexão com o banco de dados.
+     *
+     * @param       string $authUserInfo
+     *              Código de autenticação para o UA.
+     *
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
@@ -593,7 +882,11 @@ final class Security extends BObject implements iSecurity
         int $allowedFaultByIP,
         int $ipBlockTimeout,
         int $allowedFaultByLogin,
-        int $loginBlockTimeout
+        int $loginBlockTimeout,
+        array $allowedIPRanges,
+        array $deniedIPRanges,
+        array $dbCredentials,
+        string $authUserInfo
     ) {
         $this->setIsActive($isActive);
         $this->setDataCookieName($dataCookieName);
@@ -609,8 +902,11 @@ final class Security extends BObject implements iSecurity
         $this->setIpBlockTimeout($ipBlockTimeout);
         $this->setAllowedFaultByLogin($allowedFaultByLogin);
         $this->setLoginBlockTimeout($loginBlockTimeout);
+        $this->setAllowedIPRanges($allowedIPRanges);
+        $this->setDeniedIPRanges($deniedIPRanges);
+        $this->setDBCredentials($dbCredentials);
+        $this->setAuthUserInfo($authUserInfo);
     }
-
 
 
 
@@ -642,7 +938,11 @@ final class Security extends BObject implements iSecurity
             "allowedFaultByIP"      => 50,
             "ipBlockTimeout"        => 50,
             "allowedFaultByLogin"   => 5,
-            "loginBlockTimeout"     => 20
+            "loginBlockTimeout"     => 20,
+            "allowedIPRanges"       => [],
+            "deniedIPRanges"        => [],
+            "dbCredentials"         => [],
+            "authUserInfo"          => ""
         ],
         $config);
 
@@ -660,7 +960,56 @@ final class Security extends BObject implements iSecurity
             $useValues["allowedFaultByIP"],
             $useValues["ipBlockTimeout"],
             $useValues["allowedFaultByLogin"],
-            $useValues["loginBlockTimeout"]
+            $useValues["loginBlockTimeout"],
+            $useValues["allowedIPRanges"],
+            $useValues["deniedIPRanges"],
+            $useValues["dbCredentials"],
+            $useValues["authUserInfo"]
         );
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Efetua o login do usuário.
+     *
+     * @param       string $userName
+     *              Nome do usuário.
+     *
+     * @param       string $password
+     *              Senha de autenticação.
+     *
+     * @return      bool
+     *              Retornará ``true`` quando o login for realizado com
+     *              sucesso e ``false`` quando falhar por qualquer motivo.
+     */
+    public function executeLogin(string $userName, string $password) : bool
+    {
+
+    }
+    /**
+     * Efetua o logout do usuário na aplicação e encerra sua sessão.
+     *
+     * @return      bool
+     */
+    public function executeLogout() : bool
+    {
+
+    }
+    /**
+     * Retorna a mensagem de erro para casos em que o login falhou.
+     *
+     * @return      string
+     */
+    public function getLoginErrorMessage() : string
+    {
+
     }
 }

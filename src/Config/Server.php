@@ -1396,6 +1396,18 @@ final class Server extends BObject implements iServer
     public function getSecurityConfig(array $config = []) : ?iSecurity
     {
         if (isset($this->securityConfig) === false && $config !== []) {
+            // Seleciona o grupo de credenciais a serem utilizadas para este UA nesta aplicação.
+            $config["dbCredentials"] = ENV_DATABASE[$this->getEnvironmentType()][$this->getApplicationName()];
+
+
+            // Identifica o código de autenticação do UA, se houver
+            // Tenta resgatar do cookie de autenticação
+            //$secCookie = (
+            //    (\key_exists("securityCookieName", $config) === true) ?
+            //    $config["securityCookieName"] :
+            //    ""
+            //);
+            //$config["authUserInfo"] = (string)$this->getServerRequest()->getCookie($secCookie);
             $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray($config);
         }
         return $this->securityConfig;

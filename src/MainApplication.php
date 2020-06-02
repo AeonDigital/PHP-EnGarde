@@ -87,10 +87,6 @@ abstract class MainApplication implements iApplication
         ));
 
 
-        // Inicia o objeto de configuração de segurança.
-        $serverConfig->getSecurityConfig($this->defaultSecurityConfig);
-
-
         // Inicia o objeto roteador para que seja possível
         // identificar qual rota está sendo requisitada.
         $router = new \AeonDigital\EnGarde\Engine\Router($serverConfig);
@@ -107,6 +103,10 @@ abstract class MainApplication implements iApplication
             ),
             true
         );
+
+
+        // Inicia o objeto de configuração de segurança.
+        $serverConfig->getSecurityConfig($this->defaultSecurityConfig);
 
 
         // Define a propriedade de configuração que está sendo usada.
