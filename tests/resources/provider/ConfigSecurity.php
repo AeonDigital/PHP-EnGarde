@@ -17,8 +17,7 @@ $defaultSecurity = [
     "loginBlockTimeout"     => 20,
     "allowedIPRanges"       => [],
     "deniedIPRanges"        => [],
-    "dbCredentials"         => [],
-    "authUserInfo"          => ""
+    "dbCredentials"         => []
 ];
 
 
@@ -45,7 +44,6 @@ function prov_instanceOf_EnGarde_Config_Security(
         $defaultSecurity["loginBlockTimeout"],
         $defaultSecurity["allowedIPRanges"],
         $defaultSecurity["deniedIPRanges"],
-        $defaultSecurity["dbCredentials"],
-        $defaultSecurity["authUserInfo"]
+        $defaultSecurity["dbCredentials"]
     );
 }

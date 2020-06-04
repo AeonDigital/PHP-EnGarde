@@ -31,6 +31,7 @@ class ConfigApplicationTest extends TestCase
             $defaultApplication["pathToViewsResources"],
             $defaultApplication["pathToLocales"],
             $defaultApplication["pathToCacheFiles"],
+            $defaultApplication["pathToLocalData"],
             $defaultApplication["startRoute"],
             $defaultApplication["controllersNamespace"],
             $defaultApplication["locales"],
@@ -374,6 +375,42 @@ class ConfigApplicationTest extends TestCase
         $testApplication["pathToCacheFiles"] = "";
         $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
         $this->assertSame("", $nMock->getPathToCacheFiles());
+    }
+
+
+    public function test_method_getset_path_to_local_data_fails()
+    {
+        global $defaultApplication;
+        global $dirResources;
+        $testApplication = array_merge([], $defaultApplication);
+        $testApplication["pathToLocalData"] = DS . "nonexist";
+
+        $fail = false;
+        try {
+            $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        } catch (\Exception $ex) {
+            $fail = true;
+            $path = $dirResources . DS . "apps" . DS . "site" . DS . "nonexist";
+            $this->assertSame(
+                "Invalid value defined for \"pathToLocalData\". Directory does not exists. Given: [ $path ]",
+                $ex->getMessage()
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+    }
+
+
+    public function test_method_getset_path_to_local_data()
+    {
+        global $defaultApplication;
+        $nMock = prov_instanceOf_EnGarde_Config_Application($defaultApplication);
+        $this->assertSame(DS . "localData", $nMock->getPathToLocalData());
+
+
+        $testApplication = array_merge([], $defaultApplication);
+        $testApplication["pathToLocalData"] = "";
+        $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        $this->assertSame("", $nMock->getPathToLocalData());
     }
 
 

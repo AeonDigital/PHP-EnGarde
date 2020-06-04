@@ -1,0 +1,28 @@
+{
+    "Active": true,
+    "RegisterDate": "2020-06-03 22:00:00",
+    "Name": "Rianna Cantarelli",
+    "Gender": "Transgender",
+    "Login": "rianna.aeon",
+    "ShortLogin": "rianna.aeon",
+    "Password": "31f88741c850331188d23e6e0067730e13c92809",
+    "ContactEmail": "rianna.aeon@gmail.com",
+    "Profiles": [
+        {
+            "Active": true,
+            "Profile": "ANONIMOUS",
+            "Application": "EnGarde",
+            "UseConnection": null,
+            "Political": "B",
+            "DefaultGroup": false
+        },
+        {
+            "Active": true,
+            "Profile": "SUPERADMIN",
+            "Application": "EnGarde",
+            "UseConnection": null,
+            "Political": "F",
+            "DefaultGroup": true
+        }
+    ]
+}

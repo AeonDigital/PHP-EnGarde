@@ -36,8 +36,7 @@ class ConfigSecurityTest extends TestCase
             $defaultSecurity["loginBlockTimeout"],
             $defaultSecurity["allowedIPRanges"],
             $defaultSecurity["deniedIPRanges"],
-            $defaultSecurity["dbCredentials"],
-            $defaultSecurity["authUserInfo"]
+            $defaultSecurity["dbCredentials"]
         );
         $this->assertTrue(is_a($obj, Security::class));
 
@@ -58,7 +57,6 @@ class ConfigSecurityTest extends TestCase
         $this->assertSame([], $obj->getAllowedIPRanges());
         $this->assertSame([], $obj->getDeniedIPRanges());
         $this->assertSame([], $obj->getDBCredentials());
-        $this->assertSame("", $obj->getAuthUserInfo());
     }
 
 
@@ -356,4 +354,11 @@ class ConfigSecurityTest extends TestCase
         $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0000"));
         $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0001"));
     }
+
+
+    /*public function test_executelogin()
+    {
+        global $defaultSecurity;
+        $obj = prov_instanceOf_EnGarde_Config_Security($defaultSecurity);
+    }*/
 }

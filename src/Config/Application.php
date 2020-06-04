@@ -446,6 +446,66 @@ final class Application extends BObject implements iApplication
 
 
 
+    /**
+     * Caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
+     * para os arquivos de dados que constituem uma *base de dados local*.
+     *
+     * @var         string
+     */
+    private string $pathToLocalData = "";
+    /**
+     * Retorna o caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
+     * para os arquivos de dados que constituem uma *base de dados local*.
+     *
+     * O formato e conteúdo destes arquivos varia conforme a implementação realizada.
+     *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
+     * @return      string
+     */
+    public function getPathToLocalData(bool $fullPath = false) : string
+    {
+        return (
+            ($fullPath === false) ?
+            $this->pathToLocalData :
+            $this->appRootPath . $this->pathToLocalData
+        );
+    }
+    /**
+     * Define o caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
+     * para os arquivos de dados que constituem uma *base de dados local*.
+     *
+     * @param       string $pathToLocalData
+     *              Caminho relativo até o diretório de dados locais.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setPathToLocalData(string $pathToLocalData) : void
+    {
+        $path = (
+            ($pathToLocalData !== "") ?
+            $this->appRootPath . $pathToLocalData :
+            $pathToLocalData
+        );
+        $this->mainCheckForInvalidArgumentException(
+            "pathToLocalData", $path, [
+                [
+                    "conditions"       => "is string not empty",
+                    "validate"         => "is dir exists"
+                ]
+            ]
+        );
+        $this->pathToLocalData = \to_system_path($pathToLocalData);
+    }
+
+
+
+
 
 
 
@@ -901,6 +961,10 @@ final class Application extends BObject implements iApplication
      *              Caminho relativo (a partir de "appRootPath") até o diretório de armazenamento
      *              para os arquivos de cache.
      *
+     * @param       string $pathToLocalData
+     *              Caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
+     *              para os arquivos de dados locais.
+     *
      * @param       string $startRoute
      *              Rota inicial da aplicação.
      *
@@ -941,6 +1005,7 @@ final class Application extends BObject implements iApplication
         string $pathToViewsResources,
         string $pathToLocales,
         string $pathToCacheFiles,
+        string $pathToLocalData,
         string $startRoute,
         string $controllersNamespace,
         array $locales,
@@ -958,6 +1023,7 @@ final class Application extends BObject implements iApplication
         $this->setPathToViewsResources($pathToViewsResources);
         $this->setPathToLocales($pathToLocales);
         $this->setPathToCacheFiles($pathToCacheFiles);
+        $this->setPathToLocalData($pathToLocalData);
         $this->setStartRoute($startRoute);
         $this->setControllersNamespace($controllersNamespace);
         $this->setLocales($locales);
@@ -1010,6 +1076,7 @@ final class Application extends BObject implements iApplication
                 "pathToViewsResources"      => DS . "resources",
                 "pathToLocales"             => DS . "locales",
                 "pathToCacheFiles"          => DS . "cache",
+                "pathToLocalData"           => DS . "localData",
                 "startRoute"                => "/",
                 "controllersNamespace"      => "\\$appName\\controllers",
                 "locales"                   => [],
@@ -1034,6 +1101,7 @@ final class Application extends BObject implements iApplication
             $useValues["pathToViewsResources"],
             $useValues["pathToLocales"],
             $useValues["pathToCacheFiles"],
+            $useValues["pathToLocalData"],
             $useValues["startRoute"],
             $useValues["controllersNamespace"],
             $useValues["locales"],
