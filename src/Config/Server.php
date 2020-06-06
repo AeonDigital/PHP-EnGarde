@@ -355,6 +355,33 @@ final class Server extends BObject implements iServer
 
 
 
+    private bool $forceHTTPS = false;
+    /**
+     * Indica que as requisições feitas para o domínio devem ser realizadas sob o protocolo
+     * HTTPS.
+     *
+     * @return      bool
+     */
+    function getForceHTTPS() : bool
+    {
+        return $this->forceHTTPS;
+    }
+    /**
+     * Define se as requisições feitas para o domínio devem ser realizadas sob o protocolo
+     * HTTPS.
+     *
+     * @param       bool $forceHTTPS
+     *              Indica se deve forçar o protocolo HTTPS
+     *
+     * @return      void
+     */
+    private function setForceHTTPS(bool $forceHTTPS) : void
+    {
+        $this->forceHTTPS = $forceHTTPS;
+    }
+
+
+
     /**
      * Tipo de ambiente que o domínio está rodando no momento.
      *
@@ -994,6 +1021,9 @@ final class Server extends BObject implements iServer
      *              motor de aplicações que está sendo iniciado.
      *              São esperados, obrigatoriamente os seguintes valores:
      *
+     *              - bool forceHTTPS
+     *              Indica se as requisições deste domínio devem ser feitos sob HTTPS.
+     *
      *              - string rootPath
      *              Caminho completo até o diretório onde o domínio está sendo executado.
      *              Se não for definido, irá pegar o valor existente em DOCUMENT_ROOT.
@@ -1131,6 +1161,7 @@ final class Server extends BObject implements iServer
 
         // Define as demais variáveis relativas a configuração atual
         // do servidor.
+        $this->setForceHTTPS($forceHTTPS);
         $this->setEnvironmentType($environmentType);
         $this->setIsDebugMode($isDebugMode);
         $this->setIsUpdateRoutes($isUpdateRoutes);

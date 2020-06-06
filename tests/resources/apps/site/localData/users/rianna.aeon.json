@@ -11,18 +11,18 @@
         {
             "Active": true,
             "Profile": "ANONIMOUS",
-            "Application": "EnGarde",
+            "Application": "site",
             "UseConnection": null,
             "Political": "B",
-            "DefaultGroup": false
+            "Default": false
         },
         {
             "Active": true,
             "Profile": "SUPERADMIN",
-            "Application": "EnGarde",
+            "Application": "site",
             "UseConnection": null,
             "Political": "F",
-            "DefaultGroup": true
+            "Default": true
         }
     ]
 }

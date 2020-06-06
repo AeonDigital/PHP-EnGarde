@@ -7,7 +7,7 @@ use AeonDigital\EnGarde\Interfaces\Engine\iController as iController;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-
+use AeonDigital\Interfaces\Http\Data\iCookie as iCookie;
 
 
 
@@ -232,7 +232,7 @@ abstract class MainController implements iController
         return $this->serverConfig->getServerRequest()->getPost($name);
     }
     /**
-     * Retorna o valor do cookie de nome indicado.
+     * Retorna o objeto ``iCookie`` correspondente ao cookie de nome indicado.
      * Retornará ``null`` caso ele não exista.
      *
      * Mesmo que ``$this->serverConfig->getServerRequest()->getCookie()``.
@@ -240,9 +240,9 @@ abstract class MainController implements iController
      * @param       string $name
      *              Nome do cookie alvo.
      *
-     * @return      ?string
+     * @return      ?iCookie
      */
-    protected function getCookie(string $name) : ?string
+    protected function getCookie(string $name) : ?iCookie
     {
         return $this->serverConfig->getServerRequest()->getCookie($name);
     }

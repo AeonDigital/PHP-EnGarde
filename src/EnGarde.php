@@ -64,6 +64,7 @@ final class EnGarde extends BObject
                 "SERVER"    => $_SERVER,
                 "FILES"     => $_FILES,
                 "ENGINE"    => [
+                    "forceHTTPS"            => FORCE_HTTPS,
                     "environmentType"       => ENVIRONMENT,
                     "isDebugMode"           => DEBUG_MODE,
                     "isUpdateRoutes"        => UPDATE_ROUTES,
@@ -105,9 +106,15 @@ final class EnGarde extends BObject
     {
         if ($this->isRun === false) {
             $this->isRun = true;
+            $redirectTo = $this->serverConfig->getNewLocationPath();
 
-            if ($this->serverConfig->getNewLocationPath() !== "") {
-                \redirect($this->serverConfig->getNewLocationPath());
+            if ($this->serverConfig->getForceHTTPS() === true &&
+                $this->serverConfig->getRequestIsUseHTTPS() === false) {
+                $redirectTo = "https://" . $this->serverConfig->getRequestDomainName() . $redirectTo;
+            }
+
+            if ($redirectTo !== "") {
+                \redirect($redirectTo);
             }
             else {
                 $applicationNS      = $this->serverConfig->getApplicationNamespace();

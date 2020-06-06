@@ -41,6 +41,7 @@ $defaultServerVariables = [
 // Definições complementares para a configuração
 // do motor de aplicações.
 $defaultEngineVariables = [
+    "forceHTTPS"            => false,
     "environmentType"       => "UTEST",
     "isDebugMode"           => true,
     "isUpdateRoutes"        => true,
