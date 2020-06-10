@@ -274,44 +274,45 @@ final class Security extends BObject implements iSecurity
 
 
     /**
-     * Tipo de sessão/local onde ela é armazenada.
+     * Namespace que aponta para uma classe que implemente a interface
+     * ``AeonDigital\EnGarde\Interfaces\Engine\iSession`` e que será responsável
+     * pelo controle da sessão.
+     *
+     * Se apresentar apenas o último nome, o mesmo será concatenado com a namespace
+     * ``AeonDigital\EnGarde\SessionControl``.
      *
      * @var         string
      */
-    private string $sessionType = "local";
+    private string $sessionNamespace = "AeonDigital\\EnGarde\\SessionControl\\NativeLocal";
     /**
-     * Retorna o tipo de sessão que está sendo usada.
-     * - "local"     :  A sessão autenticada do usuário é armazenada na própria aplicação.
-     * - "database"  :  A sessão é armazenada num banco de dados.
-     *
-     * O formato ``local`` deve ser utilizado apenas quando não há realmente um banco de dados
-     * disponível.
+     * Retorna o nome de uma classe que implemente a interface
+     * ``AeonDigital\EnGarde\Interfaces\Engine\iSession`` e que será responsável pelo
+     * controle das sessões de UA na aplicação.
      *
      * @return      string
      */
-    public function getSessionType() : string
+    public function getSessionNamespace() : string
     {
-        return $this->sessionType;
+        return $this->sessionNamespace;
     }
     /**
-     * Define o tipo de sessão/local onde ela é armazenada.
+     * Define a classe que deve ser usada para o controle das sessões de UA da aplicação.
      *
-     * @param       string $sessionType
+     * @param       string $sessionNamespace
      *
      * @return      void
      */
-    private function setSessionType(string $sessionType) : void
+    private function setSessionNamespace(string $sessionNamespace) : void
     {
         $this->mainCheckForInvalidArgumentException(
-            "sessionType", $sessionType, [
+            "sessionNamespace", $sessionNamespace, [
                 [
-                    "validate" => "is allowed value",
-                    "allowedValues" => ["local", "database"],
-                    "caseInsensitive" => true,
+                    "validate" => "is class implements interface",
+                    "interface" => "AeonDigital\EnGarde\Interfaces\Engine\iSession"
                 ]
             ]
         );
-        $this->sessionType = \strtolower($sessionType);
+        $this->sessionNamespace = $sessionNamespace;
     }
 
 
@@ -779,8 +780,8 @@ final class Security extends BObject implements iSecurity
      * @param       int $anonymousId
      *              Id do usuário anonimo da aplicação.
      *
-     * @param       string $sessionType
-     *              Tipo de sessão/local onde ela é armazenada.
+     * @param       string $sessionNamespace
+     *              Namespace da classe de controle de sessão.
      *
      * @param       bool $isSessionRenew
      *              Define se as sessões devem ser renovadas a cada iteração do usuário.
@@ -820,7 +821,7 @@ final class Security extends BObject implements iSecurity
         string $routeToStart,
         string $routeToResetPassword,
         int $anonymousId,
-        string $sessionType,
+        string $sessionNamespace,
         bool $isSessionRenew,
         int $sessionTimeout,
         int $allowedFaultByIP,
@@ -838,7 +839,7 @@ final class Security extends BObject implements iSecurity
         $this->setRouteToStart($routeToStart);
         $this->setRouteToResetPassword($routeToResetPassword);
         $this->setAnonymousId($anonymousId);
-        $this->setSessionType($sessionType);
+        $this->setSessionNamespace($sessionNamespace);
         $this->setIsSessionRenew($isSessionRenew);
         $this->setSessionTimeout($sessionTimeout);
         $this->setAllowedFaultByIP($allowedFaultByIP);
@@ -874,7 +875,7 @@ final class Security extends BObject implements iSecurity
             "routeToStart"          => "/home",
             "routeToResetPassword"  => "/resetpassword",
             "anonymousId"           => 1,
-            "sessionType"           => "local",
+            "sessionNamespace"      => "AeonDigital\\EnGarde\\SessionControl\\NativeLocal",
             "isSessionRenew"        => true,
             "sessionTimeout"        => 40,
             "allowedFaultByIP"      => 50,
@@ -895,7 +896,7 @@ final class Security extends BObject implements iSecurity
             $useValues["routeToStart"],
             $useValues["routeToResetPassword"],
             $useValues["anonymousId"],
-            $useValues["sessionType"],
+            $useValues["sessionNamespace"],
             $useValues["isSessionRenew"],
             $useValues["sessionTimeout"],
             $useValues["allowedFaultByIP"],

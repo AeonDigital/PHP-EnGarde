@@ -27,7 +27,7 @@ class ConfigSecurityTest extends TestCase
             $defaultSecurity["routeToStart"],
             $defaultSecurity["routeToResetPassword"],
             $defaultSecurity["anonymousId"],
-            $defaultSecurity["sessionType"],
+            $defaultSecurity["sessionNamespace"],
             $defaultSecurity["isSessionRenew"],
             $defaultSecurity["sessionTimeout"],
             $defaultSecurity["allowedFaultByIP"],
@@ -47,7 +47,7 @@ class ConfigSecurityTest extends TestCase
         $this->assertSame("start", $obj->getRouteToStart());
         $this->assertSame("reset", $obj->getRouteToResetPassword());
         $this->assertSame(1, $obj->getAnonymousId());
-        $this->assertSame("local", $obj->getSessionType());
+        $this->assertSame("AeonDigital\\EnGarde\\SessionControl\\NativeLocal", $obj->getSessionNamespace());
         $this->assertSame(true, $obj->getIsSessionRenew());
         $this->assertSame(40, $obj->getSessionTimeout());
         $this->assertSame(50, $obj->getAllowedFaultByIP());
@@ -163,18 +163,18 @@ class ConfigSecurityTest extends TestCase
     }
 
 
-    public function test_constructor_invalid_sessiontype()
+    public function test_constructor_invalid_sessionNamespace()
     {
         global $defaultSecurity;
         $testSecurity = array_merge([], $defaultSecurity);
-        $testSecurity["sessionType"] = "invalid";
+        $testSecurity["sessionNamespace"] = "invalid";
 
         $fail = false;
         try {
             $obj = prov_instanceOf_EnGarde_Config_Security($testSecurity);
         } catch (\Exception $ex) {
             $fail = true;
-            $this->assertSame("Invalid value defined for \"sessionType\". Expected [ local, database ]. Given: [ invalid ]", $ex->getMessage());
+            $this->assertSame("Invalid value defined for \"sessionNamespace\". Expected Namespace of class thats implements the interface AeonDigital\EnGarde\Interfaces\Engine\iSession. Given: [ invalid ]", $ex->getMessage());
         }
         $this->assertTrue($fail, "Test must fail");
     }

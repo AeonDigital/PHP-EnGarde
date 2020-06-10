@@ -171,7 +171,6 @@ class SessionNativeTest extends TestCase
             $pathToLocalData
         );
         $this->assertTrue(is_a($obj, NativeLocal::class));
-        $this->assertEquals("NativeLocal", $obj->retrieveSessionType());
         $this->assertEquals($securityCookie, $obj->retrieveSecurityCookie());
         $this->assertEquals($pathToLocalData, $obj->retrievePathToLocalData());
         $this->assertNull($obj->retrieveSession());
@@ -197,7 +196,7 @@ class SessionNativeTest extends TestCase
 
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         $r = $obj->executeLogin("rianna.aeon", sha1("senhateste"));
-        $this->assertEquals("UserSessionAuthorized", $obj->retrieveSecurityStatus());
+        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
     }
 
@@ -302,7 +301,7 @@ class SessionNativeTest extends TestCase
 
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         $r = $obj->executeLogin("rianna.aeon", sha1("senhateste"));
-        $this->assertEquals("UserSessionAuthorized", $obj->retrieveSecurityStatus());
+        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
 
         $this->assertTrue(file_exists($this->pathToLocalData_LogFile_Session));
@@ -330,7 +329,7 @@ class SessionNativeTest extends TestCase
         $obj = $this->provideObject(true);
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         $obj->authenticateUserAgentSession();
-        $this->assertEquals("UserSessionAuthorized", $obj->retrieveSecurityStatus());
+        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
     }
 
 
@@ -377,7 +376,7 @@ class SessionNativeTest extends TestCase
         $obj = $this->provideObject(true);
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         $obj->authenticateUserAgentSession();
-        $this->assertEquals("UserSessionAuthorized", $obj->retrieveSecurityStatus());
+        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
 
         $this->assertEquals("PROFILE02", $obj->retrieveUserProfile());
         $this->assertTrue($obj->changeUserProfile("PROFILE01"));

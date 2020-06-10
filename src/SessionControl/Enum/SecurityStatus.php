@@ -129,7 +129,7 @@ class SecurityStatus
      *
      * @var         string
      */
-	const UserAccountWaitingAuthorization = "UserAccountWaitingAuthorization";
+	const UserAccountWaitingNewSession = "UserAccountWaitingNewSession";
     /**
      * Conta do usuário existe mas a senha não está correta.
      *
@@ -182,9 +182,9 @@ class SecurityStatus
      */
 	const UserSessionLoginFail = "UserSessionLoginFail";
     /**
-     * Sessão do usuário autorizada.
+     * Sessão do usuário está autenticada.
      *
      * @var         string
      */
-	const UserSessionAuthorized = "UserSessionAuthorized";
+	const UserSessionAuthenticated = "UserSessionAuthenticated";
 }

@@ -29,21 +29,6 @@ abstract class MainSession extends BObject implements iSession
 
 
 
-    protected string $sessionType;
-    /**
-     * Retorna o tipo de sessão que a instância concreta representa.
-     *
-     * @return      string
-     */
-    public function retrieveSessionType() : string
-    {
-        return $this->sessionType;
-    }
-
-
-
-
-
     /**
      * Data e hora do momento em que a requisição que ativou a aplicação
      * chegou ao domínio.

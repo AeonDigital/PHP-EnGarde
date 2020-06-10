@@ -140,7 +140,6 @@ class NativeLocal extends MainSession
             $securityCookie,
             $pathToLocalData
         );
-        $this->sessionType = "NativeLocal";
 
 
         // Define os locais fisicos onde estão os dados de segurança da aplicação.
@@ -278,8 +277,6 @@ class NativeLocal extends MainSession
 
 
 
-
-
     /**
      * Carrega o objeto de sessão correspondente ao hash encontrado no cookie de segurança.
      *
@@ -328,12 +325,15 @@ class NativeLocal extends MainSession
             }
         }
     }
+
+
+
     /**
      * Verifica se o usuário carregado está bloqueado.
      *
      * @return      void
      */
-    protected function checkAuthenticatedUser() : void
+    protected function checkIfAuthenticatedUserIsBloqued() : void
     {
         if ($this->authenticatedUser !== null) {
             if(\file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
@@ -352,12 +352,16 @@ class NativeLocal extends MainSession
             }
         }
     }
+
+
+
     /**
-     * Verifica se o usuário atualmente carregado possui uma associação com a sessão.
+     * Verifica se o usuário e sessão atualmente carregados possuem uma associação explicita
+     * um com o outro.
      *
      * @return      void
      */
-    protected function checkUserAndSession() : void
+    protected function checkIfAuthenticatedUserAndAuthenticatedSessionMatchs() : void
     {
         $this->securityStatus = SecurityStatus::UserSessionUnchecked;
         if ($this->authenticatedUser !== null && $this->authenticatedSession !== null) {
@@ -370,12 +374,15 @@ class NativeLocal extends MainSession
             }
         }
     }
+
+
+
     /**
-     * Verifica necessidade de renovar a sessão do usuário.
+     * Renova a sessão carregada se tal configuração dever ser usada.
      *
      * @return      void
      */
-    protected function checkRenewSession() : void
+    protected function renewAuthenticatedSession() : void
     {
         if ($this->authenticatedUser !== null &&
             $this->authenticatedSession !== null &&
@@ -447,7 +454,7 @@ class NativeLocal extends MainSession
             }
             else {
                 if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
-                    $this->checkAuthenticatedUser();
+                    $this->checkIfAuthenticatedUserIsBloqued();
 
                     if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
                         if ($this->authenticatedUser["Password"] !== $userPassword) {
@@ -461,7 +468,7 @@ class NativeLocal extends MainSession
                             );
                         }
                         else {
-                            $this->securityStatus = SecurityStatus::UserAccountWaitingAuthorization;
+                            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession;
 
                             if ($grantPermission === "") {
                                 $r = $this->inityAuthenticatedSession();
@@ -486,7 +493,7 @@ class NativeLocal extends MainSession
     {
         $r = false;
         if ($this->authenticatedUser !== null &&
-            $this->authenticatedUser !== null &&
+            $this->authenticatedSession !== null &&
             \file_exists($this->pathToLocalData_LogFile_Session) === true)
         {
             \unlink($this->pathToLocalData_LogFile_Session);
@@ -603,7 +610,7 @@ class NativeLocal extends MainSession
         $r = false;
 
         if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingAuthorization)
+            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
         {
             $this->securityStatus = SecurityStatus::UserSessionLoginFail;
 
@@ -616,7 +623,7 @@ class NativeLocal extends MainSession
             $expiresDate = new \DateTime();
             $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
             $this->securityCookie->setExpires($expiresDate);
-            $this->securityCookie->setValue("sessionHash=$sessionHash");
+            $this->securityCookie->setValue($sessionHash);
 
 
             if ($this->environment === "UTEST" ||
@@ -648,7 +655,7 @@ class NativeLocal extends MainSession
                             $this->authenticatedUser["Session"]) === true)
                     {
                         $r = true;
-                        $this->securityStatus = SecurityStatus::UserSessionAuthorized;
+                        $this->authenticateUserAgentSession();
                     }
                 }
             }
@@ -674,7 +681,7 @@ class NativeLocal extends MainSession
         $r = false;
 
         if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingAuthorization)
+            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
         {
             $pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
             if (\file_exists($pathToLocalData_LogFile_Session) === true) {
@@ -714,11 +721,11 @@ class NativeLocal extends MainSession
             $this->loadAuthenticatedUser($this->authenticatedSession["Login"]);
 
             if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
-                $this->checkUserAndSession();
+                $this->checkIfAuthenticatedUserAndAuthenticatedSessionMatchs();
 
                 if ($this->securityStatus === SecurityStatus::UserSessionAccepted) {
-                    $this->securityStatus = SecurityStatus::UserSessionAuthorized;
-                    $this->checkRenewSession();
+                    $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
+                    $this->renewAuthenticatedSession();
                 }
             }
         }
@@ -735,7 +742,7 @@ class NativeLocal extends MainSession
 
         if ($this->authenticatedUser !== null &&
             $this->authenticatedSession !== null &&
-            $this->securityStatus === SecurityStatus::UserSessionAuthorized)
+            $this->securityStatus === SecurityStatus::UserSessionAuthenticated)
         {
             foreach ($this->authenticatedUser["Profiles"] as $row) {
                 if ($this->applicationName === $row["Application"] &&
