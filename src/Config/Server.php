@@ -362,7 +362,7 @@ final class Server extends BObject implements iServer
      *
      * @return      bool
      */
-    function getForceHTTPS() : bool
+    public function getForceHTTPS() : bool
     {
         return $this->forceHTTPS;
     }

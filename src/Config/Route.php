@@ -156,7 +156,7 @@ final class Route extends BObject implements iRoute
      *
      * @return      string
      */
-    function getControllerNamespace() : string
+    public function getControllerNamespace() : string
     {
         return $this->namespace . "\\" . $this->controller;
     }

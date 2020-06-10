@@ -7,11 +7,6 @@ namespace AeonDigital\EnGarde\SessionControl\Enum;
 
 
 
-
-
-
-
-
 /**
  * Tipo de atividade para log.
  */

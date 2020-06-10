@@ -6,9 +6,9 @@ namespace AeonDigital\EnGarde\SessionControl;
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iSession as iSession;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-use AeonDigital\EnGarde\SessionControl\Enum\BrowseStatus as BrowseStatus;
 use AeonDigital\EnGarde\SessionControl\Enum\SecurityStatus as SecurityStatus;
 use AeonDigital\Interfaces\Http\Data\iCookie as iCookie;
+
 
 
 
@@ -205,21 +205,6 @@ abstract class MainSession extends BObject implements iSession
     public function retrieveSecurityStatus() : string
     {
         return $this->securityStatus;
-    }
-    /**
-     * Status atual da navegação do UA.
-     *
-     * @var         string
-     */
-    protected string $browseStatus = BrowseStatus::Unchecked;
-    /**
-     * Retorna o status atual da navegação do UA.
-     *
-     * @return      string
-     */
-    public function retrieveBrowseStatus() : string
-    {
-        return $this->browseStatus;
     }
 
 

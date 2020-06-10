@@ -6,9 +6,9 @@ namespace AeonDigital\EnGarde\SessionControl;
 use AeonDigital\Interfaces\Http\Data\iCookie as iCookie;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 use AeonDigital\EnGarde\SessionControl\MainSession as MainSession;
-use AeonDigital\EnGarde\SessionControl\Enum\BrowseStatus as BrowseStatus;
 use AeonDigital\EnGarde\SessionControl\Enum\SecurityStatus as SecurityStatus;
 use AeonDigital\EnGarde\SessionControl\Enum\TypeOfActivity as TypeOfActivity;
+
 
 
 
@@ -222,16 +222,16 @@ class NativeLocal extends MainSession
 
         if (\file_exists($this->pathToLocalData_File_User) === true) {
             $this->securityStatus = SecurityStatus::UserAccountUnchecked;
-            $this->authenticatedUser = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_File_User);
+            $authenticatedUser = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_File_User);
 
-            if ($this->authenticatedUser !== null) {
-                if ($this->authenticatedUser["Active"] === false) {
+            if ($authenticatedUser !== null) {
+                if ($authenticatedUser["Active"] === false) {
                     $this->securityStatus = SecurityStatus::UserAccountDisabledForDomain;
                 }
                 else {
                     $profileInUse = null;
                     $defaultProfile = null;
-                    foreach ($this->authenticatedUser["Profiles"] as $row) {
+                    foreach ($authenticatedUser["Profiles"] as $row) {
                         if ($this->applicationName === $row["Application"]) {
                             if ($row["Default"] === true) { $defaultProfile = $row; }
                             if ($this->authenticatedSession !== null &&
@@ -241,19 +241,20 @@ class NativeLocal extends MainSession
                             }
                         }
                     }
-                    $this->authenticatedUser["ProfileInUse"] = (
+                    $authenticatedUser["ProfileInUse"] = (
                         ($profileInUse === null) ? $defaultProfile : $profileInUse
                     );
 
 
-                    if ($this->authenticatedUser["ProfileInUse"] === null) {
+                    if ($authenticatedUser["ProfileInUse"] === null) {
                         $this->securityStatus = SecurityStatus::UserAccountDoesNotExistInApplication;
                     }
-                    else if ($this->authenticatedUser["ProfileInUse"]["Active"] === false) {
+                    else if ($authenticatedUser["ProfileInUse"]["Active"] === false) {
                         $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
                     }
                     else {
                         $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
+                        $this->authenticatedUser = $authenticatedUser;
                     }
                 }
             }
@@ -397,13 +398,21 @@ class NativeLocal extends MainSession
      * @param       string $userPassword
      *              Senha de autenticação.
      *
+     * @param       string $grantPermission
+     *              Permissão que será concedida a uma sessão autenticada
+     *
+     * @param       string $sessionHash
+     *              Sessão autenticada que receberá a permissão especial.
+     *
      * @return      bool
      *              Retornará ``true`` quando o login for realizado com
      *              sucesso e ``false`` quando falhar por qualquer motivo.
      */
-    function executeLogin(
+    public function executeLogin(
         string $userName,
-        string $userPassword
+        string $userPassword,
+        string $grantPermission = "",
+        string $sessionHash = ""
     ) : bool {
         $r = false;
 
@@ -437,9 +446,14 @@ class NativeLocal extends MainSession
                             );
                         }
                         else {
-                            $r = true;
                             $this->securityStatus = SecurityStatus::UserAccountWaitingAuthorization;
-                            $this->inityAuthenticatedSession();
+
+                            if ($grantPermission === "") {
+                                $r = $this->inityAuthenticatedSession();
+                            }
+                            else {
+                                $r = $this->grantSpecialPermission($grantPermission, $sessionHash);
+                            }
                         }
                     }
                 }
@@ -449,38 +463,17 @@ class NativeLocal extends MainSession
         return $r;
     }
     /**
-     * Dá ao usuário atualmente logado um tipo especial de permissão (geralmente concedida
-     * por um usuário de nível superior) para que ele possa executar determinadas ações que
-     * de outra forma não seriam possíveis.
-     *
-     * @param       string $userName
-     *              Nome do usuário.
-     *
-     * @param       string $userPassword
-     *              Senha de autenticação.
-     *
-     * @param       string $typeOfPermission
-     *              Tipo de permissão concedida.
-     *
-     * @return      bool
-     */
-    function grantSpecialPermission(
-        string $userName,
-        string $userPassword,
-        string $typeOfPermission
-    ) : bool
-    {
-
-    }
-    /**
      * Efetua o logout do usuário na aplicação e encerra sua sessão.
      *
      * @return      bool
      */
-    function executeLogout() : bool
+    public function executeLogout() : bool
     {
         $r = false;
-        if (\file_exists($this->pathToLocalData_LogFile_Session) === true) {
+        if ($this->authenticatedUser !== null &&
+            $this->authenticatedUser !== null &&
+            \file_exists($this->pathToLocalData_LogFile_Session) === true)
+        {
             \unlink($this->pathToLocalData_LogFile_Session);
             $this->authenticatedSession = null;
             $this->authenticatedUser = null;
@@ -615,24 +608,67 @@ class NativeLocal extends MainSession
             {
                 $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
 
-                $this->authenticatedUser["Session"] = [
-                    "SessionHash"       => $sessionHash,
-                    "ApplicationName"   => $this->applicationName,
-                    "LoginDate"         => $this->now->format("Y-m-d H:i:s"),
-                    "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
-                    "SessionRenew"      => $this->securityConfig->getSessionTimeout(),
-                    "Login"             => $userName,
-                    "ProfileInUse"      => $userProfile,
-                    "UserAgent"         => $this->userAgent,
-                    "UserAgentIP"       => $this->userAgentIP
-                ];
-
+                $this->authenticatedUser["Session"] = null;
+                $this->authenticatedUser["SessionHash"] = $sessionHash;
                 if (\AeonDigital\Tools\JSON::save(
-                        $this->pathToLocalData_LogFile_Session,
-                        $this->authenticatedUser["Session"]) === true)
+                    $this->pathToLocalData_File_User,
+                    $this->authenticatedUser) === true)
                 {
-                    $r = true;
-                    $this->securityStatus = SecurityStatus::Authorized;
+                    $this->authenticatedUser["Session"] = [
+                        "SessionHash"       => $sessionHash,
+                        "ApplicationName"   => $this->applicationName,
+                        "LoginDate"         => $this->now->format("Y-m-d H:i:s"),
+                        "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
+                        "SessionRenew"      => $this->securityConfig->getSessionTimeout(),
+                        "Login"             => $userName,
+                        "ProfileInUse"      => $userProfile,
+                        "UserAgent"         => $this->userAgent,
+                        "UserAgentIP"       => $this->userAgentIP,
+                        "GrantPermission"   => null
+                    ];
+
+                    if (\AeonDigital\Tools\JSON::save(
+                            $this->pathToLocalData_LogFile_Session,
+                            $this->authenticatedUser["Session"]) === true)
+                    {
+                        $r = true;
+                        $this->securityStatus = SecurityStatus::UserSessionAuthorized;
+                    }
+                }
+            }
+        }
+
+        return $r;
+    }
+    /**
+     * Concede um tipo especial de permissão para o usuário atualmente logado.
+     *
+     * @param       string $grantPermission
+     *              Permissão que será concedida a uma sessão autenticada
+     *
+     * @param       string $sessionHash
+     *              Sessão autenticada que receberá a permissão especial.
+     *
+     * @return      bool
+     */
+    protected function grantSpecialPermission(
+        string $grantPermission,
+        string $sessionHash
+    ) : bool {
+        $r = false;
+
+        if ($this->authenticatedUser !== null &&
+            $this->securityStatus = SecurityStatus::UserAccountWaitingAuthorization)
+        {
+            $pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
+            if (\file_exists($pathToLocalData_LogFile_Session) === true) {
+                $authenticatedSession = \AeonDigital\Tools\JSON::retrieve($pathToLocalData_LogFile_Session);
+                if ($authenticatedSession !== null) {
+                    $authenticatedSession["GrantPermission"] = $grantPermission;
+
+                    $r = \AeonDigital\Tools\JSON::save(
+                        $pathToLocalData_LogFile_Session,
+                        $authenticatedSession);
                 }
             }
         }
@@ -665,8 +701,7 @@ class NativeLocal extends MainSession
                 $this->checkUserAndSession();
 
                 if ($this->securityStatus === SecurityStatus::UserSessionAccepted) {
-                    $this->securityStatus = SecurityStatus::Authorized;
-                    $this->browseStatus = BrowseStatus::Authorized;
+                    $this->securityStatus = SecurityStatus::UserSessionAuthorized;
                     $this->checkRenewSession();
                 }
             }
