@@ -75,6 +75,7 @@ class SessionNativeTest extends TestCase
     protected function provideUserObject()
     {
         return [
+            "Id"            => 2,
             "Active"        => true,
             "RegisterDate"  => "2020-06-03 22:00:00",
             "Name"          => "Rianna Cantarelli",
@@ -173,10 +174,10 @@ class SessionNativeTest extends TestCase
         $this->assertEquals("NativeLocal", $obj->retrieveSessionType());
         $this->assertEquals($securityCookie, $obj->retrieveSecurityCookie());
         $this->assertEquals($pathToLocalData, $obj->retrievePathToLocalData());
-        $this->assertNull($obj->retrieveAuthenticatedSession());
-        $this->assertNull($obj->retrieveAuthenticatedUser());
-        $this->assertNull($obj->retrieveAuthenticatedUserProfile());
-        $this->assertNull($obj->retrieveAuthenticatedUserProfiles());
+        $this->assertNull($obj->retrieveSession());
+        $this->assertNull($obj->retrieveUser());
+        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
     }
 
@@ -357,5 +358,52 @@ class SessionNativeTest extends TestCase
                 "8f9d630ba6ffaa690277b4e804df57515e841cc7"
             )
         );
+    }
+
+
+    public function test_method_changeUserProfile()
+    {
+        $obj = $this->provideObject();
+        if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
+            unlink($this->pathToLocalData_LogFile_SuspectIP);
+        }
+        if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
+            unlink($this->pathToLocalData_LogFile_SuspectLogin);
+        }
+        $this->assertTrue($obj->executeLogin("rianna.aeon", sha1("senhateste")));
+
+
+
+        $obj = $this->provideObject(true);
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
+        $obj->authenticateUserAgentSession();
+        $this->assertEquals("UserSessionAuthorized", $obj->retrieveSecurityStatus());
+
+        $this->assertEquals("PROFILE02", $obj->retrieveUserProfile());
+        $this->assertTrue($obj->changeUserProfile("PROFILE01"));
+        $this->assertEquals("PROFILE01", $obj->retrieveUserProfile());
+    }
+
+
+    public function test_method_registerLogActivity()
+    {
+        $obj = $this->provideObject();
+        if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
+            unlink($this->pathToLocalData_LogFile_SuspectIP);
+        }
+        if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
+            unlink($this->pathToLocalData_LogFile_SuspectLogin);
+        }
+
+        $r = $obj->registerLogActivity(
+            "POST",
+            "http://aeondigital.com.br/test",
+            ["p1" => "v1", "p2" => "v2"],
+            "testController",
+            "testAction",
+            "actTest",
+            "obs"
+        );
+        $this->assertTrue($r);
     }
 }

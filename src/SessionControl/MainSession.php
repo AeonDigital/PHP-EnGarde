@@ -145,7 +145,7 @@ abstract class MainSession extends BObject implements iSession
      *
      * @return      ?array
      */
-    public function retrieveAuthenticatedSession() : ?array
+    public function retrieveSession() : ?array
     {
         return $this->authenticatedSession;
     }
@@ -165,7 +165,7 @@ abstract class MainSession extends BObject implements iSession
      *
      * @return      ?array
      */
-    public function retrieveAuthenticatedUser() : ?array
+    public function retrieveUser() : ?array
     {
         return $this->authenticatedUser;
     }
@@ -174,7 +174,7 @@ abstract class MainSession extends BObject implements iSession
      *
      * @return      ?string
      */
-    public function retrieveAuthenticatedUserProfile() : ?string
+    public function retrieveUserProfile() : ?string
     {
         return ($this->authenticatedUser === null) ? null : $this->authenticatedUser["ProfileInUse"];
     }
@@ -183,7 +183,7 @@ abstract class MainSession extends BObject implements iSession
      *
      * @return      ?array
      */
-    public function retrieveAuthenticatedUserProfiles() : ?array
+    public function retrieveUserProfiles() : ?array
     {
         return ($this->authenticatedUser === null) ? null : $this->authenticatedUser["Profiles"];
     }

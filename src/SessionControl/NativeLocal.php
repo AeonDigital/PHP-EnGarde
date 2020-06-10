@@ -230,26 +230,41 @@ class NativeLocal extends MainSession
                 }
                 else {
                     $profileInUse = null;
+                    $profileInUseActive = false;
                     $defaultProfile = null;
+                    $defaultProfileActive = false;
+
                     foreach ($authenticatedUser["Profiles"] as $row) {
                         if ($this->applicationName === $row["Application"]) {
-                            if ($row["Default"] === true) { $defaultProfile = $row; }
+                            if ($row["Default"] === true) {
+                                $defaultProfile = $row["Profile"];
+                                $defaultProfileActive = $row["Active"];
+                            }
                             if ($this->authenticatedSession !== null &&
                                 $this->authenticatedSession["ProfileInUse"] === $row["Profile"])
                             {
-                                $profileInUse = $row;
+                                $profileInUse = $row["Profile"];
+                                $profileInUseActive = $row["Active"];
                             }
                         }
                     }
-                    $authenticatedUser["ProfileInUse"] = (
-                        ($profileInUse === null) ? $defaultProfile : $profileInUse
-                    );
+
+                    $profileActive = false;
+                    if ($profileInUse === null) {
+                        $profileActive = $defaultProfileActive;
+                        $authenticatedUser["ProfileInUse"] = $defaultProfile;
+                    }
+                    else {
+                        $profileActive = $profileInUseActive;
+                        $authenticatedUser["ProfileInUse"] = $profileInUse;
+                    }
+
 
 
                     if ($authenticatedUser["ProfileInUse"] === null) {
                         $this->securityStatus = SecurityStatus::UserAccountDoesNotExistInApplication;
                     }
-                    else if ($authenticatedUser["ProfileInUse"]["Active"] === false) {
+                    else if ($profileActive === false) {
                         $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
                     }
                     else {
@@ -477,6 +492,7 @@ class NativeLocal extends MainSession
             \unlink($this->pathToLocalData_LogFile_Session);
             $this->authenticatedSession = null;
             $this->authenticatedUser = null;
+            $this->securityStatus = SecurityStatus::UserAgentUndefined;
             $r = true;
         }
         return $r;
@@ -592,7 +608,7 @@ class NativeLocal extends MainSession
             $this->securityStatus = SecurityStatus::UserSessionLoginFail;
 
             $userName       = $this->authenticatedUser["Login"];
-            $userProfile    = $this->authenticatedUser["ProfileInUse"]["Profile"];
+            $userProfile    = $this->authenticatedUser["ProfileInUse"];
             $userLoginDate  = $this->now->format("Y-m-d H:i:s");
             $sessionHash    = sha1($userName . $userProfile . $userLoginDate);
 
@@ -706,5 +722,105 @@ class NativeLocal extends MainSession
                 }
             }
         }
+    }
+    /**
+     * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
+     * na coleção de perfis disponíveis para este mesmo usuário.
+     *
+     * @return      ?array
+     */
+    public function changeUserProfile(string $profile) : bool
+    {
+        $r = false;
+
+        if ($this->authenticatedUser !== null &&
+            $this->authenticatedSession !== null &&
+            $this->securityStatus === SecurityStatus::UserSessionAuthorized)
+        {
+            foreach ($this->authenticatedUser["Profiles"] as $row) {
+                if ($this->applicationName === $row["Application"] &&
+                    $profile === $row["Profile"])
+                {
+                    $this->authenticatedUser["ProfileInUse"] = $row["Profile"];
+                    $this->authenticatedSession["ProfileInUse"] = $row["Profile"];
+
+                    $r = (  \AeonDigital\Tools\JSON::save(
+                                $this->pathToLocalData_File_User, $this->authenticatedUser) === true &&
+                            \AeonDigital\Tools\JSON::save(
+                                $this->pathToLocalData_LogFile_Session, $this->authenticatedSession) === true);
+                }
+            }
+        }
+
+        return $r;
+    }
+    /**
+     * Gera um registro de atividade para o usuário atual.
+     *
+     * @param       string $methodHTTP
+     *              Método HTTP evocado.
+     *
+     * @param       string $fullURL
+     *              URL completa evocada pelo UA.
+     *
+     * @param       ?array $postData
+     *              Dados que foram postados na requisição.
+     *
+     * @param       string $controller
+     *              Controller que foi acionado.
+     *
+     * @param       string $action
+     *              Nome da action que foi executada.
+     *
+     * @param       string $activity
+     *              Atividade executada.
+     *
+     * @param       string $obs
+     *              Observação.
+     *
+     * @return      bool
+     */
+    public function registerLogActivity(
+        string $methodHTTP,
+        string $fullURL,
+        ?array $postData,
+        string $controller,
+        string $action,
+        string $activity,
+        string $obs
+    ) : bool {
+        $r = false;
+
+        $userId = (
+            ($this->authenticatedUser === null) ?
+            $this->securityConfig->getAnonymousId() :
+            $this->authenticatedUser["Id"]
+        );
+
+        $logActivity = [
+            "CreatedAt"     => $this->now->format("Y-m-d H:i:s"),
+            "UserAgentIP"   => $this->userAgentIP,
+            "UserAgent"     => $this->userAgent,
+            "MethodHTTP"    => $methodHTTP,
+            "FullURL"       => $fullURL,
+            "PostData"      => \json_encode($postData),
+            "Application"   => $this->applicationName,
+            "Controller"    => $controller,
+            "Action"        => $action,
+            "Activity"      => $activity,
+            "Obs"           => $obs,
+            "UserId"        => $userId
+        ];
+
+
+        $fileLog = \mb_str_to_valid_filename(
+            \strtolower($this->now->format("Y-m-d H:i:s") . "_" . $this->userAgentIP . "_" . $methodHTTP)
+        ) . ".json";
+        $r = \AeonDigital\Tools\JSON::save(
+            $this->pathToLocalData_Log . DS . $fileLog,
+            $logActivity
+        );
+
+        return $r;
     }
 }

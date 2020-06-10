@@ -2,11 +2,11 @@
 	"SessionHash": "8f9d630ba6ffaa690277b4e804df57515e841cc7",
 	"ApplicationName": "site",
 	"LoginDate": "2020-06-08 01:00:00",
-	"SessionTimeOut": "2020-06-10 01:37:55",
+	"SessionTimeOut": "2020-06-10 12:37:16",
 	"SessionRenew": 40,
 	"Login": "rianna.aeon",
-	"ProfileInUse": "PROFILE02",
+	"ProfileInUse": "PROFILE01",
 	"UserAgent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko\/20100101 Firefox\/56.0",
 	"UserAgentIP": "200.200.100.50",
-	"GrantPermission": "specialPermission"
+	"GrantPermission": null
 }
