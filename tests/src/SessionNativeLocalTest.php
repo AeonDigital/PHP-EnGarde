@@ -110,15 +110,14 @@ class SessionNativeTest extends TestCase
     protected function provideSessionObject()
     {
         return [
+            "LoginDate"         => "2020-06-08 16:49:20",
 	        "SessionHash"       => "8f9d630ba6ffaa690277b4e804df57515e841cc7",
 	        "ApplicationName"   => "site",
-	        "LoginDate"         => "2020-06-08 16:49:20",
 	        "SessionTimeOut"    => "2020-06-08 17:29:20",
-	        "SessionRenew"      => true,
 	        "Login"             => "rianna.aeon",
-	        "ProfileInUse"      => "SUPERADMIN",
 	        "UserAgent"         => "UA",
             "UserAgentIP"       => "192.168.1.17",
+            "ProfileInUse"      => "SUPERADMIN",
             "GrantPermission"   => null
         ];
     }

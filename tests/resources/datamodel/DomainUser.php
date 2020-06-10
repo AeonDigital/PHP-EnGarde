@@ -70,11 +70,33 @@
             'allowNull' => false,
         ],
         [
+            'name' => 'Session',
+            'description' => 'Sessão do usuário que está autenticada para o domínio atual.',
+            'fkTableName' => 'DomainUserSession[]',
+            'fkDescription' => 'Usuário dono desta sessão',
+            'fkAllowNull' => false,
+            'fkOnDelete' => 'CASCADE'
+        ],
+        [
             'name' => 'Profiles',
             'description' => 'Coleção de Perfis deste usuário.',
             'fkTableName' => 'DomainUserProfile[]',
             'fkDescription' => 'Usuários em Perfis.',
             'fkLinkTable' => true,
+            'fkAllowNull' => false
+        ],
+        [
+            'name' => 'BlockedAccess',
+            'description' => 'Coleção de registros de bloqueio para este usuário.',
+            'fkTableName' => 'DomainUserBlockedAccess[]',
+            'fkDescription' => 'Usuário relacionado com este perfil.',
+            'fkAllowNull' => true
+        ],
+        [
+            'name' => 'RequestLog',
+            'description' => 'Coleção de logs das requisições deste usuário.',
+            'fkTableName' => 'DomainUserRequestLog[]',
+            'fkDescription' => 'Usuário deste log.',
             'fkAllowNull' => false
         ],
     ]

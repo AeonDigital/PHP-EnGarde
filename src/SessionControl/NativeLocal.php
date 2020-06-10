@@ -638,15 +638,14 @@ class NativeLocal extends MainSession
                     $this->authenticatedUser) === true)
                 {
                     $this->authenticatedUser["Session"] = [
+                        "LoginDate"         => $this->now->format("Y-m-d H:i:s"),
                         "SessionHash"       => $sessionHash,
                         "ApplicationName"   => $this->applicationName,
-                        "LoginDate"         => $this->now->format("Y-m-d H:i:s"),
                         "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
-                        "SessionRenew"      => $this->securityConfig->getSessionTimeout(),
                         "Login"             => $userName,
-                        "ProfileInUse"      => $userProfile,
                         "UserAgent"         => $this->userAgent,
                         "UserAgentIP"       => $this->userAgentIP,
+                        "ProfileInUse"      => $userProfile,
                         "GrantPermission"   => null
                     ];
 

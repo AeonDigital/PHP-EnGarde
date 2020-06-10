@@ -29,15 +29,14 @@
 	],
 	"ProfileInUse": "PROFILE01",
 	"Session": {
+		"LoginDate": "2020-06-08 01:00:00",
 		"SessionHash": "8f9d630ba6ffaa690277b4e804df57515e841cc7",
 		"ApplicationName": "site",
-		"LoginDate": "2020-06-08 01:00:00",
-		"SessionTimeOut": "2020-06-10 15:17:58",
-		"SessionRenew": 40,
+		"SessionTimeOut": "2020-06-10 17:30:55",
 		"Login": "rianna.aeon",
-		"ProfileInUse": "PROFILE02",
 		"UserAgent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko\/20100101 Firefox\/56.0",
 		"UserAgentIP": "200.200.100.50",
+		"ProfileInUse": "PROFILE02",
 		"GrantPermission": null
 	}
 }
