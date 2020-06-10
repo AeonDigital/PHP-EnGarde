@@ -8,7 +8,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 use AeonDigital\EnGarde\SessionControl\MainSession as MainSession;
 use AeonDigital\EnGarde\SessionControl\Enum\SecurityStatus as SecurityStatus;
 use AeonDigital\EnGarde\SessionControl\Enum\TypeOfActivity as TypeOfActivity;
-
+use AeonDigital\Interfaces\DAL\iDAL as iDAL;
 
 
 
@@ -54,6 +54,9 @@ class NativeDataBase extends MainSession
      *
      * @param       string $pathToLocalData
      *              Caminho completo até o diretório de dados da aplicação.
+     *
+     * @param       array $dbCredentials
+     *              Coleção de credenciais de acesso ao banco de dados.
      */
     public function __construct(
         \DateTime $now,
@@ -63,7 +66,8 @@ class NativeDataBase extends MainSession
         string $userAgentIP,
         iSecurity $securityConfig,
         iCookie $securityCookie,
-        string $pathToLocalData
+        string $pathToLocalData,
+        array $dbCredentials
     ) {
         parent::__construct(
             $now,
@@ -73,37 +77,11 @@ class NativeDataBase extends MainSession
             $userAgentIP,
             $securityConfig,
             $securityCookie,
-            $pathToLocalData
+            "",
+            $dbCredentials
         );
 
-
-        // Define os locais fisicos onde estão os dados de segurança da aplicação.
-        $this->pathToLocalData_Log      = $this->pathToLocalData . DS . "log";
-        $this->pathToLocalData_Users    = $this->pathToLocalData . DS . "users";
-        $this->pathToLocalData_Sessions = $this->pathToLocalData . DS . "sessions";
-
-
-        // Testa cada valor obrigatório
-        $this->mainCheckForInvalidArgumentException(
-            "pathToLocalData", $this->pathToLocalData_Log, [
-                ["validate"         => "is dir exists"]
-            ]
-        );
-        $this->mainCheckForInvalidArgumentException(
-            "pathToLocalData", $this->pathToLocalData_Users, [
-                ["validate"         => "is dir exists"]
-            ]
-        );
-        $this->mainCheckForInvalidArgumentException(
-            "pathToLocalData", $this->pathToLocalData_Sessions, [
-                ["validate"         => "is dir exists"]
-            ]
-        );
-
-
-        $fileSuspectIP = \str_replace([".", ":"], "_", $userAgentIP) . ".json";
-        $this->pathToLocalData_LogSuspect = $this->pathToLocalData_Log . DS . "suspect";
-        $this->pathToLocalData_LogFile_SuspectIP = $this->pathToLocalData_LogSuspect . DS . $fileSuspectIP;
+        $this->DAL = $securityConfig->getDAL();
     }
 
 

@@ -5,7 +5,7 @@ namespace AeonDigital\EnGarde\Config;
 
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
-use AeonDigital\Interfaces\DAL\iDAL;
+
 
 
 
@@ -652,110 +652,6 @@ final class Security extends BObject implements iSecurity
 
 
     /**
-     * Coleção de credenciais de acesso ao banco de dados.
-     *
-     * @var         array
-     */
-    private array $dbCredentials;
-    /**
-     * Retorna um array associativo contendo os nomes de perfils de usuário e
-     * respectivas credenciais de acesso ao banco de dados.
-     *
-     * @param       string $userProfile
-     *              Se definido, retornará exclusivamente os dados referentes
-     *              a este próprio perfil.
-     *              Se o perfil indicado não existir, deverá retornar ``[]``.
-     *
-     * @return      array
-     */
-    public function getDBCredentials(string $userProfile = "") : array
-    {
-        $r = [];
-        if ($userProfile === "") { $r = \array_merge($this->dbCredentials, []); }
-        elseif (\key_exists($userProfile, $this->dbCredentials) === true) {
-            $r = \array_merge($this->dbCredentials[$userProfile], []);
-        }
-        return $r;
-    }
-    /**
-     * Define a coleção de perfils de usuários e suas respectivas credenciais de acesso
-     * ao banco de dados.
-     *
-     * @param       array $dbCredentials
-     *              Coleção de credenciais de acesso ao banco de dados.
-     *
-     * @return      void
-     */
-    private function setDBCredentials(array $dbCredentials) : void
-    {
-        $this->mainCheckForInvalidArgumentException(
-            "dbCredentials", $dbCredentials,
-            [
-                [
-                    "conditions"    => "is array not empty",
-                    "validate"      => "is array assoc"
-                ],
-                [
-                    "conditions"    => "is array not empty",
-                    "validate"      => "foreach array child",
-                    "foreachChild"  => [
-                        [
-                            "validate"      => "has array assoc required keys",
-                            "requiredKeys"  => [
-                                "dbType" => null,
-                                "dbHost" => null,
-                                "dbName" => null,
-                                "dbUserName" => null,
-                                "dbUserName" => null
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        );
-        $this->dbCredentials = $dbCredentials;
-    }
-
-
-
-    /**
-     * Objeto de conexão com o banco de dados para o UA atual.
-     *
-     * @var         iDAL
-     */
-    private iDAL $DAL;
-    /**
-     * Retorna um objeto ``iDAL`` configurado com as credenciais correlacionadas
-     * ao atual perfil de usuário sendo usado pelo UA.
-     *
-     * @return      iDAL
-     */
-    public function getDAL() : iDAL
-    {
-        if (isset($this->DAL) === false) {
-            $dbCredentials = $this->getDBCredentials($this->getUserProfile());
-            $this->DAL = new \AeonDigital\DAL\DAL(
-                $dbCredentials["dbType"],
-                $dbCredentials["dbHost"],
-                $dbCredentials["dbName"],
-                $dbCredentials["dbUserName"],
-                $dbCredentials["dbUserName"],
-                ($dbCredentials["dbSSLCA"] ?? null),
-                ($dbCredentials["dbConnectionString"] ?? null)
-            );
-        }
-        return $this->DAL;
-    }
-
-
-
-
-
-
-
-
-
-    /**
      * Inicia uma instância que armazena as configurações de segurança para uma aplicação.
      *
      * @param       bool $isActive
@@ -807,9 +703,6 @@ final class Security extends BObject implements iSecurity
      * @param       array $deniedIPRanges
      *              Coleção de intervalos de Ips que devem ser bloqueados de acesso.
      *
-     * @param       array $dbCredentials
-     *              Coleção de informações de conexão com o banco de dados.
-     *
      * @throws      \InvalidArgumentException
      *              Caso seja definido um valor inválido.
      */
@@ -829,8 +722,7 @@ final class Security extends BObject implements iSecurity
         int $allowedFaultByLogin,
         int $loginBlockTimeout,
         array $allowedIPRanges,
-        array $deniedIPRanges,
-        array $dbCredentials
+        array $deniedIPRanges
     ) {
         $this->setIsActive($isActive);
         $this->setDataCookieName($dataCookieName);
@@ -848,7 +740,6 @@ final class Security extends BObject implements iSecurity
         $this->setLoginBlockTimeout($loginBlockTimeout);
         $this->setAllowedIPRanges($allowedIPRanges);
         $this->setDeniedIPRanges($deniedIPRanges);
-        $this->setDBCredentials($dbCredentials);
     }
 
 
@@ -883,8 +774,7 @@ final class Security extends BObject implements iSecurity
             "allowedFaultByLogin"   => 5,
             "loginBlockTimeout"     => 20,
             "allowedIPRanges"       => [],
-            "deniedIPRanges"        => [],
-            "dbCredentials"         => []
+            "deniedIPRanges"        => []
         ],
         $config);
 
@@ -904,8 +794,7 @@ final class Security extends BObject implements iSecurity
             $useValues["allowedFaultByLogin"],
             $useValues["loginBlockTimeout"],
             $useValues["allowedIPRanges"],
-            $useValues["deniedIPRanges"],
-            $useValues["dbCredentials"]
+            $useValues["deniedIPRanges"]
         );
     }
 }

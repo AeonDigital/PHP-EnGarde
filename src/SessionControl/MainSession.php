@@ -8,7 +8,7 @@ use AeonDigital\EnGarde\Interfaces\Engine\iSession as iSession;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
 use AeonDigital\EnGarde\SessionControl\Enum\SecurityStatus as SecurityStatus;
 use AeonDigital\Interfaces\Http\Data\iCookie as iCookie;
-
+use AeonDigital\Interfaces\DAL\iDAL as iDAL;
 
 
 
@@ -196,6 +196,23 @@ abstract class MainSession extends BObject implements iSession
 
 
 
+    /**
+     * Coleção de credenciais de acesso ao banco de dados.
+     *
+     * @var         array
+     */
+    protected array $dbCredentials;
+    /**
+     * Objeto de conexão com o banco de dados para o UA atual.
+     *
+     * @var         iDAL
+     */
+    protected iDAL $DAL;
+
+
+
+
+
 
 
 
@@ -228,6 +245,9 @@ abstract class MainSession extends BObject implements iSession
      *
      * @param       string $pathToLocalData
      *              Caminho completo até o diretório de dados da aplicação.
+     *
+     * @param       array $dbCredentials
+     *              Coleção de credenciais de acesso ao banco de dados.
      */
     public function __construct(
         \DateTime $now,
@@ -237,7 +257,8 @@ abstract class MainSession extends BObject implements iSession
         string $userAgentIP,
         iSecurity $securityConfig,
         iCookie $securityCookie,
-        string $pathToLocalData
+        string $pathToLocalData,
+        array $dbCredentials
     ) {
         $this->now              = $now;
         $this->environment      = $environment;
@@ -246,6 +267,7 @@ abstract class MainSession extends BObject implements iSession
         $this->userAgentIP      = $userAgentIP;
         $this->securityConfig   = $securityConfig;
         $this->securityCookie   = $securityCookie;
+        $this->dbCredentials    = $dbCredentials;
 
 
         $this->mainCheckForInvalidArgumentException(
@@ -257,5 +279,31 @@ abstract class MainSession extends BObject implements iSession
             ]
         );
         $this->pathToLocalData  = \to_system_path($pathToLocalData);
+    }
+
+
+
+
+    /**
+     * Retorna um objeto ``iDAL`` configurado com as credenciais correlacionadas
+     * ao atual perfil de usuário sendo usado pelo UA.
+     *
+     * @return      iDAL
+     */
+    public function getDAL() : iDAL
+    {
+        if (isset($this->DAL) === false) {
+            $dbCredentials = $this->dbCredentials[$this->getUserProfile()];
+            $this->DAL = new \AeonDigital\DAL\DAL(
+                $dbCredentials["dbType"],
+                $dbCredentials["dbHost"],
+                $dbCredentials["dbName"],
+                $dbCredentials["dbUserName"],
+                $dbCredentials["dbUserName"],
+                ($dbCredentials["dbSSLCA"] ?? null),
+                ($dbCredentials["dbConnectionString"] ?? null)
+            );
+        }
+        return $this->DAL;
     }
 }

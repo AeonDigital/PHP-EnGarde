@@ -67,7 +67,8 @@ class SessionNativeTest extends TestCase
             $defaultServerVariables["REMOTE_ADDR"],
             $securityConfig,
             $securityCookie,
-            $pathToLocalData
+            $pathToLocalData,
+            []
         );
     }
 
@@ -167,7 +168,8 @@ class SessionNativeTest extends TestCase
             $defaultServerVariables["REMOTE_ADDR"],
             $securityConfig,
             $securityCookie,
-            $pathToLocalData
+            $pathToLocalData,
+            []
         );
         $this->assertTrue(is_a($obj, NativeLocal::class));
         $this->assertEquals($securityCookie, $obj->retrieveSecurityCookie());

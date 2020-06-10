@@ -119,6 +119,9 @@ class NativeLocal extends MainSession
      *
      * @param       string $pathToLocalData
      *              Caminho completo até o diretório de dados da aplicação.
+     *
+     * @param       array $dbCredentials
+     *              Coleção de credenciais de acesso ao banco de dados.
      */
     public function __construct(
         \DateTime $now,
@@ -128,7 +131,8 @@ class NativeLocal extends MainSession
         string $userAgentIP,
         iSecurity $securityConfig,
         iCookie $securityCookie,
-        string $pathToLocalData
+        string $pathToLocalData,
+        array $dbCredentials
     ) {
         parent::__construct(
             $now,
@@ -138,7 +142,8 @@ class NativeLocal extends MainSession
             $userAgentIP,
             $securityConfig,
             $securityCookie,
-            $pathToLocalData
+            $pathToLocalData,
+            []
         );
 
 
@@ -653,8 +658,7 @@ class NativeLocal extends MainSession
                             $this->pathToLocalData_LogFile_Session,
                             $this->authenticatedUser["Session"]) === true)
                     {
-                        $r = true;
-                        $this->authenticateUserAgentSession();
+                        $r = $this->authenticateUserAgentSession();
                     }
                 }
             }
@@ -710,10 +714,11 @@ class NativeLocal extends MainSession
     /**
      * Verifica se o UA possui uma sessão válida para ser usada.
      *
-     * @return      void
+     * @return      bool
      */
-    public function authenticateUserAgentSession() : void
+    public function authenticateUserAgentSession() : bool
     {
+        $r = false;
         $this->loadAuthenticatedSession();
 
         if ($this->securityStatus === SecurityStatus::SessionValid) {
@@ -723,11 +728,13 @@ class NativeLocal extends MainSession
                 $this->checkIfAuthenticatedUserAndAuthenticatedSessionMatchs();
 
                 if ($this->securityStatus === SecurityStatus::UserSessionAccepted) {
+                    $r = true;
                     $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
                     $this->renewAuthenticatedSession();
                 }
             }
         }
+        return $r;
     }
     /**
      * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar

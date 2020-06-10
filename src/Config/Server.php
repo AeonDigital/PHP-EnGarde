@@ -1428,7 +1428,7 @@ final class Server extends BObject implements iServer
     {
         if (isset($this->securityConfig) === false && $config !== []) {
             // Seleciona o grupo de credenciais a serem utilizadas para este UA nesta aplicação.
-            $config["dbCredentials"] = ENV_DATABASE[$this->getEnvironmentType()][$this->getApplicationName()];
+            //$config["dbCre dentials"] = ENV_DATABASE[$this->getEnvironmentType()][$this->getApplicationName()];
 
 
             // Identifica o código de autenticação do UA, se houver

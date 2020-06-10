@@ -35,8 +35,7 @@ class ConfigSecurityTest extends TestCase
             $defaultSecurity["allowedFaultByLogin"],
             $defaultSecurity["loginBlockTimeout"],
             $defaultSecurity["allowedIPRanges"],
-            $defaultSecurity["deniedIPRanges"],
-            $defaultSecurity["dbCredentials"]
+            $defaultSecurity["deniedIPRanges"]
         );
         $this->assertTrue(is_a($obj, Security::class));
 
@@ -56,7 +55,6 @@ class ConfigSecurityTest extends TestCase
         $this->assertSame(20, $obj->getLoginBlockTimeout());
         $this->assertSame([], $obj->getAllowedIPRanges());
         $this->assertSame([], $obj->getDeniedIPRanges());
-        $this->assertSame([], $obj->getDBCredentials());
     }
 
 
