@@ -1,0 +1,9 @@
+{
+	"Activity": "MakeLogin",
+	"IP": "200.200.100.50",
+	"Login": "",
+	"Counter": 1,
+	"LastEventDateTime": "2020-06-08 01:00:00",
+	"Blocked": false,
+	"UnblockDate": null
+}

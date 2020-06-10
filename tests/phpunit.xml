@@ -36,7 +36,7 @@
 
             <file>src/RouterTest.php</file-->
 
-            <file>src/SessionLocalTest.php</file>
+            <file>src/SessionNativeTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

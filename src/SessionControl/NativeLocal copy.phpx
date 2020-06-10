@@ -3,31 +3,48 @@ declare (strict_types=1);
 
 namespace AeonDigital\EnGarde\SessionControl;
 
-use AeonDigital\BObject as BObject;
-use AeonDigital\EnGarde\Interfaces\Engine\iSession as iSession;
+use AeonDigital\EnGarde\SessionControl\MainSession as MainSession;
 use AeonDigital\EnGarde\SessionControl\Enum\LoginStatus as LoginStatus;
 use AeonDigital\EnGarde\SessionControl\Enum\BrowseStatus as BrowseStatus;
 use AeonDigital\EnGarde\SessionControl\Enum\TypeOfActivity as TypeOfActivity;
-use AeonDigital\Interfaces\Http\Data\iCookie as iCookie;
+
+
 
 
 
 /**
- * Implementa o controle de sessão para tipo "local".
+ * Implementa o controle de sessão para tipo "NativeLocal".
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-final class Local extends BObject implements iSession
+class NativeLocal extends MainSession
 {
-    use \AeonDigital\Traits\MainCheckArgumentException;
 
 
 
 
 
+    /**
+     * Cookie de segurança que armazena a identificação desta sessão.
+     *
+     * @var         iCookie
+     */
+    private iCookie $securityCookie;
+    /**
+     * Caminho completo até o diretório de dados da aplicação.
+     *
+     * @var         string
+     */
+    private string $pathToLocalData = "";
+    /**
+     * Informações da sessão atualmente carregada.
+     *
+     * @var         ?array
+     */
+    private ?array $sesionData = null;
     /**
      * Informações de um usuário.
      *
@@ -35,7 +52,25 @@ final class Local extends BObject implements iSession
      */
     private ?array $userData = null;
     /**
-     * Retorna os dados de um usuário que esteja carregado no momento.
+     * Status atual do login do UA.
+     *
+     * @var         string
+     */
+    private string $loginStatus = LoginStatus::Anonimous;
+    /**
+     * Status atual da navegação do UA.
+     *
+     * @var         string
+     */
+    private string $browseStatus = BrowseStatus::Unchecked;
+
+
+
+
+
+    /**
+     * Retorna os dados de um usuário que esteja carregado no momento em conjunto
+     * com sua respectiva sessão caso ela esteja válida e ativa.
      *
      * @return      ?array
      */
@@ -43,13 +78,6 @@ final class Local extends BObject implements iSession
     {
         return $this->userData;
     }
-
-
-
-    /**
-     * Status atual do login do UA.
-     */
-    private string $loginStatus = LoginStatus::Anonimous;
     /**
      * Retorna o status atual do login do UA.
      *
@@ -59,13 +87,6 @@ final class Local extends BObject implements iSession
     {
         return $this->loginStatus;
     }
-
-
-
-    /**
-     * Status atual da navegação do UA.
-     */
-    private string $browseStatus = BrowseStatus::Unchecked;
     /**
      * Retorna o status atual da navegação do UA.
      *
@@ -80,6 +101,11 @@ final class Local extends BObject implements iSession
 
 
 
+
+
+
+
+
     /**
      * array associativo contendo as informações de segurança
      * exigidas para identificar e autenticar um UA em uma requisição.
@@ -87,14 +113,14 @@ final class Local extends BObject implements iSession
      * Nesta implementação são esperadas as seguintes chaves:
      * ```
      * $arr = [
-     *  "IP"                    : (string)  IP do UA
-     *  "SecurityCookie         : (iCookie) Objeto ``iCookie`` para o cookie de segurança.
-     *  "PathToLocalData"       : (string)  Caminho completo até o diretório onde os dados da aplicação
-     *                                      estão armazenados.
      *  "Now"                   : (DateTime)Data e hora do recebimento da requisição.
      *  "Environment"           : (string)  Tipo de ambiente que a aplicação está sendo executada.
      *  "ApplicationName"       : (string)  Nome da aplicação.
      *  "UserAgent"             : (string)  User Agent que efetuou a requisição.
+     *  "UserAgentIP"           : (string)  IP do UA
+     *  "SecurityCookie         : (iCookie) Objeto ``iCookie`` para o cookie de segurança.
+     *  "PathToLocalData"       : (string)  Caminho completo até o diretório onde os dados da aplicação
+     *                                      estão armazenados.
      *  "SessionRenew"          : (bool)    Indica se a sessão é do tipo que se renova a cada requisição.
      *  "SessionTimeout"        : (int)     Tempo (em minutos) que cada sessão deve suportar de inatividade.
      *  "AllowedFaultByIP"      : (int)     Limite de falhas de login permitidas para um mesmo ``IP``.
@@ -105,12 +131,9 @@ final class Local extends BObject implements iSession
      * ```
      */
     private array $uaSecurityData = [];
-    /**
-     * Caminho completo até o diretório de dados da aplicação.
-     *
-     * @var         string
-     */
-    private string $pathToLocalData = "";
+
+
+
     /**
      * Caminho completo até o diretório que armazena os usuários da aplicação.
      *
@@ -158,12 +181,9 @@ final class Local extends BObject implements iSession
      * @var         string
      */
     private string $pathToLocalData_Session_UserName = "";
-    /**
-     * Cookie de segurança.
-     *
-     * @var         iCookie
-     */
-    private iCookie $securityCookie;
+
+
+
 
 
 
@@ -258,8 +278,6 @@ final class Local extends BObject implements iSession
         $fileIP = \str_replace([".", ":"], "_", $uaSecurityData["IP"]) . ".json";
         $this->pathToLocalData_LogSuspect = $this->pathToLocalData_Log . DS . "suspect";
         $this->pathToLocalData_LogFile_IP = $this->pathToLocalData_LogSuspect . DS . $fileIP;
-
-        if ($this->securityCookie->)
     }
 
 
@@ -292,14 +310,25 @@ final class Local extends BObject implements iSession
      * A partir do hash de autenticação da sessão do UA, carrega os dados da sessão caso ela
      * ainda esteja válida.
      *
-     * @param       string $sessionHash
-     *              Hash de autenticação da sessão do UA.
-     *
      * @return      bool
      */
-    public function loadSessionData(string $sessionHash) : bool
+    public function loadSessionData() : bool
     {
-        // Prosseguir daqui! <-------------------
+        $r = false;
+
+        $sessionHash = $this->securityCookie->getValue();
+        if ($sessionHash !== "") {
+            $this->pathToLocalData_Session_UserName = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
+            if (\file_exists($this->pathToLocalData_Session_UserName) === true) {
+
+                $this->sesionData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_Session_UserName);
+                if ($this->sesionData !== null) {
+
+                }
+            }
+        }
+
+        return $r;
     }
     /**
      * Carrega as informações do usuário de ``userName`` indicado.
@@ -585,9 +614,7 @@ final class Local extends BObject implements iSession
             $sessionHash    = sha1($userLogin . $userProfile . $userLoginDate);
 
             $this->securityCookie->setValue(
-                "userLogin=" . $userLogin .
-                "&profileInUse=" . $userProfile .
-                "&sessionHash=" . $sessionHash
+                "sessionHash=" . $sessionHash
             );
 
             $expiresDate = new \DateTime();
@@ -598,21 +625,19 @@ final class Local extends BObject implements iSession
             if ($this->uaSecurityData["Environment"] === "UTEST" ||
                 $this->securityCookie->defineCookie() === true)
             {
-                $fileUserSession = $userLogin . "_" . $sessionHash . ".json";
+                $fileUserSession = $sessionHash . ".json";
                 $this->pathToLocalData_Session_UserName = $this->pathToLocalData_Sessions . DS . $fileUserSession;
 
-                $this->CloseAuthenticatedSession();
-
                 $this->userData["Session"] = [
-                    "Hash"          => $sessionHash,
-                    "Application"   => $this->uaSecurityData["ApplicationName"],
-                    "LoginDate"     => $this->uaSecurityData["Now"]->format("Y-m-d H:i:s"),
-                    "TimeOut"       => $expiresDate->format("Y-m-d H:i:s"),
-                    "Renew"         => $this->uaSecurityData["SessionRenew"],
-                    "Login"         => $this->userData["Login"],
-                    "Profile"       => $this->userData["ProfileInUse"]["Profile"],
-                    "UserAgent"     => $this->uaSecurityData["UserAgent"],
-                    "IP"            => $this->uaSecurityData["IP"],
+                    "SessionHash"       => $sessionHash,
+                    "ApplicationName"   => $this->uaSecurityData["ApplicationName"],
+                    "LoginDate"         => $this->uaSecurityData["Now"]->format("Y-m-d H:i:s"),
+                    "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
+                    "SessionRenew"      => $this->uaSecurityData["SessionRenew"],
+                    "Login"             => $this->userData["Login"],
+                    "ProfileInUse"      => $this->userData["ProfileInUse"]["Profile"],
+                    "UserAgent"         => $this->uaSecurityData["UserAgent"],
+                    "IP"                => $this->uaSecurityData["IP"],
                 ];
 
                 if (\AeonDigital\Tools\JSON::save(

@@ -7,10 +7,11 @@
     "ShortLogin": "rianna.aeon",
     "Password": "31f88741c850331188d23e6e0067730e13c92809",
     "ContactEmail": "rianna.aeon@gmail.com",
+    "SessionHash": "aa0c3200c73a09b3f17baf8f3f81ed7a7dde967a",
     "Profiles": [
         {
             "Active": true,
-            "Profile": "ANONIMOUS",
+            "Profile": "PROFILE01",
             "Application": "site",
             "UseConnection": null,
             "Political": "B",
@@ -18,7 +19,7 @@
         },
         {
             "Active": true,
-            "Profile": "SUPERADMIN",
+            "Profile": "PROFILE02",
             "Application": "site",
             "UseConnection": null,
             "Political": "F",

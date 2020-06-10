@@ -354,11 +354,4 @@ class ConfigSecurityTest extends TestCase
         $this->assertFalse($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0000"));
         $this->assertTrue($obj->isAllowedIP("0000:0000:0000:0000:0000:0000:F000:0001"));
     }
-
-
-    /*public function test_executelogin()
-    {
-        global $defaultSecurity;
-        $obj = prov_instanceOf_EnGarde_Config_Security($defaultSecurity);
-    }*/
 }
