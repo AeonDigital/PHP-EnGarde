@@ -32,7 +32,7 @@ class SessionNativeTest extends TestCase
         global $defaultApplication;
         global $defaultSecurity;
 
-        $sessionHash = "8f9d630ba6ffaa690277b4e804df57515e841cc7";
+        $sessionHash = "bb2ea0c1cac4da36fbe4ffb38598335d7a33cf71";
 
         $securityConfig = prov_instanceOf_EnGarde_Config_Security($defaultSecurity);
         $securityCookie = new \AeonDigital\Http\Data\Cookie(
@@ -70,57 +70,6 @@ class SessionNativeTest extends TestCase
             $pathToLocalData,
             []
         );
-    }
-
-
-    protected function provideUserObject()
-    {
-        return [
-            "Id"            => 2,
-            "Active"        => true,
-            "RegisterDate"  => "2020-06-03 22:00:00",
-            "Name"          => "Rianna Cantarelli",
-            "Gender"        => "Transgender",
-            "Login"         => "rianna.aeon",
-            "ShortLogin"    => "rianna.aeon",
-            "Password"      => "31f88741c850331188d23e6e0067730e13c92809",
-            "ContactEmail"  => "rianna.aeon@gmail.com",
-            "SessionHash"   => "8f9d630ba6ffaa690277b4e804df57515e841cc7",
-            "Profiles" => [
-                [
-                    "Active"        => true,
-                    "Profile"       => "PROFILE01",
-                    "Application"   => "site",
-                    "UseConnection" =>  null,
-                    "Political"     => "B",
-                    "Default"       => false
-                ],
-                [
-                    "Active"        => true,
-                    "Profile"       => "PROFILE02",
-                    "Application"   => "site",
-                    "UseConnection" => null,
-                    "Political"     => "F",
-                    "Default"       => true
-                ]
-            ]
-        ];
-    }
-
-
-    protected function provideSessionObject()
-    {
-        return [
-            "LoginDate"         => "2020-06-08 16:49:20",
-	        "SessionHash"       => "8f9d630ba6ffaa690277b4e804df57515e841cc7",
-	        "ApplicationName"   => "site",
-	        "SessionTimeOut"    => "2020-06-08 17:29:20",
-	        "Login"             => "rianna.aeon",
-	        "UserAgent"         => "UA",
-            "UserAgentIP"       => "192.168.1.17",
-            "ProfileInUse"      => "SUPERADMIN",
-            "GrantPermission"   => null
-        ];
     }
 
 
@@ -184,9 +133,10 @@ class SessionNativeTest extends TestCase
 
 
 
-    public function test_method_executeLogin()
+    public function test_method_executeLogin_executeLogout()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
@@ -195,9 +145,32 @@ class SessionNativeTest extends TestCase
         }
 
 
-        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
+
         $r = $obj->executeLogin("rianna.aeon", sha1("senhateste"));
+
+        $authenticatedSession = \AeonDigital\Tools\JSON::retrieve(
+            $this->pathToLocalData_LogFile_Session
+        );
+        $authenticatedUser = \AeonDigital\Tools\JSON::retrieve(
+            $this->pathToLocalData_Users . DS . $authenticatedSession["DomainUser"] . ".json"
+        );
+
+        $this->assertEquals($authenticatedSession, $obj->retrieveSession());
+        $this->assertEquals($authenticatedUser, $obj->retrieveUser());
+        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertTrue(is_array($obj->retrieveUserProfiles()));
         $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
+        $this->assertTrue($r);
+
+
+        $this->assertTrue(file_exists($this->pathToLocalData_LogFile_Session));
+        $r = $obj->executeLogout();
+        $this->assertFalse(file_exists($this->pathToLocalData_LogFile_Session));
+        $this->assertNull($obj->retrieveSession());
+        $this->assertNull($obj->retrieveUser());
+        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfiles());
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
     }
 
@@ -205,6 +178,7 @@ class SessionNativeTest extends TestCase
     public function test_method_executeLogin_UserAccountUnexpectedPassword()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
@@ -212,8 +186,14 @@ class SessionNativeTest extends TestCase
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
 
-        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
+
+
         $r = $obj->executeLogin("rianna.aeon", sha1("senhaerrada"));
+
+        $this->assertNull($obj->retrieveSession());
+        $this->assertNull($obj->retrieveUser());
+        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAccountUnexpectedPassword", $obj->retrieveSecurityStatus());
         $this->assertFalse($r);
     }
@@ -222,6 +202,7 @@ class SessionNativeTest extends TestCase
     public function test_method_executeLogin_UserAccountHasBeenBlocked()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
@@ -229,7 +210,7 @@ class SessionNativeTest extends TestCase
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
 
-        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
+
 
         for ($i=0; $i<4; $i++) {
             $this->assertFalse($obj->executeLogin("rianna.aeon", sha1("senhaerrada")));
@@ -237,6 +218,7 @@ class SessionNativeTest extends TestCase
         }
         $this->assertFalse($obj->executeLogin("rianna.aeon", sha1("senhaerrada")));
         $this->assertEquals("UserAccountHasBeenBlocked", $obj->retrieveSecurityStatus());
+
         $this->assertFalse($obj->executeLogin("rianna.aeon", sha1("senhaerrada")));
         $this->assertEquals("UserAccountIsBlocked", $obj->retrieveSecurityStatus());
     }
@@ -245,12 +227,14 @@ class SessionNativeTest extends TestCase
     public function test_method_executeLogin_UserAccountDoesNotExist()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
         if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
+
 
 
         $suspect = $this->provideSuspectActivityObject();
@@ -289,49 +273,44 @@ class SessionNativeTest extends TestCase
 
 
 
-    public function test_method_executeLogout()
+
+    public function test_method_checkUserAgentSession()
     {
         $obj = $this->provideObject();
-        if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
-            unlink($this->pathToLocalData_LogFile_SuspectIP);
-        }
-        if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
-            unlink($this->pathToLocalData_LogFile_SuspectLogin);
-        }
-
-
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
-        $r = $obj->executeLogin("rianna.aeon", sha1("senhateste"));
-        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
-        $this->assertTrue($r);
-
-        $this->assertTrue(file_exists($this->pathToLocalData_LogFile_Session));
-        $r = $obj->executeLogout();
-        $this->assertFalse(file_exists($this->pathToLocalData_LogFile_Session));
-        $this->assertTrue($r);
-    }
-
-
-
-
-    public function test_method_authenticateUserAgentSession()
-    {
-        $obj = $this->provideObject();
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
         if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
+
+
+
         $this->assertTrue($obj->executeLogin("rianna.aeon", sha1("senhateste")));
 
 
 
         $obj = $this->provideObject(true);
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
-        $obj->authenticateUserAgentSession();
+        $r = $obj->checkUserAgentSession();
         $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
+
+        $authenticatedSession = \AeonDigital\Tools\JSON::retrieve(
+            $this->pathToLocalData_LogFile_Session
+        );
+        $authenticatedUser = \AeonDigital\Tools\JSON::retrieve(
+            $this->pathToLocalData_Users . DS . $authenticatedSession["DomainUser"] . ".json"
+        );
+
+        $this->assertEquals($authenticatedSession, $obj->retrieveSession());
+        $this->assertEquals($authenticatedUser, $obj->retrieveUser());
+        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertTrue(is_array($obj->retrieveUserProfiles()));
+        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
+        $this->assertTrue($r);
     }
+
 
 
 
@@ -339,14 +318,22 @@ class SessionNativeTest extends TestCase
     public function test_method_grantPermission()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
         if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
-        $this->assertTrue($obj->executeLogin("rianna.aeon", sha1("senhateste")));
 
+
+
+        $this->assertTrue($obj->executeLogin("rianna.aeon", sha1("senhateste")));
+        $authenticatedSession = \AeonDigital\Tools\JSON::retrieve(
+            $this->pathToLocalData_LogFile_Session
+        );
+        $this->assertNotNull($authenticatedSession);
+        $this->assertNull($authenticatedSession["GrantPermission"]);
 
 
         $obj = $this->provideObject();
@@ -355,45 +342,61 @@ class SessionNativeTest extends TestCase
                 "rianna.aeon",
                 sha1("senhateste"),
                 "specialPermission",
-                "8f9d630ba6ffaa690277b4e804df57515e841cc7"
+                "bb2ea0c1cac4da36fbe4ffb38598335d7a33cf71"
             )
         );
+
+        $authenticatedSession = \AeonDigital\Tools\JSON::retrieve(
+            $this->pathToLocalData_LogFile_Session
+        );
+        $this->assertNotNull($authenticatedSession);
+        $this->assertEquals("specialPermission", $authenticatedSession["GrantPermission"]);
     }
+
+
+
 
 
     public function test_method_changeUserProfile()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
         if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
+
+
+
         $this->assertTrue($obj->executeLogin("rianna.aeon", sha1("senhateste")));
 
 
 
-        $obj = $this->provideObject(true);
-        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
-        $obj->authenticateUserAgentSession();
-        $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
-
-        $this->assertEquals("PROFILE02", $obj->retrieveUserProfile());
-        $this->assertTrue($obj->changeUserProfile("PROFILE01"));
-        $this->assertEquals("PROFILE01", $obj->retrieveUserProfile());
+        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+        $this->assertTrue($obj->changeUserProfile("Administrador"));
+        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
     }
+
+
+
 
 
     public function test_method_registerLogActivity()
     {
         $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectIP);
         }
         if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
             unlink($this->pathToLocalData_LogFile_SuspectLogin);
         }
+
+
 
         $r = $obj->registerLogActivity(
             "POST",
@@ -402,7 +405,7 @@ class SessionNativeTest extends TestCase
             "testController",
             "testAction",
             "actTest",
-            "obs"
+            "note"
         );
         $this->assertTrue($r);
     }

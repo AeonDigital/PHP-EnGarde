@@ -161,7 +161,19 @@ abstract class MainSession extends BObject implements iSession
      */
     public function retrieveUserProfile() : ?string
     {
-        return ($this->authenticatedUser === null) ? null : $this->authenticatedUser["ProfileInUse"];
+        $r = null;
+        if ($this->authenticatedUser !== null) {
+            $default = null;
+            $selected = null;
+            foreach ($this->authenticatedUser["Profiles"] as $row) {
+                if ($row["ApplicationName"] === $this->applicationName) {
+                    if ($row["Default"] === true) { $default = $row["Name"]; }
+                    if ($row["Selected"] === true) { $selected = $row["Name"]; }
+                }
+            }
+            $r = $selected ?? $default;
+        }
+        return $r;
     }
     /**
      * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
@@ -208,6 +220,32 @@ abstract class MainSession extends BObject implements iSession
      * @var         iDAL
      */
     protected iDAL $DAL;
+    /**
+     * Retorna um objeto ``iDAL`` configurado com as credenciais correlacionadas
+     * ao atual perfil de usuário sendo usado pelo UA.
+     *
+     * @return      iDAL
+     */
+    public function getDAL() : iDAL
+    {
+        if (isset($this->DAL) === false) {
+            $userProfile = (($this->retrieveUserProfile() === null) ? "Anonymous" : $this->retrieveUserProfile());
+            if (\key_exists($userProfile, $this->dbCredentials) === true) {
+                $dbCredentials = $this->dbCredentials[$userProfile];
+
+                $this->DAL = new \AeonDigital\DAL\DAL(
+                    $dbCredentials["dbType"],
+                    $dbCredentials["dbHost"],
+                    $dbCredentials["dbName"],
+                    $dbCredentials["dbUserName"],
+                    $dbCredentials["dbUserPassword"],
+                    ($dbCredentials["dbSSLCA"] ?? null),
+                    ($dbCredentials["dbConnectionString"] ?? null)
+                );
+            }
+        }
+        return $this->DAL;
+    }
 
 
 
@@ -249,7 +287,7 @@ abstract class MainSession extends BObject implements iSession
      * @param       array $dbCredentials
      *              Coleção de credenciais de acesso ao banco de dados.
      */
-    public function __construct(
+    function __construct(
         \DateTime $now,
         string $environment,
         string $applicationName,
@@ -267,7 +305,15 @@ abstract class MainSession extends BObject implements iSession
         $this->userAgentIP      = $userAgentIP;
         $this->securityConfig   = $securityConfig;
         $this->securityCookie   = $securityCookie;
-        $this->dbCredentials    = $dbCredentials;
+
+        if ($dbCredentials !== [] &&
+            \key_exists($environment, $dbCredentials) === true &&
+            \key_exists($applicationName, $dbCredentials[$environment]) === true) {
+            $this->dbCredentials = $dbCredentials[$environment][$applicationName];
+        }
+        else {
+            $this->dbCredentials = [];
+        }
 
 
         $this->mainCheckForInvalidArgumentException(
@@ -279,31 +325,5 @@ abstract class MainSession extends BObject implements iSession
             ]
         );
         $this->pathToLocalData  = \to_system_path($pathToLocalData);
-    }
-
-
-
-
-    /**
-     * Retorna um objeto ``iDAL`` configurado com as credenciais correlacionadas
-     * ao atual perfil de usuário sendo usado pelo UA.
-     *
-     * @return      iDAL
-     */
-    public function getDAL() : iDAL
-    {
-        if (isset($this->DAL) === false) {
-            $dbCredentials = $this->dbCredentials[$this->getUserProfile()];
-            $this->DAL = new \AeonDigital\DAL\DAL(
-                $dbCredentials["dbType"],
-                $dbCredentials["dbHost"],
-                $dbCredentials["dbName"],
-                $dbCredentials["dbUserName"],
-                $dbCredentials["dbUserName"],
-                ($dbCredentials["dbSSLCA"] ?? null),
-                ($dbCredentials["dbConnectionString"] ?? null)
-            );
-        }
-        return $this->DAL;
     }
 }

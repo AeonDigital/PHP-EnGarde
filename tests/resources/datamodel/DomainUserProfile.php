@@ -38,7 +38,7 @@
             'name' => 'Name',
             'description' => 'Nome deste perfil de segurança.',
             'type' => 'String',
-            'length' => 32,
+            'length' => 64,
             'allowNull' => false,
             'allowEmpty' => false,
         ],

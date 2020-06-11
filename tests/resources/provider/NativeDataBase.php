@@ -7,11 +7,31 @@ $dirDataModels = $dirResources . DS . "datamodel";
 function provider_connection_credentials()
 {
     return [
-        "dbType"            => "mysql",
-        "dbHost"            => "localhost",
-        "dbName"            => "test",
-        "dbUserName"        => "root",
-        "dbUserPassword"    => "admin"
+        "UTEST" => [
+            "site" => [
+                "Anonymous" => [
+                    "dbType"            => "mysql",
+                    "dbHost"            => "localhost",
+                    "dbName"            => "test",
+                    "dbUserName"        => "root",
+                    "dbUserPassword"    => "admin"
+                ],
+                "Desenvolvedor" => [
+                    "dbType"            => "mysql",
+                    "dbHost"            => "localhost",
+                    "dbName"            => "test",
+                    "dbUserName"        => "root",
+                    "dbUserPassword"    => "admin"
+                ],
+                "Administrador" => [
+                    "dbType"            => "mysql",
+                    "dbHost"            => "localhost",
+                    "dbName"            => "test",
+                    "dbUserName"        => "root",
+                    "dbUserPassword"    => "admin"
+                ]
+            ]
+        ]
     ];
 }
 
@@ -22,7 +42,7 @@ function providerNDB_DAL()
     global $providerDAL;
 
     if ($providerDAL === null) {
-        $con = provider_connection_credentials();
+        $con = provider_connection_credentials()["UTEST"]["site"]["Desenvolvedor"];
         $providerDAL = new \AeonDigital\DAL\DAL(
             $con["dbType"],
             $con["dbHost"],

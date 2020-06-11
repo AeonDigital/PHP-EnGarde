@@ -123,7 +123,7 @@ class NativeLocal extends MainSession
      * @param       array $dbCredentials
      *              Coleção de credenciais de acesso ao banco de dados.
      */
-    public function __construct(
+    function __construct(
         \DateTime $now,
         string $environment,
         string $applicationName,
@@ -181,7 +181,7 @@ class NativeLocal extends MainSession
 
 
     /**
-     * Identifica se o IP do UA está liberado para uso na aplicação.
+     * Identifica se o IP do UA está liberado para uso no domínio.
      *
      * @return      void
      */
@@ -203,8 +203,6 @@ class NativeLocal extends MainSession
             }
         }
     }
-
-
 
 
 
@@ -233,42 +231,15 @@ class NativeLocal extends MainSession
                     $this->securityStatus = SecurityStatus::UserAccountDisabledForDomain;
                 }
                 else {
-                    $profileInUse = null;
-                    $profileInUseActive = false;
-                    $defaultProfile = null;
-                    $defaultProfileActive = false;
-
+                    $hasProfileForThisApplication = false;
                     foreach ($authenticatedUser["Profiles"] as $row) {
-                        if ($this->applicationName === $row["Application"]) {
-                            if ($row["Default"] === true) {
-                                $defaultProfile = $row["Profile"];
-                                $defaultProfileActive = $row["Active"];
-                            }
-                            if ($this->authenticatedSession !== null &&
-                                $this->authenticatedSession["ProfileInUse"] === $row["Profile"])
-                            {
-                                $profileInUse = $row["Profile"];
-                                $profileInUseActive = $row["Active"];
-                            }
+                        if ($this->applicationName === $row["ApplicationName"]) {
+                            $hasProfileForThisApplication = true;
                         }
                     }
 
-                    $profileActive = false;
-                    if ($profileInUse === null) {
-                        $profileActive = $defaultProfileActive;
-                        $authenticatedUser["ProfileInUse"] = $defaultProfile;
-                    }
-                    else {
-                        $profileActive = $profileInUseActive;
-                        $authenticatedUser["ProfileInUse"] = $profileInUse;
-                    }
 
-
-
-                    if ($authenticatedUser["ProfileInUse"] === null) {
-                        $this->securityStatus = SecurityStatus::UserAccountDoesNotExistInApplication;
-                    }
-                    else if ($profileActive === false) {
+                    if ($hasProfileForThisApplication === false) {
                         $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
                     }
                     else {
@@ -278,6 +249,86 @@ class NativeLocal extends MainSession
                 }
             }
         }
+    }
+
+
+
+    /**
+     * Verifica se o usuário carregado está bloqueado.
+     *
+     * @return      void
+     */
+    protected function checkIfAuthenticatedUserIsBlocked() : void
+    {
+        if ($this->authenticatedUser !== null) {
+            if(\file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
+                $loginSuspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectLogin);
+                if($loginSuspectData !== null && $loginSuspectData["Blocked"] === true) {
+                    $unblockDate = \DateTime::createFromFormat("Y-m-d H:i:s", $loginSuspectData["UnblockDate"]);
+
+                    if($unblockDate < $this->now) {
+                        \unlink($this->pathToLocalData_LogFile_SuspectLogin);
+                    }
+                    else {
+                        $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * Inicia os sets de segurança necessários para que uma
+     * sessão autenticada possa iniciar.
+     *
+     * @return      bool
+     *              Retornará ``true`` caso a ação tenha sido bem sucedida, ``false``
+     *              se houver alguma falha no processo.
+     */
+    protected function registerAuthenticatedSession() : bool
+    {
+        $r = false;
+
+        if ($this->authenticatedUser !== null &&
+            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
+        {
+            $this->securityStatus = SecurityStatus::UserSessionLoginFail;
+
+            $userName       = $this->authenticatedUser["Login"];
+            $userPassword   = $this->authenticatedUser["Password"];
+            $userLoginDate  = $this->now->format("Y-m-d H:i:s");
+            $sessionHash    = sha1($userName . $userPassword . $userLoginDate);
+
+
+            $expiresDate = new \DateTime();
+            $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
+            $this->securityCookie->setExpires($expiresDate);
+            $this->securityCookie->setValue($sessionHash);
+
+
+            if ($this->environment === "UTEST" ||
+                $this->securityCookie->defineCookie() === true)
+            {
+                $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
+                $authenticatedSession = [
+                    "RegisterDate"      => $this->now->format("Y-m-d H:i:s"),
+                    "SessionHash"       => $sessionHash,
+                    "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
+                    "UserAgent"         => $this->userAgent,
+                    "UserAgentIP"       => $this->userAgentIP,
+                    "GrantPermission"   => null,
+                    "DomainUser"        => $userName,
+                ];
+
+                $r = (\AeonDigital\Tools\JSON::save(
+                        $this->pathToLocalData_LogFile_Session,
+                        $authenticatedSession) === true);
+            }
+        }
+
+        return $r;
     }
 
 
@@ -312,9 +363,6 @@ class NativeLocal extends MainSession
                     elseif ($authenticatedSession["UserAgent"] !== $this->userAgent) {
                         $this->securityStatus = SecurityStatus::SessionUnespectedUserAgent;
                     }
-                    elseif ($authenticatedSession["ApplicationName"] !== $this->applicationName) {
-                        $this->securityStatus = SecurityStatus::SessionUnespectedApplication;
-                    }
                     else {
                         $sessionTimeOut = new \DateTime($authenticatedSession["SessionTimeOut"]);
 
@@ -334,55 +382,6 @@ class NativeLocal extends MainSession
 
 
     /**
-     * Verifica se o usuário carregado está bloqueado.
-     *
-     * @return      void
-     */
-    protected function checkIfAuthenticatedUserIsBloqued() : void
-    {
-        if ($this->authenticatedUser !== null) {
-            if(\file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
-                $loginSuspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectLogin);
-
-                if($loginSuspectData !== null && $loginSuspectData["Blocked"] === true) {
-                    $unblockDate = \DateTime::createFromFormat("Y-m-d H:i:s", $loginSuspectData["UnblockDate"]);
-
-                    if($unblockDate < $this->now) {
-                        \unlink($this->pathToLocalData_LogFile_SuspectLogin);
-                    }
-                    else {
-                        $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
-                    }
-                }
-            }
-        }
-    }
-
-
-
-    /**
-     * Verifica se o usuário e sessão atualmente carregados possuem uma associação explicita
-     * um com o outro.
-     *
-     * @return      void
-     */
-    protected function checkIfAuthenticatedUserAndAuthenticatedSessionMatchs() : void
-    {
-        $this->securityStatus = SecurityStatus::UserSessionUnchecked;
-        if ($this->authenticatedUser !== null && $this->authenticatedSession !== null) {
-            if ($this->authenticatedUser["SessionHash"] !== $this->authenticatedSession["SessionHash"]) {
-                $this->securityStatus = SecurityStatus::UserSessionUnespected;
-            }
-            else {
-                $this->authenticatedUser["Session"] = $this->authenticatedSession;
-                $this->securityStatus = SecurityStatus::UserSessionAccepted;
-            }
-        }
-    }
-
-
-
-    /**
      * Renova a sessão carregada se tal configuração dever ser usada.
      *
      * @return      void
@@ -391,19 +390,15 @@ class NativeLocal extends MainSession
     {
         if ($this->authenticatedUser !== null &&
             $this->authenticatedSession !== null &&
-            $this->authenticatedUser["Session"] === $this->authenticatedSession &&
             $this->securityConfig->getIsSessionRenew() === true)
         {
             $renewUntil = new \DateTime();
             $renewUntil->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
 
             $this->authenticatedSession["SessionTimeOut"] = $renewUntil->format("Y-m-d H:i:s");
-            if (\AeonDigital\Tools\JSON::save(
+            \AeonDigital\Tools\JSON::save(
                 $this->pathToLocalData_LogFile_Session,
-                $this->authenticatedSession) === true)
-            {
-                $this->authenticatedUser["Session"] = $this->authenticatedSession;
-            }
+                $this->authenticatedSession);
         }
     }
 
@@ -459,7 +454,7 @@ class NativeLocal extends MainSession
             }
             else {
                 if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
-                    $this->checkIfAuthenticatedUserIsBloqued();
+                    $this->checkIfAuthenticatedUserIsBlocked();
 
                     if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
                         if ($this->authenticatedUser["Password"] !== $userPassword) {
@@ -476,7 +471,9 @@ class NativeLocal extends MainSession
                             $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession;
 
                             if ($grantPermission === "") {
-                                $r = $this->inityAuthenticatedSession();
+                                if ($this->registerAuthenticatedSession() === true) {
+                                    $r = $this->checkUserAgentSession();
+                                }
                             }
                             else {
                                 $r = $this->grantSpecialPermission($grantPermission, $sessionHash);
@@ -487,6 +484,44 @@ class NativeLocal extends MainSession
             }
         }
 
+
+        if ($r === false) {
+            $this->authenticatedUser = null;
+            $this->authenticatedSession = null;
+        }
+
+        return $r;
+    }
+    /**
+     * Verifica se o UA possui uma sessão válida para ser usada.
+     *
+     * @return      bool
+     */
+    public function checkUserAgentSession() : bool
+    {
+        $r = false;
+        $this->loadAuthenticatedSession();
+
+        if ($this->securityStatus === SecurityStatus::SessionValid) {
+            $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
+
+            if ($this->authenticatedUser === null) {
+                $this->loadAuthenticatedUser($this->authenticatedSession["DomainUser"]);
+            }
+
+            if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
+                $this->securityStatus = SecurityStatus::UserSessionUnchecked;
+
+                if ($this->authenticatedSession["DomainUser"] !== $this->authenticatedUser["Login"]) {
+                    $this->securityStatus = SecurityStatus::UserSessionUnespected;
+                }
+                else {
+                    $r = true;
+                    $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
+                    $this->renewAuthenticatedSession();
+                }
+            }
+        }
         return $r;
     }
     /**
@@ -501,11 +536,12 @@ class NativeLocal extends MainSession
             $this->authenticatedSession !== null &&
             \file_exists($this->pathToLocalData_LogFile_Session) === true)
         {
-            \unlink($this->pathToLocalData_LogFile_Session);
-            $this->authenticatedSession = null;
-            $this->authenticatedUser = null;
-            $this->securityStatus = SecurityStatus::UserAgentUndefined;
-            $r = true;
+            if (\unlink($this->pathToLocalData_LogFile_Session) === true) {
+                $r = true;
+                $this->authenticatedUser = null;
+                $this->authenticatedSession = null;
+                $this->securityStatus = SecurityStatus::UserAgentUndefined;
+            }
         }
         return $r;
     }
@@ -603,70 +639,6 @@ class NativeLocal extends MainSession
         }
     }
     /**
-     * Inicia os sets de segurança necessários para que uma
-     * sessão autenticada possa iniciar.
-     *
-     * @return      bool
-     *              Retornará ``true`` caso a ação tenha sido bem sucedida, ``false``
-     *              se houver alguma falha no processo.
-     */
-    protected function inityAuthenticatedSession() : bool
-    {
-        $r = false;
-
-        if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
-        {
-            $this->securityStatus = SecurityStatus::UserSessionLoginFail;
-
-            $userName       = $this->authenticatedUser["Login"];
-            $userProfile    = $this->authenticatedUser["ProfileInUse"];
-            $userLoginDate  = $this->now->format("Y-m-d H:i:s");
-            $sessionHash    = sha1($userName . $userProfile . $userLoginDate);
-
-
-            $expiresDate = new \DateTime();
-            $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
-            $this->securityCookie->setExpires($expiresDate);
-            $this->securityCookie->setValue($sessionHash);
-
-
-            if ($this->environment === "UTEST" ||
-                $this->securityCookie->defineCookie() === true)
-            {
-                $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
-
-                $this->authenticatedUser["Session"] = null;
-                $this->authenticatedUser["SessionHash"] = $sessionHash;
-                if (\AeonDigital\Tools\JSON::save(
-                    $this->pathToLocalData_File_User,
-                    $this->authenticatedUser) === true)
-                {
-                    $this->authenticatedUser["Session"] = [
-                        "LoginDate"         => $this->now->format("Y-m-d H:i:s"),
-                        "SessionHash"       => $sessionHash,
-                        "ApplicationName"   => $this->applicationName,
-                        "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
-                        "Login"             => $userName,
-                        "UserAgent"         => $this->userAgent,
-                        "UserAgentIP"       => $this->userAgentIP,
-                        "ProfileInUse"      => $userProfile,
-                        "GrantPermission"   => null
-                    ];
-
-                    if (\AeonDigital\Tools\JSON::save(
-                            $this->pathToLocalData_LogFile_Session,
-                            $this->authenticatedUser["Session"]) === true)
-                    {
-                        $r = $this->authenticateUserAgentSession();
-                    }
-                }
-            }
-        }
-
-        return $r;
-    }
-    /**
      * Concede um tipo especial de permissão para o usuário atualmente logado.
      *
      * @param       string $grantPermission
@@ -683,19 +655,16 @@ class NativeLocal extends MainSession
     ) : bool {
         $r = false;
 
-        if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
-        {
-            $pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
-            if (\file_exists($pathToLocalData_LogFile_Session) === true) {
-                $authenticatedSession = \AeonDigital\Tools\JSON::retrieve($pathToLocalData_LogFile_Session);
-                if ($authenticatedSession !== null) {
-                    $authenticatedSession["GrantPermission"] = $grantPermission;
+        $pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
+        if (\file_exists($pathToLocalData_LogFile_Session) === true) {
+            $authenticatedSession = \AeonDigital\Tools\JSON::retrieve($pathToLocalData_LogFile_Session);
 
-                    $r = \AeonDigital\Tools\JSON::save(
-                        $pathToLocalData_LogFile_Session,
-                        $authenticatedSession);
-                }
+            if ($authenticatedSession !== null) {
+                $authenticatedSession["GrantPermission"] = $grantPermission;
+
+                $r = \AeonDigital\Tools\JSON::save(
+                    $pathToLocalData_LogFile_Session,
+                    $authenticatedSession);
             }
         }
 
@@ -711,31 +680,6 @@ class NativeLocal extends MainSession
 
 
 
-    /**
-     * Verifica se o UA possui uma sessão válida para ser usada.
-     *
-     * @return      bool
-     */
-    public function authenticateUserAgentSession() : bool
-    {
-        $r = false;
-        $this->loadAuthenticatedSession();
-
-        if ($this->securityStatus === SecurityStatus::SessionValid) {
-            $this->loadAuthenticatedUser($this->authenticatedSession["Login"]);
-
-            if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
-                $this->checkIfAuthenticatedUserAndAuthenticatedSessionMatchs();
-
-                if ($this->securityStatus === SecurityStatus::UserSessionAccepted) {
-                    $r = true;
-                    $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
-                    $this->renewAuthenticatedSession();
-                }
-            }
-        }
-        return $r;
-    }
     /**
      * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
      * na coleção de perfis disponíveis para este mesmo usuário.
@@ -746,23 +690,16 @@ class NativeLocal extends MainSession
     {
         $r = false;
 
-        if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null &&
-            $this->securityStatus === SecurityStatus::UserSessionAuthenticated)
+        if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated)
         {
-            foreach ($this->authenticatedUser["Profiles"] as $row) {
-                if ($this->applicationName === $row["Application"] &&
-                    $profile === $row["Profile"])
-                {
-                    $this->authenticatedUser["ProfileInUse"] = $row["Profile"];
-                    $this->authenticatedSession["ProfileInUse"] = $row["Profile"];
-
-                    $r = (  \AeonDigital\Tools\JSON::save(
-                                $this->pathToLocalData_File_User, $this->authenticatedUser) === true &&
-                            \AeonDigital\Tools\JSON::save(
-                                $this->pathToLocalData_LogFile_Session, $this->authenticatedSession) === true);
+            foreach ($this->authenticatedUser["Profiles"] as $i => $row) {
+                $this->authenticatedUser["Profiles"][$i]["Selected"] = false;
+                if ($this->applicationName === $row["ApplicationName"] && $profile === $row["Name"]) {
+                    $this->authenticatedUser["Profiles"][$i]["Selected"] = true;
                 }
             }
+
+            $r = \AeonDigital\Tools\JSON::save($this->pathToLocalData_File_User, $this->authenticatedUser);
         }
 
         return $r;
@@ -788,7 +725,7 @@ class NativeLocal extends MainSession
      * @param       string $activity
      *              Atividade executada.
      *
-     * @param       string $obs
+     * @param       string $note
      *              Observação.
      *
      * @return      bool
@@ -800,7 +737,7 @@ class NativeLocal extends MainSession
         string $controller,
         string $action,
         string $activity,
-        string $obs
+        string $note
     ) : bool {
         $r = false;
 
@@ -821,13 +758,15 @@ class NativeLocal extends MainSession
             "Controller"    => $controller,
             "Action"        => $action,
             "Activity"      => $activity,
-            "Obs"           => $obs,
+            "Note"          => $note,
             "UserId"        => $userId
         ];
 
 
         $fileLog = \mb_str_to_valid_filename(
-            \strtolower($this->now->format("Y-m-d H:i:s") . "_" . $this->userAgentIP . "_" . $methodHTTP)
+            \strtolower(
+                $this->now->format("Y-m-d H:i:s") . "_" . $this->userAgentIP . "_" . $methodHTTP
+            )
         ) . ".json";
         $r = \AeonDigital\Tools\JSON::save(
             $this->pathToLocalData_Log . DS . $fileLog,

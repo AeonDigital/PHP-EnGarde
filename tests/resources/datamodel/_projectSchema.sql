@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-10-17-38-47
+ * Generated in 2020-06-10-19-52-03
 */
 
 /*--INI CREATE TABLE--*/
@@ -38,7 +38,7 @@ CREATE TABLE DomainUserProfile (
     Active TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indica se este perfil de segurança está ativo ou não.', 
     RegisterDate DATETIME NOT NULL DEFAULT NOW() COMMENT 'Data e hora da criação deste registro.', 
     ApplicationName VARCHAR(32) NOT NULL COMMENT 'Nome da aplicação para qual este perfil de segurança é utilizado.', 
-    Name VARCHAR(32) NOT NULL COMMENT 'Nome deste perfil de segurança.', 
+    Name VARCHAR(64) NOT NULL COMMENT 'Nome deste perfil de segurança.', 
     Description VARCHAR(255) NOT NULL COMMENT 'Descrição deste grupo de segurança.', 
     PRIMARY KEY (Id)
 ) COMMENT 'Define um perfil de segurança para um conjunto de usuários';
@@ -131,5 +131,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-10-17-38-47
+ * Generated in 2020-06-10-19-52-03
 */

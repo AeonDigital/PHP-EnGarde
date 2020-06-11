@@ -9,6 +9,6 @@
 	"Controller": "testController",
 	"Action": "testAction",
 	"Activity": "actTest",
-	"Obs": "obs",
+	"Note": "note",
 	"UserId": 1
 }

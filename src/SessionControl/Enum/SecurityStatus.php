@@ -66,12 +66,6 @@ class SecurityStatus
      */
 	const SessionUnespectedUserAgent = "SessionUnespectedUserAgent";
     /**
-     * Aplicação indicada não é compativel com o valor armazenado em sua sessão.
-     *
-     * @var         string
-     */
-	const SessionUnespectedApplication = "SessionUnespectedApplication";
-    /**
      * Sessão do UA expirou.
      *
      * @var         string
@@ -106,12 +100,6 @@ class SecurityStatus
      * @var         string
      */
 	const UserAccountDisabledForDomain = "UserAccountDisabledForDomain";
-    /**
-     * Conta de usuário não existe para a aplicação alvo.
-     *
-     * @var         string
-     */
-	const UserAccountDoesNotExistInApplication = "UserAccountDoesNotExistInApplication";
     /**
      * Conta do usuário está desabilitada dentro da aplicação alvo.
      *

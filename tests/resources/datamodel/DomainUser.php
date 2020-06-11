@@ -90,7 +90,7 @@
             'description' => 'Coleção de registros de bloqueio para este usuário.',
             'fkTableName' => 'DomainUserBlockedAccess[]',
             'fkDescription' => 'Usuário relacionado com este perfil.',
-            'fkAllowNull' => true
+            'fkAllowNull' => false
         ],
         [
             'name' => 'RequestLog',

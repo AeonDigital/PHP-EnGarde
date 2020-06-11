@@ -58,7 +58,7 @@ class NativeDataBase extends MainSession
      * @param       array $dbCredentials
      *              Coleção de credenciais de acesso ao banco de dados.
      */
-    public function __construct(
+    function __construct(
         \DateTime $now,
         string $environment,
         string $applicationName,
@@ -80,8 +80,6 @@ class NativeDataBase extends MainSession
             "",
             $dbCredentials
         );
-
-        $this->DAL = $securityConfig->getDAL();
     }
 
 
@@ -89,7 +87,7 @@ class NativeDataBase extends MainSession
 
 
     /**
-     * Identifica se o IP do UA está liberado para uso na aplicação.
+     * Identifica se o IP do UA está liberado para uso no domínio.
      *
      * @return      void
      */
@@ -97,18 +95,23 @@ class NativeDataBase extends MainSession
     {
         $this->securityStatus = SecurityStatus::UserAgentIPValid;
 
-        if(\file_exists($this->pathToLocalData_LogFile_SuspectIP)) {
-            $suspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectIP);
+        $strSQL = " SELECT
+                        COUNT(Id) as count
+                    FROM
+                        DomainUserBlockedAccess
+                    WHERE
+                        UserAgentIP=:UserAgentIP AND
+                        BlockTimeOut>=:BlockTimeOut AND
+                        DomainUser_Id=:DomainUser_Id;";
 
-            if($suspectData["Blocked"] === true) {
-                $unblockDate = \DateTime::createFromFormat("Y-m-d H:i:s", $suspectData["UnblockDate"]);
-                if($unblockDate < $this->now) {
-                    \unlink($this->pathToLocalData_LogFile_SuspectIP);
-                }
-                else {
-                    $this->securityStatus = SecurityStatus::UserAgentIPBlocked;
-                }
-            }
+        $parans = [
+            "UserAgentIP"   => $this->userAgentIP,
+            "BlockTimeOut"  => $this->now,
+            "DomainUser_Id" => $this->securityConfig->getAnonymousId()
+        ];
+
+        if ($this->DAL->getCountOf($strSQL, $parans) >= 1) {
+            $this->securityStatus = SecurityStatus::UserAgentIPBlocked;
         }
     }
 
@@ -127,62 +130,82 @@ class NativeDataBase extends MainSession
     protected function loadAuthenticatedUser(string $userName) : void
     {
         $this->securityStatus = SecurityStatus::UserAccountDoesNotExist;
-        $fileUserLogin = \mb_str_to_valid_filename(\strtolower($userName)) . ".json";
-        $this->pathToLocalData_File_User = $this->pathToLocalData_Users . DS . $fileUserLogin;
-        $this->pathToLocalData_LogFile_SuspectLogin = $this->pathToLocalData_LogSuspect . DS . $fileUserLogin;
 
+        $strSQL = " SELECT
+                        secdu.*,
+                        secdup.Id as secdup_Id,
+                        secdup.Active as secdup_Active,
+                        secdup.ApplicationName as secdup_ApplicationName,
+                        secdup.Name as secdup_Name,
+                        secdup.Description as secdup_Description,
+                        dupdu.DefaultProfile as secdup_DefaultProfile
+                    FROM
+                        DomainUser secdu
+                        INNER JOIN secdup_to_secdu dupdu ON dupdu.DomainUser_Id=secdu.Id
+                        INNER JOIN DomainUserProfile secdup ON secdup.Id=dupdu.DomainUserProfile_Id
+                    WHERE
+                        secdu.Login=:Login OR
+                        secdu.ShortLogin=:ShortLogin;";
 
-        if (\file_exists($this->pathToLocalData_File_User) === true) {
+        $parans = [
+            "Login" => $userName,
+            "ShortLogin" => $userName
+        ];
+
+        $dtUser = $this->DAL->getDataTable($strSQL, $parans);
+        if ($dtUser !== null) {
             $this->securityStatus = SecurityStatus::UserAccountUnchecked;
-            $authenticatedUser = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_File_User);
 
-            if ($authenticatedUser !== null) {
-                if ($authenticatedUser["Active"] === false) {
-                    $this->securityStatus = SecurityStatus::UserAccountDisabledForDomain;
+
+            $user = [
+                "Id"            => (int)$dtUser[0]["Id"],
+                "Active"        => (bool)$dtUser[0]["Active"],
+                "RegisterDate"  => new \DateTime($dtUser[0]["RegisterDate"]),
+                "Name"          => $dtUser[0]["Name"],
+                "Gender"        => $dtUser[0]["Gender"],
+                "Login"         => $dtUser[0]["Login"],
+                "ShortLogin"    => $dtUser[0]["ShortLogin"],
+                "ProfileInUse"  => null,
+                "Profiles"      => [],
+                "Session"       => null
+            ];
+
+
+            $profileActive = null;
+            foreach ($dtUser as $row) {
+                $prof = [
+                    "Id"                => (int)$row["secdup_Id"],
+                    "Active"            => (bool)$row["secdup_Active"],
+                    "ApplicationName"   => $row["secdup_ApplicationName"],
+                    "Name"              => $row["secdup_Name"],
+                    "Description"       => $row["secdup_Description"],
+                    "DefaultProfile"    => (bool)$row["secdup_DefaultProfile"],
+                ];
+
+                if ($prof["ApplicationName"] === $this->applicationName &&
+                    $prof["DefaultProfile"] === true)
+                {
+                    $profileActive = $prof;
+                    $user["ProfileInUse"] = $prof["Name"];
+                }
+                $user["Profiles"][] = $prof;
+            }
+
+
+
+            if ($user["Active"] === false) {
+                $this->securityStatus = SecurityStatus::UserAccountDisabledForDomain;
+            }
+            else {
+                if ($user["ProfileInUse"] === null) {
+                    $this->securityStatus = SecurityStatus::UserAccountDoesNotExistInApplication; // !!
+                }
+                else if ($profileActive["Active"] === false) {
+                    $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
                 }
                 else {
-                    $profileInUse = null;
-                    $profileInUseActive = false;
-                    $defaultProfile = null;
-                    $defaultProfileActive = false;
-
-                    foreach ($authenticatedUser["Profiles"] as $row) {
-                        if ($this->applicationName === $row["Application"]) {
-                            if ($row["Default"] === true) {
-                                $defaultProfile = $row["Profile"];
-                                $defaultProfileActive = $row["Active"];
-                            }
-                            if ($this->authenticatedSession !== null &&
-                                $this->authenticatedSession["ProfileInUse"] === $row["Profile"])
-                            {
-                                $profileInUse = $row["Profile"];
-                                $profileInUseActive = $row["Active"];
-                            }
-                        }
-                    }
-
-                    $profileActive = false;
-                    if ($profileInUse === null) {
-                        $profileActive = $defaultProfileActive;
-                        $authenticatedUser["ProfileInUse"] = $defaultProfile;
-                    }
-                    else {
-                        $profileActive = $profileInUseActive;
-                        $authenticatedUser["ProfileInUse"] = $profileInUse;
-                    }
-
-
-
-                    if ($authenticatedUser["ProfileInUse"] === null) {
-                        $this->securityStatus = SecurityStatus::UserAccountDoesNotExistInApplication;
-                    }
-                    else if ($profileActive === false) {
-                        $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
-                    }
-                    else {
-                        $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
-                        $this->authenticatedUser = $authenticatedUser;
-                    }
+                    $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
+                    $this->authenticatedUser = $user;
                 }
             }
         }
@@ -205,34 +228,38 @@ class NativeDataBase extends MainSession
 
         if ($sessionHash !== "") {
             $this->securityStatus = SecurityStatus::SessionUnchecked;
-            $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
 
-            if (\file_exists($this->pathToLocalData_LogFile_Session) === true) {
-                $authenticatedSession = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_Session);
+            $strSQL = " SELECT
+                            *
+                        FROM
+                            DomainUserSession
+                        WHERE
+                            SessionHash=:SessionHash;";
 
-                if ($authenticatedSession === null) {
-                    $this->securityStatus = SecurityStatus::SessionInvalid;
+            $parans = [
+                "SessionHash" => $sessionHash
+            ];
+
+            $dtSession = $this->DAL->getDataRow($strSQL, $parans);
+            if ($dtSession === null) {
+                $this->securityStatus = SecurityStatus::SessionInvalid;
+            }
+            else {
+                if ($dtSession["UserAgentIP"] !== $this->userAgentIP) {
+                    $this->securityStatus = SecurityStatus::SessionUnespectedUserAgentIP;
+                }
+                elseif ($dtSession["UserAgent"] !== $this->userAgent) {
+                    $this->securityStatus = SecurityStatus::SessionUnespectedUserAgent;
                 }
                 else {
-                    if ($authenticatedSession["UserAgentIP"] !== $this->userAgentIP) {
-                        $this->securityStatus = SecurityStatus::SessionUnespectedUserAgentIP;
-                    }
-                    elseif ($authenticatedSession["UserAgent"] !== $this->userAgent) {
-                        $this->securityStatus = SecurityStatus::SessionUnespectedUserAgent;
-                    }
-                    elseif ($authenticatedSession["ApplicationName"] !== $this->applicationName) {
-                        $this->securityStatus = SecurityStatus::SessionUnespectedApplication;
+                    $sessionTimeOut = new \DateTime($dtSession["SessionTimeOut"]);
+
+                    if ($sessionTimeOut < $this->now) {
+                        $this->securityStatus = SecurityStatus::SessionExpired;
                     }
                     else {
-                        $sessionTimeOut = new \DateTime($authenticatedSession["SessionTimeOut"]);
-
-                        if ($sessionTimeOut < $this->now) {
-                            $this->securityStatus = SecurityStatus::SessionExpired;
-                        }
-                        else {
-                            $this->securityStatus = SecurityStatus::SessionValid;
-                            $this->authenticatedSession = $authenticatedSession;
-                        }
+                        $this->securityStatus = SecurityStatus::SessionValid;
+                        $this->authenticatedSession = $dtSession;
                     }
                 }
             }
@@ -249,19 +276,23 @@ class NativeDataBase extends MainSession
     protected function checkIfAuthenticatedUserIsBloqued() : void
     {
         if ($this->authenticatedUser !== null) {
-            if(\file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
-                $loginSuspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectLogin);
+            $strSQL = " SELECT
+                            COUNT(Id) as count
+                        FROM
+                            DomainUserBlockedAccess
+                        WHERE
+                            UserAgentIP=:UserAgentIP AND
+                            BlockTimeOut>=:BlockTimeOut AND
+                            DomainUser_Id=:DomainUser_Id;";
 
-                if($loginSuspectData !== null && $loginSuspectData["Blocked"] === true) {
-                    $unblockDate = \DateTime::createFromFormat("Y-m-d H:i:s", $loginSuspectData["UnblockDate"]);
+            $parans = [
+                "UserAgentIP"   => $this->userAgentIP,
+                "BlockTimeOut"  => $this->now,
+                "DomainUser_Id" => $this->authenticatedUser["Id"]
+            ];
 
-                    if($unblockDate < $this->now) {
-                        \unlink($this->pathToLocalData_LogFile_SuspectLogin);
-                    }
-                    else {
-                        $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
-                    }
-                }
+            if ($this->DAL->getCountOf($strSQL, $parans) >= 1) {
+                $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
             }
         }
     }
@@ -278,7 +309,7 @@ class NativeDataBase extends MainSession
     {
         $this->securityStatus = SecurityStatus::UserSessionUnchecked;
         if ($this->authenticatedUser !== null && $this->authenticatedSession !== null) {
-            if ($this->authenticatedUser["SessionHash"] !== $this->authenticatedSession["SessionHash"]) {
+            if ($this->authenticatedUser["Id"] !== $this->authenticatedSession["DomainUser_Id"]) {
                 $this->securityStatus = SecurityStatus::UserSessionUnespected;
             }
             else {
@@ -306,10 +337,13 @@ class NativeDataBase extends MainSession
             $renewUntil->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
 
             $this->authenticatedSession["SessionTimeOut"] = $renewUntil->format("Y-m-d H:i:s");
-            if (\AeonDigital\Tools\JSON::save(
-                $this->pathToLocalData_LogFile_Session,
-                $this->authenticatedSession) === true)
-            {
+
+            $paran = [
+                "SessionTimeOut" => $renewUntil,
+                "Id" => $this->authenticatedSession["Id"]
+            ];
+
+            if ($this->DAL->updateSet("DomainUserSession", $paran, "Id") === true) {
                 $this->authenticatedUser["Session"] = $this->authenticatedSession;
             }
         }
@@ -358,8 +392,7 @@ class NativeDataBase extends MainSession
             $this->loadAuthenticatedUser($userName);
             if ($this->securityStatus === SecurityStatus::UserAccountDoesNotExist) {
                 $this->registerSuspectActivity(
-                    $userName,
-                    $this->pathToLocalData_LogFile_SuspectIP,
+                    $this->securityConfig->getAnonymousId(),
                     $this->securityConfig->getAllowedFaultByIP(),
                     $this->securityConfig->getIPBlockTimeout(),
                     "IP"
@@ -373,11 +406,10 @@ class NativeDataBase extends MainSession
                         if ($this->authenticatedUser["Password"] !== $userPassword) {
                             $this->securityStatus = SecurityStatus::UserAccountUnexpectedPassword;
                             $this->registerSuspectActivity(
-                                $userName,
-                                $this->pathToLocalData_LogFile_SuspectLogin,
+                                $this->authenticatedUser["Id"],
                                 $this->securityConfig->getAllowedFaultByLogin(),
                                 $this->securityConfig->getLoginBlockTimeout(),
-                                "UserName"
+                                "User"
                             );
                         }
                         else {
@@ -406,14 +438,14 @@ class NativeDataBase extends MainSession
     {
         $r = false;
         if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null &&
-            \file_exists($this->pathToLocalData_LogFile_Session) === true)
+            $this->authenticatedSession !== null)
         {
-            \unlink($this->pathToLocalData_LogFile_Session);
-            $this->authenticatedSession = null;
-            $this->authenticatedUser = null;
-            $this->securityStatus = SecurityStatus::UserAgentUndefined;
-            $r = true;
+            if ($this->DAL->deleteFrom("DomainUserSession", "Id", $this->authenticatedSession["Id"]) === true) {
+                $this->authenticatedSession = null;
+                $this->authenticatedUser = null;
+                $this->securityStatus = SecurityStatus::UserAgentUndefined;
+                $r = true;
+            }
         }
         return $r;
     }
@@ -423,91 +455,77 @@ class NativeDataBase extends MainSession
 
 
     /**
-     * Gerencia a criação de um arquivo de controle de acessos de IP/UserName e efetua a contagem de
-     * falhas de autenticação em uma atividade de verificação de "UserName" ou "UserPassword" além de
-     * definir o IP/UserName como bloqueado em casos em que atinja o limite de falhas permitidas.
+     * Verifica quando a tentativa sucessiva de login atinjiu algum dos limites estipulados e então
+     * gera um registro de bloqueio para aquele IP/User.
      *
-     * @param       string $userName
-     *              Nome do usuário.
-     *
-     * @param       string $registerFile
-     *              Arquivo que deve ser usado para registrar as atividades monitoradas.
+     * @param       int $userId
+     *              Id do usuário.
      *
      * @param       int $allowedFault
      *              Numero máximo de falhas permitidas para este tipo de ação.
      *
      * @param       int $blockTimeout
-     *              Tempo (em minutos) que o IP/UserName será bloqueado em caso de atinjir o número máximo
+     *              Tempo (em minutos) que o IP/User será bloqueado em caso de atinjir o número máximo
      *              de falhas configuradas.
      *
      * @param       string $blockType
      *              Tipo de bloqueio possível.
-     *              ["IP", "UserName"]
+     *              ["IP", "User"]
      *
      * @return      void
      */
     protected function registerSuspectActivity(
-        string $userName,
-        string $registerFile,
+        int $userId,
         int $allowedFault,
         int $blockTimeout,
         string $blockType
     ) : void {
-        if (\file_exists($registerFile) === false) {
-            \AeonDigital\Tools\JSON::save(
-                $registerFile, [
-                    "Activity"          => TypeOfActivity::MakeLogin,
-                    "IP"                => $this->userAgentIP,
-                    "Login"             => ($blockType === "IP") ? "" : $userName,
-                    "Counter"           => 1,
-                    "LastEventDateTime" => $this->now->format("Y-m-d H:i:s"),
-                    "Blocked"           => false,
-                    "UnblockDate"       => null
-                ]
-            );
-        }
-        else {
-            $suspectData = \AeonDigital\Tools\JSON::retrieve($registerFile);
-            if ($suspectData === null) {
-                $suspectData = [
-                    "Activity"          => TypeOfActivity::MakeLogin,
-                    "IP"                => $this->userAgentIP,
-                    "Login"             => ($blockType === "IP") ? "" : $userName,
-                    "Counter"           => 1,
-                    "LastEventDateTime" => $this->now->format("Y-m-d H:i:s"),
-                    "Blocked"           => false,
-                    "UnblockDate"       => null
-                ];
+        $userId = (
+            ($this->authenticatedUser === null) ?
+            $this->securityConfig->getAnonymousId() :
+            $this->authenticatedUser["Id"]
+        );
+
+        $minRegisterDate = new \DateTime($this->now->format("Y-m-d H:i:s"));
+        $minRegisterDate->sub(new \DateInterval("PT" . $blockTimeout . "M"));
+
+        $strSQL = " SELECT
+                        COUNT(Id) as count
+                    FROM
+                        DomainUserRequestLog
+                    WHERE
+                        RegisterDate>=:RegisterDate AND
+                        UserAgentIP=:UserAgentIP AND
+                        ApplicationName=:ApplicationName AND
+                        Activity=:Activity AND
+                        DomainUser_Id=:DomainUser_Id;";
+
+        $parans = [
+            "RegisterDate"      => $minRegisterDate,
+            "UserAgentIP"       => $this->userAgentIP,
+            "ApplicationName"   => $this->applicationName,
+            "Activity"          => TypeOfActivity::MakeLogin,
+            "DomainUser_Id"     => $userId
+        ];
+
+
+        if ($this->DAL->getCountOf($strSQL, $parans) >= $allowedFault) {
+            $blockTimeOut = new \DateTime($this->now->format("Y-m-d H:i:s"));
+            $blockTimeOut->add(new \DateInterval("PT" . $blockTimeout . "M"));
+
+            $blockAccess = [
+                "UserAgentIP"   => $this->userAgentIP,
+                "BlockTimeOut"  => $blockTimeOut,
+                "DomainUser_Id" => $userId
+            ];
+
+            if ($this->DAL->insertInto("DomainUserBlockedAccess", $blockAccess) === true) {
+                $this->securityStatus = (
+                    ($blockType === "IP") ?
+                    SecurityStatus::UserAgentIPBlocked :
+                    SecurityStatus::UserAccountHasBeenBlocked
+                );
             }
-            else {
-                $diffInMinutes = $this->now->diff(
-                    \DateTime::createFromFormat("Y-m-d H:i:s", $suspectData["LastEventDateTime"])
-                )->format("%i");
-
-                $suspectData["Counter"]++;
-                $suspectData["LastEventDateTime"] = $this->now->format("Y-m-d H:i:s");
-                if ($diffInMinutes > $blockTimeout) {
-                    $suspectData["Counter"] = 1;
-                }
-
-                if($suspectData["Counter"] >= $allowedFault) {
-                    $unblockDate = new \DateTime();
-                    $unblockDate->add(new \DateInterval("PT" . $blockTimeout . "M"));
-
-                    if ($allowedFault > 0 && $blockTimeout > 0) {
-                        $suspectData["Blocked"]       = true;
-                        $suspectData["UnblockDate"]   = $unblockDate->format("Y-m-d H:i:s");
-
-                        $this->securityStatus = (
-                            ($blockType === "IP") ?
-                            SecurityStatus::UserAgentIPBlocked :
-                            SecurityStatus::UserAccountHasBeenBlocked
-                        );
-                    }
-                }
-            }
-
-            \AeonDigital\Tools\JSON::save($registerFile, $suspectData);
         }
     }
     /**
@@ -542,34 +560,18 @@ class NativeDataBase extends MainSession
             if ($this->environment === "UTEST" ||
                 $this->securityCookie->defineCookie() === true)
             {
-                $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
+                $parans = [
+                    "SessionHash"       => $sessionHash,
+                    "SessionTimeOut"    => $expiresDate,
+                    "UserAgent"         => $this->userAgent,
+                    "UserAgentIP"       => $this->userAgentIP,
+                    "ProfileInUse"      => $userProfile,
+                    "GrantPermission"   => null,
+                    "DomainUser_Id"     => $this->authenticatedUser["Id"]
+                ];
 
-                $this->authenticatedUser["Session"] = null;
-                $this->authenticatedUser["SessionHash"] = $sessionHash;
-                if (\AeonDigital\Tools\JSON::save(
-                    $this->pathToLocalData_File_User,
-                    $this->authenticatedUser) === true)
-                {
-                    $this->authenticatedUser["Session"] = [
-                        "SessionHash"       => $sessionHash,
-                        "ApplicationName"   => $this->applicationName,
-                        "LoginDate"         => $this->now->format("Y-m-d H:i:s"),
-                        "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
-                        "SessionRenew"      => $this->securityConfig->getSessionTimeout(),
-                        "Login"             => $userName,
-                        "ProfileInUse"      => $userProfile,
-                        "UserAgent"         => $this->userAgent,
-                        "UserAgentIP"       => $this->userAgentIP,
-                        "GrantPermission"   => null
-                    ];
-
-                    if (\AeonDigital\Tools\JSON::save(
-                            $this->pathToLocalData_LogFile_Session,
-                            $this->authenticatedUser["Session"]) === true)
-                    {
-                        $r = true;
-                        $this->authenticateUserAgentSession();
-                    }
+                if ($this->DAL->insertInto("DomainUserSession", $parans) === true) {
+                    $r = $this->authenticateUserAgentSession();
                 }
             }
         }
@@ -624,10 +626,11 @@ class NativeDataBase extends MainSession
     /**
      * Verifica se o UA possui uma sessão válida para ser usada.
      *
-     * @return      void
+     * @return      bool
      */
-    public function authenticateUserAgentSession() : void
+    public function authenticateUserAgentSession() : bool
     {
+        $r = false;
         $this->loadAuthenticatedSession();
 
         if ($this->securityStatus === SecurityStatus::SessionValid) {
@@ -637,11 +640,13 @@ class NativeDataBase extends MainSession
                 $this->checkIfAuthenticatedUserAndAuthenticatedSessionMatchs();
 
                 if ($this->securityStatus === SecurityStatus::UserSessionAccepted) {
+                    $r = true;
                     $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
                     $this->renewAuthenticatedSession();
                 }
             }
         }
+        return $r;
     }
     /**
      * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
@@ -718,29 +723,20 @@ class NativeDataBase extends MainSession
         );
 
         $logActivity = [
-            "CreatedAt"     => $this->now->format("Y-m-d H:i:s"),
-            "UserAgentIP"   => $this->userAgentIP,
-            "UserAgent"     => $this->userAgent,
-            "MethodHTTP"    => $methodHTTP,
-            "FullURL"       => $fullURL,
-            "PostData"      => \json_encode($postData),
-            "Application"   => $this->applicationName,
-            "Controller"    => $controller,
-            "Action"        => $action,
-            "Activity"      => $activity,
-            "Obs"           => $obs,
-            "UserId"        => $userId
+            "UserAgent"         => $this->userAgent,
+            "UserAgentIP"       => $this->userAgentIP,
+            "MethodHTTP"        => $methodHTTP,
+            "FullURL"           => $fullURL,
+            "PostData"          => \json_encode($postData),
+            "ApplicationName"   => $this->applicationName,
+            "ControllerName"    => $controller,
+            "ActionName"        => $action,
+            "Activity"          => $activity,
+            "Note"              => $obs,
+            "DomainUser_Id"     => $userId
         ];
 
-
-        $fileLog = \mb_str_to_valid_filename(
-            \strtolower($this->now->format("Y-m-d H:i:s") . "_" . $this->userAgentIP . "_" . $methodHTTP)
-        ) . ".json";
-        $r = \AeonDigital\Tools\JSON::save(
-            $this->pathToLocalData_Log . DS . $fileLog,
-            $logActivity
-        );
-
+        $r = $this->DAL->insertInto("DomainUserRequestLog", $logActivity);
         return $r;
     }
 }

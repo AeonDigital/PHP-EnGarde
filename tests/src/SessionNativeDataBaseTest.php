@@ -15,7 +15,7 @@ require_once __DIR__ . "/../phpunit.php";
 class SessionNativeDataBaseTest extends TestCase
 {
 
-
+    //providerNDB_executeCreateSchema();
     /*
     protected function provideObject($withSession = false)
     {
@@ -24,7 +24,7 @@ class SessionNativeDataBaseTest extends TestCase
         global $defaultApplication;
         global $defaultSecurity;
 
-        $sessionHash = "8f9d630ba6ffaa690277b4e804df57515e841cc7";
+        $sessionHash = "bb2ea0c1cac4da36fbe4ffb38598335d7a33cf71";
 
         $securityConfig = prov_instanceOf_EnGarde_Config_Security($defaultSecurity);
         $securityCookie = new \AeonDigital\Http\Data\Cookie(
@@ -76,7 +76,7 @@ class SessionNativeDataBaseTest extends TestCase
             "ShortLogin"    => "rianna.aeon",
             "Password"      => "31f88741c850331188d23e6e0067730e13c92809",
             "ContactEmail"  => "rianna.aeon@gmail.com",
-            "SessionHash"   => "8f9d630ba6ffaa690277b4e804df57515e841cc7",
+            "SessionHash"   => "bb2ea0c1cac4da36fbe4ffb38598335d7a33cf71",
             "Profiles" => [
                 [
                     "Active"        => true,
@@ -102,7 +102,7 @@ class SessionNativeDataBaseTest extends TestCase
     protected function provideSessionObject()
     {
         return [
-	        "SessionHash"       => "8f9d630ba6ffaa690277b4e804df57515e841cc7",
+	        "SessionHash"       => "bb2ea0c1cac4da36fbe4ffb38598335d7a33cf71",
 	        "ApplicationName"   => "site",
 	        "LoginDate"         => "2020-06-08 16:49:20",
 	        "SessionTimeOut"    => "2020-06-08 17:29:20",
@@ -141,7 +141,38 @@ class SessionNativeDataBaseTest extends TestCase
 
     public function test_constructor_ok()
     {
-        providerNDB_executeCreateSchema();
+        global $defaultServerVariables;
+        global $defaultEngineVariables;
+        global $defaultApplication;
+        global $defaultSecurity;
+
+        $securityConfig = prov_instanceOf_EnGarde_Config_Security($defaultSecurity);
+        $securityCookie = new \AeonDigital\Http\Data\Cookie(
+            $defaultSecurity["securityCookieName"], "", null,
+            $defaultServerVariables["HTTP_HOST"], "/",
+            $defaultEngineVariables["forceHTTPS"], true
+        );
+
+
+        $obj = new NativeDataBase(
+            new \DateTime("2020-06-08 01:00:00"),
+            $defaultEngineVariables["environmentType"],
+            $defaultApplication["appName"],
+            $defaultServerVariables["HTTP_USER_AGENT"],
+            $defaultServerVariables["REMOTE_ADDR"],
+            $securityConfig,
+            $securityCookie,
+            "",
+            provider_connection_credentials()
+        );
+        $this->assertTrue(is_a($obj, NativeDataBase::class));
+        $this->assertEquals($securityCookie, $obj->retrieveSecurityCookie());
+        $this->assertTrue(is_a($obj->getDAL(), "AeonDigital\\DAL\\DAL"));
+        $this->assertNull($obj->retrieveSession());
+        $this->assertNull($obj->retrieveUser());
+        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfiles());
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
     }
 
 
@@ -318,7 +349,7 @@ class SessionNativeDataBaseTest extends TestCase
                 "rianna.aeon",
                 sha1("senhateste"),
                 "specialPermission",
-                "8f9d630ba6ffaa690277b4e804df57515e841cc7"
+                "bb2ea0c1cac4da36fbe4ffb38598335d7a33cf71"
             )
         );
     }
