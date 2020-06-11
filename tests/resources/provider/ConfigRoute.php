@@ -47,6 +47,7 @@ $defaultRoute = [
     "isUseXHTML"                => true,
     "runMethodName"             => "",
     "customProperties"          => [],
+    "isAutoLog"                 => true,
     "description"               => "Teste",
     "devDescription"            => "Teste unitário",
     "relationedRoutes"          => [
@@ -98,6 +99,7 @@ function prov_instanceOf_EnGarde_Config_Route($defaultRoute)
         $defaultRoute["isUseXHTML"],
         $defaultRoute["runMethodName"],
         $defaultRoute["customProperties"],
+        $defaultRoute["isAutoLog"],
         $defaultRoute["description"],
         $defaultRoute["devDescription"],
         $defaultRoute["relationedRoutes"],

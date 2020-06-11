@@ -30,6 +30,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Descrição genérica no controller.',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -105,6 +106,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Página home da aplicação',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -181,6 +183,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Página home da aplicação',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -260,6 +263,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Página home da aplicação',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -336,6 +340,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Página home da aplicação',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -411,6 +416,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -479,6 +485,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Evoca a view para o formulário de contato.',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -545,6 +552,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Recebe os dados submetidos pelo formulário de contato, processa-os e retorna o resultado.',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -619,6 +627,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -690,6 +699,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
         'relationedRoutes' => 
@@ -761,6 +771,7 @@ array (
         'customProperties' => 
         array (
         ),
+        'isAutoLog' => false,
         'description' => 'Evoca a view de lista.',
         'devDescription' => '',
         'relationedRoutes' => 

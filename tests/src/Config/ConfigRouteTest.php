@@ -34,6 +34,7 @@ class ConfigRouteTest extends TestCase
             $defaultRoute["isUseXHTML"],
             $defaultRoute["runMethodName"],
             $defaultRoute["customProperties"],
+            $defaultRoute["isAutoLog"],
             $defaultRoute["description"],
             $defaultRoute["devDescription"],
             $defaultRoute["relationedRoutes"],
@@ -73,6 +74,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame(true, $nMock->getIsUseXHTML());
         $this->assertSame("run", $nMock->getRunMethodName());
         $this->assertSame([], $nMock->getCustomProperties());
+        $this->assertSame(true, $nMock->getIsAutoLog());
         $this->assertSame("Teste", $nMock->getDescription());
         $this->assertSame("Teste unitário", $nMock->getDevDescription());
         $this->assertSame(["/unit-test"], $nMock->getRelationedRoutes());

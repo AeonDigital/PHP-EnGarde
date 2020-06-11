@@ -335,6 +335,7 @@ class Router extends BObject implements iRouter
                 "routes",
                 "runMethodName",
                 "customProperties",
+                "isAutoLog",
                 "description",
                 "devDescription",
                 "relationedRoutes",

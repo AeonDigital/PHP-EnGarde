@@ -548,6 +548,39 @@ final class Route extends BObject implements iRoute
 
 
 
+    /**
+     * Indica se a atividade realizada nesta rota deve ser registrada pelo
+     * sistema de log nativo da sessão.
+     *
+     * @var         bool
+     */
+    private bool $isAutoLog = false;
+    /**
+     * Retorna ``true`` caso a atividade desta rota deva ser registrada no log do sistema.
+     *
+     * @return      bool
+     */
+    public function getIsAutoLog() : bool
+    {
+        return $this->isAutoLog;
+    }
+    /**
+     * Define se a atividade realizada nesta rota deve ser registrada pelo
+     * sistema de log nativo da sessão.
+     *
+     * @param       bool $isAutoLog
+     *              Use ``true`` para ativar o log nativo da aplicação..
+     *
+     * @return      void
+     */
+    private function setIsAutoLog(bool $isAutoLog) : void
+    {
+        $this->isAutoLog = $isAutoLog;
+    }
+
+
+
+
 
 
 
@@ -1593,6 +1626,9 @@ final class Route extends BObject implements iRoute
      * @param       array $customProperties
      *              Coleção de propriedades customizadas da rota.
      *
+     * @param       bool $isAutoLog
+     *              Indica se esta rota deve ter suas atividades registradas pelo sistema nativo de log.
+     *
      * @param       string $description
      *              Descrição sobre a ação executada por esta rota.
      *
@@ -1660,6 +1696,7 @@ final class Route extends BObject implements iRoute
         bool $isUseXHTML,
         string $runMethodName,
         array $customProperties,
+        bool $isAutoLog,
         string $description,
         string $devDescription,
         array $relationedRoutes,
@@ -1689,6 +1726,7 @@ final class Route extends BObject implements iRoute
         $this->setIsUseXHTML($isUseXHTML);
         $this->setRunMethodName($runMethodName);
         $this->setCustomProperties($customProperties);
+        $this->setIsAutoLog($isAutoLog);
         $this->setDescription($description);
         $this->setDevDescription($devDescription);
         $this->setRelationedRoutes($relationedRoutes);
@@ -1750,6 +1788,7 @@ final class Route extends BObject implements iRoute
                 "isUseXHTML"                => false,
                 "runMethodName"             => "",
                 "customProperties"          => [],
+                "isAutoLog"                 => false,
                 "description"               => "",
                 "devDescription"            => "",
                 "relationedRoutes"          => [],
@@ -1784,6 +1823,7 @@ final class Route extends BObject implements iRoute
             $useConfig["isUseXHTML"],
             $useConfig["runMethodName"],
             $useConfig["customProperties"],
+            $useConfig["isAutoLog"],
             $useConfig["description"],
             $useConfig["devDescription"],
             $useConfig["relationedRoutes"],
@@ -1825,6 +1865,7 @@ final class Route extends BObject implements iRoute
             "isUseXHTML"                => $this->getIsUseXHTML(),
             "runMethodName"             => $this->getRunMethodName(),
             "customProperties"          => $this->getCustomProperties(),
+            "isAutoLog"                 => $this->getIsAutoLog(),
             "description"               => $this->getDescription(),
             "devDescription"            => $this->getDevDescription(),
             "relationedRoutes"          => $this->getRelationedRoutes(),
