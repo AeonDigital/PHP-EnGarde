@@ -50,7 +50,7 @@
         [
             'name' => 'PostData',
             'description' => 'Informação postada em conjunto com a requisição.',
-            'type' => 'Long',
+            'type' => 'String',
             'readOnly' => true,
             'allowNull' => false,
             'allowEmpty' => false,
@@ -97,7 +97,7 @@
             'type' => 'String',
             'length' => 255,
             'readOnly' => true,
-            'allowNull' => false,
+            'allowNull' => true,
             'allowEmpty' => false,
         ],
     ]

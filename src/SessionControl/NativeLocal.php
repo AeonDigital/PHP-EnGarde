@@ -189,7 +189,7 @@ class NativeLocal extends MainSession
     {
         $this->securityStatus = SecurityStatus::UserAgentIPValid;
 
-        if(\file_exists($this->pathToLocalData_LogFile_SuspectIP)) {
+        if(\file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
             $suspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectIP);
 
             if($suspectData["Blocked"] === true) {
@@ -260,18 +260,16 @@ class NativeLocal extends MainSession
      */
     protected function checkIfAuthenticatedUserIsBlocked() : void
     {
-        if ($this->authenticatedUser !== null) {
-            if(\file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
-                $loginSuspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectLogin);
-                if($loginSuspectData !== null && $loginSuspectData["Blocked"] === true) {
-                    $unblockDate = \DateTime::createFromFormat("Y-m-d H:i:s", $loginSuspectData["UnblockDate"]);
+        if(\file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
+            $loginSuspectData = \AeonDigital\Tools\JSON::retrieve($this->pathToLocalData_LogFile_SuspectLogin);
+            if($loginSuspectData !== null && $loginSuspectData["Blocked"] === true) {
+                $unblockDate = \DateTime::createFromFormat("Y-m-d H:i:s", $loginSuspectData["UnblockDate"]);
 
-                    if($unblockDate < $this->now) {
-                        \unlink($this->pathToLocalData_LogFile_SuspectLogin);
-                    }
-                    else {
-                        $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
-                    }
+                if($unblockDate < $this->now) {
+                    \unlink($this->pathToLocalData_LogFile_SuspectLogin);
+                }
+                else {
+                    $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
                 }
             }
         }
@@ -291,41 +289,37 @@ class NativeLocal extends MainSession
     {
         $r = false;
 
-        if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
+        $this->securityStatus = SecurityStatus::UserSessionLoginFail;
+
+        $userName       = $this->authenticatedUser["Login"];
+        $userPassword   = $this->authenticatedUser["Password"];
+        $userLoginDate  = $this->now->format("Y-m-d H:i:s");
+        $sessionHash    = sha1($userName . $userPassword . $userLoginDate);
+
+
+        $expiresDate = new \DateTime();
+        $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
+        $this->securityCookie->setExpires($expiresDate);
+        $this->securityCookie->setValue($sessionHash);
+
+
+        if ($this->environment === "UTEST" ||
+            $this->securityCookie->defineCookie() === true)
         {
-            $this->securityStatus = SecurityStatus::UserSessionLoginFail;
+            $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
+            $authenticatedSession = [
+                "RegisterDate"      => $this->now->format("Y-m-d H:i:s"),
+                "SessionHash"       => $sessionHash,
+                "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
+                "UserAgent"         => $this->userAgent,
+                "UserAgentIP"       => $this->userAgentIP,
+                "GrantPermission"   => null,
+                "DomainUser"        => $userName,
+            ];
 
-            $userName       = $this->authenticatedUser["Login"];
-            $userPassword   = $this->authenticatedUser["Password"];
-            $userLoginDate  = $this->now->format("Y-m-d H:i:s");
-            $sessionHash    = sha1($userName . $userPassword . $userLoginDate);
-
-
-            $expiresDate = new \DateTime();
-            $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
-            $this->securityCookie->setExpires($expiresDate);
-            $this->securityCookie->setValue($sessionHash);
-
-
-            if ($this->environment === "UTEST" ||
-                $this->securityCookie->defineCookie() === true)
-            {
-                $this->pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
-                $authenticatedSession = [
-                    "RegisterDate"      => $this->now->format("Y-m-d H:i:s"),
-                    "SessionHash"       => $sessionHash,
-                    "SessionTimeOut"    => $expiresDate->format("Y-m-d H:i:s"),
-                    "UserAgent"         => $this->userAgent,
-                    "UserAgentIP"       => $this->userAgentIP,
-                    "GrantPermission"   => null,
-                    "DomainUser"        => $userName,
-                ];
-
-                $r = (\AeonDigital\Tools\JSON::save(
-                        $this->pathToLocalData_LogFile_Session,
-                        $authenticatedSession) === true);
-            }
+            $r = (\AeonDigital\Tools\JSON::save(
+                    $this->pathToLocalData_LogFile_Session,
+                    $authenticatedSession) === true);
         }
 
         return $r;
@@ -388,9 +382,7 @@ class NativeLocal extends MainSession
      */
     protected function renewAuthenticatedSession() : void
     {
-        if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null &&
-            $this->securityConfig->getIsSessionRenew() === true)
+        if ($this->securityConfig->getIsSessionRenew() === true)
         {
             $renewUntil = new \DateTime();
             $renewUntil->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
@@ -532,8 +524,7 @@ class NativeLocal extends MainSession
     public function executeLogout() : bool
     {
         $r = false;
-        if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null &&
+        if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated &&
             \file_exists($this->pathToLocalData_LogFile_Session) === true)
         {
             if (\unlink($this->pathToLocalData_LogFile_Session) === true) {

@@ -12,7 +12,7 @@ require_once __DIR__ . "/../phpunit.php";
 
 
 
-class SessionNativeTest extends TestCase
+class SessionNativeLocalTest extends TestCase
 {
 
     protected string $pathToLocalData                       = "";

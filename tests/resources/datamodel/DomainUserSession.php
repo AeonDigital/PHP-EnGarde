@@ -2,6 +2,9 @@
     'tableName' => 'DomainUserSession',
     'alias' => 'secdus',
     'description' => 'Define uma sessão de acesso para um usuário que efetuou login',
+    'executeAfterCreateTable' => [
+        'ALTER TABLE DomainUserSession ADD CONSTRAINT uc_col_DomainUser_Id UNIQUE (DomainUser_Id);',
+    ],
     'columns' => [
         [
             'name' => 'RegisterDate',
@@ -46,14 +49,6 @@
             'readOnly' => true,
             'allowNull' => false,
             'allowEmpty' => false,
-        ],
-        [
-            'name' => 'ProfileInUse',
-            'description' => 'Perfil de segurança do usuário sendo usado no momento.',
-            'type' => 'String',
-            'length' => 32,
-            'allowNull' => false,
-            'allowEmpty' => false
         ],
         [
             'name' => 'GrantPermission',

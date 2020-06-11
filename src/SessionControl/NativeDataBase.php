@@ -117,8 +117,6 @@ class NativeDataBase extends MainSession
 
 
 
-
-
     /**
      * Carrega as informações do usuário indicado.
      *
@@ -138,7 +136,8 @@ class NativeDataBase extends MainSession
                         secdup.ApplicationName as secdup_ApplicationName,
                         secdup.Name as secdup_Name,
                         secdup.Description as secdup_Description,
-                        dupdu.DefaultProfile as secdup_DefaultProfile
+                        dupdu.ProfileDefault as secdup_ProfileDefault,
+                        dupdu.ProfileSelected as secdup_ProfileSelected
                     FROM
                         DomainUser secdu
                         INNER JOIN secdup_to_secdu dupdu ON dupdu.DomainUser_Id=secdu.Id
@@ -152,55 +151,45 @@ class NativeDataBase extends MainSession
             "ShortLogin" => $userName
         ];
 
-        $dtUser = $this->DAL->getDataTable($strSQL, $parans);
-        if ($dtUser !== null) {
+        $dtDomainUser = $this->DAL->getDataTable($strSQL, $parans);
+        if ($dtDomainUser !== null) {
             $this->securityStatus = SecurityStatus::UserAccountUnchecked;
 
-
-            $user = [
-                "Id"            => (int)$dtUser[0]["Id"],
-                "Active"        => (bool)$dtUser[0]["Active"],
-                "RegisterDate"  => new \DateTime($dtUser[0]["RegisterDate"]),
-                "Name"          => $dtUser[0]["Name"],
-                "Gender"        => $dtUser[0]["Gender"],
-                "Login"         => $dtUser[0]["Login"],
-                "ShortLogin"    => $dtUser[0]["ShortLogin"],
-                "ProfileInUse"  => null,
-                "Profiles"      => [],
-                "Session"       => null
-            ];
-
-
-            $profileActive = null;
-            foreach ($dtUser as $row) {
-                $prof = [
-                    "Id"                => (int)$row["secdup_Id"],
-                    "Active"            => (bool)$row["secdup_Active"],
-                    "ApplicationName"   => $row["secdup_ApplicationName"],
-                    "Name"              => $row["secdup_Name"],
-                    "Description"       => $row["secdup_Description"],
-                    "DefaultProfile"    => (bool)$row["secdup_DefaultProfile"],
-                ];
-
-                if ($prof["ApplicationName"] === $this->applicationName &&
-                    $prof["DefaultProfile"] === true)
-                {
-                    $profileActive = $prof;
-                    $user["ProfileInUse"] = $prof["Name"];
-                }
-                $user["Profiles"][] = $prof;
-            }
-
-
-
-            if ($user["Active"] === false) {
+            if ((bool)$dtDomainUser[0]["Active"] === false) {
                 $this->securityStatus = SecurityStatus::UserAccountDisabledForDomain;
             }
             else {
-                if ($user["ProfileInUse"] === null) {
-                    $this->securityStatus = SecurityStatus::UserAccountDoesNotExistInApplication; // !!
+                $user = [
+                    "Id"            => (int)$dtDomainUser[0]["Id"],
+                    "Active"        => (bool)$dtDomainUser[0]["Active"],
+                    "RegisterDate"  => new \DateTime($dtDomainUser[0]["RegisterDate"]),
+                    "Name"          => $dtDomainUser[0]["Name"],
+                    "Gender"        => $dtDomainUser[0]["Gender"],
+                    "Login"         => $dtDomainUser[0]["Login"],
+                    "ShortLogin"    => $dtDomainUser[0]["ShortLogin"],
+                    "Password"      => $dtDomainUser[0]["Password"],
+                    "Profiles"      => []
+                ];
+
+
+                $hasProfileForThisApplication = false;
+                foreach ($dtDomainUser as $row) {
+                    $user["Profiles"][] = [
+                        "Id"                => (int)$row["secdup_Id"],
+                        "Active"            => (bool)$row["secdup_Active"],
+                        "ApplicationName"   => $row["secdup_ApplicationName"],
+                        "Name"              => $row["secdup_Name"],
+                        "Description"       => $row["secdup_Description"],
+                        "Default"           => (bool)$row["secdup_ProfileDefault"],
+                        "Selected"          => (bool)$row["secdup_ProfileSelected"],
+                    ];
+                    if ($this->applicationName === $row["secdup_ApplicationName"]) {
+                        $hasProfileForThisApplication = true;
+                    }
                 }
-                else if ($profileActive["Active"] === false) {
+
+
+                if ($hasProfileForThisApplication === false) {
                     $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
                 }
                 else {
@@ -209,6 +198,92 @@ class NativeDataBase extends MainSession
                 }
             }
         }
+    }
+
+
+
+    /**
+     * Verifica se o usuário carregado está bloqueado.
+     *
+     * @return      void
+     */
+    protected function checkIfAuthenticatedUserIsBlocked() : void
+    {
+        $strSQL = " SELECT
+                        COUNT(Id) as count
+                    FROM
+                        DomainUserBlockedAccess
+                    WHERE
+                        UserAgentIP=:UserAgentIP AND
+                        BlockTimeOut>=:BlockTimeOut AND
+                        DomainUser_Id=:DomainUser_Id;";
+
+        $parans = [
+            "UserAgentIP"   => $this->userAgentIP,
+            "BlockTimeOut"  => $this->now,
+            "DomainUser_Id" => $this->authenticatedUser["Id"]
+        ];
+
+        if ($this->DAL->getCountOf($strSQL, $parans) >= 1) {
+            $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
+        }
+    }
+
+
+
+    /**
+     * Inicia os sets de segurança necessários para que uma
+     * sessão autenticada possa iniciar.
+     *
+     * @return      bool
+     *              Retornará ``true`` caso a ação tenha sido bem sucedida, ``false``
+     *              se houver alguma falha no processo.
+     */
+    protected function registerAuthenticatedSession() : bool
+    {
+        $r = false;
+
+        $this->securityStatus = SecurityStatus::UserSessionLoginFail;
+
+        $userName       = $this->authenticatedUser["Login"];
+        $userPassword   = $this->authenticatedUser["Password"];
+        $userLoginDate  = $this->now->format("Y-m-d H:i:s");
+        $sessionHash    = sha1($userName . $userPassword . $userLoginDate);
+
+
+        $expiresDate = new \DateTime();
+        $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
+        $this->securityCookie->setExpires($expiresDate);
+        $this->securityCookie->setValue($sessionHash);
+
+
+        if ($this->environment === "UTEST" ||
+            $this->securityCookie->defineCookie() === true)
+        {
+            $strSQL = " DELETE FROM
+                            DomainUserSession
+                        WHERE
+                            DomainUser_Id=:DomainUser_Id;";
+
+            $parans = [
+                "DomainUser_Id"     => $this->authenticatedUser["Id"]
+            ];
+            $this->DAL->executeInstruction($strSQL, $parans);
+
+
+            $parans = [
+                "SessionHash"       => $sessionHash,
+                "SessionTimeOut"    => $expiresDate,
+                "UserAgent"         => $this->userAgent,
+                "UserAgentIP"       => $this->userAgentIP,
+                "GrantPermission"   => null,
+                "DomainUser_Id"     => $this->authenticatedUser["Id"]
+            ];
+
+            $r = $this->DAL->insertInto("DomainUserSession", $parans);
+        }
+
+        return $r;
     }
 
 
@@ -230,11 +305,15 @@ class NativeDataBase extends MainSession
             $this->securityStatus = SecurityStatus::SessionUnchecked;
 
             $strSQL = " SELECT
-                            *
+                            secdus.*,
+                            secdu.Login as DomainUser
                         FROM
-                            DomainUserSession
+                            DomainUserSession secdus
+                            INNER JOIN DomainUser secdu ON secdu.Id=secdus.DomainUser_Id
                         WHERE
-                            SessionHash=:SessionHash;";
+                            secdus.SessionHash=:SessionHash
+                        ORDER BY
+                            secdus.Id DESC;";
 
             $parans = [
                 "SessionHash" => $sessionHash
@@ -260,61 +339,9 @@ class NativeDataBase extends MainSession
                     else {
                         $this->securityStatus = SecurityStatus::SessionValid;
                         $this->authenticatedSession = $dtSession;
+                        $this->authenticatedSession["Id"] = (int)$this->authenticatedSession["Id"];
                     }
                 }
-            }
-        }
-    }
-
-
-
-    /**
-     * Verifica se o usuário carregado está bloqueado.
-     *
-     * @return      void
-     */
-    protected function checkIfAuthenticatedUserIsBloqued() : void
-    {
-        if ($this->authenticatedUser !== null) {
-            $strSQL = " SELECT
-                            COUNT(Id) as count
-                        FROM
-                            DomainUserBlockedAccess
-                        WHERE
-                            UserAgentIP=:UserAgentIP AND
-                            BlockTimeOut>=:BlockTimeOut AND
-                            DomainUser_Id=:DomainUser_Id;";
-
-            $parans = [
-                "UserAgentIP"   => $this->userAgentIP,
-                "BlockTimeOut"  => $this->now,
-                "DomainUser_Id" => $this->authenticatedUser["Id"]
-            ];
-
-            if ($this->DAL->getCountOf($strSQL, $parans) >= 1) {
-                $this->securityStatus = SecurityStatus::UserAccountIsBlocked;
-            }
-        }
-    }
-
-
-
-    /**
-     * Verifica se o usuário e sessão atualmente carregados possuem uma associação explicita
-     * um com o outro.
-     *
-     * @return      void
-     */
-    protected function checkIfAuthenticatedUserAndAuthenticatedSessionMatchs() : void
-    {
-        $this->securityStatus = SecurityStatus::UserSessionUnchecked;
-        if ($this->authenticatedUser !== null && $this->authenticatedSession !== null) {
-            if ($this->authenticatedUser["Id"] !== $this->authenticatedSession["DomainUser_Id"]) {
-                $this->securityStatus = SecurityStatus::UserSessionUnespected;
-            }
-            else {
-                $this->authenticatedUser["Session"] = $this->authenticatedSession;
-                $this->securityStatus = SecurityStatus::UserSessionAccepted;
             }
         }
     }
@@ -328,11 +355,7 @@ class NativeDataBase extends MainSession
      */
     protected function renewAuthenticatedSession() : void
     {
-        if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null &&
-            $this->authenticatedUser["Session"] === $this->authenticatedSession &&
-            $this->securityConfig->getIsSessionRenew() === true)
-        {
+        if ($this->securityConfig->getIsSessionRenew() === true) {
             $renewUntil = new \DateTime();
             $renewUntil->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
 
@@ -343,9 +366,7 @@ class NativeDataBase extends MainSession
                 "Id" => $this->authenticatedSession["Id"]
             ];
 
-            if ($this->DAL->updateSet("DomainUserSession", $paran, "Id") === true) {
-                $this->authenticatedUser["Session"] = $this->authenticatedSession;
-            }
+            $this->DAL->updateSet("DomainUserSession", $paran, "Id");
         }
     }
 
@@ -385,6 +406,7 @@ class NativeDataBase extends MainSession
     ) : bool {
         $r = false;
 
+        $this->getDAL();
         $this->executeLogout();
         $this->checkUserAgentIP();
         if ($this->securityStatus === SecurityStatus::UserAgentIPValid)
@@ -400,7 +422,7 @@ class NativeDataBase extends MainSession
             }
             else {
                 if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
-                    $this->checkIfAuthenticatedUserIsBloqued();
+                    $this->checkIfAuthenticatedUserIsBlocked();
 
                     if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
                         if ($this->authenticatedUser["Password"] !== $userPassword) {
@@ -409,14 +431,16 @@ class NativeDataBase extends MainSession
                                 $this->authenticatedUser["Id"],
                                 $this->securityConfig->getAllowedFaultByLogin(),
                                 $this->securityConfig->getLoginBlockTimeout(),
-                                "User"
+                                "UserName"
                             );
                         }
                         else {
                             $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession;
 
                             if ($grantPermission === "") {
-                                $r = $this->inityAuthenticatedSession();
+                                if ($this->registerAuthenticatedSession() === true) {
+                                    $r = $this->checkUserAgentSession();
+                                }
                             }
                             else {
                                 $r = $this->grantSpecialPermission($grantPermission, $sessionHash);
@@ -427,6 +451,46 @@ class NativeDataBase extends MainSession
             }
         }
 
+
+        if ($r === false) {
+            $this->authenticatedUser = null;
+            $this->authenticatedSession = null;
+        }
+
+        return $r;
+
+    }
+    /**
+     * Verifica se o UA possui uma sessão válida para ser usada.
+     *
+     * @return      bool
+     */
+    public function checkUserAgentSession() : bool
+    {
+        $r = false;
+        $this->getDAL();
+        $this->loadAuthenticatedSession();
+
+        if ($this->securityStatus === SecurityStatus::SessionValid) {
+            $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
+
+            if ($this->authenticatedUser === null) {
+                $this->loadAuthenticatedUser($this->authenticatedSession["DomainUser"]);
+            }
+
+            if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
+                $this->securityStatus = SecurityStatus::UserSessionUnchecked;
+
+                if ($this->authenticatedSession["DomainUser"] !== $this->authenticatedUser["Login"]) {
+                    $this->securityStatus = SecurityStatus::UserSessionUnespected;
+                }
+                else {
+                    $r = true;
+                    $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
+                    $this->renewAuthenticatedSession();
+                }
+            }
+        }
         return $r;
     }
     /**
@@ -437,9 +501,9 @@ class NativeDataBase extends MainSession
     public function executeLogout() : bool
     {
         $r = false;
-        if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null)
+        if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated)
         {
+            $this->getDAL();
             if ($this->DAL->deleteFrom("DomainUserSession", "Id", $this->authenticatedSession["Id"]) === true) {
                 $this->authenticatedSession = null;
                 $this->authenticatedUser = null;
@@ -486,8 +550,27 @@ class NativeDataBase extends MainSession
             $this->authenticatedUser["Id"]
         );
 
+
+        $parans = [
+            "UserAgent"         => $this->userAgent,
+            "UserAgentIP"       => $this->userAgentIP,
+            "MethodHTTP"        => "-",
+            "FullURL"           => "-",
+            "PostData"          => "{}",
+            "ApplicationName"   => $this->applicationName,
+            "ControllerName"    => "-",
+            "ActionName"        => "-",
+            "Activity"          => TypeOfActivity::MakeLogin,
+            "Note"              => null,
+            "DomainUser_Id"     => $userId,
+        ];
+        $r = $this->DAL->insertInto("DomainUserRequestLog", $parans);
+
+
+
         $minRegisterDate = new \DateTime($this->now->format("Y-m-d H:i:s"));
         $minRegisterDate->sub(new \DateInterval("PT" . $blockTimeout . "M"));
+
 
         $strSQL = " SELECT
                         COUNT(Id) as count
@@ -508,7 +591,6 @@ class NativeDataBase extends MainSession
             "DomainUser_Id"     => $userId
         ];
 
-
         if ($this->DAL->getCountOf($strSQL, $parans) >= $allowedFault) {
             $blockTimeOut = new \DateTime($this->now->format("Y-m-d H:i:s"));
             $blockTimeOut->add(new \DateInterval("PT" . $blockTimeout . "M"));
@@ -522,61 +604,11 @@ class NativeDataBase extends MainSession
             if ($this->DAL->insertInto("DomainUserBlockedAccess", $blockAccess) === true) {
                 $this->securityStatus = (
                     ($blockType === "IP") ?
-                    SecurityStatus::UserAgentIPBlocked :
+                    SecurityStatus::UserAgentIPHasBeenBlocked :
                     SecurityStatus::UserAccountHasBeenBlocked
                 );
             }
         }
-    }
-    /**
-     * Inicia os sets de segurança necessários para que uma
-     * sessão autenticada possa iniciar.
-     *
-     * @return      bool
-     *              Retornará ``true`` caso a ação tenha sido bem sucedida, ``false``
-     *              se houver alguma falha no processo.
-     */
-    protected function inityAuthenticatedSession() : bool
-    {
-        $r = false;
-
-        if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
-        {
-            $this->securityStatus = SecurityStatus::UserSessionLoginFail;
-
-            $userName       = $this->authenticatedUser["Login"];
-            $userProfile    = $this->authenticatedUser["ProfileInUse"];
-            $userLoginDate  = $this->now->format("Y-m-d H:i:s");
-            $sessionHash    = sha1($userName . $userProfile . $userLoginDate);
-
-
-            $expiresDate = new \DateTime();
-            $expiresDate->add(new \DateInterval("PT" . $this->securityConfig->getSessionTimeout() . "M"));
-            $this->securityCookie->setExpires($expiresDate);
-            $this->securityCookie->setValue($sessionHash);
-
-
-            if ($this->environment === "UTEST" ||
-                $this->securityCookie->defineCookie() === true)
-            {
-                $parans = [
-                    "SessionHash"       => $sessionHash,
-                    "SessionTimeOut"    => $expiresDate,
-                    "UserAgent"         => $this->userAgent,
-                    "UserAgentIP"       => $this->userAgentIP,
-                    "ProfileInUse"      => $userProfile,
-                    "GrantPermission"   => null,
-                    "DomainUser_Id"     => $this->authenticatedUser["Id"]
-                ];
-
-                if ($this->DAL->insertInto("DomainUserSession", $parans) === true) {
-                    $r = $this->authenticateUserAgentSession();
-                }
-            }
-        }
-
-        return $r;
     }
     /**
      * Concede um tipo especial de permissão para o usuário atualmente logado.
@@ -595,59 +627,27 @@ class NativeDataBase extends MainSession
     ) : bool {
         $r = false;
 
-        if ($this->authenticatedUser !== null &&
-            $this->securityStatus = SecurityStatus::UserAccountWaitingNewSession)
-        {
-            $pathToLocalData_LogFile_Session = $this->pathToLocalData_Sessions . DS . $sessionHash . ".json";
-            if (\file_exists($pathToLocalData_LogFile_Session) === true) {
-                $authenticatedSession = \AeonDigital\Tools\JSON::retrieve($pathToLocalData_LogFile_Session);
-                if ($authenticatedSession !== null) {
-                    $authenticatedSession["GrantPermission"] = $grantPermission;
+        $parans = [
+            "GrantPermission"   => $grantPermission,
+            "SessionHash"       => $sessionHash
+        ];
 
-                    $r = \AeonDigital\Tools\JSON::save(
-                        $pathToLocalData_LogFile_Session,
-                        $authenticatedSession);
-                }
-            }
-        }
-
-        return $r;
-    }
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Verifica se o UA possui uma sessão válida para ser usada.
-     *
-     * @return      bool
-     */
-    public function authenticateUserAgentSession() : bool
-    {
-        $r = false;
-        $this->loadAuthenticatedSession();
-
-        if ($this->securityStatus === SecurityStatus::SessionValid) {
-            $this->loadAuthenticatedUser($this->authenticatedSession["Login"]);
-
-            if ($this->securityStatus === SecurityStatus::UserAccountRecognizedAndActive) {
-                $this->checkIfAuthenticatedUserAndAuthenticatedSessionMatchs();
-
-                if ($this->securityStatus === SecurityStatus::UserSessionAccepted) {
-                    $r = true;
-                    $this->securityStatus = SecurityStatus::UserSessionAuthenticated;
-                    $this->renewAuthenticatedSession();
-                }
-            }
+        if ($this->DAL->updateSet("DomainUserSession", $parans, "SessionHash") === true) {
+            $r = true;
+            $this->authenticatedSession["GrantPermission"] = $grantPermission;
         }
         return $r;
     }
+
+
+
+
+
+
+
+
+
+
     /**
      * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
      * na coleção de perfis disponíveis para este mesmo usuário.
@@ -657,22 +657,53 @@ class NativeDataBase extends MainSession
     public function changeUserProfile(string $profile) : bool
     {
         $r = false;
-
-        if ($this->authenticatedUser !== null &&
-            $this->authenticatedSession !== null &&
-            $this->securityStatus === SecurityStatus::UserSessionAuthenticated)
-        {
+        if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated) {
+            $profilesObjects = [];
+            $DomainUserProfile_Id = null;
             foreach ($this->authenticatedUser["Profiles"] as $row) {
-                if ($this->applicationName === $row["Application"] &&
-                    $profile === $row["Profile"])
-                {
-                    $this->authenticatedUser["ProfileInUse"] = $row["Profile"];
-                    $this->authenticatedSession["ProfileInUse"] = $row["Profile"];
+                if ($row["ApplicationName"] === $this->applicationName) {
+                    $row["Selected"] = false;
+                    if ($row["Name"] === $profile) {
+                        $DomainUserProfile_Id = $row["Id"];
+                        $row["Selected"] = true;
+                    }
+                }
+                $profilesObjects[] = $row;
+            }
 
-                    $r = (  \AeonDigital\Tools\JSON::save(
-                                $this->pathToLocalData_File_User, $this->authenticatedUser) === true &&
-                            \AeonDigital\Tools\JSON::save(
-                                $this->pathToLocalData_LogFile_Session, $this->authenticatedSession) === true);
+            if ($DomainUserProfile_Id !== null) {
+                $strSQL = " UPDATE
+                                secdup_to_secdu dupdu
+                                INNER JOIN DomainUserProfile secdup ON dupdu.DomainUserProfile_Id=secdup.Id
+                            SET
+                                dupdu.ProfileSelected=0
+                            WHERE
+                                dupdu.DomainUser_Id=:DomainUser_Id AND
+                                secdup.ApplicationName=:ApplicationName;";
+
+                $parans = [
+                    "DomainUser_Id"     => $this->authenticatedUser["Id"],
+                    "ApplicationName"   => $this->applicationName
+                ];
+                if ($this->DAL->executeInstruction($strSQL, $parans) === true) {
+                    $strSQL = " UPDATE
+                                    secdup_to_secdu dupdu
+                                    INNER JOIN DomainUserProfile secdup ON dupdu.DomainUserProfile_Id=secdup.Id
+                                SET
+                                    dupdu.ProfileSelected=1
+                                WHERE
+                                    dupdu.DomainUser_Id=:DomainUser_Id AND
+                                    dupdu.DomainUserProfile_Id=:DomainUserProfile_Id AND
+                                    secdup.ApplicationName=:ApplicationName;";
+                    $parans = [
+                        "DomainUser_Id"         => $this->authenticatedUser["Id"],
+                        "DomainUserProfile_Id"  => $DomainUserProfile_Id,
+                        "ApplicationName"       => $this->applicationName
+                    ];
+                    if ($this->DAL->executeInstruction($strSQL, $parans) === true) {
+                        $r = true;
+                        $this->authenticatedUser["Profiles"] = $profilesObjects;
+                    }
                 }
             }
         }
@@ -700,7 +731,7 @@ class NativeDataBase extends MainSession
      * @param       string $activity
      *              Atividade executada.
      *
-     * @param       string $obs
+     * @param       string $note
      *              Observação.
      *
      * @return      bool
@@ -712,7 +743,7 @@ class NativeDataBase extends MainSession
         string $controller,
         string $action,
         string $activity,
-        string $obs
+        string $note
     ) : bool {
         $r = false;
 
@@ -722,7 +753,7 @@ class NativeDataBase extends MainSession
             $this->authenticatedUser["Id"]
         );
 
-        $logActivity = [
+        $parans = [
             "UserAgent"         => $this->userAgent,
             "UserAgentIP"       => $this->userAgentIP,
             "MethodHTTP"        => $methodHTTP,
@@ -732,11 +763,11 @@ class NativeDataBase extends MainSession
             "ControllerName"    => $controller,
             "ActionName"        => $action,
             "Activity"          => $activity,
-            "Note"              => $obs,
+            "Note"              => $note,
             "DomainUser_Id"     => $userId
         ];
 
-        $r = $this->DAL->insertInto("DomainUserRequestLog", $logActivity);
-        return $r;
+        $this->getDAL();
+        return $this->DAL->insertInto("DomainUserRequestLog", $parans);
     }
 }

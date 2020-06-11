@@ -198,7 +198,7 @@
     'modelFilePath' => 'DomainUserSession.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, RegisterDate, SessionHash, SessionTimeOut, UserAgent, UserAgentIP, ProfileInUse, GrantPermission FROM DomainUserSession WHERE Id=:Id;',
+      'select' => 'SELECT Id, RegisterDate, SessionHash, SessionTimeOut, UserAgent, UserAgentIP, GrantPermission FROM DomainUserSession WHERE Id=:Id;',
       'selectChild' => 
       array (
       ),

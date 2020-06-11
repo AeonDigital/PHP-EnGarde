@@ -19,6 +19,12 @@ class SecurityStatus
      */
     const UserAgentUndefined = "UserAgentUndefined";
     /**
+     * IP desabilitado por excesso de falhas ao tentar login.
+     *
+     * @var         string
+     */
+	const UserAgentIPHasBeenBlocked = "UserAgentIPHasBeenBlocked";
+    /**
      * O UA está usando um IP que está bloqueado.
      *
      * @var         string
