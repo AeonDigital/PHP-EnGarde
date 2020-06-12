@@ -235,6 +235,12 @@ class NativeLocal extends MainSession
                     foreach ($authenticatedUser["Profiles"] as $row) {
                         if ($this->applicationName === $row["ApplicationName"]) {
                             $hasProfileForThisApplication = true;
+
+                            if ($row["Selected"] === true ||
+                                ($this->profileInUse_Id === 0 && $row["Default"] === true)) {
+                                $this->profileInUse_Id = 1;
+                                $this->profileInUse_Name = $row["Name"];
+                            }
                         }
                     }
 
@@ -542,6 +548,30 @@ class NativeLocal extends MainSession
 
 
     /**
+     * Verifica se o usuário atualmente identificado possui permissão de acesso
+     * na rota identificada a partir do seu perfil em uso.
+     *
+     * @param       string $methodHTTP
+     *              Método HTTP sendo usado.
+     *
+     * @param       string $rawURL
+     *              URL evocada em seu estado bruto.
+     *
+     * @return      bool
+     */
+    public function checkRoutePermission(
+        string $methodHTTP,
+        string $rawURL
+    ) : bool
+    {
+        return true;
+    }
+
+
+
+
+
+    /**
      * Gerencia a criação de um arquivo de controle de acessos de IP/UserName e efetua a contagem de
      * falhas de autenticação em uma atividade de verificação de "UserName" ou "UserPassword" além de
      * definir o IP/UserName como bloqueado em casos em que atinja o limite de falhas permitidas.
@@ -691,12 +721,15 @@ class NativeLocal extends MainSession
             }
 
             $r = \AeonDigital\Tools\JSON::save($this->pathToLocalData_File_User, $this->authenticatedUser);
+            if ($r === true) {
+                $this->profileInUse_Name = $profile;
+            }
         }
 
         return $r;
     }
     /**
-     * Gera um registro de atividade para o usuário atual.
+     * Gera um registro de atividade para a requisição atual.
      *
      * @param       string $methodHTTP
      *              Método HTTP evocado.

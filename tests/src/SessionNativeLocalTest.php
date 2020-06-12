@@ -409,4 +409,26 @@ class SessionNativeLocalTest extends TestCase
         );
         $this->assertTrue($r);
     }
+
+
+
+
+
+    public function test_method_checkRoutePermission()
+    {
+        $obj = $this->provideObject();
+        $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
+        if (file_exists($this->pathToLocalData_LogFile_SuspectIP) === true) {
+            unlink($this->pathToLocalData_LogFile_SuspectIP);
+        }
+        if (file_exists($this->pathToLocalData_LogFile_SuspectLogin) === true) {
+            unlink($this->pathToLocalData_LogFile_SuspectLogin);
+        }
+
+
+
+        $r = $obj->checkRoutePermission("POST", "http://aeondigital.com.br/test");
+        $this->assertTrue($r);
+        $this->assertEquals("", $obj->getRouteRedirect());
+    }
 }

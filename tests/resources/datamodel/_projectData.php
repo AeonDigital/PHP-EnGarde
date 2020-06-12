@@ -130,6 +130,13 @@
             1 => 'DomainUser_Id',
           ),
         ),
+        'RoutesPermissions' => 
+        array (
+          'select' => 'SELECT Id as fkId FROM DomainUserProfileRoute WHERE DomainUserProfile_Id=:Id;',
+          'oColumnFK' => NULL,
+          'linkTableName' => NULL,
+          'linkTableColumns' => NULL,
+        ),
       ),
       'selectParentId' => 
       array (
@@ -137,14 +144,53 @@
       'attatchWith' => 
       array (
         'DomainUser' => 'INSERT INTO secdup_to_secdu (DomainUserProfile_Id, DomainUser_Id) VALUES (:thisId, :tgtId);',
+        'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=:thisId WHERE Id=:tgtId;',
       ),
       'detachWith' => 
       array (
         'DomainUser' => 'DELETE FROM secdup_to_secdu WHERE DomainUserProfile_Id=:thisId AND DomainUser_Id=:tgtId;',
+        'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:tgtId;',
       ),
       'detachWithAll' => 
       array (
         'DomainUser' => 'DELETE FROM secdup_to_secdu WHERE DomainUserProfile_Id=:thisId;',
+        'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE DomainUserProfile_Id=:thisId;',
+      ),
+      'oColumn' => 
+      array (
+      ),
+      'singleFK' => 
+      array (
+      ),
+      'collectionFK' => 
+      array (
+      ),
+    ),
+  ),
+  'DomainUserProfileRoute' => 
+  array (
+    'modelFilePath' => 'DomainUserProfileRoute.php',
+    'ormInstructions' => 
+    array (
+      'select' => 'SELECT Id, MethodHTTP, RawURL, Allow, RedirectTo FROM DomainUserProfileRoute WHERE Id=:Id;',
+      'selectChild' => 
+      array (
+      ),
+      'selectParentId' => 
+      array (
+        'DomainUserProfile' => 'SELECT DomainUserProfile_Id FROM DomainUserProfileRoute WHERE Id=:thisId;',
+      ),
+      'attatchWith' => 
+      array (
+        'DomainUserProfile' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=:tgtId WHERE Id=:thisId;',
+      ),
+      'detachWith' => 
+      array (
+        'DomainUserProfile' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:thisId;',
+      ),
+      'detachWithAll' => 
+      array (
+        'DomainUserProfile' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:thisId;',
       ),
       'oColumn' => 
       array (

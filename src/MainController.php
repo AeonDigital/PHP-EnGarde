@@ -264,4 +264,35 @@ abstract class MainController implements iController
     {
         return $this->serverConfig->getServerRequest()->getParam($name);
     }
+
+
+
+
+
+    /**
+     * Gera um registro de atividade para a requisição atual.
+     *
+     * @param       string $activity
+     *              Atividade executada.
+     *
+     * @param       string $note
+     *              Observação.
+     *
+     * @return      bool
+     */
+    protected function registerLogActivity(
+        string $activity,
+        string $note
+    ) : bool {
+        $securitySession = $this->serverConfig->getSecuritySession();
+        return $securitySession->registerLogActivity(
+            $this->routeConfig->getMethod(),
+            $this->serverConfig->getApplicationRequestUri() . $this->serverConfig->getRequestQueryStrings(),
+            $this->serverConfig->getServerRequest()->getPostedFields(),
+            $this->routeConfig->getController(),
+            $this->routeConfig->getAction(),
+            $activity,
+            $note
+        );
+    }
 }

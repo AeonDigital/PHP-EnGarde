@@ -410,4 +410,27 @@ class SessionNativeDataBaseTest extends TestCase
         );
         $this->assertTrue($r);
     }
+
+
+
+
+
+    public function test_method_checkRoutePermission()
+    {
+        $this->cleanLogDataTables();
+        $obj = $this->provideObject();
+
+
+
+        $this->assertTrue($obj->executeLogin("rianna", sha1("senhateste")));
+        $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/dashboard"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/forbiden"));
+        $this->assertFalse($obj->checkRoutePermission("GET", "/site/nonexists"));
+
+        $this->assertTrue($obj->changeUserProfile("Administrador"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/dashboard"));
+        $this->assertFalse($obj->checkRoutePermission("GET", "/site/forbiden"));
+        $this->assertFalse($obj->checkRoutePermission("GET", "/site/nonexists"));
+    }
 }

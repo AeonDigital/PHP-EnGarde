@@ -138,17 +138,38 @@ abstract class MainApplication implements iApplication
             $hasAuthentication = $securitySession->checkUserAgentSession();
 
             // SE
-            //  o UA não está autenticado
-            // E
-            //  a rota não possui uma configuração específica,
-            // OU
-            //  está configurada como uma rota protegida
-            if ($hasAuthentication === false &&
-                (isset($this->routeConfig) === false || $this->routeConfig->getIsSecure() === true))
-            {
-                $this->serverConfig->redirectTo(
-                    $securityConfig->getRouteToLogin(), 401
-                );
+            //  o UA está identificado
+            if ($hasAuthentication === true) {
+                // SE
+                //  a rota possui uma configuração própria
+                if (isset($this->routeConfig) === true) {
+                    // SE
+                    //  a configuração indica que trata-se mesmo de uma rota protegida.
+                    if ($this->routeConfig->getIsSecure() === true) {
+                        $permission = $securitySession->checkRoutePermission(
+                            $this->routeConfig->getMethod(),
+                            $this->routeConfig->getRoutes()[0]
+                        );
+                        if ($permission === true) {
+                            $this->serverConfig->redirectTo(
+                                $securityConfig->getRouteRedirect(), 403
+                            );
+                        }
+                    }
+                }
+            }
+            // SENÃO
+            //  o UA não é reconhecido
+            else {
+                // SE
+                //  não existe uma configuração para a rota
+                // OU
+                //  a configuração informa que trata-se de um recurso protegido
+                if (isset($this->routeConfig) === false || $this->routeConfig->getIsSecure() === true) {
+                    $this->serverConfig->redirectTo(
+                        $securityConfig->getRouteToLogin(), 401
+                    );
+                }
             }
         }
     }
@@ -173,7 +194,7 @@ abstract class MainApplication implements iApplication
             $responseCacheFileContents = \file_get_contents($this->getCacheFileName());
 
             // Resgata os headers a serem usados para o envio.
-            $headers = strtok($responseCacheFileContents, "\n");
+            $headers = \strtok($responseCacheFileContents, "\n");
             $this->response = $this->response->withHeaders(\json_decode($headers, true));
 
 
@@ -216,7 +237,7 @@ abstract class MainApplication implements iApplication
                     foreach ($middlewares as $callMiddleware) {
 
                         // Se o middleware está registrado com seu nome completo
-                        if (class_exists($callMiddleware) === true) {
+                        if (\class_exists($callMiddleware) === true) {
                             $requestHandler->add(new $callMiddleware());
                         }
                         // Senão, o middleware registrado deve corresponder a um
@@ -240,7 +261,7 @@ abstract class MainApplication implements iApplication
                 // Caso necessário, inicia o buffer
                 // Com isso, esconderá todas as saídas explicitas originarias
                 // dos middlewares e da action.
-                if ($hideAllOutputs === true) { ob_start("mb_output_handler"); }
+                if ($hideAllOutputs === true) { \ob_start("mb_output_handler"); }
 
 
                 // Executa os middlewares e action alvo retornando
@@ -252,7 +273,7 @@ abstract class MainApplication implements iApplication
 
 
                 // Caso necessário, esvazia o buffer e encerra-o
-                if ($hideAllOutputs === true) { ob_end_clean(); }
+                if ($hideAllOutputs === true) { \ob_end_clean(); }
 
 
                 // Efetua o envio dos dados obtidos e processados para o UA.
@@ -261,6 +282,20 @@ abstract class MainApplication implements iApplication
                 // Cria o arquivo de cache, se for necessário.
                 $this->saveOrUpdateResponseCache();
             }
+        }
+
+
+        // Se a rota necessita ter seus acessos registrados
+        if (isset($this->routeConfig) === true && $this->routeConfig->getIsAutoLog() === true) {
+            $this->serverConfig->getSecuritySession()->registerLogActivity(
+                $this->routeConfig->getMethod(),
+                $this->serverConfig->getApplicationRequestUri() . $this->serverConfig->getRequestQueryStrings(),
+                $this->serverConfig->getServerRequest()->getPostedFields(),
+                $this->routeConfig->getController(),
+                $this->routeConfig->getAction(),
+                "autolog",
+                ""
+            );
         }
     }
 
@@ -302,7 +337,7 @@ abstract class MainApplication implements iApplication
             $totalLength    = $streamBody->getSize();
             $haveToSend     = $totalLength;
             while ($haveToSend > 0 && $streamBody->eof() === false) {
-                $strPart = $streamBody->read(min($partLength, $haveToSend));
+                $strPart = $streamBody->read(\min($partLength, $haveToSend));
                 echo $strPart;
 
                 $haveToSend -= $partLength;

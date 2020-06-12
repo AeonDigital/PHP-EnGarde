@@ -59,6 +59,13 @@
             'fkDescription' => 'Perfil em Usuários',
             'fkLinkTable' => true,
             'fkAllowNull' => false,
+        ],
+        [
+            'name' => 'RoutesPermissions',
+            'description' => 'Coleção de configurações para as rotas relacionadas a este perfil.',
+            'fkTableName' => 'DomainUserProfileRoute[]',
+            'fkDescription' => 'Perfil relacionado a esta rota',
+            'fkAllowNull' => false,
         ]
     ]
 ];

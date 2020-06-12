@@ -74,6 +74,18 @@ abstract class MainSession extends BObject implements iSession
      * @var         iSecurity
      */
     protected iSecurity $securityConfig;
+    /**
+     * Nome do perfil do usuário atualmente sendo usado.
+     *
+     * @var         string
+     */
+    protected string $profileInUse_Name = "";
+    /**
+     * Id do perfil do usuário atualmente sendo usado.
+     *
+     * @var         int
+     */
+    protected int $profileInUse_Id = 0;
 
 
 
@@ -161,19 +173,7 @@ abstract class MainSession extends BObject implements iSession
      */
     public function retrieveUserProfile() : ?string
     {
-        $r = null;
-        if ($this->authenticatedUser !== null) {
-            $default = null;
-            $selected = null;
-            foreach ($this->authenticatedUser["Profiles"] as $row) {
-                if ($row["ApplicationName"] === $this->applicationName) {
-                    if ($row["Default"] === true) { $default = $row["Name"]; }
-                    if ($row["Selected"] === true) { $selected = $row["Name"]; }
-                }
-            }
-            $r = $selected ?? $default;
-        }
-        return $r;
+        return (($this->authenticatedUser === null) ? null : $this->profileInUse_Name);
     }
     /**
      * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
@@ -245,6 +245,28 @@ abstract class MainSession extends BObject implements iSession
             }
         }
         return $this->DAL;
+    }
+
+
+
+
+
+    /**
+     * URI para a qual o usuário deve ser direcionado em caso de falha
+     * na verificação de permissão da rota atual.
+     *
+     * @var         string
+     */
+    protected string $routeRedirect = "";
+    /**
+     * Retorna uma URI para a qual o usuário deve ser direcionado em caso de falha
+     * na verificação de permissão da rota atual.
+     *
+     * @return      string
+     */
+    public function getRouteRedirect() : string
+    {
+        return $this->routeRedirect;
     }
 
 

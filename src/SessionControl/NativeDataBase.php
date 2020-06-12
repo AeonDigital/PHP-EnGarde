@@ -185,6 +185,12 @@ class NativeDataBase extends MainSession
                     ];
                     if ($this->applicationName === $row["secdup_ApplicationName"]) {
                         $hasProfileForThisApplication = true;
+
+                        if ((bool)$row["secdup_ProfileSelected"] === true ||
+                            ($this->profileInUse_Id === 0 && (bool)$row["secdup_ProfileDefault"] === true)) {
+                            $this->profileInUse_Id = (int)$row["secdup_Id"];
+                            $this->profileInUse_Name = $row["secdup_Name"];
+                        }
                     }
                 }
 
@@ -519,6 +525,55 @@ class NativeDataBase extends MainSession
 
 
     /**
+     * Verifica se o usuário atualmente identificado possui permissão de acesso
+     * na rota identificada a partir do seu perfil em uso.
+     *
+     * @param       string $methodHTTP
+     *              Método HTTP sendo usado.
+     *
+     * @param       string $rawURL
+     *              URL evocada em seu estado bruto.
+     *
+     * @return      bool
+     */
+    public function checkRoutePermission(
+        string $methodHTTP,
+        string $rawURL
+    ) : bool {
+        $r = false;
+        $this->getDAL();
+
+        $strSQL = " SELECT
+                        Allow, RedirectTo
+                    FROM
+                        DomainUserProfileRoute
+                    WHERE
+                        MethodHTTP=:MethodHTTP AND
+                        RawURL=:RawURL AND
+                        DomainUserProfile_Id=:DomainUserProfile_Id;";
+
+        $parans = [
+            "MethodHTTP"            => $methodHTTP,
+            "RawURL"                => $rawURL,
+            "DomainUserProfile_Id"  => $this->profileInUse_Id
+        ];
+
+        $routePermission = $this->DAL->getDataRow($strSQL, $parans);
+        if ($routePermission !== null) {
+            $r = (bool)$routePermission["Allow"];
+            $this->routeRedirect = $routePermission["RedirectTo"];
+        }
+        else {
+            $this->routeRedirect = "";
+        }
+
+        return $r;
+    }
+
+
+
+
+    /**
      * Verifica quando a tentativa sucessiva de login atinjiu algum dos limites estipulados e então
      * gera um registro de bloqueio para aquele IP/User.
      *
@@ -702,6 +757,8 @@ class NativeDataBase extends MainSession
                     ];
                     if ($this->DAL->executeInstruction($strSQL, $parans) === true) {
                         $r = true;
+                        $this->profileInUse_Id = $DomainUserProfile_Id;
+                        $this->profileInUse_Name = $profile;
                         $this->authenticatedUser["Profiles"] = $profilesObjects;
                     }
                 }
@@ -711,7 +768,7 @@ class NativeDataBase extends MainSession
         return $r;
     }
     /**
-     * Gera um registro de atividade para o usuário atual.
+     * Gera um registro de atividade para a requisição atual.
      *
      * @param       string $methodHTTP
      *              Método HTTP evocado.
@@ -763,7 +820,7 @@ class NativeDataBase extends MainSession
             "ControllerName"    => $controller,
             "ActionName"        => $action,
             "Activity"          => $activity,
-            "Note"              => $note,
+            "Note"              => (($note === "") ? null : $note),
             "DomainUser_Id"     => $userId
         ];
 

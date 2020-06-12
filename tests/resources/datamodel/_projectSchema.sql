@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-11-18-36-07
+ * Generated in 2020-06-12-01-09-47
 */
 
 /*--INI CREATE TABLE--*/
@@ -42,6 +42,20 @@ CREATE TABLE DomainUserProfile (
     Description VARCHAR(255) NOT NULL COMMENT 'Descrição deste grupo de segurança.', 
     PRIMARY KEY (Id)
 ) COMMENT 'Define um perfil de segurança para um conjunto de usuários';
+/*--END CREATE TABLE--*/
+
+
+
+/*--INI CREATE TABLE--*/
+CREATE TABLE DomainUserProfileRoute (
+    Id BIGINT NOT NULL AUTO_INCREMENT, 
+    MethodHTTP VARCHAR(8) NOT NULL COMMENT 'Método HTTP evocado na execução da requisição.', 
+    RawURL VARCHAR(255) NOT NULL COMMENT 'URI da rota a qual esta regra corresponde.', 
+    Allow TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Permissão para esta rota.', 
+    RedirectTo VARCHAR(255) COMMENT 'URL para onde o usuário deve ser redirecionado caso não possa visitar esta rota.', 
+    DomainUserProfile_Id BIGINT NOT NULL COMMENT 'Perfil relacionado a esta rota', 
+    PRIMARY KEY (Id)
+) COMMENT 'Configuração de uma rota para um perfil de segurança';
 /*--END CREATE TABLE--*/
 
 
@@ -120,6 +134,11 @@ INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SE
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Administrador") FROM DomainUser;
 UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=2;
 UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=2 AND DomainUser_Id=5;
+ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT fk_secdupr_to_secdup_DomainUserProfile_Id FOREIGN KEY (DomainUserProfile_Id) REFERENCES DomainUserProfile(Id);
+ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawURL_DomainUserProfile_Id UNIQUE (MethodHTTP, RawURL, DomainUserProfile_Id);
+INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/dashboard", 1, "/site/home" Id FROM DomainUserProfile);
+INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/forbiden", 1, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");
+INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/forbiden", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Administrador");
 ALTER TABLE DomainUserRequestLog ADD CONSTRAINT fk_secdurl_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id);
 ALTER TABLE DomainUserSession ADD CONSTRAINT uc_secdus_SessionHash UNIQUE (SessionHash);
 CREATE INDEX idx_secdus_SessionHash ON DomainUserSession (SessionHash);
@@ -134,5 +153,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-11-18-36-07
+ * Generated in 2020-06-12-01-09-47
 */
