@@ -467,11 +467,16 @@ final class Application extends BObject implements iApplication
      */
     public function getPathToLocalData(bool $fullPath = false) : string
     {
-        return (
-            ($fullPath === false) ?
-            $this->pathToLocalData :
-            $this->appRootPath . $this->pathToLocalData
-        );
+        if ($this->pathToLocalData === "") {
+            return "";
+        }
+        else {
+            return (
+                ($fullPath === false) ?
+                $this->pathToLocalData :
+                $this->appRootPath . $this->pathToLocalData
+            );
+        }
     }
     /**
      * Define o caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
@@ -1076,7 +1081,7 @@ final class Application extends BObject implements iApplication
                 "pathToViewsResources"      => DS . "resources",
                 "pathToLocales"             => DS . "locales",
                 "pathToCacheFiles"          => DS . "cache",
-                "pathToLocalData"           => DS . "localData",
+                "pathToLocalData"           => "",
                 "startRoute"                => "/",
                 "controllersNamespace"      => "\\$appName\\controllers",
                 "locales"                   => [],

@@ -9,8 +9,8 @@ use AeonDigital\Interfaces\Http\iFactory as iFactory;
 use AeonDigital\Interfaces\Http\Message\iServerRequest as iServerRequest;
 use AeonDigital\EnGarde\Interfaces\Config\iApplication as iApplication;
 use AeonDigital\EnGarde\Interfaces\Config\iSecurity as iSecurity;
+use AeonDigital\EnGarde\Interfaces\Engine\iSession as iSession;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
-
 
 /**
  * Implementação de "Config\iServer".
@@ -23,7 +23,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 final class Server extends BObject implements iServer
 {
     use \AeonDigital\Traits\MainCheckArgumentException;
-
+    use \AeonDigital\Http\Traits\HTTPRawStatusCode;
 
 
 
@@ -117,6 +117,40 @@ final class Server extends BObject implements iServer
     public function getRequestHTTPVersion() : string
     {
         return $this->SERVER["SERVER_PROTOCOL"];
+    }
+    /**
+     * Resgata a identificação do UA que está executando esta requisição.
+     *
+     * @return      string
+     */
+    public function getRequestUserAgent() : string
+    {
+        return $this->SERVER["HTTP_USER_AGENT"];
+    }
+    /**
+     * Retorna o ``IP`` do UA que está executando esta requisição.
+     *
+     * @return      string
+     */
+    public function getRequestUserAgentIP() : string
+    {
+        $ip = "";
+
+        if (\getenv("HTTP_CLIENT_IP") !== false) {
+            $ip = \getenv("HTTP_CLIENT_IP");
+        } elseif (\getenv("HTTP_X_FORWARDED_FOR") !== false) {
+            $ip = \getenv("HTTP_X_FORWARDED_FOR");
+        } elseif (\getenv("HTTP_X_FORWARDED") !== false) {
+            $ip = \getenv("HTTP_X_FORWARDED");
+        } elseif (\getenv("HTTP_FORWARDED_FOR") !== false) {
+            $ip = \getenv("HTTP_FORWARDED_FOR");
+        } elseif (\getenv("HTTP_FORWARDED") !== false) {
+            $ip = \getenv("HTTP_FORWARDED");
+        } elseif (\getenv("REMOTE_ADDR") !== false) {
+            $ip = \getenv("REMOTE_ADDR");
+        }
+
+        return $ip;
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
@@ -261,35 +295,6 @@ final class Server extends BObject implements iServer
         }
 
         return $str;
-    }
-
-
-
-    /**
-     * Retorna o ``IP`` do usuário que está no momento visitando o site.
-     * Um valor vazio em retorno indica que não foi possível identificar o ``IP``.
-     *
-     * @return      string
-     */
-    public function getClientIP() : string
-    {
-        $ip = "";
-
-        if (\getenv("HTTP_CLIENT_IP") !== false) {
-            $ip = \getenv("HTTP_CLIENT_IP");
-        } elseif (\getenv("HTTP_X_FORWARDED_FOR") !== false) {
-            $ip = \getenv("HTTP_X_FORWARDED_FOR");
-        } elseif (\getenv("HTTP_X_FORWARDED") !== false) {
-            $ip = \getenv("HTTP_X_FORWARDED");
-        } elseif (\getenv("HTTP_FORWARDED_FOR") !== false) {
-            $ip = \getenv("HTTP_FORWARDED_FOR");
-        } elseif (\getenv("HTTP_FORWARDED") !== false) {
-            $ip = \getenv("HTTP_FORWARDED");
-        } elseif (\getenv("REMOTE_ADDR") !== false) {
-            $ip = \getenv("REMOTE_ADDR");
-        }
-
-        return $ip;
     }
 
 
@@ -1413,7 +1418,7 @@ final class Server extends BObject implements iServer
      *
      * @var         ?iSecurity
      */
-    private ?iSecurity $securityConfig = null;
+    private iSecurity $securityConfig;
     /**
      * Retorna a instância ``Config\iSecurity`` a ser usada.
      *
@@ -1422,26 +1427,59 @@ final class Server extends BObject implements iServer
      * @param       array $config
      *              Array associativo contendo as configurações para esta instância.
      *
-     * @return      ?iSecurity
+     * @return      iSecurity
      */
-    public function getSecurityConfig(array $config = []) : ?iSecurity
+    public function getSecurityConfig(array $config = []) : iSecurity
     {
         if (isset($this->securityConfig) === false && $config !== []) {
-            // Seleciona o grupo de credenciais a serem utilizadas para este UA nesta aplicação.
-            //$config["dbCre dentials"] = ENV_DATABASE[$this->getEnvironmentType()][$this->getApplicationName()];
-
-
-            // Identifica o código de autenticação do UA, se houver
-            // Tenta resgatar do cookie de autenticação
-            //$secCookie = (
-            //    (\key_exists("securityCookieName", $config) === true) ?
-            //    $config["securityCookieName"] :
-            //    ""
-            //);
-            //$config["authUserInfo"] = (string)$this->getServerRequest()->getCookie($secCookie);
             $this->securityConfig = \AeonDigital\EnGarde\Config\Security::fromArray($config);
         }
         return $this->securityConfig;
+    }
+
+
+
+    /**
+     * Instância ``iSession`` a ser usada.
+     *
+     * @var         iSession
+     */
+    private iSession $securitySession;
+    /**
+     * Retorna uma instância ``iSession`` para efetuar o controle de sessão
+     * de UA dentro da aplicação.
+     *
+     * @return      iSession
+     */
+    public function getSecuritySession() : iSession
+    {
+        if (isset($this->securitySession) === false) {
+            $sessionNS = $this->getSecurityConfig()->getSessionNamespace();
+            $securityCookie = $this->getServerRequest()->getCookie(
+                $this->getSecurityConfig()->getSecurityCookieName()
+            );
+            if ($securityCookie === null) {
+                $securityCookie = new \AeonDigital\Http\Data\Cookie(
+                    $this->getSecurityConfig()->getSecurityCookieName(), "", null,
+                    $this->getRequestDomainName(), "/",
+                    $this->getForceHTTPS(), true
+                );
+            }
+
+            $this->securitySession = new $sessionNS(
+                $this->getNow(),
+                $this->getEnvironmentType(),
+                $this->getApplicationName(),
+                $this->getRequestUserAgent(),
+                $this->getRequestUserAgentIP(),
+                $this->getSecurityConfig(),
+                $securityCookie,
+                $this->getApplicationConfig()->getPathToLocalData(true),
+                ((\defined("ENV_DATABASE") === true) ? ENV_DATABASE : [])
+            );
+        }
+
+        return $this->securitySession;
     }
 
 
@@ -1583,6 +1621,37 @@ final class Server extends BObject implements iServer
     public function getRawRouteConfig() : ?array
     {
         return $this->rawRouteConfig;
+    }
+
+
+
+
+
+    /**
+     * Redireciona o ``UA`` para a URL indicada.
+     *
+     * Esta ação interrompe o script imediatamente após o redirecionamento.
+     *
+     * @param       string $url
+     *              URL para onde o ``UA`` será redirecionado.
+     *
+     * @param       int $code
+     *              Código HTTP.
+     *
+     * @param       string $message
+     *              Mensagem HTTP.
+     *              Se nenhuma for informada irá usar a mensagem padrão que corresponda
+     *              ao código HTTP indicado.
+     *
+     * @return      void
+     */
+    public function redirectTo(string $url, int $code = 302, string $message = "") : void
+    {
+        if (isset(self::$rawStatusCode[$code]) === true && $message === "") {
+            $message = self::$rawStatusCode[$code];
+        }
+        $httpStatusCode = $this->getRequestHTTPVersion() . " $code $message";
+        \redirect($url, $httpStatusCode);
     }
 
 

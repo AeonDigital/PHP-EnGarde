@@ -6,8 +6,8 @@ namespace AeonDigital\EnGarde;
 use AeonDigital\BObject as BObject;
 use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
+use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-
 
 
 
@@ -40,7 +40,12 @@ abstract class MainApplication implements iApplication
      * @var         iResponse
      */
     protected iResponse $response;
-
+    /**
+     * Objeto ``iRoute`` da rota atualmente sendo executada.
+     *
+     * @var         iRoute
+     */
+    protected iRoute $routeConfig;
 
 
 
@@ -97,21 +102,57 @@ abstract class MainApplication implements iApplication
 
         // Identifica a rota e inicia o objeto de configuração da mesma
         // baseado na URI que a aplicação deseja.
-        $rc = $serverConfig->getRouteConfig(
-            $router->selectTargetRawRoute(
-                $serverConfig->getApplicationRequestUri()
-            ),
-            true
-        );
-
-
-        // Inicia o objeto de configuração de segurança.
-        $serverConfig->getSecurityConfig($this->defaultSecurityConfig);
+        if ($serverConfig->getRouteConfig(
+                $router->selectTargetRawRoute($serverConfig->getApplicationRequestUri()), true) !== null) {
+            $this->routeConfig = $serverConfig->getRouteConfig();
+        }
 
 
         // Define a propriedade de configuração que está sendo usada.
         $this->serverConfig = $serverConfig;
+        // Executa o protocolo de segurança da aplicação.
+        $this->applySecuritySettings();
     }
+
+
+
+
+
+    /**
+     * Inicia as instâncias de objetos responsáveis pela segurança da aplicação e efetua
+     * todas as verificações possíveis para identificar se o UA tem ou não condições de executar
+     * a rota que está requisitando.
+     *
+     * Conforme as configurações irá enviar o UA para uma das rotas definidas.
+     *
+     * @return      void
+     */
+    private function applySecuritySettings() : void
+    {
+        // Inicia os objetos de configurações de segurança.
+        $securityConfig = $this->serverConfig->getSecurityConfig($this->defaultSecurityConfig);
+        $securitySession = $this->serverConfig->getSecuritySession();
+
+        // Apenas se a aplicação possui alguma configuração de segurança
+        if ($securityConfig->getIsActive() === true) {
+            $hasAuthentication = $securitySession->checkUserAgentSession();
+
+            // SE
+            //  o UA não está autenticado
+            // E
+            //  a rota não possui uma configuração específica,
+            // OU
+            //  está configurada como uma rota protegida
+            if ($hasAuthentication === false &&
+                (isset($this->routeConfig) === false || $this->routeConfig->getIsSecure() === true))
+            {
+                $this->serverConfig->redirectTo(
+                    $securityConfig->getRouteToLogin(), 401
+                );
+            }
+        }
+    }
+
 
 
 
@@ -149,10 +190,10 @@ abstract class MainApplication implements iApplication
         else {
             // Se este não for o método a ser executado para
             // resolver esta rota, evoca o método alvo.
-            if ($this->serverConfig->getRouteConfig() !== null &&
-                $this->serverConfig->getRouteConfig()->getRunMethodName() !== "run")
+            if (isset($this->routeConfig) === true &&
+                $this->routeConfig->getRunMethodName() !== "run")
             {
-                $exec = $this->serverConfig->getRouteConfig()->getRunMethodName();
+                $exec = $this->routeConfig->getRunMethodName();
                 $this->$exec();
             }
             else {
@@ -170,8 +211,8 @@ abstract class MainApplication implements iApplication
 
 
                 // Registra os middlewares caso existam
-                if ($this->serverConfig->getRouteConfig() !== null) {
-                    $middlewares = $this->serverConfig->getRouteConfig()->getMiddlewares();
+                if (isset($this->routeConfig) === true) {
+                    $middlewares = $this->routeConfig->getMiddlewares();
                     foreach ($middlewares as $callMiddleware) {
 
                         // Se o middleware está registrado com seu nome completo
@@ -286,8 +327,8 @@ abstract class MainApplication implements iApplication
      */
     private function isRouteCacheable() : bool
     {
-        return ($this->serverConfig->getRouteConfig() !== null &&
-                $this->serverConfig->getRouteConfig()->getIsUseCache() === true);
+        return (isset($this->routeConfig) === true &&
+                $this->routeConfig->getIsUseCache() === true);
     }
     /**
      * Monta o caminho completo do arquivo de cache correspondente a rota que está sendo executada
@@ -318,7 +359,7 @@ abstract class MainApplication implements iApplication
             $this->cacheFileName = \to_system_path(
                 $this->serverConfig->getApplicationConfig()->getPathToCacheFiles(true) .
                 DS .
-                $baseCacheFileName . $qs . "." . $this->serverConfig->getRouteConfig()->getResponseMime()
+                $baseCacheFileName . $qs . "." . $this->routeConfig->getResponseMime()
             );
         }
         return $this->cacheFileName;
@@ -359,7 +400,7 @@ abstract class MainApplication implements iApplication
                 $fileLastMod->setTimestamp(\filemtime($cacheFileName));
 
                 $diff = $fileLastMod->diff($this->serverConfig->getNow());
-                $r = ($diff->format("%i") < $this->serverConfig->getRouteConfig()->getCacheTimeout());
+                $r = ($diff->format("%i") < $this->routeConfig->getCacheTimeout());
             }
         }
 

@@ -375,7 +375,7 @@ class ResponseHandler implements iResponseHandler
         $useBody = [
             "requestDate"   => $this->serverConfig->getNow()->format("D, d M Y H:i:s"),
             "responseDate"  => $now->format("D, d M Y H:i:s"),
-            "requestIP"     => $this->serverConfig->getClientIP(),
+            "requestIP"     => $this->serverConfig->getRequestUserAgentIP(),
             "requestURI"       => [
                 "protocol"          => $this->serverConfig->getServerRequest()->getUri()->getScheme(),
                 "version"           => $this->serverConfig->getRequestHTTPVersion(),

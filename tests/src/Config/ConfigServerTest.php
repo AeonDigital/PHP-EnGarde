@@ -79,6 +79,39 @@ class ConfigServerTest extends TestCase
     }
 
 
+    public function test_method_get_request_user_agent()
+    {
+        global $defaultServerVariables;
+        $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
+        $this->assertSame(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
+            $nMock->getRequestUserAgent()
+        );
+    }
+
+
+    public function test_method_get_request_user_agent_ip()
+    {
+        $strTest = [
+            "REMOTE_ADDR"           => "192.168.0.6",
+            "HTTP_FORWARDED"        => "192.168.0.5",
+            "HTTP_FORWARDED_FOR"    => "192.168.0.4",
+            "HTTP_X_FORWARDED"      => "192.168.0.3",
+            "HTTP_X_FORWARDED_FOR"  => "192.168.0.2",
+            "HTTP_CLIENT_IP"        => "192.168.0.1"
+        ];
+
+        global $defaultServerVariables;
+        $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
+
+        foreach ($strTest as $k => $v) {
+            putenv($k . "=" . $v);
+            $result = $nMock->getRequestUserAgentIP();
+            $this->assertEquals($v, $result);
+        }
+    }
+
+
     public function test_method_get_request_is_use_https()
     {
         global $dirResources;
@@ -239,28 +272,6 @@ class ConfigServerTest extends TestCase
         ]);
         $result = $nMock->getCurrentURI();
         $this->assertSame("http://test.server.com.br:8080", $result);
-    }
-
-
-    public function test_method_get_client_ip()
-    {
-        $strTest = [
-            "REMOTE_ADDR"           => "192.168.0.6",
-            "HTTP_FORWARDED"        => "192.168.0.5",
-            "HTTP_FORWARDED_FOR"    => "192.168.0.4",
-            "HTTP_X_FORWARDED"      => "192.168.0.3",
-            "HTTP_X_FORWARDED_FOR"  => "192.168.0.2",
-            "HTTP_CLIENT_IP"        => "192.168.0.1"
-        ];
-
-        global $defaultServerVariables;
-        $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-
-        foreach ($strTest as $k => $v) {
-            putenv($k . "=" . $v);
-            $result = $nMock->getClientIP();
-            $this->assertEquals($v, $result);
-        }
     }
 
 
