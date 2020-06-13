@@ -757,6 +757,7 @@ final class Application extends BObject implements iApplication
             "routes"            => [],
             "runMethodName"     => "",
             "customProperties"  => [],
+            "isAutoLog"         => false,
             "description"       => "",
             "devDescription"    => "",
             "relationedRoutes"  => [],
@@ -777,7 +778,7 @@ final class Application extends BObject implements iApplication
         // Coleção de propriedades que podem ser definidas
         $allowedProperties = [
             "allowedMethods", "allowedMimeTypes", "isUseXHTML", "runMethodName", "customProperties",
-            "description", "devDescription", "middlewares", "isSecure", "isUseCache",
+            "isAutoLog", "description", "devDescription", "middlewares", "isSecure", "isUseCache",
             "cacheTimeout", "responseHeaders", "masterPage", "view", "styleSheets",
             "javaScripts", "metaData", "localeDirectory",
         ];
