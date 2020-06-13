@@ -137,6 +137,7 @@ abstract class MainApplication implements iApplication
         if ($securityConfig->getIsActive() === true) {
             $hasAuthentication = $securitySession->checkUserAgentSession();
 
+
             // SE
             //  o UA está identificado
             if ($hasAuthentication === true) {
@@ -161,11 +162,25 @@ abstract class MainApplication implements iApplication
             // SENÃO
             //  o UA não é reconhecido
             else {
+
+                $freePass = false;
+                if (isset($this->routeConfig) === true) {
+                    $freeRoutes = [
+                        $securityConfig->getRouteToLogin(),
+                        $securityConfig->getRouteToStart(),
+                        $securityConfig->getRouteToResetPassword(),
+                    ];
+                    $freePass = (\in_array($this->routeConfig->getRoutes()[0], $freeRoutes));
+                }
+
                 // SE
+                //  não trata-se de uma rota livre
+                // E
                 //  não existe uma configuração para a rota
                 // OU
                 //  a configuração informa que trata-se de um recurso protegido
-                if (isset($this->routeConfig) === false || $this->routeConfig->getIsSecure() === true) {
+                if ($freePass === false &&
+                    (isset($this->routeConfig) === false || $this->routeConfig->getIsSecure() === true)) {
                     $this->serverConfig->redirectTo(
                         $securityConfig->getRouteToLogin(), 401
                     );
