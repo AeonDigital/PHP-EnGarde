@@ -57,7 +57,7 @@ final class Server extends BObject implements iServer
      */
     public function getVersion() : string
     {
-        return "v0.5.5-beta";
+        return "v0.5.6-beta";
     }
 
 
