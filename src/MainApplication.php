@@ -151,7 +151,7 @@ abstract class MainApplication implements iApplication
                             $this->routeConfig->getMethod(),
                             $this->routeConfig->getRoutes()[0]
                         );
-                        if ($permission === true) {
+                        if ($permission === false) {
                             $this->serverConfig->redirectTo(
                                 $securityConfig->getRouteRedirect(), 403
                             );
