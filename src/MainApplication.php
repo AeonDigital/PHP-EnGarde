@@ -205,6 +205,24 @@ abstract class MainApplication implements iApplication
      */
     public function run() : void
     {
+        // Se a rota necessita ter seus acessos registrados
+        if (isset($this->routeConfig) === true && $this->routeConfig->getIsAutoLog() === true) {
+            $urlQS = $this->serverConfig->getRequestQueryStrings();
+            $fullURL = $this->serverConfig->getApplicationRequestUri() . (($urlQS === "") ? "" : "?" . $urlQS);
+
+            $this->serverConfig->getSecuritySession()->registerLogActivity(
+                $this->routeConfig->getMethod(),
+                $fullURL,
+                $this->serverConfig->getServerRequest()->getPostedFields(),
+                $this->routeConfig->getController(),
+                $this->routeConfig->getAction(),
+                "autolog",
+                ""
+            );
+        }
+
+
+
         $hasValidCache = false;
 
         // Identifica se o resultado desta rota é cacheável e, se existe um resultado pronto
@@ -302,23 +320,6 @@ abstract class MainApplication implements iApplication
                 // Cria o arquivo de cache, se for necessário.
                 $this->saveOrUpdateResponseCache();
             }
-        }
-
-
-        // Se a rota necessita ter seus acessos registrados
-        if (isset($this->routeConfig) === true && $this->routeConfig->getIsAutoLog() === true) {
-            $urlQS = $this->serverConfig->getRequestQueryStrings();
-            $fullURL = $this->serverConfig->getApplicationRequestUri() . (($urlQS === "") ? "" : "?" . $urlQS);
-
-            $this->serverConfig->getSecuritySession()->registerLogActivity(
-                $this->routeConfig->getMethod(),
-                $fullURL,
-                $this->serverConfig->getServerRequest()->getPostedFields(),
-                $this->routeConfig->getController(),
-                $this->routeConfig->getAction(),
-                "autolog",
-                ""
-            );
         }
     }
 
