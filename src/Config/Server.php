@@ -1458,13 +1458,18 @@ final class Server extends BObject implements iServer
             $securityCookie = $this->getServerRequest()->getCookie(
                 $this->getSecurityConfig()->getSecurityCookieName()
             );
-            if ($securityCookie === null) {
-                $securityCookie = new \AeonDigital\Http\Data\Cookie(
-                    $this->getSecurityConfig()->getSecurityCookieName(), "", null,
-                    $this->getRequestDomainName(), "/",
-                    $this->getForceHTTPS(), true
-                );
+
+            $useCookieValue = "";
+            if ($securityCookie !== null) {
+                $useCookieValue = $securityCookie->getValue();
             }
+            $securityCookie = new \AeonDigital\Http\Data\Cookie(
+                $this->getSecurityConfig()->getSecurityCookieName(),
+                $useCookieValue, null,
+                $this->getRequestDomainName(), "/",
+                $this->getForceHTTPS(), true
+            );
+
 
             $this->securitySession = new $sessionNS(
                 $this->getNow(),
