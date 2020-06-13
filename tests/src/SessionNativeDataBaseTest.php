@@ -84,8 +84,8 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Desenvolvedor",
                     "Description"       => "Usuários desenvolvedores do sistema.",
                     "AllowAll"          => true,
-                    "Default"           => false,
-                    "Selected"          => false
+                    "Default"           => true,
+                    "Selected"          => true
                 ],
                 [
                     "Id"                => 2,
@@ -94,8 +94,8 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Administrador",
                     "Description"       => "Usuários administradores do sistema.",
                     "AllowAll"          => false,
-                    "Default"           => true,
-                    "Selected"          => true
+                    "Default"           => false,
+                    "Selected"          => false
                 ],
                 [
                     "Id"                => 3,
@@ -206,7 +206,7 @@ class SessionNativeDataBaseTest extends TestCase
         unset($authenticatedUser["RegisterDate"]);
         $this->assertEquals($userModel, $authenticatedUser);
 
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
         $this->assertEquals($authenticatedUser["Profiles"], $obj->retrieveUserProfiles());
 
 
@@ -336,7 +336,7 @@ class SessionNativeDataBaseTest extends TestCase
         unset($authenticatedUser["RegisterDate"]);
         $this->assertEquals($userModel, $authenticatedUser);
 
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
         $this->assertEquals($authenticatedUser["Profiles"], $obj->retrieveUserProfiles());
         $this->assertTrue($r);
     }
@@ -386,18 +386,18 @@ class SessionNativeDataBaseTest extends TestCase
 
 
         $this->assertTrue($obj->executeLogin("rianna", sha1("senhateste")));
-        if ($obj->retrieveUserProfile() === "Administrador") {
-            $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
-            $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
-        }
-        elseif ($obj->retrieveUserProfile() === "Desenvolvedor") {
+        if ($obj->retrieveUserProfile() === "Desenvolvedor") {
             $this->assertTrue($obj->changeUserProfile("Administrador"));
             $this->assertEquals("Administrador", $obj->retrieveUserProfile());
         }
+        elseif ($obj->retrieveUserProfile() === "Administrador") {
+            $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
+            $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+        }
 
 
-        $this->assertTrue($obj->changeUserProfile("Administrador"));
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
     }
 
 
@@ -449,5 +449,8 @@ class SessionNativeDataBaseTest extends TestCase
         $this->assertTrue($obj->checkRoutePermission("GET", "/site/levelone"));
         $this->assertFalse($obj->checkRoutePermission("GET", "/site/leveltwo"));
         $this->assertFalse($obj->checkRoutePermission("GET", "/site/levelthree"));
+
+
+        $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
     }
 }

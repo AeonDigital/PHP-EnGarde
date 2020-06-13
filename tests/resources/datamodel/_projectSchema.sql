@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-13-01-22-45
+ * Generated in 2020-06-13-02-30-34
 */
 
 /*--INI CREATE TABLE--*/
@@ -135,8 +135,8 @@ ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Administrador") FROM DomainUser;
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Publicador") FROM DomainUser;
-UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=2;
-UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=2 AND DomainUser_Id=5;
+UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=1;
+UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;
 ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT fk_secdupr_to_secdup_DomainUserProfile_Id FOREIGN KEY (DomainUserProfile_Id) REFERENCES DomainUserProfile(Id);
 ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawURL_DomainUserProfile_Id UNIQUE (MethodHTTP, RawURL, DomainUserProfile_Id);
 INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");
@@ -156,5 +156,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-13-01-22-45
+ * Generated in 2020-06-13-02-30-34
 */

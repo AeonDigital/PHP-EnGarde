@@ -12,8 +12,8 @@
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;',
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Administrador") FROM DomainUser;',
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Publicador") FROM DomainUser;',
-        'UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=2;',
-        'UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=2 AND DomainUser_Id=5;'
+        'UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=1;',
+        'UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;'
     ],
     'columns' => [
         [
