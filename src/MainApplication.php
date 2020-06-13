@@ -307,11 +307,9 @@ abstract class MainApplication implements iApplication
 
         // Se a rota necessita ter seus acessos registrados
         if (isset($this->routeConfig) === true && $this->routeConfig->getIsAutoLog() === true) {
-            $fullURL = $this->serverConfig->getApplicationRequestUri();
-            $queryStrings = $this->serverConfig->getRequestQueryStrings();
-            if ($queryStrings !== "") {
-                $fullURL .= "?" . $queryStrings;
-            }
+            $urlQS = $this->serverConfig->getRequestQueryStrings();
+            $fullURL = $this->serverConfig->getApplicationRequestUri() . (($urlQS === "") ? "" : "?" . $urlQS);
+
             $this->serverConfig->getSecuritySession()->registerLogActivity(
                 $this->routeConfig->getMethod(),
                 $fullURL,
