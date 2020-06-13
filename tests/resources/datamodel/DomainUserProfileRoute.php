@@ -4,9 +4,9 @@
     'description' => 'Configuração de uma rota para um perfil de segurança',
     'executeAfterCreateTable' => [
         'ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawURL_DomainUserProfile_Id UNIQUE (MethodHTTP, RawURL, DomainUserProfile_Id);',
-        'INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/dashboard", 1, "/site/home", Id FROM DomainUserProfile);',
-        'INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/forbiden", 1, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");',
-        'INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/forbiden", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Administrador");',
+        'INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");',
+        'INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");',
+        'INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");',
     ],
     'columns' => [
         [

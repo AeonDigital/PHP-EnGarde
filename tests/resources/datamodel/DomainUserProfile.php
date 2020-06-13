@@ -4,12 +4,14 @@
     'description' => 'Define um perfil de segurança para um conjunto de usuários',
     'executeAfterCreateTable' => [
         'ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_ApplicationName_Name UNIQUE (ApplicationName, Name);',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.");',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description) VALUES ("site", "Administrador", "Usuários administradores do sistema.");',
+        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1);',
+        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0);',
+        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0);',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;',
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;',
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Administrador") FROM DomainUser;',
+        'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Publicador") FROM DomainUser;',
         'UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=2;',
         'UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=2 AND DomainUser_Id=5;'
     ],
@@ -50,6 +52,13 @@
             'description' => 'Descrição deste grupo de segurança.',
             'type' => 'String',
             'length' => 255,
+            'allowNull' => false,
+        ],
+        [
+            'name' => 'AllowAll',
+            'description' => 'Indica se a política de acesso para este perfil é permissiva.',
+            'type' => 'Bool',
+            'default' => false,
             'allowNull' => false,
         ],
         [

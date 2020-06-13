@@ -136,6 +136,7 @@ class NativeDataBase extends MainSession
                         secdup.ApplicationName as secdup_ApplicationName,
                         secdup.Name as secdup_Name,
                         secdup.Description as secdup_Description,
+                        secdup.AllowAll as secdup_AllowAll,
                         dupdu.ProfileDefault as secdup_ProfileDefault,
                         dupdu.ProfileSelected as secdup_ProfileSelected
                     FROM
@@ -180,6 +181,7 @@ class NativeDataBase extends MainSession
                         "ApplicationName"   => $row["secdup_ApplicationName"],
                         "Name"              => $row["secdup_Name"],
                         "Description"       => $row["secdup_Description"],
+                        "AllowAll"          => (bool)$row["secdup_AllowAll"],
                         "Default"           => (bool)$row["secdup_ProfileDefault"],
                         "Selected"          => (bool)$row["secdup_ProfileSelected"],
                     ];
@@ -188,8 +190,9 @@ class NativeDataBase extends MainSession
 
                         if ((bool)$row["secdup_ProfileSelected"] === true ||
                             ($this->profileInUse_Id === 0 && (bool)$row["secdup_ProfileDefault"] === true)) {
-                            $this->profileInUse_Id = (int)$row["secdup_Id"];
-                            $this->profileInUse_Name = $row["secdup_Name"];
+                            $this->profileInUse_Id          = (int)$row["secdup_Id"];
+                            $this->profileInUse_Name        = $row["secdup_Name"];
+                            $this->profileInUse_AllowAll    = (bool)$row["secdup_AllowAll"];
                         }
                     }
                 }
@@ -540,8 +543,10 @@ class NativeDataBase extends MainSession
         string $methodHTTP,
         string $rawURL
     ) : bool {
-        $r = false;
+        $r = $this->profileInUse_AllowAll;
+
         $this->getDAL();
+        $this->routeRedirect = "";
 
         $strSQL = " SELECT
                         Allow, RedirectTo
@@ -561,10 +566,9 @@ class NativeDataBase extends MainSession
         $routePermission = $this->DAL->getDataRow($strSQL, $parans);
         if ($routePermission !== null) {
             $r = (bool)$routePermission["Allow"];
-            $this->routeRedirect = $routePermission["RedirectTo"];
-        }
-        else {
-            $this->routeRedirect = "";
+            if ($r === false) {
+                $this->routeRedirect = $routePermission["RedirectTo"];
+            }
         }
 
         return $r;
@@ -714,11 +718,13 @@ class NativeDataBase extends MainSession
         $r = false;
         if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated) {
             $profilesObjects = [];
+            $AllowAll = null;
             $DomainUserProfile_Id = null;
             foreach ($this->authenticatedUser["Profiles"] as $row) {
                 if ($row["ApplicationName"] === $this->applicationName) {
                     $row["Selected"] = false;
                     if ($row["Name"] === $profile) {
+                        $AllowAll = $row["AllowAll"];
                         $DomainUserProfile_Id = $row["Id"];
                         $row["Selected"] = true;
                     }
@@ -757,8 +763,9 @@ class NativeDataBase extends MainSession
                     ];
                     if ($this->DAL->executeInstruction($strSQL, $parans) === true) {
                         $r = true;
-                        $this->profileInUse_Id = $DomainUserProfile_Id;
-                        $this->profileInUse_Name = $profile;
+                        $this->profileInUse_Id          = $DomainUserProfile_Id;
+                        $this->profileInUse_Name        = $profile;
+                        $this->profileInUse_AllowAll    = $AllowAll;
                         $this->authenticatedUser["Profiles"] = $profilesObjects;
                     }
                 }

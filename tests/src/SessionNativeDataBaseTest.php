@@ -83,6 +83,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "ApplicationName"   => "site",
                     "Name"              => "Desenvolvedor",
                     "Description"       => "Usuários desenvolvedores do sistema.",
+                    "AllowAll"          => true,
                     "Default"           => false,
                     "Selected"          => false
                 ],
@@ -92,8 +93,19 @@ class SessionNativeDataBaseTest extends TestCase
                     "ApplicationName"   => "site",
                     "Name"              => "Administrador",
                     "Description"       => "Usuários administradores do sistema.",
+                    "AllowAll"          => false,
                     "Default"           => true,
                     "Selected"          => true
+                ],
+                [
+                    "Id"                => 3,
+                    "Active"            => true,
+                    "ApplicationName"   => "site",
+                    "Name"              => "Publicador",
+                    "Description"       => "Usuários publicadores de conteúdo.",
+                    "AllowAll"          => false,
+                    "Default"           => false,
+                    "Selected"          => false
                 ]
             ]
         ];
@@ -423,14 +435,19 @@ class SessionNativeDataBaseTest extends TestCase
 
 
         $this->assertTrue($obj->executeLogin("rianna", sha1("senhateste")));
+        // Usuário com regra permissiva... acessa tudo que não é explicitamente proibido
         $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
         $this->assertTrue($obj->checkRoutePermission("GET", "/site/dashboard"));
-        $this->assertTrue($obj->checkRoutePermission("GET", "/site/forbiden"));
-        $this->assertFalse($obj->checkRoutePermission("GET", "/site/nonexists"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/levelone"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/leveltwo"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/nonexists"));
+        $this->assertFalse($obj->checkRoutePermission("GET", "/site/levelthree"));
 
+        // Usuário com regra restritiva... apenas acessa aquilo que é explicitamente permitido.
         $this->assertTrue($obj->changeUserProfile("Administrador"));
         $this->assertTrue($obj->checkRoutePermission("GET", "/site/dashboard"));
-        $this->assertFalse($obj->checkRoutePermission("GET", "/site/forbiden"));
-        $this->assertFalse($obj->checkRoutePermission("GET", "/site/nonexists"));
+        $this->assertTrue($obj->checkRoutePermission("GET", "/site/levelone"));
+        $this->assertFalse($obj->checkRoutePermission("GET", "/site/leveltwo"));
+        $this->assertFalse($obj->checkRoutePermission("GET", "/site/levelthree"));
     }
 }

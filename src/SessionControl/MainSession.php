@@ -86,6 +86,12 @@ abstract class MainSession extends BObject implements iSession
      * @var         int
      */
     protected int $profileInUse_Id = 0;
+    /**
+     * Política geral de acesso a rotas para o perfil de usuário sendo usado.
+     *
+     * @var         bool
+     */
+    protected bool $profileInUse_AllowAll = false;
 
 
 
