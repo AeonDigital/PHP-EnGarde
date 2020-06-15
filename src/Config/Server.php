@@ -1490,6 +1490,24 @@ final class Server extends BObject implements iServer
 
 
     /**
+     * Identifica se existem definições de seguranças.
+     *
+     * Normalmente isto significa verificar se os métodos ``getSecurityConfig`` e
+     * ``getSecuritySession`` estão, ambos, aptos a retornarem instâncias de suas respectivas
+     * classes com as configurações correspondentes.
+     *
+     * @return      bool
+     *              Retornará ``true`` caso as instâncias de segurança estejam definidas.
+     */
+    public function hasDefinedSecuritySettings() : bool
+    {
+        return (isset($this->securityConfig) === true && isset($this->securitySession) === true);
+    }
+
+
+
+
+    /**
      * Instância ``Config\iRoute`` a ser usada.
      *
      * @var         ?iRoute

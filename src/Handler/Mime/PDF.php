@@ -88,9 +88,9 @@ final class PDF extends aMime
             $body = \str_replace("data-eg-html-prop=\"\"", $htmlProp, $body);
         }
         else {
-            $viewData = $this->response->getViewData();
-            if ($viewData !== null) {
-                $body = $this->convertArrayToStructuredString((array)$viewData, "  ");
+            $this->viewData = $this->response->getViewData();
+            if ($this->viewData !== null) {
+                $body = $this->convertArrayToStructuredString((array)$this->viewData, "  ");
             }
         }
 

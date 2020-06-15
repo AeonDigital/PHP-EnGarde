@@ -4,9 +4,9 @@ declare (strict_types=1);
 namespace AeonDigital\EnGarde\Handler\Mime;
 
 use AeonDigital\Interfaces\Http\Server\iMimeHandler as iMimeHandler;
-use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
-use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
+use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
+
 
 
 
@@ -22,26 +22,12 @@ use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRouteConfig;
  */
 abstract class aMime implements iMimeHandler
 {
+    use \AeonDigital\EnGarde\Traits\ActionTools;
 
 
-    /**
-     * Instância de configuração do Servidor.
-     *
-     * @var         iServerConfig
-     */
-    protected iServerConfig $serverConfig;
-    /**
-     * Instância de configuração da rota.
-     *
-     * @var         iRouteConfig
-     */
-    protected iRouteConfig $routeConfig;
-    /**
-     * Objeto "iResponse".
-     *
-     * @var         iResponse
-     */
-    protected iResponse $response;
+
+
+
     /**
      * Caminho relativo (a partir da URL raiz) até o local onde a aplicação
      * armazena seus recursos públicos.
@@ -49,6 +35,11 @@ abstract class aMime implements iMimeHandler
      * @var         string
      */
     protected string $resourcesBasePath = "";
+
+
+
+
+
 
 
 
@@ -72,12 +63,17 @@ abstract class aMime implements iMimeHandler
         $this->response     = $response;
 
 
-
         $resourcesBasePath = \str_replace(
             [$this->serverConfig->getRootPath(), "\\"], ["", "/"],
             $this->serverConfig->getApplicationConfig()->getPathToViewsResources(true)
         );
         $this->resourcesBasePath = "/" . \trim($resourcesBasePath, "/") . "/";
+
+
+        if ($this->serverConfig->hasDefinedSecuritySettings() === true &&
+            $this->serverConfig->getSecuritySession()->hasDataBase() === true) {
+            $this->DAL = $securitySession->getDAL();
+        }
     }
 
 
@@ -100,8 +96,8 @@ abstract class aMime implements iMimeHandler
 
         // Apenas se há uma view definida...
         if ($this->serverConfig->getRouteConfig()->getView() !== "") {
-            $viewData   = $this->response->getViewData();
-            $viewConfig = $this->response->getViewConfig();
+            $this->viewData     = $this->response->getViewData();
+            $this->viewConfig   = $this->response->getViewConfig();
 
             $viewPath = \to_system_path(
                 $this->serverConfig->getApplicationConfig()->getPathToViews(true) .
@@ -127,8 +123,8 @@ abstract class aMime implements iMimeHandler
 
         // Apenas se há uma masterpage definida...
         if ($this->serverConfig->getRouteConfig()->getMasterPage() !== "") {
-            $viewData   = $this->response->getViewData();
-            $viewConfig = $this->response->getViewConfig();
+            $this->viewData     = $this->response->getViewData();
+            $this->viewConfig   = $this->response->getViewConfig();
 
             $viewMaster = \to_system_path(
                 $this->serverConfig->getApplicationConfig()->getPathToViews(true) .
@@ -590,35 +586,35 @@ abstract class aMime implements iMimeHandler
      */
     protected string $description = "";
     /**
-     * Verifica se o ``$viewData`` possui metadados a serem incorporados
+     * Verifica se o ``$this->viewData`` possui metadados a serem incorporados
      * nos documentos finais.
      *
      * @return      void
      */
     protected function setDocumentMetaData() : void
     {
-        $viewData = $this->response->getViewData();
+        $this->viewData = $this->response->getViewData();
         $this->createdDate = new \DateTime();
 
         // Identifica se estão definidos os metadados para serem
         // adicionados no documento final.
-        if (isset($viewData->metaData) === true) {
+        if (isset($this->viewData->metaData) === true) {
             $strPropNames = [
                 "authorName", "companyName", "keywords", "description"
             ];
             foreach ($strPropNames as $propName) {
-                if (isset($viewData->metaData->{$propName}) === true &&
-                    \is_string($viewData->metaData->{$propName}) === true)
+                if (isset($this->viewData->metaData->{$propName}) === true &&
+                    \is_string($vthis->iewData->metaData->{$propName}) === true)
                 {
-                    $this->{$propName} = $viewData->metaData->{$propName};
+                    $this->{$propName} = $this->viewData->metaData->{$propName};
                 }
             }
 
 
-            if (isset($viewData->metaData->createdDate) === true &&
-                \is_a($viewData->metaData->createdDate, "\DateTime") === true)
+            if (isset($this->viewData->metaData->createdDate) === true &&
+                \is_a($this->viewData->metaData->createdDate, "\DateTime") === true)
             {
-                $this->createdDate = $viewData->metaData->createdDate;
+                $this->createdDate = $this->viewData->metaData->createdDate;
             }
         }
     }

@@ -74,9 +74,9 @@ final class TXT extends aMime
             $body = \str_replace("<view />", $viewContent, $masterContent);
         }
         else {
-            $viewData = $this->response->getViewData();
-            if ($viewData !== null) {
-                $body = $this->convertArrayToStructuredString((array)$viewData, "  ");
+            $this->viewData = $this->response->getViewData();
+            if ($this->viewData !== null) {
+                $body = $this->convertArrayToStructuredString((array)$this->viewData, "  ");
             }
         }
 

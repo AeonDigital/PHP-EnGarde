@@ -74,10 +74,10 @@ final class XML extends aMime
             $body = \str_replace("<view />", $viewContent, $masterContent);
         }
         else {
-            $viewData = $this->response->getViewData();
-            if ($viewData !== null) {
+            $this->viewData = $this->response->getViewData();
+            if ($this->viewData !== null) {
                 $xml = new \SimpleXMLElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><root></root>");
-                $this->convertArrayToXML((array)$viewData, $xml);
+                $this->convertArrayToXML((array)$this->viewData, $xml);
                 $body = $xml->asXML();
             }
         }

@@ -59,8 +59,8 @@ final class CSV extends aMime
     public function createResponseBody() : string
     {
         $body = "";
-        $viewData = $this->response->getViewData();
-        $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
+        $this->viewData = $this->response->getViewData();
+        $dataTable = ((isset($this->viewData->dataTable) === true) ? $this->viewData->dataTable : []);
 
         $finalArray = $this->prepareArrayToCreateSpreadSheet(
             $dataTable, '"', '""', true

@@ -58,8 +58,8 @@ final class XLS extends aMime
      */
     public function createResponseBody() : string
     {
-        $viewData = $this->response->getViewData();
-        $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
+        $this->viewData = $this->response->getViewData();
+        $dataTable = ((isset($this->viewData->dataTable) === true) ? $this->viewData->dataTable : []);
         $finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
         return $this->createXLSBody($finalArray);
     }

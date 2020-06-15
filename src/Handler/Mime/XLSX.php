@@ -60,8 +60,8 @@ final class XLSX extends aMime
     {
         $this->setDocumentMetaData();
 
-        $viewData = $this->response->getViewData();
-        $dataTable = ((isset($viewData->dataTable) === true) ? $viewData->dataTable : []);
+        $this->viewData = $this->response->getViewData();
+        $dataTable = ((isset($this->viewData->dataTable) === true) ? $this->viewData->dataTable : []);
         $finalArray = $this->prepareArrayToCreateSpreadSheet($dataTable);
 
         return $this->createXLSXBody($finalArray);

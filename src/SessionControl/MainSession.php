@@ -215,6 +215,19 @@ abstract class MainSession extends BObject implements iSession
 
 
     /**
+     * Informará ``true`` caso a implementação esteja apta a utilizar um
+     * banco de dados.
+     *
+     * @return      bool
+     */
+    public function hasDataBase() : bool
+    {
+        return ($this->dbCredentials !== []);
+    }
+
+
+
+    /**
      * Coleção de credenciais de acesso ao banco de dados.
      *
      * @var         array
