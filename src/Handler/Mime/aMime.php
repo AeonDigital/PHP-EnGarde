@@ -72,7 +72,7 @@ abstract class aMime implements iMimeHandler
 
         if ($this->serverConfig->hasDefinedSecuritySettings() === true &&
             $this->serverConfig->getSecuritySession()->hasDataBase() === true) {
-            $this->DAL = $securitySession->getDAL();
+            $this->DAL = $this->serverConfig->getSecuritySession()->getDAL();
         }
     }
 

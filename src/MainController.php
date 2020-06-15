@@ -52,7 +52,7 @@ abstract class MainController implements iController
 
         if ($this->serverConfig->hasDefinedSecuritySettings() === true &&
             $this->serverConfig->getSecuritySession()->hasDataBase() === true) {
-            $this->DAL = $securitySession->getDAL();
+            $this->DAL = $this->serverConfig->getSecuritySession()->getDAL();
         }
     }
 
