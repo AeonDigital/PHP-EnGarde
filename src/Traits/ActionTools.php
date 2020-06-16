@@ -216,6 +216,65 @@ trait ActionTools
 
 
 
+    /**
+     * Identifica se o UA está autenticado.
+     *
+     * @return      bool
+     */
+    protected function isAuthenticated() : bool
+    {
+        return (
+            $this->serverConfig->hasDefinedSecuritySettings() === true &&
+            $this->serverConfig->getSecuritySession()->retrieveSecurityStatus() === \AeonDigital\EnGarde\SessionControl\Enum\SecurityStatus::UserSessionAuthenticated
+        );
+    }
+    /**
+     * Retorna os dados de um usuário autenticado que esteja associado a sessão
+     * que está reconhecida, ativa e válida.
+     *
+     * @return      ?array
+     */
+    protected function retrieveUser() : ?array
+    {
+        return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
+            $this->serverConfig->getSecuritySession()->retrieveUser() : null);
+    }
+    /**
+     * Retorna o perfil de segurança do usuário atualmente em uso.
+     *
+     * @return      ?string
+     */
+    protected function retrieveUserProfile() : ?string
+    {
+        return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
+            $this->serverConfig->getSecuritySession()->retrieveUserProfile() : null);
+    }
+    /**
+     * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
+     *
+     * @return      ?array
+     */
+    protected function retrieveUserProfiles() : ?array
+    {
+        return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
+            $this->serverConfig->getSecuritySession()->retrieveUserProfiles() : null);
+    }
+    /**
+     * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
+     * na coleção de perfis disponíveis para este mesmo usuário.
+     *
+     * @return      ?array
+     */
+    protected function changeUserProfile(string $profile) : bool
+    {
+        return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
+            $this->serverConfig->getSecuritySession()->changeUserProfile($profile) : null);
+    }
+
+
+
+
+
 
     /**
      * Gera um registro de atividade para a requisição atual.
