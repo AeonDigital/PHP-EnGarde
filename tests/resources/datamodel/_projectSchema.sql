@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-13-15-50-35
+ * Generated in 2020-06-16-00-00-12
 */
 
 /*--INI CREATE TABLE--*/
@@ -41,6 +41,7 @@ CREATE TABLE DomainUserProfile (
     Name VARCHAR(64) NOT NULL COMMENT 'Nome deste perfil de segurança.', 
     Description VARCHAR(255) NOT NULL COMMENT 'Descrição deste grupo de segurança.', 
     AllowAll TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Indica se a política de acesso para este perfil é permissiva.', 
+    HomeURL VARCHAR(255) NOT NULL COMMENT 'Indica a home para onde este perfil deve ser direcionado ao efetuar login.', 
     PRIMARY KEY (Id)
 ) COMMENT 'Define um perfil de segurança para um conjunto de usuários';
 /*--END CREATE TABLE--*/
@@ -127,9 +128,9 @@ INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Rian
 CREATE INDEX idx_secduba_UserAgentIP ON DomainUserBlockedAccess (UserAgentIP);
 ALTER TABLE DomainUserBlockedAccess ADD CONSTRAINT fk_secduba_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id);
 ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_ApplicationName_Name UNIQUE (ApplicationName, Name);
-INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1);
-INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0);
-INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0);
+INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/");
+INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0, "/");
+INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0, "/");
 ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;
 ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;
@@ -156,5 +157,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-13-15-50-35
+ * Generated in 2020-06-16-00-00-12
 */

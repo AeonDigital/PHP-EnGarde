@@ -231,15 +231,15 @@ class NativeLocal extends MainSession
                     $this->securityStatus = SecurityStatus::UserAccountDisabledForDomain;
                 }
                 else {
+                    $profileInUse = null;
                     $hasProfileForThisApplication = false;
                     foreach ($authenticatedUser["Profiles"] as $row) {
                         if ($this->applicationName === $row["ApplicationName"]) {
                             $hasProfileForThisApplication = true;
 
                             if ($row["Selected"] === true ||
-                                ($this->profileInUse_Id === 0 && $row["Default"] === true)) {
-                                $this->profileInUse_Id = 1;
-                                $this->profileInUse_Name = $row["Name"];
+                                ($profileInUse === null && $row["Default"] === true)) {
+                                $profileInUse = $row;
                             }
                         }
                     }
@@ -250,6 +250,7 @@ class NativeLocal extends MainSession
                     }
                     else {
                         $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
+                        $this->profileInUse = $profileInUse;
                         $this->authenticatedUser = $authenticatedUser;
                     }
                 }
@@ -484,6 +485,7 @@ class NativeLocal extends MainSession
 
 
         if ($r === false) {
+            $this->profileInUse = null;
             $this->authenticatedUser = null;
             $this->authenticatedSession = null;
         }
@@ -535,6 +537,7 @@ class NativeLocal extends MainSession
         {
             if (\unlink($this->pathToLocalData_LogFile_Session) === true) {
                 $r = true;
+                $this->profileInUse = null;
                 $this->authenticatedUser = null;
                 $this->authenticatedSession = null;
                 $this->securityStatus = SecurityStatus::UserAgentUndefined;
@@ -713,16 +716,18 @@ class NativeLocal extends MainSession
 
         if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated)
         {
+            $profileInUse = null;
             foreach ($this->authenticatedUser["Profiles"] as $i => $row) {
                 $this->authenticatedUser["Profiles"][$i]["Selected"] = false;
                 if ($this->applicationName === $row["ApplicationName"] && $profile === $row["Name"]) {
                     $this->authenticatedUser["Profiles"][$i]["Selected"] = true;
+                    $profileInUse = $row;
                 }
             }
 
             $r = \AeonDigital\Tools\JSON::save($this->pathToLocalData_File_User, $this->authenticatedUser);
             if ($r === true) {
-                $this->profileInUse_Name = $profile;
+                $this->profileInUse = $profileInUse;
             }
         }
 

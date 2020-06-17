@@ -125,7 +125,7 @@ class SessionNativeLocalTest extends TestCase
         $this->assertEquals($pathToLocalData, $obj->retrievePathToLocalData());
         $this->assertNull($obj->retrieveSession());
         $this->assertNull($obj->retrieveUser());
-        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfileName());
         $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
     }
@@ -157,7 +157,7 @@ class SessionNativeLocalTest extends TestCase
 
         $this->assertEquals($authenticatedSession, $obj->retrieveSession());
         $this->assertEquals($authenticatedUser, $obj->retrieveUser());
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         $this->assertTrue(is_array($obj->retrieveUserProfiles()));
         $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
@@ -168,7 +168,7 @@ class SessionNativeLocalTest extends TestCase
         $this->assertFalse(file_exists($this->pathToLocalData_LogFile_Session));
         $this->assertNull($obj->retrieveSession());
         $this->assertNull($obj->retrieveUser());
-        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfileName());
         $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
@@ -192,7 +192,7 @@ class SessionNativeLocalTest extends TestCase
 
         $this->assertNull($obj->retrieveSession());
         $this->assertNull($obj->retrieveUser());
-        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfileName());
         $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAccountUnexpectedPassword", $obj->retrieveSecurityStatus());
         $this->assertFalse($r);
@@ -305,7 +305,7 @@ class SessionNativeLocalTest extends TestCase
 
         $this->assertEquals($authenticatedSession, $obj->retrieveSession());
         $this->assertEquals($authenticatedUser, $obj->retrieveUser());
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         $this->assertTrue(is_array($obj->retrieveUserProfiles()));
         $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
@@ -374,11 +374,11 @@ class SessionNativeLocalTest extends TestCase
 
 
 
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
-        $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
-        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         $this->assertTrue($obj->changeUserProfile("Administrador"));
-        $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+        $this->assertEquals("Administrador", $obj->retrieveUserProfileName());
+        $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
     }
 
 

@@ -84,6 +84,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Desenvolvedor",
                     "Description"       => "Usuários desenvolvedores do sistema.",
                     "AllowAll"          => true,
+                    "HomeURL"           => "/",
                     "Default"           => true,
                     "Selected"          => true
                 ],
@@ -94,6 +95,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Administrador",
                     "Description"       => "Usuários administradores do sistema.",
                     "AllowAll"          => false,
+                    "HomeURL"           => "/",
                     "Default"           => false,
                     "Selected"          => false
                 ],
@@ -104,6 +106,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Publicador",
                     "Description"       => "Usuários publicadores de conteúdo.",
                     "AllowAll"          => false,
+                    "HomeURL"           => "/",
                     "Default"           => false,
                     "Selected"          => false
                 ]
@@ -206,7 +209,7 @@ class SessionNativeDataBaseTest extends TestCase
         unset($authenticatedUser["RegisterDate"]);
         $this->assertEquals($userModel, $authenticatedUser);
 
-        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         $this->assertEquals($authenticatedUser["Profiles"], $obj->retrieveUserProfiles());
 
 
@@ -214,10 +217,11 @@ class SessionNativeDataBaseTest extends TestCase
         $r = $obj->executeLogout();
         $this->assertNull($obj->retrieveSession());
         $this->assertNull($obj->retrieveUser());
-        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfileName());
         $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAgentUndefined", $obj->retrieveSecurityStatus());
     }
+
 
 
     public function test_method_executeLogin_UserAccountUnexpectedPassword()
@@ -231,11 +235,12 @@ class SessionNativeDataBaseTest extends TestCase
 
         $this->assertNull($obj->retrieveSession());
         $this->assertNull($obj->retrieveUser());
-        $this->assertNull($obj->retrieveUserProfile());
+        $this->assertNull($obj->retrieveUserProfileName());
         $this->assertNull($obj->retrieveUserProfiles());
         $this->assertEquals("UserAccountUnexpectedPassword", $obj->retrieveSecurityStatus());
         $this->assertFalse($r);
     }
+
 
 
     public function test_method_executeLogin_UserAccountHasBeenBlocked()
@@ -336,7 +341,7 @@ class SessionNativeDataBaseTest extends TestCase
         unset($authenticatedUser["RegisterDate"]);
         $this->assertEquals($userModel, $authenticatedUser);
 
-        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         $this->assertEquals($authenticatedUser["Profiles"], $obj->retrieveUserProfiles());
         $this->assertTrue($r);
     }
@@ -386,18 +391,18 @@ class SessionNativeDataBaseTest extends TestCase
 
 
         $this->assertTrue($obj->executeLogin("rianna", sha1("senhateste")));
-        if ($obj->retrieveUserProfile() === "Desenvolvedor") {
+        if ($obj->retrieveUserProfileName() === "Desenvolvedor") {
             $this->assertTrue($obj->changeUserProfile("Administrador"));
-            $this->assertEquals("Administrador", $obj->retrieveUserProfile());
+            $this->assertEquals("Administrador", $obj->retrieveUserProfileName());
         }
-        elseif ($obj->retrieveUserProfile() === "Administrador") {
+        elseif ($obj->retrieveUserProfileName() === "Administrador") {
             $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
-            $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+            $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         }
 
 
         $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
-        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfile());
+        $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
     }
 
 
@@ -453,4 +458,5 @@ class SessionNativeDataBaseTest extends TestCase
 
         $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
     }
+
 }

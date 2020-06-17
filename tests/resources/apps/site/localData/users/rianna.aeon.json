@@ -15,7 +15,7 @@
 			"Name": "Desenvolvedor",
 			"Description": "",
 			"Default": true,
-			"Selected": false
+			"Selected": true
 		},
 		{
 			"Active": true,
@@ -24,7 +24,7 @@
 			"Name": "Administrador",
 			"Description": "",
 			"Default": false,
-			"Selected": true
+			"Selected": false
 		}
 	]
 }

@@ -4,9 +4,9 @@
     'description' => 'Define um perfil de segurança para um conjunto de usuários',
     'executeAfterCreateTable' => [
         'ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_ApplicationName_Name UNIQUE (ApplicationName, Name);',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1);',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0);',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0);',
+        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/");',
+        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0, "/");',
+        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0, "/");',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;',
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;',
@@ -60,6 +60,14 @@
             'type' => 'Bool',
             'default' => false,
             'allowNull' => false,
+        ],
+        [
+            'name' => 'HomeURL',
+            'description' => 'Indica a home para onde este perfil deve ser direcionado ao efetuar login.',
+            'type' => 'String',
+            'length' => 255,
+            'allowNull' => false,
+            'allowEmpty' => false,
         ],
         [
             'name' => 'DomainUsers',

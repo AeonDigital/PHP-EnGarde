@@ -75,23 +75,11 @@ abstract class MainSession extends BObject implements iSession
      */
     protected iSecurity $securityConfig;
     /**
-     * Nome do perfil do usuário atualmente sendo usado.
+     * Objeto do perfil de usuário atualmente em uso.
      *
-     * @var         string
+     * @var         ?array
      */
-    protected string $profileInUse_Name = "";
-    /**
-     * Id do perfil do usuário atualmente sendo usado.
-     *
-     * @var         int
-     */
-    protected int $profileInUse_Id = 0;
-    /**
-     * Política geral de acesso a rotas para o perfil de usuário sendo usado.
-     *
-     * @var         bool
-     */
-    protected bool $profileInUse_AllowAll = false;
+    protected ?array $profileInUse = null;
 
 
 
@@ -173,13 +161,22 @@ abstract class MainSession extends BObject implements iSession
         return $this->authenticatedUser;
     }
     /**
+     * Retorna o objeto completo do perfil de usuário atualmente em uso.
+     *
+     * @return      ?array
+     */
+    public function retrieveUserProfile() : ?array
+    {
+        return $this->profileInUse;
+    }
+    /**
      * Retorna o perfil de segurança do usuário atualmente em uso.
      *
      * @return      ?string
      */
-    public function retrieveUserProfile() : ?string
+    public function retrieveUserProfileName() : ?string
     {
-        return (($this->authenticatedUser === null) ? null : $this->profileInUse_Name);
+        return (($this->profileInUse === null) ? null : $this->profileInUse["Name"]);
     }
     /**
      * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.

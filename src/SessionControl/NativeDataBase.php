@@ -137,6 +137,7 @@ class NativeDataBase extends MainSession
                         secdup.Name as secdup_Name,
                         secdup.Description as secdup_Description,
                         secdup.AllowAll as secdup_AllowAll,
+                        secdup.HomeURL as secdup_HomeURL,
                         dupdu.ProfileDefault as secdup_ProfileDefault,
                         dupdu.ProfileSelected as secdup_ProfileSelected
                     FROM
@@ -173,6 +174,7 @@ class NativeDataBase extends MainSession
                 ];
 
 
+                $profileInUse = null;
                 $hasProfileForThisApplication = false;
                 foreach ($dtDomainUser as $row) {
                     $user["Profiles"][] = [
@@ -182,6 +184,7 @@ class NativeDataBase extends MainSession
                         "Name"              => $row["secdup_Name"],
                         "Description"       => $row["secdup_Description"],
                         "AllowAll"          => (bool)$row["secdup_AllowAll"],
+                        "HomeURL"           => $row["secdup_HomeURL"],
                         "Default"           => (bool)$row["secdup_ProfileDefault"],
                         "Selected"          => (bool)$row["secdup_ProfileSelected"],
                     ];
@@ -189,10 +192,9 @@ class NativeDataBase extends MainSession
                         $hasProfileForThisApplication = true;
 
                         if ((bool)$row["secdup_ProfileSelected"] === true ||
-                            ($this->profileInUse_Id === 0 && (bool)$row["secdup_ProfileDefault"] === true)) {
-                            $this->profileInUse_Id          = (int)$row["secdup_Id"];
-                            $this->profileInUse_Name        = $row["secdup_Name"];
-                            $this->profileInUse_AllowAll    = (bool)$row["secdup_AllowAll"];
+                            ($profileInUse === null && (bool)$row["secdup_ProfileDefault"] === true))
+                        {
+                            $profileInUse = $user["Profiles"][count($user["Profiles"]) - 1];
                         }
                     }
                 }
@@ -203,6 +205,7 @@ class NativeDataBase extends MainSession
                 }
                 else {
                     $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
+                    $this->profileInUse = $profileInUse;
                     $this->authenticatedUser = $user;
                 }
             }
@@ -462,6 +465,7 @@ class NativeDataBase extends MainSession
 
 
         if ($r === false) {
+            $this->profileInUse = null;
             $this->authenticatedUser = null;
             $this->authenticatedSession = null;
         }
@@ -514,6 +518,7 @@ class NativeDataBase extends MainSession
         {
             $this->getDAL();
             if ($this->DAL->deleteFrom("DomainUserSession", "Id", $this->authenticatedSession["Id"]) === true) {
+                $this->profileInUse = null;
                 $this->authenticatedSession = null;
                 $this->authenticatedUser = null;
                 $this->securityStatus = SecurityStatus::UserAgentUndefined;
@@ -543,7 +548,13 @@ class NativeDataBase extends MainSession
         string $methodHTTP,
         string $rawURL
     ) : bool {
-        $r = $this->profileInUse_AllowAll;
+        $r = false;
+        $pId = 0;
+
+        if ($this->profileInUse !== null) {
+            $r = $this->profileInUse["AllowAll"];
+            $pId = $this->profileInUse["Id"];
+        }
 
         $this->getDAL();
         $this->routeRedirect = "";
@@ -560,7 +571,7 @@ class NativeDataBase extends MainSession
         $parans = [
             "MethodHTTP"            => $methodHTTP,
             "RawURL"                => $rawURL,
-            "DomainUserProfile_Id"  => $this->profileInUse_Id
+            "DomainUserProfile_Id"  => $pId
         ];
 
         $routePermission = $this->DAL->getDataRow($strSQL, $parans);
@@ -718,21 +729,19 @@ class NativeDataBase extends MainSession
         $r = false;
         if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated) {
             $profilesObjects = [];
-            $AllowAll = null;
-            $DomainUserProfile_Id = null;
+            $selectedProfile = null;
             foreach ($this->authenticatedUser["Profiles"] as $row) {
                 if ($row["ApplicationName"] === $this->applicationName) {
                     $row["Selected"] = false;
                     if ($row["Name"] === $profile) {
-                        $AllowAll = $row["AllowAll"];
-                        $DomainUserProfile_Id = $row["Id"];
                         $row["Selected"] = true;
+                        $selectedProfile = $row;
                     }
                 }
                 $profilesObjects[] = $row;
             }
 
-            if ($DomainUserProfile_Id !== null) {
+            if ($selectedProfile["Id"] !== null) {
                 $strSQL = " UPDATE
                                 secdup_to_secdu dupdu
                                 INNER JOIN DomainUserProfile secdup ON dupdu.DomainUserProfile_Id=secdup.Id
@@ -758,14 +767,12 @@ class NativeDataBase extends MainSession
                                     secdup.ApplicationName=:ApplicationName;";
                     $parans = [
                         "DomainUser_Id"         => $this->authenticatedUser["Id"],
-                        "DomainUserProfile_Id"  => $DomainUserProfile_Id,
+                        "DomainUserProfile_Id"  => $selectedProfile["Id"],
                         "ApplicationName"       => $this->applicationName
                     ];
                     if ($this->DAL->executeInstruction($strSQL, $parans) === true) {
                         $r = true;
-                        $this->profileInUse_Id          = $DomainUserProfile_Id;
-                        $this->profileInUse_Name        = $profile;
-                        $this->profileInUse_AllowAll    = $AllowAll;
+                        $this->profileInUse = $selectedProfile;
                         $this->authenticatedUser["Profiles"] = $profilesObjects;
                     }
                 }

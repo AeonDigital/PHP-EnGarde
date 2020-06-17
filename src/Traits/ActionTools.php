@@ -216,6 +216,7 @@ trait ActionTools
 
 
 
+
     /**
      * Identifica se o UA está autenticado.
      *
@@ -271,6 +272,59 @@ trait ActionTools
             $this->serverConfig->getSecuritySession()->changeUserProfile($profile) : null);
     }
 
+
+
+
+
+    /**
+     * Retorna um objeto ``stdClass`` configurado com os valores padrões para
+     * resposta a requisições que esperam um objeto JSON.
+     *
+     * @return       stdClass
+	 */
+    protected function retrieveDefaultResponse() : stdClass
+    {
+        return (object)[
+            // Indica se a ação requisitada pelo UA foi bem sucedida.
+            "success"       => false,
+            // Flag genérica sobre o status de retorno da requisição.
+            "status"        => "",
+            // Mensagem de retorno para a requisição.
+            // Geralmente é uma mensagem genérica sobre o sucesso ou falha da requisição.
+            "message"       => "",
+            // Indica se a mensagem de retorno deve ser tratada como HTML.
+            "isHTML"        => false,
+            // Array associativo contendo informações sobre a
+            // validação dos dados recebidos.
+            "validate"      => null,
+            // Se definido, indica o local para onde o UA deve ser direcionado.
+            "redirectTo"    => "",
+            // Indica a URL em que o UA está neste momento.
+            "fromURL"       => ""
+        ];
+    }
+    /**
+     * Retorna um objeto ``stdClass`` configurado com os valores padrões para
+     * um objeto JSON que deve ser submetido pelo UA.
+     *
+     * @return       stdClass
+	 */
+    protected function retrieveDefaultRequest() : stdClass
+    {
+        return (object)[
+            // Indica se a ação requisitada pelo UA foi bem sucedida.
+            "success"       => false,
+            // Dados que estão sendo enviados.
+            // Geralmente trata-se dos campos de um formulário.
+            // Dados recebidos de uma requisição ou formulário.
+            "data"          => null,
+            // Nomes de cada uma das coleções de campos que foram submetidos
+            "fieldsets"     => null,
+            // Informações sobre a associação dos dados submetidos com relação as entidades
+            // de dados correlacionadas a esta requisição.
+            "attatchRules"  => null,
+        ];
+	}
 
 
 

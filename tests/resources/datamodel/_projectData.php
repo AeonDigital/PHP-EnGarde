@@ -116,7 +116,7 @@
     'modelFilePath' => 'DomainUserProfile.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, Active, RegisterDate, ApplicationName, Name, Description, AllowAll FROM DomainUserProfile WHERE Id=:Id;',
+      'select' => 'SELECT Id, Active, RegisterDate, ApplicationName, Name, Description, AllowAll, HomeURL FROM DomainUserProfile WHERE Id=:Id;',
       'selectChild' => 
       array (
         'DomainUsers' => 
