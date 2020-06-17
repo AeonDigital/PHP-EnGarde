@@ -245,7 +245,9 @@ abstract class MainSession extends BObject implements iSession
     public function getDAL() : iDAL
     {
         if (isset($this->DAL) === false) {
-            $userProfile = (($this->retrieveUserProfile() === null) ? "Anonymous" : $this->retrieveUserProfile());
+            $userProfile = (
+                ($this->retrieveUserProfileName() === null) ? "Anonymous" : $this->retrieveUserProfileName()
+            );
             if (\key_exists($userProfile, $this->dbCredentials) === true) {
                 $dbCredentials = $this->dbCredentials[$userProfile];
 

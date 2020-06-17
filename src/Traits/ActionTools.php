@@ -241,14 +241,24 @@ trait ActionTools
             $this->serverConfig->getSecuritySession()->retrieveUser() : null);
     }
     /**
+     * Retorna o objeto completo do perfil de usuário atualmente em uso.
+     *
+     * @return      ?array
+     */
+    protected function retrieveUserProfile() : ?array
+    {
+        return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
+            $this->serverConfig->getSecuritySession()->retrieveUserProfile() : null);
+    }
+    /**
      * Retorna o perfil de segurança do usuário atualmente em uso.
      *
      * @return      ?string
      */
-    protected function retrieveUserProfile() : ?string
+    protected function retrieveUserProfileName() : ?string
     {
         return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
-            $this->serverConfig->getSecuritySession()->retrieveUserProfile() : null);
+            $this->serverConfig->getSecuritySession()->retrieveUserProfileName() : null);
     }
     /**
      * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
@@ -264,7 +274,7 @@ trait ActionTools
      * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
      * na coleção de perfis disponíveis para este mesmo usuário.
      *
-     * @return      ?array
+     * @return      bool
      */
     protected function changeUserProfile(string $profile) : bool
     {
