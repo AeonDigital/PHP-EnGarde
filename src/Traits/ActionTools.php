@@ -312,8 +312,6 @@ trait ActionTools
     protected function retrieveDefaultRequest() : stdClass
     {
         return (object)[
-            // Indica se a ação requisitada pelo UA foi bem sucedida.
-            "success"       => false,
             // Dados que estão sendo enviados.
             // Geralmente trata-se dos campos de um formulário.
             // Dados recebidos de uma requisição ou formulário.
