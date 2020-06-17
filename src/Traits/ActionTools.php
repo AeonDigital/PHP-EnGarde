@@ -303,7 +303,7 @@ trait ActionTools
             // Geralmente é uma mensagem genérica sobre o sucesso ou falha da requisição.
             "message"       => "",
             // Indica se a mensagem de retorno deve ser tratada como HTML.
-            "isHTML"        => false,
+            "isHTML"        => true,
             // Array associativo contendo informações sobre a
             // validação dos dados recebidos.
             "validate"      => null,
