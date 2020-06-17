@@ -356,7 +356,7 @@ trait ActionTools
         $securitySession = $this->serverConfig->getSecuritySession();
         return $securitySession->registerLogActivity(
             $this->routeConfig->getMethod(),
-            $this->serverConfig->getApplicationRequestUri() . $this->serverConfig->getRequestQueryStrings(),
+            $this->serverConfig->getApplicationRequestFullUri(),
             $this->serverConfig->getServerRequest()->getPostedFields(),
             $this->routeConfig->getController(),
             $this->routeConfig->getAction(),

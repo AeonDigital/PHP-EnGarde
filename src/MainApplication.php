@@ -207,12 +207,9 @@ abstract class MainApplication implements iApplication
     {
         // Se a rota necessita ter seus acessos registrados
         if (isset($this->routeConfig) === true && $this->routeConfig->getIsAutoLog() === true) {
-            $urlQS = $this->serverConfig->getRequestQueryStrings();
-            $fullURL = $this->serverConfig->getApplicationRequestUri() . (($urlQS === "") ? "" : "?" . $urlQS);
-
             $this->serverConfig->getSecuritySession()->registerLogActivity(
                 $this->routeConfig->getMethod(),
-                $fullURL,
+                $this->serverConfig->getApplicationRequestFullUri(),
                 $this->serverConfig->getServerRequest()->getPostedFields(),
                 $this->routeConfig->getController(),
                 $this->routeConfig->getAction(),
@@ -410,8 +407,8 @@ abstract class MainApplication implements iApplication
 
             // Existindo querystrings, cria um hash para identificar tal conjunto de valores
             $qs = "";
-            if ($this->serverConfig->getServerRequest()->getQueryParams() !== []) {
-                $qs = "_" . \sha1(\http_build_query($this->serverConfig->getServerRequest()->getQueryParams()));
+            if ($this->serverConfig->getRequestQueryStrings() !== "") {
+                $qs = "_" . \sha1($this->serverConfig->getRequestQueryStrings());
             }
 
             $this->serverConfig->getApplicationConfig()->getPathToCacheFiles(true);

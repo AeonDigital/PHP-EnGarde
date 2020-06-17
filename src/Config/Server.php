@@ -914,6 +914,19 @@ final class Server extends BObject implements iServer
         return "/" . trim($url, "/");
     }
     /**
+     * Retorna a URI que está sendo requisitada em ``nível de aplicação``, ou seja, irá SEMPRE
+     * adicionar o nome da aplicação que está sendo chamada na primeira partícula da URI caso
+     * ela esteja omitida e em adição, trará qualquer querystring definida originalmente na
+     * requisição.
+     *
+     * @return      string
+     */
+    public function getApplicationRequestFullUri() : string
+    {
+        $qs = $this->getRequestQueryStrings();
+        return $this->getApplicationRequestUri() . (($qs === "") ? "" : "?" . $qs);
+    }
+    /**
      * Pode retornar uma string para onde o UA deve ser redirecionado caso alguma das
      * configurações ou processamento dos presentes dados indique que tal redirecionamento
      * seja necessário.

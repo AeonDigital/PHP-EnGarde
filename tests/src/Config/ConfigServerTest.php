@@ -609,48 +609,58 @@ class ConfigServerTest extends TestCase
 
 
 
-        $testServerVariables["REQUEST_URI"] = "/site/path/to/resource?qs1=v1";
+        $testServerVariables["REQUEST_URI"] = "/site/path/to/resource";
+        $testServerVariables["QUERY_STRING"] = "qs1=v1";
         $nMock = prov_instanceOf_EnGarde_Config_Server($testServerVariables);
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(false, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
         $this->assertSame("/site/path/to/resource", $nMock->getApplicationRequestUri());
+        $this->assertSame("/site/path/to/resource?qs1=v1", $nMock->getApplicationRequestFullUri());
 
 
 
-        $testServerVariables["REQUEST_URI"] = "/path/to/resource?qs1=v1";
+        $testServerVariables["REQUEST_URI"] = "/path/to/resource";
+        $testServerVariables["QUERY_STRING"] = "qs1=v1";
         $nMock = prov_instanceOf_EnGarde_Config_Server($testServerVariables);
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
         $this->assertSame("/site/path/to/resource", $nMock->getApplicationRequestUri());
+        $this->assertSame("/site/path/to/resource?qs1=v1", $nMock->getApplicationRequestFullUri());
 
 
 
         $testServerVariables["REQUEST_URI"] = "/blog/path";
+        $testServerVariables["QUERY_STRING"] = "";
         $nMock = prov_instanceOf_EnGarde_Config_Server($testServerVariables);
         $this->assertSame("blog", $nMock->getApplicationName());
         $this->assertSame(false, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\blog\\AppStart", $nMock->getApplicationNamespace());
         $this->assertSame("/blog/path", $nMock->getApplicationRequestUri());
+        $this->assertSame("/blog/path", $nMock->getApplicationRequestFullUri());
 
 
 
         $testServerVariables["REQUEST_URI"] = "/";
+        $testServerVariables["QUERY_STRING"] = "";
         $nMock = prov_instanceOf_EnGarde_Config_Server($testServerVariables);
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
         $this->assertSame("/site", $nMock->getApplicationRequestUri());
+        $this->assertSame("/site", $nMock->getApplicationRequestFullUri());
 
 
 
         $testServerVariables["REQUEST_URI"] = "";
+        $testServerVariables["QUERY_STRING"] = "";
         $nMock = prov_instanceOf_EnGarde_Config_Server($testServerVariables);
         $this->assertSame("site", $nMock->getApplicationName());
         $this->assertSame(true, $nMock->getIsApplicationNameOmitted());
         $this->assertSame("\\site\\AppStart", $nMock->getApplicationNamespace());
         $this->assertSame("/site", $nMock->getApplicationRequestUri());
+        $this->assertSame("/site", $nMock->getApplicationRequestFullUri());
     }
 
 
