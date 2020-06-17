@@ -290,9 +290,9 @@ trait ActionTools
      * Retorna um objeto ``stdClass`` configurado com os valores padrões para
      * resposta a requisições que esperam um objeto JSON.
      *
-     * @return       stdClass
+     * @return       \stdClass
 	 */
-    protected function retrieveDefaultResponse() : stdClass
+    protected function retrieveDefaultResponse() : \stdClass
     {
         return (object)[
             // Indica se a ação requisitada pelo UA foi bem sucedida.
@@ -317,9 +317,9 @@ trait ActionTools
      * Retorna um objeto ``stdClass`` configurado com os valores padrões para
      * um objeto JSON que deve ser submetido pelo UA.
      *
-     * @return       stdClass
+     * @return       \stdClass
 	 */
-    protected function retrieveDefaultRequest() : stdClass
+    protected function retrieveDefaultRequest() : \stdClass
     {
         return (object)[
             // Dados que estão sendo enviados.
