@@ -1,7 +1,19 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-16-00-00-12
+ * Generated in 2020-06-24-16-11-56
 */
+
+/*--INI CREATE TABLE--*/
+CREATE TABLE DomainApplication (
+    Id BIGINT NOT NULL AUTO_INCREMENT, 
+    Active TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indica se a aplicação está ativa.', 
+    RegisterDate DATETIME NOT NULL DEFAULT NOW() COMMENT 'Data e hora da criação deste registro.', 
+    Name VARCHAR(32) NOT NULL COMMENT 'Nome da aplicação.', 
+    PRIMARY KEY (Id)
+) COMMENT 'Aplicação disponível para este domínio';
+/*--END CREATE TABLE--*/
+
+
 
 /*--INI CREATE TABLE--*/
 CREATE TABLE DomainUser (
@@ -37,11 +49,11 @@ CREATE TABLE DomainUserProfile (
     Id BIGINT NOT NULL AUTO_INCREMENT, 
     Active TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indica se este perfil de segurança está ativo ou não.', 
     RegisterDate DATETIME NOT NULL DEFAULT NOW() COMMENT 'Data e hora da criação deste registro.', 
-    ApplicationName VARCHAR(32) NOT NULL COMMENT 'Nome da aplicação para qual este perfil de segurança é utilizado.', 
     Name VARCHAR(64) NOT NULL COMMENT 'Nome deste perfil de segurança.', 
     Description VARCHAR(255) NOT NULL COMMENT 'Descrição deste grupo de segurança.', 
     AllowAll TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Indica se a política de acesso para este perfil é permissiva.', 
     HomeURL VARCHAR(255) NOT NULL COMMENT 'Indica a home para onde este perfil deve ser direcionado ao efetuar login.', 
+    DomainApplication_Id BIGINT NOT NULL COMMENT 'Perfil de usuários em aplicações', 
     PRIMARY KEY (Id)
 ) COMMENT 'Define um perfil de segurança para um conjunto de usuários';
 /*--END CREATE TABLE--*/
@@ -51,10 +63,13 @@ CREATE TABLE DomainUserProfile (
 /*--INI CREATE TABLE--*/
 CREATE TABLE DomainUserProfileRoute (
     Id BIGINT NOT NULL AUTO_INCREMENT, 
+    ControllerName VARCHAR(128) NOT NULL COMMENT 'Nome do controller que resolve esta rota.', 
+    ActionName VARCHAR(128) NOT NULL COMMENT 'Nome da action que resolve esta rota.', 
     MethodHTTP VARCHAR(8) NOT NULL COMMENT 'Método HTTP evocado na execução da requisição.', 
-    RawURL VARCHAR(255) NOT NULL COMMENT 'URI da rota a qual esta regra corresponde.', 
+    RawURL VARCHAR(255) NOT NULL COMMENT 'URI da rota a qual esta regra corresponde (contendo o nome da aplicação).', 
     Allow TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Permissão para esta rota.', 
     RedirectTo VARCHAR(255) COMMENT 'URL para onde o usuário deve ser redirecionado caso não possa visitar esta rota.', 
+    Description VARCHAR(255) COMMENT 'Breve descrição da rota.', 
     DomainUserProfile_Id BIGINT NOT NULL COMMENT 'Perfil relacionado a esta rota', 
     PRIMARY KEY (Id)
 ) COMMENT 'Configuração de uma rota para um perfil de segurança';
@@ -116,6 +131,8 @@ CREATE TABLE secdup_to_secdu (
 */
 
 /*--INI CONSTRAINT INSTRUCTIONS--*/
+ALTER TABLE DomainApplication ADD CONSTRAINT uc_secapp_Name UNIQUE (Name);
+INSERT INTO DomainApplication (Active, Name) VALUES (1, "Site");
 ALTER TABLE DomainUser ADD CONSTRAINT uc_secdu_Login UNIQUE (Login);
 CREATE INDEX idx_secdu_Login ON DomainUser (Login);
 ALTER TABLE DomainUser ADD CONSTRAINT uc_secdu_ShortLogin UNIQUE (ShortLogin);
@@ -126,11 +143,12 @@ INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Elia
 INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Geraldo Bilefete", "Masculino", "geraldo@dna.com.br", "geraldo", SHA1("senhateste"));
 INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Rianna Cantarelli", "Feminino", "rianna@dna.com.br", "rianna", SHA1("senhateste"));
 CREATE INDEX idx_secduba_UserAgentIP ON DomainUserBlockedAccess (UserAgentIP);
-ALTER TABLE DomainUserBlockedAccess ADD CONSTRAINT fk_secduba_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id);
-ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_ApplicationName_Name UNIQUE (ApplicationName, Name);
-INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/");
-INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0, "/");
-INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0, "/");
+ALTER TABLE DomainUserBlockedAccess ADD CONSTRAINT fk_secduba_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id) ON DELETE CASCADE;
+ALTER TABLE DomainUserProfile ADD CONSTRAINT fk_secdup_to_secapp_DomainApplication_Id FOREIGN KEY (DomainApplication_Id) REFERENCES DomainApplication(Id) ON DELETE CASCADE;
+ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_Name_DomainApplication_Id UNIQUE (Name, DomainApplication_Id);
+INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));
+INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Administrador", "Usuários administradores do sistema.", 0, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));
+INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Publicador", "Usuários publicadores de conteúdo.", 0, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));
 ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;
 ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;
@@ -138,12 +156,12 @@ INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SE
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Publicador") FROM DomainUser;
 UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=1;
 UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;
-ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT fk_secdupr_to_secdup_DomainUserProfile_Id FOREIGN KEY (DomainUserProfile_Id) REFERENCES DomainUserProfile(Id);
+ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT fk_secdupr_to_secdup_DomainUserProfile_Id FOREIGN KEY (DomainUserProfile_Id) REFERENCES DomainUserProfile(Id) ON DELETE CASCADE;
 ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawURL_DomainUserProfile_Id UNIQUE (MethodHTTP, RawURL, DomainUserProfile_Id);
-INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");
-INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
-INSERT INTO DomainUserProfileRoute (MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
-ALTER TABLE DomainUserRequestLog ADD CONSTRAINT fk_secdurl_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id);
+INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "index", "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");
+INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "dashboard", "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
+INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "levelone", "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
+ALTER TABLE DomainUserRequestLog ADD CONSTRAINT fk_secdurl_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id) ON DELETE CASCADE;
 ALTER TABLE DomainUserSession ADD CONSTRAINT uc_secdus_SessionHash UNIQUE (SessionHash);
 CREATE INDEX idx_secdus_SessionHash ON DomainUserSession (SessionHash);
 ALTER TABLE DomainUserSession ADD CONSTRAINT fk_secdus_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id) ON DELETE CASCADE;
@@ -157,5 +175,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-16-00-00-12
+ * Generated in 2020-06-24-16-11-56
 */

@@ -3,10 +3,10 @@
     'alias' => 'secdup',
     'description' => 'Define um perfil de segurança para um conjunto de usuários',
     'executeAfterCreateTable' => [
-        'ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_ApplicationName_Name UNIQUE (ApplicationName, Name);',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/");',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Administrador", "Usuários administradores do sistema.", 0, "/");',
-        'INSERT INTO DomainUserProfile (ApplicationName, Name, Description, AllowAll, HomeURL) VALUES ("site", "Publicador", "Usuários publicadores de conteúdo.", 0, "/");',
+        'ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_Name_DomainApplication_Id UNIQUE (Name, DomainApplication_Id);',
+        'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));',
+        'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Administrador", "Usuários administradores do sistema.", 0, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));',
+        'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Publicador", "Usuários publicadores de conteúdo.", 0, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;',
         'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;',
@@ -30,14 +30,6 @@
             'readOnly' => true,
             'default' => 'NOW()',
             'allowNull' => false,
-        ],
-        [
-            'name' => 'ApplicationName',
-            'description' => 'Nome da aplicação para qual este perfil de segurança é utilizado.',
-            'type' => 'String',
-            'length' => 32,
-            'allowNull' => false,
-            'allowEmpty' => false,
         ],
         [
             'name' => 'Name',
@@ -83,6 +75,7 @@
             'fkTableName' => 'DomainUserProfileRoute[]',
             'fkDescription' => 'Perfil relacionado a esta rota',
             'fkAllowNull' => false,
+            'fkOnDelete' => 'CASCADE'
         ]
     ]
 ];

@@ -1,4 +1,46 @@
 <?php return array (
+  'DomainApplication' => 
+  array (
+    'modelFilePath' => 'DomainApplication.php',
+    'ormInstructions' => 
+    array (
+      'select' => 'SELECT Id, Active, RegisterDate, Name FROM DomainApplication WHERE Id=:Id;',
+      'selectChild' => 
+      array (
+        'UserProfiles' => 
+        array (
+          'select' => 'SELECT Id as fkId FROM DomainUserProfile WHERE DomainApplication_Id=:Id;',
+          'oColumnFK' => NULL,
+          'linkTableName' => NULL,
+          'linkTableColumns' => NULL,
+        ),
+      ),
+      'selectParentId' => 
+      array (
+      ),
+      'attatchWith' => 
+      array (
+        'DomainUserProfile' => 'UPDATE DomainUserProfile SET DomainApplication_Id=:thisId WHERE Id=:tgtId;',
+      ),
+      'detachWith' => 
+      array (
+        'DomainUserProfile' => 'UPDATE DomainUserProfile SET DomainApplication_Id=null WHERE Id=:tgtId;',
+      ),
+      'detachWithAll' => 
+      array (
+        'DomainUserProfile' => 'UPDATE DomainUserProfile SET DomainApplication_Id=null WHERE DomainApplication_Id=:thisId;',
+      ),
+      'oColumn' => 
+      array (
+      ),
+      'singleFK' => 
+      array (
+      ),
+      'collectionFK' => 
+      array (
+      ),
+    ),
+  ),
   'DomainUser' => 
   array (
     'modelFilePath' => 'DomainUser.php',
@@ -116,7 +158,7 @@
     'modelFilePath' => 'DomainUserProfile.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, Active, RegisterDate, ApplicationName, Name, Description, AllowAll, HomeURL FROM DomainUserProfile WHERE Id=:Id;',
+      'select' => 'SELECT Id, Active, RegisterDate, Name, Description, AllowAll, HomeURL FROM DomainUserProfile WHERE Id=:Id;',
       'selectChild' => 
       array (
         'DomainUsers' => 
@@ -140,19 +182,23 @@
       ),
       'selectParentId' => 
       array (
+        'DomainApplication' => 'SELECT DomainApplication_Id FROM DomainUserProfile WHERE Id=:thisId;',
       ),
       'attatchWith' => 
       array (
+        'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=:tgtId WHERE Id=:thisId;',
         'DomainUser' => 'INSERT INTO secdup_to_secdu (DomainUserProfile_Id, DomainUser_Id) VALUES (:thisId, :tgtId);',
         'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=:thisId WHERE Id=:tgtId;',
       ),
       'detachWith' => 
       array (
+        'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=null WHERE Id=:thisId;',
         'DomainUser' => 'DELETE FROM secdup_to_secdu WHERE DomainUserProfile_Id=:thisId AND DomainUser_Id=:tgtId;',
         'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:tgtId;',
       ),
       'detachWithAll' => 
       array (
+        'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=null WHERE Id=:thisId;',
         'DomainUser' => 'DELETE FROM secdup_to_secdu WHERE DomainUserProfile_Id=:thisId;',
         'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE DomainUserProfile_Id=:thisId;',
       ),
@@ -172,7 +218,7 @@
     'modelFilePath' => 'DomainUserProfileRoute.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, MethodHTTP, RawURL, Allow, RedirectTo FROM DomainUserProfileRoute WHERE Id=:Id;',
+      'select' => 'SELECT Id, ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, Description FROM DomainUserProfileRoute WHERE Id=:Id;',
       'selectChild' => 
       array (
       ),

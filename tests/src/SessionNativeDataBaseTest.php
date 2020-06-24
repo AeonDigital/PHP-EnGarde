@@ -136,7 +136,7 @@ class SessionNativeDataBaseTest extends TestCase
 
     public function test_constructor_ok()
     {
-        //providerNDB_executeCreateSchema();
+        providerNDB_executeCreateSchema();
         global $defaultServerVariables;
         global $defaultEngineVariables;
         global $defaultApplication;
@@ -173,7 +173,7 @@ class SessionNativeDataBaseTest extends TestCase
 
 
 
-
+    /*
     public function test_method_executeLogin_executeLogout()
     {
         $this->cleanLogDataTables();
@@ -458,5 +458,5 @@ class SessionNativeDataBaseTest extends TestCase
 
         $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
     }
-
+    */
 }

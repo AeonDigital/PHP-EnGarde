@@ -75,7 +75,7 @@
             'fkTableName' => 'DomainUserSession[]',
             'fkDescription' => 'Usuário dono desta sessão',
             'fkAllowNull' => false,
-            'fkOnDelete' => 'CASCADE'
+            'fkOnDelete' => 'CASCADE',
         ],
         [
             'name' => 'Profiles',
@@ -83,21 +83,24 @@
             'fkTableName' => 'DomainUserProfile[]',
             'fkDescription' => 'Usuários em Perfis.',
             'fkLinkTable' => true,
-            'fkAllowNull' => false
+            'fkAllowNull' => false,
+            'fkOnDelete' => 'CASCADE'
         ],
         [
             'name' => 'BlockedAccess',
             'description' => 'Coleção de registros de bloqueio para este usuário.',
             'fkTableName' => 'DomainUserBlockedAccess[]',
             'fkDescription' => 'Usuário relacionado com este perfil.',
-            'fkAllowNull' => false
+            'fkAllowNull' => false,
+            'fkOnDelete' => 'CASCADE'
         ],
         [
             'name' => 'RequestLog',
             'description' => 'Coleção de logs das requisições deste usuário.',
             'fkTableName' => 'DomainUserRequestLog[]',
             'fkDescription' => 'Usuário deste log.',
-            'fkAllowNull' => false
+            'fkAllowNull' => false,
+            'fkOnDelete' => 'CASCADE'
         ],
     ]
 ];
