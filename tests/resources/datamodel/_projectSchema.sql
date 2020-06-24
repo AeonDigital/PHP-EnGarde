@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-24-16-11-56
+ * Generated in 2020-06-24-16-59-51
 */
 
 /*--INI CREATE TABLE--*/
@@ -8,7 +8,9 @@ CREATE TABLE DomainApplication (
     Id BIGINT NOT NULL AUTO_INCREMENT, 
     Active TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indica se a aplicação está ativa.', 
     RegisterDate DATETIME NOT NULL DEFAULT NOW() COMMENT 'Data e hora da criação deste registro.', 
-    Name VARCHAR(32) NOT NULL COMMENT 'Nome da aplicação.', 
+    CommercialName VARCHAR(32) NOT NULL COMMENT 'Nome comercial da aplicação.', 
+    ApplicationName VARCHAR(32) NOT NULL COMMENT 'Nome da aplicação em seu formato "programático".', 
+    Description VARCHAR(255) COMMENT 'Breve descrição da aplicação.', 
     PRIMARY KEY (Id)
 ) COMMENT 'Aplicação disponível para este domínio';
 /*--END CREATE TABLE--*/
@@ -131,8 +133,9 @@ CREATE TABLE secdup_to_secdu (
 */
 
 /*--INI CONSTRAINT INSTRUCTIONS--*/
-ALTER TABLE DomainApplication ADD CONSTRAINT uc_secapp_Name UNIQUE (Name);
-INSERT INTO DomainApplication (Active, Name) VALUES (1, "Site");
+ALTER TABLE DomainApplication ADD CONSTRAINT uc_secdapp_CommercialName UNIQUE (CommercialName);
+ALTER TABLE DomainApplication ADD CONSTRAINT uc_secdapp_ApplicationName UNIQUE (ApplicationName);
+INSERT INTO DomainApplication (Active, CommercialName, ApplicationName, Description) VALUES (1, "Site", "site", "Website");
 ALTER TABLE DomainUser ADD CONSTRAINT uc_secdu_Login UNIQUE (Login);
 CREATE INDEX idx_secdu_Login ON DomainUser (Login);
 ALTER TABLE DomainUser ADD CONSTRAINT uc_secdu_ShortLogin UNIQUE (ShortLogin);
@@ -144,11 +147,11 @@ INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Gera
 INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Rianna Cantarelli", "Feminino", "rianna@dna.com.br", "rianna", SHA1("senhateste"));
 CREATE INDEX idx_secduba_UserAgentIP ON DomainUserBlockedAccess (UserAgentIP);
 ALTER TABLE DomainUserBlockedAccess ADD CONSTRAINT fk_secduba_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id) ON DELETE CASCADE;
-ALTER TABLE DomainUserProfile ADD CONSTRAINT fk_secdup_to_secapp_DomainApplication_Id FOREIGN KEY (DomainApplication_Id) REFERENCES DomainApplication(Id) ON DELETE CASCADE;
+ALTER TABLE DomainUserProfile ADD CONSTRAINT fk_secdup_to_secdapp_DomainApplication_Id FOREIGN KEY (DomainApplication_Id) REFERENCES DomainApplication(Id) ON DELETE CASCADE;
 ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_Name_DomainApplication_Id UNIQUE (Name, DomainApplication_Id);
-INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));
-INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Administrador", "Usuários administradores do sistema.", 0, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));
-INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Publicador", "Usuários publicadores de conteúdo.", 0, "/", (SELECT Id FROM DomainApplication WHERE Name="site"));
+INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));
+INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Administrador", "Usuários administradores do sistema.", 0, "/", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));
+INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Publicador", "Usuários publicadores de conteúdo.", 0, "/", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));
 ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;
 ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;
 INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;
@@ -175,5 +178,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-24-16-11-56
+ * Generated in 2020-06-24-16-59-51
 */

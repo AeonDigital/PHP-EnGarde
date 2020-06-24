@@ -4,7 +4,7 @@
     'modelFilePath' => 'DomainApplication.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, Active, RegisterDate, Name FROM DomainApplication WHERE Id=:Id;',
+      'select' => 'SELECT Id, Active, RegisterDate, CommercialName, ApplicationName, Description FROM DomainApplication WHERE Id=:Id;',
       'selectChild' => 
       array (
         'UserProfiles' => 

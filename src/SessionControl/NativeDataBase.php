@@ -133,17 +133,18 @@ class NativeDataBase extends MainSession
                         secdu.*,
                         secdup.Id as secdup_Id,
                         secdup.Active as secdup_Active,
-                        secdup.ApplicationName as secdup_ApplicationName,
                         secdup.Name as secdup_Name,
                         secdup.Description as secdup_Description,
                         secdup.AllowAll as secdup_AllowAll,
                         secdup.HomeURL as secdup_HomeURL,
                         dupdu.ProfileDefault as secdup_ProfileDefault,
-                        dupdu.ProfileSelected as secdup_ProfileSelected
+                        dupdu.ProfileSelected as secdup_ProfileSelected,
+                        secdapp.ApplicationName as secdapp_ApplicationName
                     FROM
                         DomainUser secdu
                         INNER JOIN secdup_to_secdu dupdu ON dupdu.DomainUser_Id=secdu.Id
                         INNER JOIN DomainUserProfile secdup ON secdup.Id=dupdu.DomainUserProfile_Id
+                        INNER JOIN DomainApplication secdapp ON secdapp.Id=secdup.DomainApplication_Id
                     WHERE
                         secdu.Login=:Login OR
                         secdu.ShortLogin=:ShortLogin;";
@@ -180,7 +181,7 @@ class NativeDataBase extends MainSession
                     $user["Profiles"][] = [
                         "Id"                => (int)$row["secdup_Id"],
                         "Active"            => (bool)$row["secdup_Active"],
-                        "ApplicationName"   => $row["secdup_ApplicationName"],
+                        "ApplicationName"   => $row["secdapp_ApplicationName"],
                         "Name"              => $row["secdup_Name"],
                         "Description"       => $row["secdup_Description"],
                         "AllowAll"          => (bool)$row["secdup_AllowAll"],
@@ -188,7 +189,7 @@ class NativeDataBase extends MainSession
                         "Default"           => (bool)$row["secdup_ProfileDefault"],
                         "Selected"          => (bool)$row["secdup_ProfileSelected"],
                     ];
-                    if ($this->applicationName === $row["secdup_ApplicationName"]) {
+                    if ($this->applicationName === $row["secdapp_ApplicationName"]) {
                         $hasProfileForThisApplication = true;
 
                         if ((bool)$row["secdup_ProfileSelected"] === true ||
@@ -745,11 +746,12 @@ class NativeDataBase extends MainSession
                 $strSQL = " UPDATE
                                 secdup_to_secdu dupdu
                                 INNER JOIN DomainUserProfile secdup ON dupdu.DomainUserProfile_Id=secdup.Id
+                                INNER JOIN DomainApplication secdapp ON secdapp.Id=secdup.DomainApplication_Id
                             SET
                                 dupdu.ProfileSelected=0
                             WHERE
                                 dupdu.DomainUser_Id=:DomainUser_Id AND
-                                secdup.ApplicationName=:ApplicationName;";
+                                secdapp.ApplicationName=:ApplicationName;";
 
                 $parans = [
                     "DomainUser_Id"     => $this->authenticatedUser["Id"],
@@ -759,12 +761,13 @@ class NativeDataBase extends MainSession
                     $strSQL = " UPDATE
                                     secdup_to_secdu dupdu
                                     INNER JOIN DomainUserProfile secdup ON dupdu.DomainUserProfile_Id=secdup.Id
+                                    INNER JOIN DomainApplication secdapp ON secdapp.Id=secdup.DomainApplication_Id
                                 SET
                                     dupdu.ProfileSelected=1
                                 WHERE
                                     dupdu.DomainUser_Id=:DomainUser_Id AND
                                     dupdu.DomainUserProfile_Id=:DomainUserProfile_Id AND
-                                    secdup.ApplicationName=:ApplicationName;";
+                                    secdapp.ApplicationName=:ApplicationName;";
                     $parans = [
                         "DomainUser_Id"         => $this->authenticatedUser["Id"],
                         "DomainUserProfile_Id"  => $selectedProfile["Id"],

@@ -1,9 +1,9 @@
 <?php return [
     'tableName' => 'DomainApplication',
-    'alias' => 'secapp',
+    'alias' => 'secdapp',
     'description' => 'Aplicação disponível para este domínio',
     'executeAfterCreateTable' => [
-        'INSERT INTO DomainApplication (Active, Name) VALUES (1, "Site");'
+        'INSERT INTO DomainApplication (Active, CommercialName, ApplicationName, Description) VALUES (1, "Site", "site", "Website");'
     ],
     'columns' => [
         [
@@ -22,12 +22,30 @@
             'allowNull' => false,
         ],
         [
-            'name' => 'Name',
-            'description' => 'Nome da aplicação.',
+            'name' => 'CommercialName',
+            'description' => 'Nome comercial da aplicação.',
             'type' => 'String',
             'length' => 32,
             'unique' => true,
             'allowNull' => false,
+            'allowEmpty' => false,
+        ],
+        [
+            'name' => 'ApplicationName',
+            'description' => 'Nome da aplicação em seu formato "programático".',
+            'type' => 'String',
+            'length' => 32,
+            'unique' => true,
+            'allowNull' => false,
+            'allowEmpty' => false,
+        ],
+        [
+            'name' => 'Description',
+            'description' => 'Breve descrição da aplicação.',
+            'type' => 'String',
+            'length' => 255,
+            'default' => null,
+            'allowNull' => true,
             'allowEmpty' => false,
         ],
         [
