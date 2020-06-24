@@ -279,7 +279,7 @@ class NativeDataBase extends MainSession
                             DomainUser_Id=:DomainUser_Id;";
 
             $parans = [
-                "DomainUser_Id"     => $this->authenticatedUser["Id"]
+                "DomainUser_Id" => $this->authenticatedUser["Id"]
             ];
             $this->DAL->executeInstruction($strSQL, $parans);
 
