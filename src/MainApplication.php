@@ -149,7 +149,7 @@ abstract class MainApplication implements iApplication
                     if ($this->routeConfig->getIsSecure() === true) {
                         $permission = $securitySession->checkRoutePermission(
                             $this->routeConfig->getMethod(),
-                            $this->routeConfig->getRoutes()[0]
+                            $this->routeConfig->getActiveRoute(true),
                         );
                         if ($permission === false) {
                             $redirectTo = (
@@ -175,7 +175,7 @@ abstract class MainApplication implements iApplication
                         $securityConfig->getRouteToStart(),
                         $securityConfig->getRouteToResetPassword(),
                     ];
-                    $freePass = (\in_array($this->routeConfig->getRoutes()[0], $freeRoutes));
+                    $freePass = (\in_array($this->routeConfig->getActiveRoute(true), $freeRoutes));
                 }
 
                 // SE
