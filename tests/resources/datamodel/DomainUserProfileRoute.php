@@ -3,10 +3,10 @@
     'alias' => 'secdupr',
     'description' => 'Configuração de uma rota para um perfil de segurança',
     'executeAfterCreateTable' => [
-        'ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawURL_DomainUserProfile_Id UNIQUE (MethodHTTP, RawURL, DomainUserProfile_Id);',
-        'INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "index", "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");',
-        'INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "dashboard", "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");',
-        'INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "levelone", "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");',
+        'ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawRoute_DomainUserProfile_Id UNIQUE (MethodHTTP, RawRoute, DomainUserProfile_Id);',
+        'INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "index", "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");',
+        'INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "dashboard", "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");',
+        'INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "levelone", "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");',
     ],
     'columns' => [
         [
@@ -37,8 +37,8 @@
             'allowEmpty' => false,
         ],
         [
-            'name' => 'RawURL',
-            'description' => 'URI da rota a qual esta regra corresponde (contendo o nome da aplicação).',
+            'name' => 'RawRoute',
+            'description' => 'Versão bruta da rota a qual esta regra corresponde (contendo o nome da aplicação).',
             'type' => 'String',
             'length' => 255,
             'readOnly' => true,

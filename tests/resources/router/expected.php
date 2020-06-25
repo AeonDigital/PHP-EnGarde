@@ -25,6 +25,7 @@ array (
         array (
           0 => '/test',
         ),
+        'activeRoute' => '/test',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -101,6 +102,7 @@ array (
           0 => '/',
           1 => '/home',
         ),
+        'activeRoute' => '/',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -178,6 +180,7 @@ array (
           0 => '/',
           1 => '/home',
         ),
+        'activeRoute' => '/',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -258,6 +261,7 @@ array (
           0 => '/',
           1 => '/home',
         ),
+        'activeRoute' => '/home',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -335,6 +339,7 @@ array (
           0 => '/',
           1 => '/home',
         ),
+        'activeRoute' => '/home',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -411,6 +416,7 @@ array (
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
+        'activeRoute' => '/list',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -480,6 +486,7 @@ array (
         array (
           0 => '/contact',
         ),
+        'activeRoute' => '/contact',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -547,6 +554,7 @@ array (
         array (
           0 => '/contact',
         ),
+        'activeRoute' => '/contact',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -622,6 +630,7 @@ array (
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
+        'activeRoute' => '/list/orderby:[a-zA-Z]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -694,6 +703,7 @@ array (
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
+        'activeRoute' => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 
@@ -766,6 +776,7 @@ array (
           2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
+        'activeRoute' => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
         'customProperties' => 

@@ -445,22 +445,41 @@ class RouterTest extends TestCase
 
         $r = $nMock->selectTargetRawRoute("/site");
         $this->assertNotNull($r);
+
         $this->assertTrue(is_array($r));
+        $expectedParans = null;
+        $this->assertSame("/^\/site\//", $r["route"]);
+        $this->assertSame($expectedParans, $r["parans"]);
+
+
+
+        $r = $nMock->selectTargetRawRoute("/site/home");
+        $this->assertNotNull($r);
+
+        $this->assertTrue(is_array($r));
+        $expectedParans = null;
+        $this->assertSame("/^\/site\/home\//", $r["route"]);
+        $this->assertSame($expectedParans, $r["parans"]);
+
 
 
         $r = $nMock->selectTargetRawRoute("/site/list/nameasc/10");
         $this->assertNotNull($r);
+
         $this->assertTrue(is_array($r));
-        $expected = ["orderby" => "nameasc", "page" => "10"];
-        $this->assertSame($expected, $r["parans"]);
+        $expectedParans = ["orderby" => "nameasc", "page" => "10"];
+        $this->assertSame("/^\/site\/list\/(?P<orderby>[a-zA-Z]+)\/(?P<page>[0-9]+)\//", $r["route"]);
+        $this->assertSame($expectedParans, $r["parans"]);
+
 
 
         $r = $nMock->selectTargetRawRoute("/site/configurando-uma-rota/propriedades/responseMime");
         $this->assertNotNull($r);
-        $this->assertTrue(is_array($r));
 
-        $expected = ["propertie" => "responseMime"];
-        $this->assertSame($expected, $r["parans"]);
+        $this->assertTrue(is_array($r));
+        $expectedParans = ["propertie" => "responseMime"];
+        $this->assertSame("/^\/site\/configurando-uma-rota\/propriedades\/(?P<propertie>[a-zA-Z]+)\//", $r["route"]);
+        $this->assertSame($expectedParans, $r["parans"]);
     }
 }
 

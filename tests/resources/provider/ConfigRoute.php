@@ -44,6 +44,7 @@ $defaultRoute = [
         "/index",
         "/home"
     ],
+    "activeRoute"               => "/",
     "isUseXHTML"                => true,
     "runMethodName"             => "",
     "customProperties"          => [],
@@ -96,6 +97,7 @@ function prov_instanceOf_EnGarde_Config_Route($defaultRoute)
         $defaultRoute["allowedMimeTypes"],
         $defaultRoute["method"],
         $defaultRoute["routes"],
+        $defaultRoute["activeRoute"],
         $defaultRoute["isUseXHTML"],
         $defaultRoute["runMethodName"],
         $defaultRoute["customProperties"],

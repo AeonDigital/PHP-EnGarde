@@ -398,8 +398,10 @@ final class Route extends BObject implements iRoute
      */
     private array $routes = [];
     /**
-     * Retorna a rota que está sendo resolvida e seus respectivos aliases.
+     * Retorna um array contendo todas as rotas que respondem a esta mesma configuração.
      * As rotas devem sempre ser definidas de forma relativa à raiz (começando com "/").
+     * Nesta coleção, o nome da aplicação não deverá estar presente pois deve replicar o padrão
+     * definido nos controllers.
      *
      * @return      array
      */
@@ -410,6 +412,8 @@ final class Route extends BObject implements iRoute
     /**
      * Define a rota que está sendo resolvida e seus respectivos aliases.
      * As rotas devem sempre ser definidas de forma relativa à raiz (começando com "/").
+     * Nesta coleção, o nome da aplicação não deverá estar presente pois deve replicar o padrão
+     * definido nos controllers.
      *
      * @param       array $routes
      *              Coleção de rotas que apontam para o mesmo recurso.
@@ -442,6 +446,58 @@ final class Route extends BObject implements iRoute
             ]
         );
         $this->routes = $routes;
+    }
+
+
+
+
+
+    /**
+     * Rota base que está sendo utilizada.
+     *
+     * @var         string
+     */
+    private string $activeRoute = "";
+    /**
+     * Retorna a rota base que está sendo utilizada.
+     *
+     * @param       bool $withApplicationName
+     *              Quando ``true`` irá adicionar o nome da aplicação atual na primeira
+     *              partícula da rota em si.
+     *
+     * @return      string
+     */
+    public function getActiveRoute(bool $withApplicationName = false) : string
+    {
+        return (
+            ($withApplicationName === false) ?
+            $this->activeRoute :
+            \rtrim("/" . $this->application . $this->activeRoute, "/")
+        );
+    }
+    /**
+     * Define a rota base que está sendo utilizada.
+     *
+     * @param       string $activeRoute
+     *              Rota base (sem o nome da aplicação).
+     *
+     * @return      void
+     */
+    private function setActiveRoute(string $activeRoute) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "activeRoute", $activeRoute, [
+                [
+                    "validate" => "is string not empty"
+                ],
+                [
+                    "validate" => "is allowed value",
+                    "allowedValues" => $this->routes,
+                ]
+
+            ]
+        );
+        $this->activeRoute = $activeRoute;
     }
 
 
@@ -1615,7 +1671,10 @@ final class Route extends BObject implements iRoute
      *              Obrigatório. Método ``HTTP`` que está sendo usado para evocar esta rota.
      *
      * @param       array $routes
-     *              Obrigatório. Rota que está sendo resolvida e seus respectivos aliases.
+     *              Obrigatório. Coleção de rotas que correspondem a esta mesma configuração.
+     *
+     * @param       string $activeRoute
+     *              Obrigatório. Rota base que está sendo resolvida.
      *
      * @param       bool $isUseXHTML
      *              Indica se a aplicação deve priorizar o uso do mime ``xhtml`` sobre o ``html``.
@@ -1693,6 +1752,7 @@ final class Route extends BObject implements iRoute
         array $allowedMimeTypes,
         string $method,
         array $routes,
+        string $activeRoute,
         bool $isUseXHTML,
         string $runMethodName,
         array $customProperties,
@@ -1723,6 +1783,7 @@ final class Route extends BObject implements iRoute
         $this->setAllowedMimeTypes($allowedMimeTypes);
         $this->setMethod($method);
         $this->setRoutes($routes);
+        $this->setActiveRoute($activeRoute);
         $this->setIsUseXHTML($isUseXHTML);
         $this->setRunMethodName($runMethodName);
         $this->setCustomProperties($customProperties);
@@ -1785,6 +1846,7 @@ final class Route extends BObject implements iRoute
                 "allowedMimeTypes"          => [],
                 "method"                    => "",
                 "routes"                    => [],
+                "activeRoute"               => "",
                 "isUseXHTML"                => false,
                 "runMethodName"             => "",
                 "customProperties"          => [],
@@ -1820,6 +1882,7 @@ final class Route extends BObject implements iRoute
             $useConfig["allowedMimeTypes"],
             $useConfig["method"],
             $useConfig["routes"],
+            $useConfig["activeRoute"],
             $useConfig["isUseXHTML"],
             $useConfig["runMethodName"],
             $useConfig["customProperties"],
@@ -1862,6 +1925,7 @@ final class Route extends BObject implements iRoute
             "allowedMimeTypes"          => $this->getAllowedMimeTypes(),
             "method"                    => $this->getMethod(),
             "routes"                    => $this->getRoutes(),
+            "activeRoute"               => $this->getActiveRoute(),
             "isUseXHTML"                => $this->getIsUseXHTML(),
             "runMethodName"             => $this->getRunMethodName(),
             "customProperties"          => $this->getCustomProperties(),

@@ -218,7 +218,7 @@
     'modelFilePath' => 'DomainUserProfileRoute.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, ControllerName, ActionName, MethodHTTP, RawURL, Allow, RedirectTo, Description FROM DomainUserProfileRoute WHERE Id=:Id;',
+      'select' => 'SELECT Id, ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, Description FROM DomainUserProfileRoute WHERE Id=:Id;',
       'selectChild' => 
       array (
       ),

@@ -540,14 +540,14 @@ class NativeDataBase extends MainSession
      * @param       string $methodHTTP
      *              Método HTTP sendo usado.
      *
-     * @param       string $rawURL
-     *              URL evocada em seu estado bruto.
+     * @param       string $rawRoute
+     *              Rota evocada em seu estado bruto (contendo o nome da aplicação).
      *
      * @return      bool
      */
-    public function checkRoutePermission(
+    function checkRoutePermission(
         string $methodHTTP,
-        string $rawURL
+        string $rawRoute
     ) : bool {
         $r = false;
         $pId = 0;
@@ -566,12 +566,12 @@ class NativeDataBase extends MainSession
                         DomainUserProfileRoute
                     WHERE
                         MethodHTTP=:MethodHTTP AND
-                        RawURL=:RawURL AND
+                        RawRoute=:RawRoute AND
                         DomainUserProfile_Id=:DomainUserProfile_Id;";
 
         $parans = [
             "MethodHTTP"            => $methodHTTP,
-            "RawURL"                => $rawURL,
+            "RawRoute"              => $rawRoute,
             "DomainUserProfile_Id"  => $pId
         ];
 

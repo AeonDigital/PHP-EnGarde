@@ -557,14 +557,14 @@ class NativeLocal extends MainSession
      * @param       string $methodHTTP
      *              Método HTTP sendo usado.
      *
-     * @param       string $rawURL
-     *              URL evocada em seu estado bruto.
+     * @param       string $rawRoute
+     *              Rota evocada em seu estado bruto (contendo o nome da aplicação).
      *
      * @return      bool
      */
-    public function checkRoutePermission(
+    function checkRoutePermission(
         string $methodHTTP,
-        string $rawURL
+        string $rawRoute
     ) : bool
     {
         return true;

@@ -42,6 +42,7 @@ class XMLTest extends TestCase
                 "/index",
                 "/home"
             ],
+            "activeRoute"               => "/",
             "isUseXHTML"                => true,
             "runMethodName"             => "",
             "customProperties"          => ["prop1" => "val1", "prop2" => "val2"],

@@ -31,6 +31,7 @@ class ConfigRouteTest extends TestCase
             $defaultRoute["allowedMimeTypes"],
             $defaultRoute["method"],
             $defaultRoute["routes"],
+            $defaultRoute["activeRoute"],
             $defaultRoute["isUseXHTML"],
             $defaultRoute["runMethodName"],
             $defaultRoute["customProperties"],
@@ -71,6 +72,8 @@ class ConfigRouteTest extends TestCase
         );
         $this->assertSame("GET", $nMock->getMethod());
         $this->assertSame(["/", "/index", "/home"], $nMock->getRoutes());
+        $this->assertSame("/", $nMock->getActiveRoute());
+        $this->assertSame("/site", $nMock->getActiveRoute(true));
         $this->assertSame(true, $nMock->getIsUseXHTML());
         $this->assertSame("run", $nMock->getRunMethodName());
         $this->assertSame([], $nMock->getCustomProperties());

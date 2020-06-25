@@ -256,6 +256,7 @@ class Router extends BObject implements iRouter
                         foreach ($actionRouteConfig["allowedMethods"] as $method) {
                             $cloneRouteConfig   = \array_merge([], $actionRouteConfig);
                             $cloneRouteConfig["method"] = $method;
+                            $cloneRouteConfig["activeRoute"] = $cloneRouteConfig["routes"][0];
                             $controllerRoutes[] = \AeonDigital\EnGarde\Config\Route::fromArray($cloneRouteConfig);
                         }
                     }
@@ -293,6 +294,7 @@ class Router extends BObject implements iRouter
 
                     // Registra a rota com o método indicado
                     $this->appRoutes[$routeType][$regexRoute][$method] = $cfg->toArray();
+                    $this->appRoutes[$routeType][$regexRoute][$method]["activeRoute"] = $route;
                 }
             }
         }
@@ -360,6 +362,7 @@ class Router extends BObject implements iRouter
             if ($isController === true) {
                 unset($allowedProperties[\array_search("action", $allowedProperties)]);
                 unset($allowedProperties[\array_search("routes", $allowedProperties)]);
+                unset($allowedProperties[\array_search("activeRoute", $allowedProperties)]);
             }
 
 
