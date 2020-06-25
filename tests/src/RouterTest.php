@@ -439,7 +439,6 @@ class RouterTest extends TestCase
     public function test_method_select_target_raw_route()
     {
         $nMock = $this->provideRouteMock();
-        $pathToAppRoutes = $nMock->getPathToAppRoutes();
         $nMock->testProcessApplicationRoutes();
 
 
@@ -452,6 +451,8 @@ class RouterTest extends TestCase
         $r = $nMock->selectTargetRawRoute("/site/list/nameasc/10");
         $this->assertNotNull($r);
         $this->assertTrue(is_array($r));
+        $expected = ["orderby" => "nameasc", "page" => "10"];
+        $this->assertSame($expected, $r["parans"]);
 
 
         $r = $nMock->selectTargetRawRoute("/site/configurando-uma-rota/propriedades/responseMime");

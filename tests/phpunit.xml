@@ -36,8 +36,9 @@
 
             <file>src/RouterTest.php</file>
 
-            <file>src/SessionNativeLocalTest.php</file-->
-            <file>src/SessionNativeDataBaseTest.php</file>
+            <file>src/SessionNativeLocalTest.php</file>
+            <file>src/SessionNativeDataBaseTest.php</file-->
+            <file>src/RouterTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

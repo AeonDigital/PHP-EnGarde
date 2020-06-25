@@ -408,7 +408,7 @@ array (
         array (
           0 => '/list',
           1 => '/list/orderby:[a-zA-Z]+',
-          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
+          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
         'isUseXHTML' => true,
@@ -619,7 +619,7 @@ array (
         array (
           0 => '/list',
           1 => '/list/orderby:[a-zA-Z]+',
-          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
+          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
         'isUseXHTML' => true,
@@ -668,7 +668,7 @@ array (
         'localeDictionary' => '',
       ),
     ),
-    '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\/(?P<page>[0-9])\\//' => 
+    '/^\\/site\\/list\\/(?P<orderby>[a-zA-Z]+)\\/(?P<page>[0-9]+)\\//' => 
     array (
       'GET' => 
       array (
@@ -691,7 +691,7 @@ array (
         array (
           0 => '/list',
           1 => '/list/orderby:[a-zA-Z]+',
-          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
+          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
         'isUseXHTML' => true,
@@ -763,7 +763,7 @@ array (
         array (
           0 => '/list',
           1 => '/list/orderby:[a-zA-Z]+',
-          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]',
+          2 => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
           3 => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         ),
         'isUseXHTML' => true,

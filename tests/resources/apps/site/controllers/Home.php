@@ -89,7 +89,7 @@ class Home
         "routes" => [
             "/list",
             "/list/orderby:[a-zA-Z]+",
-            "/list/orderby:[a-zA-Z]+/page:[0-9]",
+            "/list/orderby:[a-zA-Z]+/page:[0-9]+",
             "/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+"
         ],
         "action" => "list",

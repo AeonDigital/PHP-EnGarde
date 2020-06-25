@@ -581,8 +581,8 @@ class Router extends BObject implements iRouter
 
             // Se ainda não encontrou a rota certa pesquisa entre as rotas complexas
             if ($matchRoute["route"] === null && isset($appRoutes["complex"]) === true) {
-                $matchIndex     = 0;
-                $matchRoutes    = [];
+                $matchIndex = 0;
+                $matchRoutes = [];
 
                 // Verifica apenas as rotas que ainda não foram conferidas
                 foreach ($appRoutes["complex"] as $route => $config) {
@@ -608,7 +608,7 @@ class Router extends BObject implements iRouter
                         // significando assim que ela adequa-se mais idealmente ao
                         // definido.
                         foreach ($matchRoutes as $i => $matchs) {
-                            $parts = \substr_count($matchs["rawRoute"], "/");
+                            $parts = \substr_count($matchs["route"], "/");
 
                             if ($parts > $countParts) {
                                 $matchIndex = $i;
