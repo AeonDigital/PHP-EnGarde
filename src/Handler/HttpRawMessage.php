@@ -534,6 +534,13 @@ class HttpRawMessage
                 "message"           => $reasonPhrase,
                 "protocol"          => self::$protocol,
                 "method"            => self::$method,
+            ],
+            "debugLog"          => [
+                "code"              => $code,
+                "message"           => $reasonPhrase,
+                "file"              => "",
+                "line"              => 0,
+                "traceLog"          => []
             ]
         ];
 
