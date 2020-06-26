@@ -84,7 +84,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Desenvolvedor",
                     "Description"       => "Usuários desenvolvedores do sistema.",
                     "AllowAll"          => true,
-                    "HomeURL"           => "/",
+                    "HomeURL"           => "/site",
                     "Default"           => true,
                     "Selected"          => true
                 ],
@@ -95,7 +95,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Administrador",
                     "Description"       => "Usuários administradores do sistema.",
                     "AllowAll"          => false,
-                    "HomeURL"           => "/",
+                    "HomeURL"           => "/site",
                     "Default"           => false,
                     "Selected"          => false
                 ],
@@ -106,7 +106,7 @@ class SessionNativeDataBaseTest extends TestCase
                     "Name"              => "Publicador",
                     "Description"       => "Usuários publicadores de conteúdo.",
                     "AllowAll"          => false,
-                    "HomeURL"           => "/",
+                    "HomeURL"           => "/site",
                     "Default"           => false,
                     "Selected"          => false
                 ]
