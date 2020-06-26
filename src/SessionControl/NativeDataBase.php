@@ -129,6 +129,14 @@ class NativeDataBase extends MainSession
     {
         $this->securityStatus = SecurityStatus::UserAccountDoesNotExist;
 
+        $parans = [];
+        $strSqlWhere = [];
+        foreach ($this->securityConfig->getLoginKeyNames() as $key) {
+            $parans[$key] = $userName;
+            $strSqlWhere[] = "secdu.$key=:$key";
+        }
+        $strSqlWhere = \implode(" OR ", $strSqlWhere);
+
         $strSQL = " SELECT
                         secdu.*,
                         secdup.Id as secdup_Id,
@@ -146,13 +154,7 @@ class NativeDataBase extends MainSession
                         INNER JOIN DomainUserProfile secdup ON secdup.Id=dupdu.DomainUserProfile_Id
                         INNER JOIN DomainApplication secdapp ON secdapp.Id=secdup.DomainApplication_Id
                     WHERE
-                        secdu.Login=:Login OR
-                        secdu.ShortLogin=:ShortLogin;";
-
-        $parans = [
-            "Login" => $userName,
-            "ShortLogin" => $userName
-        ];
+                        $strSqlWhere;";
 
         $dtDomainUser = $this->DAL->getDataTable($strSQL, $parans);
         if ($dtDomainUser !== null) {

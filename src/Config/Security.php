@@ -240,6 +240,45 @@ final class Security extends BObject implements iSecurity
 
 
     /**
+     * Coleção de nomes de campos que servem como chaves identificadoras
+     * para os usuários do sistema.
+     *
+     * @var         array
+     */
+    private array $loginKeyNames = ["Login"];
+    /**
+     * Retorna uma coleção de nomes de campos que servem como chaves identificadoras
+     * para os usuários do sistema.
+     *
+     * @return      array
+     */
+    public function getLoginKeyNames() : array
+    {
+        return $this->loginKeyNames;
+    }
+    /**
+     * Define a coleção de nomes de campos que servem como chaves identificadoras
+     * para os usuários do sistema.
+     *
+     * Nesta implementação, tal recurso só funciona para ``NativeDataBase``.
+     *
+     * @param       array $loginKeys
+     *              Coleção de campos de chave única que podem ser usados para identificar
+     *              a existência de um usuário registrado no sistema.
+     *
+     * @return      void
+     */
+    private function setLoginKeyNames(array $loginKeys) : void
+    {
+        $this->loginKeyNames = \array_merge(["Login"], $loginKeys);
+        \array_unique($this->loginKeyNames);
+    }
+
+
+
+
+
+    /**
      * Id do usuário anonimo da aplicação.
      *
      * @var         int
@@ -673,6 +712,10 @@ final class Security extends BObject implements iSecurity
      * @param       string $routeToResetPassword
      *              Rota para o local onde o usuário pode ir para efetuar o reset de sua senha.
      *
+     * @param       array $loginKeyNames
+     *              Coleção de nomes de campos que servem como chaves identificadoras
+     *              para os usuários do sistema.
+     *
      * @param       int $anonymousId
      *              Id do usuário anonimo da aplicação.
      *
@@ -713,6 +756,7 @@ final class Security extends BObject implements iSecurity
         string $routeToLogin,
         string $routeToStart,
         string $routeToResetPassword,
+        array $loginKeyNames,
         int $anonymousId,
         string $sessionNamespace,
         bool $isSessionRenew,
@@ -730,6 +774,7 @@ final class Security extends BObject implements iSecurity
         $this->setRouteToLogin($routeToLogin);
         $this->setRouteToStart($routeToStart);
         $this->setRouteToResetPassword($routeToResetPassword);
+        $this->setLoginKeyNames($loginKeyNames);
         $this->setAnonymousId($anonymousId);
         $this->setSessionNamespace($sessionNamespace);
         $this->setIsSessionRenew($isSessionRenew);
@@ -765,6 +810,7 @@ final class Security extends BObject implements iSecurity
             "routeToLogin"          => "/login",
             "routeToStart"          => "/home",
             "routeToResetPassword"  => "/resetpassword",
+            "loginKeyNames"         => [],
             "anonymousId"           => 1,
             "sessionNamespace"      => "AeonDigital\\EnGarde\\SessionControl\\NativeLocal",
             "isSessionRenew"        => true,
@@ -785,6 +831,7 @@ final class Security extends BObject implements iSecurity
             $useValues["routeToLogin"],
             $useValues["routeToStart"],
             $useValues["routeToResetPassword"],
+            $useValues["loginKeyNames"],
             $useValues["anonymousId"],
             $useValues["sessionNamespace"],
             $useValues["isSessionRenew"],

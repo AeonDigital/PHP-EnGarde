@@ -26,6 +26,7 @@ class ConfigSecurityTest extends TestCase
             $defaultSecurity["routeToLogin"],
             $defaultSecurity["routeToStart"],
             $defaultSecurity["routeToResetPassword"],
+            $defaultSecurity["loginKeyNames"],
             $defaultSecurity["anonymousId"],
             $defaultSecurity["sessionNamespace"],
             $defaultSecurity["isSessionRenew"],
@@ -45,6 +46,7 @@ class ConfigSecurityTest extends TestCase
         $this->assertSame("login", $obj->getRouteToLogin());
         $this->assertSame("start", $obj->getRouteToStart());
         $this->assertSame("reset", $obj->getRouteToResetPassword());
+        $this->assertSame(["Login", "ShortLogin"], $obj->getLoginKeyNames());
         $this->assertSame(1, $obj->getAnonymousId());
         $this->assertSame("AeonDigital\\EnGarde\\SessionControl\\NativeLocal", $obj->getSessionNamespace());
         $this->assertSame(true, $obj->getIsSessionRenew());
