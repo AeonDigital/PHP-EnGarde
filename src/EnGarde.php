@@ -75,6 +75,7 @@ final class EnGarde extends BObject
                     "maxFileSize"           => REQUEST_MAX_FILESIZE,
                     "maxPostSize"           => REQUEST_MAX_POSTSIZE,
                     "pathToErrorView"       => DEFAULT_ERROR_VIEW,
+                    "pathToHttpMessageView" => DEFAULT_HTTP_MESSAGE_VIEW,
                     "applicationClassName"  => APPLICATION_CLASSNAME,
                     "developerHttpMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
                     "frameworkHttpMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
