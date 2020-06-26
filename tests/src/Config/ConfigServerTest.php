@@ -75,7 +75,7 @@ class ConfigServerTest extends TestCase
     {
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-        $this->assertSame("1.1", $nMock->getRequestHTTPVersion());
+        $this->assertSame("1.1", $nMock->getRequestHttpVersion());
     }
 
 
@@ -121,7 +121,7 @@ class ConfigServerTest extends TestCase
                 "SERVER_PORT" => "443"
             ]
         );
-        $this->assertTrue($nMock->getRequestIsUseHTTPS());
+        $this->assertTrue($nMock->getRequestIsUseHttps());
 
 
         $nMock = prov_instanceOf_EnGarde_Config_Server(
@@ -130,7 +130,7 @@ class ConfigServerTest extends TestCase
                 "SERVER_PORT" => "80"
             ]
         );
-        $this->assertFalse($nMock->getRequestIsUseHTTPS());
+        $this->assertFalse($nMock->getRequestIsUseHttps());
     }
 
 
@@ -568,6 +568,43 @@ class ConfigServerTest extends TestCase
     }
 
 
+    public function test_methods_getset_path_to_http_message_view_fails()
+    {
+        global $defaultServerVariables;
+        global $defaultEngineVariables;
+        $testEngineVariables = array_merge([], $defaultEngineVariables);
+        $testEngineVariables["pathToHttpMessageView"] = DS . "nonexists.php";
+
+        $fail = false;
+        try {
+            $nMock = prov_instanceOf_EnGarde_Config_Server(
+                $defaultServerVariables, [], $testEngineVariables
+            );
+        } catch (\Exception $ex) {
+            $fail = true;
+            $path = $defaultServerVariables["DOCUMENT_ROOT"] . DS . "nonexists.php";
+            $this->assertSame(
+                "Invalid value defined for \"pathToHttpMessageView\". File does not exists. Given: [ $path ]",
+                $ex->getMessage()
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+    }
+
+
+    public function test_methods_getset_path_to_http_message_view()
+    {
+        global $dirResources;
+        global $defaultServerVariables;
+        $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
+        $this->assertSame(DS . "httpMessage.phtml", $nMock->getPathToHttpMessageView());
+        $this->assertSame(
+            $dirResources . DS . "apps" . DS . "httpMessage.phtml",
+            $nMock->getPathToHttpMessageView(true)
+        );
+    }
+
+
     public function test_methods_getset_application_className_fails()
     {
         global $defaultServerVariables;
@@ -664,19 +701,19 @@ class ConfigServerTest extends TestCase
     }
 
 
-    public function test_methods_getset_developer_HTTP_methods()
+    public function test_methods_getset_developer_http_methods()
     {
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-        $this->assertSame(["GET", "POST", "PUT", "PATCH", "DELETE"], $nMock->getDeveloperHTTPMethods());
+        $this->assertSame(["GET", "POST", "PUT", "PATCH", "DELETE"], $nMock->getDeveloperHttpMethods());
     }
 
 
-    public function test_methods_getset_framework_HTTP_methods()
+    public function test_methods_getset_framework_http_methods()
     {
         global $defaultServerVariables;
         $nMock = prov_instanceOf_EnGarde_Config_Server($defaultServerVariables);
-        $this->assertSame(["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"], $nMock->getFrameworkHTTPMethods());
+        $this->assertSame(["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"], $nMock->getFrameworkHttpMethods());
     }
 
 }

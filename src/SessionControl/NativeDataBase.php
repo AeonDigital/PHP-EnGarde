@@ -38,7 +38,7 @@ class NativeDataBase extends MainSession
      *              Tipo de ambiente que o domínio está rodando no momento.
      *
      * @param       string $applicationName
-     *              Nome da aplicação que deve responder a requisição ``HTTP`` atual.
+     *              Nome da aplicação que deve responder a requisição ``Http`` atual.
      *
      * @param       string $userAgent
      *              Identificação do user agent que efetuou a requisição.
@@ -537,8 +537,8 @@ class NativeDataBase extends MainSession
      * Verifica se o usuário atualmente identificado possui permissão de acesso
      * na rota identificada a partir do seu perfil em uso.
      *
-     * @param       string $methodHTTP
-     *              Método HTTP sendo usado.
+     * @param       string $methodHttp
+     *              Método ``Http`` sendo usado.
      *
      * @param       string $rawRoute
      *              Rota evocada em seu estado bruto (contendo o nome da aplicação).
@@ -546,7 +546,7 @@ class NativeDataBase extends MainSession
      * @return      bool
      */
     function checkRoutePermission(
-        string $methodHTTP,
+        string $methodHttp,
         string $rawRoute
     ) : bool {
         $r = false;
@@ -565,12 +565,12 @@ class NativeDataBase extends MainSession
                     FROM
                         DomainUserProfileRoute
                     WHERE
-                        MethodHTTP=:MethodHTTP AND
+                        MethodHttp=:MethodHttp AND
                         RawRoute=:RawRoute AND
                         DomainUserProfile_Id=:DomainUserProfile_Id;";
 
         $parans = [
-            "MethodHTTP"            => $methodHTTP,
+            "MethodHttp"            => $methodHttp,
             "RawRoute"              => $rawRoute,
             "DomainUserProfile_Id"  => $pId
         ];
@@ -625,7 +625,7 @@ class NativeDataBase extends MainSession
         $parans = [
             "UserAgent"         => $this->userAgent,
             "UserAgentIP"       => $this->userAgentIP,
-            "MethodHTTP"        => "-",
+            "MethodHttp"        => "-",
             "FullURL"           => "-",
             "PostData"          => "{}",
             "ApplicationName"   => $this->applicationName,
@@ -787,8 +787,8 @@ class NativeDataBase extends MainSession
     /**
      * Gera um registro de atividade para a requisição atual.
      *
-     * @param       string $methodHTTP
-     *              Método HTTP evocado.
+     * @param       string $methodHttp
+     *              Método ``Http`` evocado.
      *
      * @param       string $fullURL
      *              URL completa evocada pelo UA.
@@ -811,7 +811,7 @@ class NativeDataBase extends MainSession
      * @return      bool
      */
     public function registerLogActivity(
-        string $methodHTTP,
+        string $methodHttp,
         string $fullURL,
         ?array $postData,
         string $controller,
@@ -830,7 +830,7 @@ class NativeDataBase extends MainSession
         $parans = [
             "UserAgent"         => $this->userAgent,
             "UserAgentIP"       => $this->userAgentIP,
-            "MethodHTTP"        => $methodHTTP,
+            "MethodHttp"        => $methodHttp,
             "FullURL"           => $fullURL,
             "PostData"          => \json_encode($postData),
             "ApplicationName"   => $this->applicationName,

@@ -103,7 +103,7 @@ class NativeLocal extends MainSession
      *              Tipo de ambiente que o domínio está rodando no momento.
      *
      * @param       string $applicationName
-     *              Nome da aplicação que deve responder a requisição ``HTTP`` atual.
+     *              Nome da aplicação que deve responder a requisição ``Http`` atual.
      *
      * @param       string $userAgent
      *              Identificação do user agent que efetuou a requisição.
@@ -554,8 +554,8 @@ class NativeLocal extends MainSession
      * Verifica se o usuário atualmente identificado possui permissão de acesso
      * na rota identificada a partir do seu perfil em uso.
      *
-     * @param       string $methodHTTP
-     *              Método HTTP sendo usado.
+     * @param       string $methodHttp
+     *              Método ``Http`` sendo usado.
      *
      * @param       string $rawRoute
      *              Rota evocada em seu estado bruto (contendo o nome da aplicação).
@@ -563,7 +563,7 @@ class NativeLocal extends MainSession
      * @return      bool
      */
     function checkRoutePermission(
-        string $methodHTTP,
+        string $methodHttp,
         string $rawRoute
     ) : bool
     {
@@ -736,8 +736,8 @@ class NativeLocal extends MainSession
     /**
      * Gera um registro de atividade para a requisição atual.
      *
-     * @param       string $methodHTTP
-     *              Método HTTP evocado.
+     * @param       string $methodHttp
+     *              Método ``Http`` evocado.
      *
      * @param       string $fullURL
      *              URL completa evocada pelo UA.
@@ -760,7 +760,7 @@ class NativeLocal extends MainSession
      * @return      bool
      */
     public function registerLogActivity(
-        string $methodHTTP,
+        string $methodHttp,
         string $fullURL,
         ?array $postData,
         string $controller,
@@ -780,7 +780,7 @@ class NativeLocal extends MainSession
             "CreatedAt"     => $this->now->format("Y-m-d H:i:s"),
             "UserAgentIP"   => $this->userAgentIP,
             "UserAgent"     => $this->userAgent,
-            "MethodHTTP"    => $methodHTTP,
+            "MethodHttp"    => $methodHttp,
             "FullURL"       => $fullURL,
             "PostData"      => \json_encode($postData),
             "Application"   => $this->applicationName,
@@ -794,7 +794,7 @@ class NativeLocal extends MainSession
 
         $fileLog = \mb_str_to_valid_filename(
             \strtolower(
-                $this->now->format("Y-m-d H:i:s") . "_" . $this->userAgentIP . "_" . $methodHTTP
+                $this->now->format("Y-m-d H:i:s") . "_" . $this->userAgentIP . "_" . $methodHttp
             )
         ) . ".json";
         $r = \AeonDigital\Tools\JSON::save(

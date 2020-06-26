@@ -218,7 +218,7 @@
     'modelFilePath' => 'DomainUserProfileRoute.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, Description FROM DomainUserProfileRoute WHERE Id=:Id;',
+      'select' => 'SELECT Id, ControllerName, ActionName, MethodHttp, RawRoute, Allow, RedirectTo, Description FROM DomainUserProfileRoute WHERE Id=:Id;',
       'selectChild' => 
       array (
       ),
@@ -254,7 +254,7 @@
     'modelFilePath' => 'DomainUserRequestLog.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, RegisterDate, UserAgent, UserAgentIP, MethodHTTP, FullURL, PostData, ApplicationName, ControllerName, ActionName, Activity, Note FROM DomainUserRequestLog WHERE Id=:Id;',
+      'select' => 'SELECT Id, RegisterDate, UserAgent, UserAgentIP, MethodHttp, FullURL, PostData, ApplicationName, ControllerName, ActionName, Activity, Note FROM DomainUserRequestLog WHERE Id=:Id;',
       'selectChild' => 
       array (
       ),

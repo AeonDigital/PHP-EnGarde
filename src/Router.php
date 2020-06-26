@@ -13,7 +13,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iServer as iServer;
 
 
 /**
- * Roteador para as requisições ``HTTP`` de uma Aplicação.
+ * Roteador para as requisições ``Http`` de uma Aplicação.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
@@ -246,7 +246,7 @@ class Router extends BObject implements iRouter
                     }
 
 
-                    // Se não foram definidos os métodos HTTP com os quais
+                    // Se não foram definidos os métodos Http com os quais
                     // esta rota está apta a trabalhar...
                     if ($actionRouteConfig["allowedMethods"] === []) {
                         $err = "Invalid Route Register. ``allowedMethods`` is not defined.";
@@ -276,8 +276,8 @@ class Router extends BObject implements iRouter
 
 
                 // SE
-                // o método HTTP que está sendo evocado deve ser executado pelo framework...
-                if (\array_in_ci($method, $this->serverConfig->getFrameworkHTTPMethods()) === true) {
+                // o método Http que está sendo evocado deve ser executado pelo framework...
+                if (\array_in_ci($method, $this->serverConfig->getFrameworkHttpMethods()) === true) {
                     $err = "The Method HTTP \"" . $method . "\" is implemented by the framework and can not be set in route configuration.";
                     throw new \InvalidArgumentException($err);
                 }
@@ -494,7 +494,7 @@ class Router extends BObject implements iRouter
 
 
     /**
-     * Corrige a sintaxe de uma Rota ``HTTP`` transformando-a em uma Regex válida.
+     * Corrige a sintaxe de uma Rota ``Http`` transformando-a em uma Regex válida.
      *
      * @param       string $route
      *              Rota contendo parametros nomeados.

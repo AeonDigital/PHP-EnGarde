@@ -18,24 +18,6 @@ class AppStart extends Application
 
 
 
-    public function configureApplication() : void
-    {
-        $this->applicationConfig->setLocales(["pt-BR", "en-US"]);
-        $this->applicationConfig->setDefaultLocale("pt-BR");
-        $this->applicationConfig->setIsUseLabels(true);
-        $this->applicationConfig->setPathToErrorView("/views/_shared/errorView.phtml");
-
-
-        // Define as especificações de rota válidas para toda a aplicação.
-        $this->applicationConfig->setDefaultRouteConfig([
-            "masterPage" => "masterpage.phtml"
-        ]);
-    }
-
-
-
-
-
     public function customRun() : void
     {
         $this->testViewDebug = "custom run executed";

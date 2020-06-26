@@ -13,22 +13,23 @@ namespace AeonDigital\EnGarde\Handler;
 
 
 /**
- * Classe a ser usada para permitir configurar o tratamento de erros ocorridos em runtime.
+ * Classe que implementa métodos que servem a função de envio de mensagens ``Http``
+ * para o UA de forma simplificada.
  *
  * @package     AeonDigital\EnGarde
  * @author      Rianna Cantarelli <rianna@aeondigital.com.br>
  * @copyright   2020, Rianna Cantarelli
  * @license     ADPL-v1.0
  */
-class ErrorListening
+class HttpRawMessage
 {
-    use \AeonDigital\Http\Traits\HTTPRawStatusCode;
+    use \AeonDigital\Http\Traits\HttpRawStatusCode;
 
 
 
 
     /**
-     * Como esta versão do framework *EnGarde* foi feita a partir da versão 7.1 do
+     * Como esta versão do framework *EnGarde* foi feita após a versão 7.1 do
      * PHP e esta, por sua vez modificou a forma como tratava os "Errors" e as
      * "Exceptions", foi considerado importante adicionar aqui um recorte da
      * [documentação oficial](http://php.net/manual/pt_BR/language.errors.php7.php)
@@ -120,24 +121,31 @@ class ErrorListening
      */
     private static bool $isDebugMode = false;
     /**
-     * Protocolo HTTP/HTTPS.
+     * Protocolo ``Http/Https``.
      *
      * @var         string
      */
     private static string $protocol = "";
     /**
-     * Método HTTP usado.
+     * Método ``Http`` usado.
      *
      * @var         string
      */
     private static string $method = "";
     /**
      * Caminho completo até a view que deve ser enviada ao
-     * UA em caso de erros no domínio.
+     * UA em caso de erros.
      *
      * @var         string
      */
     private static string $pathToErrorView = "";
+    /**
+     * Caminho completo até a view que deve ser enviada ao
+     * UA em caso de mensagens ``Http`` simples.
+     *
+     * @var         string
+     */
+    private static string $pathToHttpMessageView = "";
 
 
 
@@ -161,13 +169,16 @@ class ErrorListening
      *              Indica se o domínio está em modo de debug.
      *
      * @param       string $protocol
-     *              Protocolo HTTP/HTTPS.
+     *              Protocolo ``Http/Https``.
      *
      * @param       string $method
-     *              Método HTTP usado.
+     *              Método ``Http`` usado.
      *
      * @param       string $pathToErrorView
      *              Caminho completo até a view de erros
+     *
+     * @param       string $pathToHttpMessageView
+     *              Caminho completo até a view de mensagem.
      */
     static public function setContext(
         string $rootPath,
@@ -175,19 +186,21 @@ class ErrorListening
         bool $isDebugMode,
         string $protocol,
         string $method,
-        string $pathToErrorView = ""
+        string $pathToErrorView = "",
+        string $pathToHttpMessageView = ""
     ) : void {
         $isTestEnv = (  self::$environmentType === "" ||
                         self::$environmentType === "UTEST");
 
         if ($isTestEnv === true)
         {
-            self::$rootPath         = \to_system_path($rootPath) . DIRECTORY_SEPARATOR;
-            self::$environmentType  = $environmentType;
-            self::$isDebugMode      = $isDebugMode;
-            self::$protocol         = \strtolower($protocol);
-            self::$method           = \strtoupper($method);
-            self::$pathToErrorView  = $pathToErrorView;
+            self::$rootPath                 = \to_system_path($rootPath) . DIRECTORY_SEPARATOR;
+            self::$environmentType          = $environmentType;
+            self::$isDebugMode              = $isDebugMode;
+            self::$protocol                 = \strtolower($protocol);
+            self::$method                   = \strtoupper($method);
+            self::$pathToErrorView          = $pathToErrorView;
+            self::$pathToHttpMessageView    = $pathToHttpMessageView;
         }
     }
     /**
@@ -198,12 +211,13 @@ class ErrorListening
     static public function getContext() : array
     {
         return [
-            "rootPath"          => self::$rootPath,
-            "environmentType"   => self::$environmentType,
-            "isDebugMode"       => self::$isDebugMode,
-            "protocol"          => self::$protocol,
-            "method"            => self::$method,
-            "pathToErrorView"   => self::$pathToErrorView
+            "rootPath"              => self::$rootPath,
+            "environmentType"       => self::$environmentType,
+            "isDebugMode"           => self::$isDebugMode,
+            "protocol"              => self::$protocol,
+            "method"                => self::$method,
+            "pathToErrorView"       => self::$pathToErrorView,
+            "pathToHttpMessageView" => self::$pathToHttpMessageView
         ];
     }
     /**
@@ -220,12 +234,13 @@ class ErrorListening
 
         if ($isTestEnv === true)
         {
-            self::$rootPath         = "";
-            self::$environmentType  = "";
-            self::$isDebugMode      = false;
-            self::$protocol         = "";
-            self::$method           = "";
-            self::$pathToErrorView  = "";
+            self::$rootPath                 = "";
+            self::$environmentType          = "";
+            self::$isDebugMode              = false;
+            self::$protocol                 = "";
+            self::$method                   = "";
+            self::$pathToErrorView          = "";
+            self::$pathToHttpMessageView    = "";
         }
     }
 
@@ -234,11 +249,11 @@ class ErrorListening
 
 
     /**
-     * Define o caminho completo até a view que deve ser enviada ao ``UA`` em caso de erros no
-     * domínio.
+     * Define o caminho completo até a view que deve ser enviada ao
+     * UA em caso de erros.
      *
      * @param       string $pathToErrorView
-     *              Caminho até a view de erro padrão.
+     *              Caminho completo até a view.
      *
      * @return      void
      */
@@ -255,7 +270,28 @@ class ErrorListening
 
 
     /**
-     * Manipulador padrão para as exceptions ocorridas.
+     * Define o caminho completo até a view que deve ser enviada ao
+     * UA em caso de mensagens ``Http`` simples.
+     *
+     * @param       string $pathToErrorView
+     *              Caminho completo até a view.
+     *
+     * @return      void
+     */
+    static public function setPathToHttpMessageView(string $pathToHttpMessageView = "") : void
+    {
+        self::$pathToHttpMessageView = "";
+        if ($pathToHttpMessageView !== "") {
+            self::$pathToHttpMessageView = \to_system_path($pathToHttpMessageView);
+        }
+    }
+
+
+
+
+
+    /**
+     * Manipulador padrão para as exceptions.
      *
      * @param       \Exception $ex
      *              Exception capturada.
@@ -329,10 +365,10 @@ class ErrorListening
         ];
 
 
-        return self::sendToUA($viewData);
+        return self::sendToUA($viewData, self::$pathToErrorView);
     }
     /**
-     * Manipulador padrão para os erros ocorridos.
+     * Manipulador padrão para os erros.
      *
      * @param       int $errorCode
      *              Código do erro que aconteceu.
@@ -409,7 +445,7 @@ class ErrorListening
         ];
 
 
-        return self::sendToUA($viewData);
+        return self::sendToUA($viewData, self::$pathToErrorView);
     }
 
 
@@ -417,21 +453,21 @@ class ErrorListening
 
 
     /**
-     * Lança um erro ``HTTP`` de forma explicita.
-     * Este tipo de erro não apresenta informações além do código ``HTTP`` e da ``reason phrase``
+     * Lança um erro ``Http`` de forma explicita.
+     * Este tipo de erro não apresenta informações além do código ``Http`` e da ``reason phrase``
      * definidos e não tem como função ajudar a debugar a aplicação.
      *
      * Deve ser usado quando o desenvolvedor deseja lançar uma falha explicita para o ``UA``.
      *
      * @param       int $code
-     *              Código ``HTTP``.
+     *              Código ``Http``.
      *
      * @param       string $reasonPhrase
      *              Frase razão para o erro.
      *
      * @return      void
      */
-    static public function throwHTTPError(
+    static public function throwHttpError(
         int $code,
         string $reasonPhrase = ""
     ) {
@@ -444,7 +480,7 @@ class ErrorListening
         $viewData = [
             "rootPath"          => self::$rootPath,
             "environmentType"   => self::$environmentType,
-            "isDebugMode"       => false,
+            "isDebugMode"       => self::$isDebugMode,
             "http"              => [
                 "code"              => $code,
                 "message"           => $reasonPhrase,
@@ -461,7 +497,48 @@ class ErrorListening
         ];
 
 
-        return self::sendToUA($viewData);
+        return self::sendToUA($viewData, self::$pathToErrorView);
+    }
+
+
+
+
+
+    /**
+     * Envia para o UA uma mensagem Http básica (código ``Http`` e ``reason phrase``).
+     *
+     * @param       int $code
+     *              Código ``Http``.
+     *
+     * @param       string $reasonPhrase
+     *              Frase razão para o erro.
+     *
+     * @return      void
+     */
+    static public function throwHttpMessage(
+        int $code,
+        string $reasonPhrase = ""
+    ) {
+        if ($reasonPhrase === "" && isset(self::$rawStatusCode[$code]) === true) {
+            $reasonPhrase = self::$rawStatusCode[$code];
+        }
+
+
+        // Gera o viewData
+        $viewData = [
+            "rootPath"          => self::$rootPath,
+            "environmentType"   => self::$environmentType,
+            "isDebugMode"       => self::$isDebugMode,
+            "http"              => [
+                "code"              => $code,
+                "message"           => $reasonPhrase,
+                "protocol"          => self::$protocol,
+                "method"            => self::$method,
+            ]
+        ];
+
+
+        return self::sendToUA($viewData, self::$pathToHttpMessageView);
     }
 
 
@@ -477,15 +554,18 @@ class ErrorListening
      * @param       array $viewData
      *              Objeto de dados do processamento no momento atual.
      *
+     * @param       string $pathToView
+     *              Caminho completo até a view que deve ser usada.
+     *
      * @return      void|string
      */
-    static private function sendToUA(array $viewData)
+    static private function sendToUA(array $viewData, string $pathToView = "")
     {
         $http = $viewData["http"];
         $str = "";
         $cType = "";
         if ($http["method"] === "GET") {
-            $str = self::prepareXHTML($viewData);
+            $str = self::prepareXHTML($viewData, $pathToView);
             $cType = "text/html";
         }
         else {
@@ -518,13 +598,16 @@ class ErrorListening
      * @param       array $viewData
      *              Objeto de dados do processamento no momento atual.
      *
+     * @param       string $pathToView
+     *              Caminho completo até a view que deve ser usada.
+     *
      * @return      string
      */
-    static private function prepareXHTML(array $viewData) : string
+    static private function prepareXHTML(array $viewData, string $pathToView = "") : string
     {
         $str = "";
 
-        if (self::$pathToErrorView === "" || \file_exists(self::$pathToErrorView) === false) {
+        if ($pathToView === "" || \file_exists($pathToView) === false) {
             $str = self::createNonStyleErrorPage($viewData);
         } else {
             $viewData = (object)$viewData;
@@ -534,7 +617,7 @@ class ErrorListening
             $viewData->debugLog->traceLog   = (object)$viewData->debugLog->traceLog;
 
             \ob_start("mb_output_handler");
-            require_once self::$pathToErrorView;
+            require_once $pathToView;
             $str = \ob_get_contents();
             \ob_end_clean();
         }

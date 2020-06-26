@@ -86,8 +86,8 @@ class RouteResolver implements iRequestHandler
 
 
         // SE
-        // o método HTTP que está sendo evocado deve ser executado pelo desenvolvedor...
-        if (\in_array($request->getMethod(), $this->serverConfig->getDeveloperHTTPMethods()) === true)
+        // o método Http que está sendo evocado deve ser executado pelo desenvolvedor...
+        if (\in_array($request->getMethod(), $this->serverConfig->getDeveloperHttpMethods()) === true)
         {
             // Identifica o controller e a action que devem ser executadas.
             $targetController   = $this->serverConfig->getRouteConfig()->getControllerNamespace();

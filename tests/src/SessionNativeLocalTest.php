@@ -39,7 +39,7 @@ class SessionNativeLocalTest extends TestCase
             $defaultSecurity["securityCookieName"],
             (($withSession === true) ? $sessionHash : ""), null,
             $defaultServerVariables["HTTP_HOST"], "/",
-            $defaultEngineVariables["forceHTTPS"], true
+            $defaultEngineVariables["forceHttps"], true
         );
         $pathToLocalData = to_system_path(
             $defaultApplication["appRootPath"] . $defaultApplication["pathToLocalData"]
@@ -102,7 +102,7 @@ class SessionNativeLocalTest extends TestCase
         $securityCookie = new \AeonDigital\Http\Data\Cookie(
             $defaultSecurity["securityCookieName"], "", null,
             $defaultServerVariables["HTTP_HOST"], "/",
-            $defaultEngineVariables["forceHTTPS"], true
+            $defaultEngineVariables["forceHttps"], true
         );
         $pathToLocalData = to_system_path(
             $defaultApplication["appRootPath"] . $defaultApplication["pathToLocalData"]

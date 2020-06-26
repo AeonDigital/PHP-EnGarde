@@ -47,7 +47,7 @@ class ResponseHandler implements iResponseHandler
     private array $useHeaders = [];
     /**
      * Instância opcional que utilizará um subsistema
-     * que tem como objetivo responder aos métodos HTTP especiais
+     * que tem como objetivo responder aos métodos ``Http`` especiais
      * que são originalmente reservados para o framework.
      *
      * @var         iResponseHandler
@@ -100,15 +100,15 @@ class ResponseHandler implements iResponseHandler
 
 
         // SE
-        // o método HTTP que está sendo evocado deve ser executado pelo framework...
-        if (\array_in_ci($httpMethod, $this->serverConfig->getFrameworkHTTPMethods()) === true) {
+        // o método Http que está sendo evocado deve ser executado pelo framework...
+        if (\array_in_ci($httpMethod, $this->serverConfig->getFrameworkHttpMethods()) === true) {
             // Verifica se existe na aplicação atual algum subsistema definido para responder
             // a este tipo de requisição.
-            $allowedHTTPSubSystem = $this->serverConfig->getApplicationConfig()->getHTTPSubSystemNamespaces();
-            if (\key_exists($httpMethod, $allowedHTTPSubSystem) === true &&
-                \class_exists($allowedHTTPSubSystem[$httpMethod]) === true)
+            $allowedHttpSubSystem = $this->serverConfig->getApplicationConfig()->getHttpSubSystemNamespaces();
+            if (\key_exists($httpMethod, $allowedHttpSubSystem) === true &&
+                \class_exists($allowedHttpSubSystem[$httpMethod]) === true)
             {
-                $httpSubSystemNamespace = $allowedHTTPSubSystem[$httpMethod];
+                $httpSubSystemNamespace = $allowedHttpSubSystem[$httpMethod];
                 $this->httpSubSystem    = new $httpSubSystemNamespace(
                     $this->serverConfig,
                     $this->response
@@ -122,7 +122,7 @@ class ResponseHandler implements iResponseHandler
             }
         }
         // SENÃO
-        // Sendo uma requisição que utiliza um método HTTP
+        // Sendo uma requisição que utiliza um método Http
         // que pode ser controlado pelos controllers das aplicações.
         else {
 
@@ -208,9 +208,9 @@ class ResponseHandler implements iResponseHandler
 
         //
         // Verifica se a configuração da rota indica que a mesma não é cacheavel.
-        // Nestes casos adiciona os headers HTTP que forçarão os navegadores a não
+        // Nestes casos adiciona os headers Http que forçarão os navegadores a não
         // salvarem uma cópia desta resposta.
-        // Lembrando: apenas os métodos HTTP "GET" e "HEAD" são cacheáveis
+        // Lembrando: apenas os métodos Http "GET" e "HEAD" são cacheáveis
         if (\in_array($this->serverConfig->getRequestMethod(), ["GET", "HEAD"]) === true &&
             $this->serverConfig->getRouteConfig()->getIsUseCache() === false)
         {
@@ -266,21 +266,21 @@ class ResponseHandler implements iResponseHandler
 
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
-     * método ``HTTP HEAD``.
+     * método ``Http HEAD``.
      *
      * @return      void
      */
     private function prepareResponseToHEAD() : void
     {
         $rawRouteConfig         = $this->serverConfig->getRawRouteConfig();
-        $frameworkHTTPMethods   = $this->serverConfig->getFrameworkHTTPMethods();
+        $frameworkHttpMethods   = $this->serverConfig->getFrameworkHttpMethods();
 
         // Prepara os Headers a serem utilizados
         $this->prepareResponseHeaders(
             "application/json",
             $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHTTPMethods),
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHttpMethods),
                 "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
@@ -290,21 +290,21 @@ class ResponseHandler implements iResponseHandler
 
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
-     * método ``HTTP OPTIONS``.
+     * método ``Http OPTIONS``.
      *
      * @return      void
      */
     private function prepareResponseToOPTIONS() : void
     {
         $rawRouteConfig         = $this->serverConfig->getRawRouteConfig();
-        $frameworkHTTPMethods   = $this->serverConfig->getFrameworkHTTPMethods();
+        $frameworkHttpMethods   = $this->serverConfig->getFrameworkHttpMethods();
 
         // Prepara os Headers a serem utilizados
         $this->prepareResponseHeaders(
             "application/json",
             $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHTTPMethods),
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHttpMethods),
                 "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
@@ -341,7 +341,7 @@ class ResponseHandler implements iResponseHandler
 
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
-     * método ``HTTP TRACE``.
+     * método ``Http TRACE``.
      *
      * @return      void
      */
@@ -349,7 +349,7 @@ class ResponseHandler implements iResponseHandler
     {
         $now                    = new \DateTime();
         $rawRouteConfig         = $this->serverConfig->getRawRouteConfig();
-        $frameworkHTTPMethods   = $this->serverConfig->getFrameworkHTTPMethods();
+        $frameworkHttpMethods   = $this->serverConfig->getFrameworkHttpMethods();
 
 
         // Prepara os Headers a serem utilizados
@@ -357,7 +357,7 @@ class ResponseHandler implements iResponseHandler
             "application/json",
             $this->serverConfig->getApplicationConfig()->getDefaultLocale(),
             [
-                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHTTPMethods),
+                "Allow" => \array_merge(\array_keys($rawRouteConfig["config"]), $frameworkHttpMethods),
                 "Allow-Languages" => $this->serverConfig->getApplicationConfig()->getLocales()
             ]
         );
@@ -378,7 +378,7 @@ class ResponseHandler implements iResponseHandler
             "requestIP"     => $this->serverConfig->getRequestUserAgentIP(),
             "requestURI"       => [
                 "protocol"          => $this->serverConfig->getServerRequest()->getUri()->getScheme(),
-                "version"           => $this->serverConfig->getRequestHTTPVersion(),
+                "version"           => $this->serverConfig->getRequestHttpVersion(),
                 "port"              => $this->serverConfig->getRequestPort(),
                 "method"            => $this->serverConfig->getRequestMethod(),
                 "domain"            => $this->serverConfig->getServerRequest()->getUri()->getHost(),
@@ -404,7 +404,7 @@ class ResponseHandler implements iResponseHandler
 
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
-     * método ``HTTP DEV``.
+     * método ``Http DEV``.
      *
      * @return      void
      */
@@ -417,7 +417,7 @@ class ResponseHandler implements iResponseHandler
 
     /**
      * Prepara o objeto ``response`` para responder a uma requisição em que foi usado o
-     * método ``HTTP CONNECT``.
+     * método ``Http CONNECT``.
      *
      * @return      void
      */

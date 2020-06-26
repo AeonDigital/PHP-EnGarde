@@ -18,6 +18,7 @@ $defaultApplication = [
     "isUseLabels"               => true,
     "defaultRouteConfig"        => [],
     "pathToErrorView"           => "/errorView.phtml",
+    "pathToHttpMessageView"     => "/httpMessage.phtml",
     "httpSubSystemNamespaces"   => [
         "HEAD" => "\\subsystem\\responseHEAD"
     ]
@@ -50,6 +51,7 @@ function prov_instanceOf_EnGarde_Config_Application(
         $defaultApplication["isUseLabels"],
         $defaultApplication["defaultRouteConfig"],
         $defaultApplication["pathToErrorView"],
+        $defaultApplication["pathToHttpMessageView"],
         $defaultApplication["httpSubSystemNamespaces"]
     );
 }

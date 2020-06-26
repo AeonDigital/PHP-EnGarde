@@ -30,8 +30,8 @@
             'allowEmpty' => false,
         ],
         [
-            'name' => 'MethodHTTP',
-            'description' => 'Método HTTP evocado na execução da requisição.',
+            'name' => 'MethodHttp',
+            'description' => 'Método Http evocado na execução da requisição.',
             'type' => 'String',
             'length' => 8,
             'readOnly' => true,

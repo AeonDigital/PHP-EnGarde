@@ -2,7 +2,7 @@
 	"CreatedAt": "2020-06-08 01:00:00",
 	"UserAgentIP": "200.200.100.50",
 	"UserAgent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko\/20100101 Firefox\/56.0",
-	"MethodHTTP": "POST",
+	"MethodHttp": "POST",
 	"FullURL": "http:\/\/aeondigital.com.br\/test",
 	"PostData": "{\"p1\":\"v1\",\"p2\":\"v2\"}",
 	"Application": "site",

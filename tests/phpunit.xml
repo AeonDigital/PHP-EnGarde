@@ -32,7 +32,7 @@
             <file>src/Handler/Mime/XLSTest.php</file>
             <file>src/Handler/Mime/XLSXTest.php</file>
 
-            <file>src/Handler/ErrorListeningTest.php</file>
+            <file>src/Handler/HttpRawMessageTest.php</file>
 
             <file>src/RouterTest.php</file>
 

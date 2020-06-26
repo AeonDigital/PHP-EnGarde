@@ -843,20 +843,20 @@ final class Application extends BObject implements iApplication
      */
     private function setPathToErrorView(string $pathToErrorView) : void
     {
-        $this->pathToErrorView = \to_system_path($pathToErrorView);
-        $fullPathToErrorView = $this->getPathToErrorView(true);
+        if ($pathToErrorView !== "") {
+            $this->pathToErrorView = \to_system_path($pathToErrorView);
+            $fullPathToErrorView = $this->getPathToErrorView(true);
 
-        $this->mainCheckForInvalidArgumentException(
-            "pathToErrorView", $fullPathToErrorView, [
-                [
-                    "conditions" => "is string not empty",
-                    "validate" => "is file exists",
+            $this->mainCheckForInvalidArgumentException(
+                "pathToErrorView", $fullPathToErrorView, [
+                    ["validate" => "is file exists"]
                 ]
-            ]
-        );
-        \AeonDigital\EnGarde\Handler\ErrorListening::setPathToErrorView(
-            $fullPathToErrorView
-        );
+            );
+
+            \AeonDigital\EnGarde\Handler\HttpRawMessage::setPathToErrorView(
+                $fullPathToErrorView
+            );
+        }
     }
 
 
@@ -864,17 +864,76 @@ final class Application extends BObject implements iApplication
 
 
     /**
-     * Array associativo contendo a correlação entre os métodos HTTP
+     * Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     * de envio de uma simples mensagem ``Http``.
+     *
+     * @var         string
+     */
+    private string $pathToHttpMessageView = "";
+    /**
+     * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     * de envio de uma simples mensagem ``Http``.
+     *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
+     * @return      string
+     */
+    public function getPathToHttpMessageView(bool $fullPath = false) : string
+    {
+        return (
+            ($fullPath === false) ?
+            $this->pathToHttpMessageView :
+            $this->appRootPath . $this->pathToHttpMessageView
+        );
+    }
+    /**
+     * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     * de envio de uma simples mensagem ``Http``.
+     *
+     * O caminho deve ser definido a partir do diretório raiz da aplicação.
+     *
+     * @param       ?string $pathToHttpMessageView
+     *              Caminho até a view de mensagem padrão.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso o arquivo alvo seja inexistente.
+     */
+    private function setPathToHttpMessageView(string $pathToHttpMessageView) : void
+    {
+        if ($pathToHttpMessageView !== "") {
+            $this->pathToHttpMessageView = \to_system_path($pathToHttpMessageView);
+            $pathToHttpMessageView = $this->getPathToHttpMessageView(true);
+
+            $this->mainCheckForInvalidArgumentException(
+                "pathToHttpMessageView", $pathToHttpMessageView, [
+                    ["validate" => "is file exists"]
+                ]
+            );
+            \AeonDigital\EnGarde\Handler\HttpRawMessage::setPathToHttpMessageView(
+                $pathToHttpMessageView
+            );
+        }
+    }
+
+
+
+
+    /**
+     * Array associativo contendo a correlação entre os métodos ``Http``
      * e suas respectivas classes de resolução.
      *
      * @var         array
      */
     private array $httpSubSystemNamespaces = [];
     /**
-     * Resgata um array associativo contendo a correlação entre os métodos HTTP
+     * Resgata um array associativo contendo a correlação entre os métodos ``Http``
      * e suas respectivas classes de resolução.
      *
-     * Tais classes serão usadas exclusivamente para resolver os métodos HTTP que
+     * Tais classes serão usadas exclusivamente para resolver os métodos ``Http`` que
      * originalmente devem ser processados pelo framework.
      *
      * Originalmente estes:
@@ -890,12 +949,12 @@ final class Application extends BObject implements iApplication
      *
      * @return      array
      */
-    public function getHTTPSubSystemNamespaces() : array
+    public function getHttpSubSystemNamespaces() : array
     {
         return $this->httpSubSystemNamespaces;
     }
     /**
-     * Define um array associativo contendo a correlação entre os métodos HTTP
+     * Define um array associativo contendo a correlação entre os métodos ``Http``
      * e suas respectivas classes de resolução.
      *
      * @param       array $httpSubSystemNamespaces
@@ -904,7 +963,7 @@ final class Application extends BObject implements iApplication
      *
      * @return      void
      */
-    private function setHTTPSubSystemNamespaces(array $httpSubSystemNamespaces) : void
+    private function setHttpSubSystemNamespaces(array $httpSubSystemNamespaces) : void
     {
         $this->mainCheckForInvalidArgumentException(
             "httpSubSystemNamespaces", $httpSubSystemNamespaces, [
@@ -993,8 +1052,12 @@ final class Application extends BObject implements iApplication
      *              Caminho relativo até a view que deve ser enviada ao UA em caso de erros
      *              na aplicação.
      *
+     * @param       string $pathToHttpMessageView
+     *              Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     *              de envio de uma simples mensagem ``Http``.
+     *
      * @param       array $httpSubSystemNamespaces
-     *              Coleção de métodos HTTP que devem ser resolvidos pelo framework e as
+     *              Coleção de métodos ``Http`` que devem ser resolvidos pelo framework e as
      *              respectivas classes que devem resolver cada qual.
      *
      * @return      void
@@ -1019,6 +1082,7 @@ final class Application extends BObject implements iApplication
         bool $isUseLabels,
         array $defaultRouteConfig,
         string $pathToErrorView,
+        string $pathToHttpMessageView,
         array $httpSubSystemNamespaces
     ) {
         $this->setAppName($appName);
@@ -1037,7 +1101,8 @@ final class Application extends BObject implements iApplication
         $this->setIsUseLabels($isUseLabels);
         $this->setDefaultRouteConfig($defaultRouteConfig);
         $this->setPathToErrorView($pathToErrorView);
-        $this->setHTTPSubSystemNamespaces($httpSubSystemNamespaces);
+        $this->setPathToHttpMessageView($pathToHttpMessageView);
+        $this->setHttpSubSystemNamespaces($httpSubSystemNamespaces);
     }
 
 
@@ -1090,6 +1155,7 @@ final class Application extends BObject implements iApplication
                 "isUseLabels"               => false,
                 "defaultRouteConfig"        => [],
                 "pathToErrorView"           => "",
+                "pathToHttpMessageView"     => "",
                 "httpSubSystemNamespaces"   => []
             ],
             $config
@@ -1115,6 +1181,7 @@ final class Application extends BObject implements iApplication
             $useValues["isUseLabels"],
             $useValues["defaultRouteConfig"],
             $useValues["pathToErrorView"],
+            $useValues["pathToHttpMessageView"],
             $useValues["httpSubSystemNamespaces"]
         );
     }

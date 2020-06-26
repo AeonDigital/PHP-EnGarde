@@ -31,7 +31,7 @@ class SessionNativeDataBaseTest extends TestCase
             $defaultSecurity["securityCookieName"],
             $sessionHash, null,
             $defaultServerVariables["HTTP_HOST"], "/",
-            $defaultEngineVariables["forceHTTPS"], true
+            $defaultEngineVariables["forceHttps"], true
         );
 
 
@@ -146,7 +146,7 @@ class SessionNativeDataBaseTest extends TestCase
         $securityCookie = new \AeonDigital\Http\Data\Cookie(
             $defaultSecurity["securityCookieName"], "", null,
             $defaultServerVariables["HTTP_HOST"], "/",
-            $defaultEngineVariables["forceHTTPS"], true
+            $defaultEngineVariables["forceHttps"], true
         );
 
 

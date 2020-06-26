@@ -41,7 +41,7 @@ $defaultServerVariables = [
 // Definições complementares para a configuração
 // do motor de aplicações.
 $defaultEngineVariables = [
-    "forceHTTPS"            => false,
+    "forceHttps"            => false,
     "environmentType"       => "UTEST",
     "isDebugMode"           => true,
     "isUpdateRoutes"        => true,
@@ -52,9 +52,10 @@ $defaultEngineVariables = [
     "maxFileSize"           => 100,
     "maxPostSize"           => 100,
     "pathToErrorView"       => "/errorView.phtml",
+    "pathToHttpMessageView" => "/httpMessage.phtml",
     "applicationClassName"  => "AppStart",
-    "developerHTTPMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    "frameworkHTTPMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
+    "developerHttpMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    "frameworkHttpMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
 ];
 
 

@@ -39,6 +39,7 @@ class ConfigApplicationTest extends TestCase
             $defaultApplication["isUseLabels"],
             $defaultApplication["defaultRouteConfig"],
             $defaultApplication["pathToErrorView"],
+            $defaultApplication["pathToHttpMessageView"],
             $defaultApplication["httpSubSystemNamespaces"]
         );
         $this->assertTrue(is_a($nMock, Application::class));
@@ -667,6 +668,40 @@ class ConfigApplicationTest extends TestCase
 
         $path = $dirResources . DS . "apps" . DS . "site" . DS . "errorView.phtml";
         $this->assertSame($path, $nMock->getPathToErrorView(true));
+    }
+
+
+    public function test_method_getset_path_to_http_message_view_fails()
+    {
+        global $defaultApplication;
+        global $dirResources;
+        $testApplication = array_merge([], $defaultApplication);
+        $testApplication["pathToHttpMessageView"] = DS . "nonexist.php";
+
+        $fail = false;
+        try {
+            $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        } catch (\Exception $ex) {
+            $fail = true;
+            $path = $dirResources . DS . "apps" . DS . "site" . DS . "nonexist.php";
+            $this->assertSame(
+                "Invalid value defined for \"pathToHttpMessageView\". File does not exists. Given: [ $path ]",
+                $ex->getMessage()
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+    }
+
+
+    public function test_method_getset_path_to_http_message_view()
+    {
+        global $dirResources;
+        global $defaultApplication;
+        $nMock = prov_instanceOf_EnGarde_Config_Application($defaultApplication);
+        $this->assertSame(DS . "httpMessage.phtml", $nMock->getPathToHttpMessageView());
+
+        $path = $dirResources . DS . "apps" . DS . "site" . DS . "httpMessage.phtml";
+        $this->assertSame($path, $nMock->getPathToHttpMessageView(true));
     }
 
 

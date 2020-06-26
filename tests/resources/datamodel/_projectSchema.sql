@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-06-25-00-51-17
+ * Generated in 2020-06-25-22-37-06
 */
 
 /*--INI CREATE TABLE--*/
@@ -67,7 +67,7 @@ CREATE TABLE DomainUserProfileRoute (
     Id BIGINT NOT NULL AUTO_INCREMENT, 
     ControllerName VARCHAR(128) NOT NULL COMMENT 'Nome do controller que resolve esta rota.', 
     ActionName VARCHAR(128) NOT NULL COMMENT 'Nome da action que resolve esta rota.', 
-    MethodHTTP VARCHAR(8) NOT NULL COMMENT 'Método HTTP evocado na execução da requisição.', 
+    MethodHttp VARCHAR(8) NOT NULL COMMENT 'Método Http evocado na execução da requisição.', 
     RawRoute VARCHAR(255) NOT NULL COMMENT 'Versão bruta da rota a qual esta regra corresponde (contendo o nome da aplicação).', 
     Allow TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Permissão para esta rota.', 
     RedirectTo VARCHAR(255) COMMENT 'URL para onde o usuário deve ser redirecionado caso não possa visitar esta rota.', 
@@ -85,7 +85,7 @@ CREATE TABLE DomainUserRequestLog (
     RegisterDate DATETIME NOT NULL DEFAULT NOW() COMMENT 'Data e hora da criação deste registro.', 
     UserAgent VARCHAR(255) NOT NULL COMMENT 'Identificação do UA no momento em que a autenticação foi criada.', 
     UserAgentIP VARCHAR(64) NOT NULL COMMENT 'Identificação do IP do UA no momento em que a autenticação foi criada.', 
-    MethodHTTP VARCHAR(8) NOT NULL COMMENT 'Método HTTP evocado na execução da requisição.', 
+    MethodHttp VARCHAR(8) NOT NULL COMMENT 'Método Http evocado na execução da requisição.', 
     FullURL VARCHAR(2048) NOT NULL COMMENT 'Url completa que foi evocada (junto com eventuais parametros querystring).', 
     PostData LONGTEXT NOT NULL COMMENT 'Informação postada em conjunto com a requisição.', 
     ApplicationName VARCHAR(32) NOT NULL COMMENT 'Nome da aplicação que resolveu esta requisição.', 
@@ -160,10 +160,10 @@ INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SE
 UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=1;
 UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;
 ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT fk_secdupr_to_secdup_DomainUserProfile_Id FOREIGN KEY (DomainUserProfile_Id) REFERENCES DomainUserProfile(Id) ON DELETE CASCADE;
-ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHTTP_RawRoute_DomainUserProfile_Id UNIQUE (MethodHTTP, RawRoute, DomainUserProfile_Id);
-INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "index", "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");
-INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "dashboard", "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
-INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHTTP, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "levelone", "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
+ALTER TABLE DomainUserProfileRoute ADD CONSTRAINT uc_col_MethodHttp_RawRoute_DomainUserProfile_Id UNIQUE (MethodHttp, RawRoute, DomainUserProfile_Id);
+INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHttp, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "index", "GET", "/site/levelthree", 0, "/site/home", Id FROM DomainUserProfile WHERE Name="Desenvolvedor");
+INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHttp, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "dashboard", "GET", "/site/dashboard", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
+INSERT INTO DomainUserProfileRoute (ControllerName, ActionName, MethodHttp, RawRoute, Allow, RedirectTo, DomainUserProfile_Id) (SELECT "home", "levelone", "GET", "/site/levelone", 1, null, Id FROM DomainUserProfile WHERE Name="Administrador");
 ALTER TABLE DomainUserRequestLog ADD CONSTRAINT fk_secdurl_to_secdu_DomainUser_Id FOREIGN KEY (DomainUser_Id) REFERENCES DomainUser(Id) ON DELETE CASCADE;
 ALTER TABLE DomainUserSession ADD CONSTRAINT uc_secdus_SessionHash UNIQUE (SessionHash);
 CREATE INDEX idx_secdus_SessionHash ON DomainUserSession (SessionHash);
@@ -178,5 +178,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-06-25-00-51-17
+ * Generated in 2020-06-25-22-37-06
 */

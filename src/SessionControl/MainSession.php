@@ -51,7 +51,7 @@ abstract class MainSession extends BObject implements iSession
      */
     protected string $environment;
     /**
-     * Nome da aplicação que deve responder a requisição ``HTTP`` atual.
+     * Nome da aplicação que deve responder a requisição ``Http`` atual.
      *
      * @return      string
      */
@@ -307,7 +307,7 @@ abstract class MainSession extends BObject implements iSession
      *              Tipo de ambiente que o domínio está rodando no momento.
      *
      * @param       string $applicationName
-     *              Nome da aplicação que deve responder a requisição ``HTTP`` atual.
+     *              Nome da aplicação que deve responder a requisição ``Http`` atual.
      *
      * @param       string $userAgent
      *              Identificação do user agent que efetuou a requisição.

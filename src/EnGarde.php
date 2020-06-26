@@ -64,7 +64,7 @@ final class EnGarde extends BObject
                 "SERVER"    => $_SERVER,
                 "FILES"     => $_FILES,
                 "ENGINE"    => [
-                    "forceHTTPS"            => FORCE_HTTPS,
+                    "forceHttps"            => FORCE_HTTPS,
                     "environmentType"       => ENVIRONMENT,
                     "isDebugMode"           => DEBUG_MODE,
                     "isUpdateRoutes"        => UPDATE_ROUTES,
@@ -76,8 +76,8 @@ final class EnGarde extends BObject
                     "maxPostSize"           => REQUEST_MAX_POSTSIZE,
                     "pathToErrorView"       => DEFAULT_ERROR_VIEW,
                     "applicationClassName"  => APPLICATION_CLASSNAME,
-                    "developerHTTPMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
-                    "frameworkHTTPMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
+                    "developerHttpMethods"  => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                    "frameworkHttpMethods"  => ["HEAD", "OPTIONS", "TRACE", "DEV", "CONNECT"]
                 ]
             ]
         );
@@ -108,8 +108,8 @@ final class EnGarde extends BObject
             $this->isRun = true;
             $redirectTo = $this->serverConfig->getNewLocationPath();
 
-            if ($this->serverConfig->getForceHTTPS() === true &&
-                $this->serverConfig->getRequestIsUseHTTPS() === false) {
+            if ($this->serverConfig->getForceHttps() === true &&
+                $this->serverConfig->getRequestIsUseHttps() === false) {
                 $redirectTo = "https://" . $this->serverConfig->getRequestDomainName() . $redirectTo;
             }
 

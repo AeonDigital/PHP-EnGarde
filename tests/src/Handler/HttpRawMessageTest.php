@@ -2,7 +2,7 @@
 declare (strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use AeonDigital\EnGarde\Handler\ErrorListening as ErrorListening;
+use AeonDigital\EnGarde\Handler\HttpRawMessage as HttpRawMessage;
 
 require_once __DIR__ . "/../../phpunit.php";
 
@@ -12,28 +12,30 @@ require_once __DIR__ . "/../../phpunit.php";
 
 
 
-class ErrorListeningTest extends TestCase
+class HttpRawMessageTest extends TestCase
 {
 
 
 
 
 
-    function configureErrorListening(
+    function configureHttpRawMessage(
         $env = "UTEST",
         $debugMode = false,
         $method = "get",
-        $pathToErrorView = ""
+        $pathToErrorView = "",
+        $pathToHttpMessageView = ""
     ) {
         global $dirResources;
 
-        ErrorListening::setContext(
+        HttpRawMessage::setContext(
             $dirResources . "/apps",
             $env,
             $debugMode,
             "http",
             $method,
-            $pathToErrorView
+            $pathToErrorView,
+            $pathToHttpMessageView
         );
     }
 
@@ -44,68 +46,84 @@ class ErrorListeningTest extends TestCase
     public function test_getsetclear_context()
     {
         $val = [
-            "rootPath"          => "\\",
-            "environmentType"   => "UTEST",
-            "isDebugMode"       => true,
-            "protocol"          => "http",
-            "method"            => "GET",
-            "pathToErrorView"   => ""
+            "rootPath"              => "\\",
+            "environmentType"       => "UTEST",
+            "isDebugMode"           => true,
+            "protocol"              => "http",
+            "method"                => "GET",
+            "pathToErrorView"       => "",
+            "pathToHttpMessageView" => ""
         ];
 
-        ErrorListening::setContext(
+        HttpRawMessage::setContext(
             $val["rootPath"],
             $val["environmentType"],
             $val["isDebugMode"],
             $val["protocol"],
             $val["method"],
-            $val["pathToErrorView"]
+            $val["pathToErrorView"],
+            $val["pathToHttpMessageView"]
         );
-        $this->assertSame($val, ErrorListening::getContext());
+        $this->assertSame($val, HttpRawMessage::getContext());
 
 
-        ErrorListening::clearContext();
+        HttpRawMessage::clearContext();
         $val = [
-            "rootPath"          => "",
-            "environmentType"   => "",
-            "isDebugMode"       => false,
-            "protocol"          => "",
-            "method"            => "",
-            "pathToErrorView"   => ""
+            "rootPath"              => "",
+            "environmentType"       => "",
+            "isDebugMode"           => false,
+            "protocol"              => "",
+            "method"                => "",
+            "pathToErrorView"       => "",
+            "pathToHttpMessageView" => ""
         ];
-        $this->assertSame($val, ErrorListening::getContext());
+        $this->assertSame($val, HttpRawMessage::getContext());
 
 
         $val = [
-            "rootPath"          => "\\",
-            "environmentType"   => "UTEST",
-            "isDebugMode"       => true,
-            "protocol"          => "http",
-            "method"            => "GET",
-            "pathToErrorView"   => ""
+            "rootPath"              => "\\",
+            "environmentType"       => "UTEST",
+            "isDebugMode"           => true,
+            "protocol"              => "http",
+            "method"                => "GET",
+            "pathToErrorView"       => "",
+            "pathToHttpMessageView" => ""
         ];
 
-        ErrorListening::setContext(
+        HttpRawMessage::setContext(
             $val["rootPath"],
             $val["environmentType"],
             $val["isDebugMode"],
             $val["protocol"],
             $val["method"],
-            $val["pathToErrorView"]
+            $val["pathToErrorView"],
+            $val["pathToHttpMessageView"]
         );
-        $this->assertSame($val, ErrorListening::getContext());
-
+        $this->assertSame($val, HttpRawMessage::getContext());
     }
 
 
 
     public function test_method_setpathtoerrorview()
     {
-        ErrorListening::clearContext();
-        $this->assertSame("", ErrorListening::getContext()["pathToErrorView"]);
+        HttpRawMessage::clearContext();
+        $this->assertSame("", HttpRawMessage::getContext()["pathToErrorView"]);
 
         $val = "pathToFile.phtml";
-        ErrorListening::setPathToErrorView($val);
-        $this->assertSame($val, ErrorListening::getContext()["pathToErrorView"]);
+        HttpRawMessage::setPathToErrorView($val);
+        $this->assertSame($val, HttpRawMessage::getContext()["pathToErrorView"]);
+    }
+
+
+
+    public function test_method_setpathtohttpmessageview()
+    {
+        HttpRawMessage::clearContext();
+        $this->assertSame("", HttpRawMessage::getContext()["pathToHttpMessageView"]);
+
+        $val = "pathToFile.phtml";
+        HttpRawMessage::setPathToHttpMessageView($val);
+        $this->assertSame($val, HttpRawMessage::getContext()["pathToHttpMessageView"]);
     }
 
 
@@ -114,9 +132,9 @@ class ErrorListeningTest extends TestCase
     {
         global $dirResources;
         // GET | DebugMode-OFF
-        $this->configureErrorListening();
+        $this->configureHttpRawMessage();
 
-        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onexception-get-debugmodeoff.php");
+        $tgtPathToExpected  = to_system_path($dirResources . "/httprawmessage/onexception-get-debugmodeoff.php");
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
             $expected = file_get_contents($tgtPathToExpected);
@@ -129,7 +147,7 @@ class ErrorListeningTest extends TestCase
             $val = 1 / 0;
         } catch (\Exception $ex) {
             $fail = true;
-            $r = ErrorListening::onException($ex);
+            $r = HttpRawMessage::onException($ex);
 
             if ($expected === null) {
                 $expected = str_replace(["\r", "\n"], "", $r);
@@ -146,10 +164,10 @@ class ErrorListeningTest extends TestCase
 
 
         // GET | DebugMode-ON
-        $this->configureErrorListening("UTEST", true);
+        $this->configureHttpRawMessage("UTEST", true);
 
 
-        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onexception-get-debugmodeon.php");
+        $tgtPathToExpected  = to_system_path($dirResources . "/httprawmessage/onexception-get-debugmodeon.php");
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
             $expected = file_get_contents($tgtPathToExpected);
@@ -162,7 +180,7 @@ class ErrorListeningTest extends TestCase
             $val = 1 / 0;
         } catch (\Exception $ex) {
             $fail = true;
-            $r = ErrorListening::onException($ex);
+            $r = HttpRawMessage::onException($ex);
 
             if ($expected === null) {
                 $expected = str_replace(["\r", "\n"], "", $r);
@@ -183,9 +201,9 @@ class ErrorListeningTest extends TestCase
     {
         global $dirResources;
         // POST | DebugMode-OFF
-        $this->configureErrorListening("UTEST", false, "POST");
+        $this->configureHttpRawMessage("UTEST", false, "POST");
 
-        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onerror-get-debugmodeoff.php");
+        $tgtPathToExpected  = to_system_path($dirResources . "/httprawmessage/onerror-get-debugmodeoff.php");
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
             $expected = file_get_contents($tgtPathToExpected);
@@ -198,7 +216,7 @@ class ErrorListeningTest extends TestCase
             $val = 1 / 0;
         } catch (\Exception $ex) {
             $fail = true;
-            $r = ErrorListening::onError(
+            $r = HttpRawMessage::onError(
                 $ex->getCode(),
                 $ex->getMessage(),
                 $ex->getFile(),
@@ -220,9 +238,9 @@ class ErrorListeningTest extends TestCase
 
 
         // POST | DebugMode-ON
-        $this->configureErrorListening("UTEST", true, "POST");
+        $this->configureHttpRawMessage("UTEST", true, "POST");
 
-        $tgtPathToExpected  = to_system_path($dirResources . "/errorlistening/onerror-get-debugmodeon.php");
+        $tgtPathToExpected  = to_system_path($dirResources . "/httprawmessage/onerror-get-debugmodeon.php");
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
             $expected = file_get_contents($tgtPathToExpected);
@@ -235,7 +253,7 @@ class ErrorListeningTest extends TestCase
             $val = 1 / 0;
         } catch (\Exception $ex) {
             $fail = true;
-            $r = ErrorListening::onError(
+            $r = HttpRawMessage::onError(
                 $ex->getCode(),
                 $ex->getMessage(),
                 $ex->getFile(),
@@ -260,9 +278,9 @@ class ErrorListeningTest extends TestCase
     public function test_method_throwhttperror()
     {
         global $dirResources;
-        $this->configureErrorListening();
+        $this->configureHttpRawMessage();
 
-        $tgtPathToExpected  = $dirResources . "/errorlistening/throwhttperror-custom.php";
+        $tgtPathToExpected  = $dirResources . "/httprawmessage/throwhttperror-custom.php";
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
             $expected = file_get_contents($tgtPathToExpected);
@@ -270,7 +288,7 @@ class ErrorListeningTest extends TestCase
         }
 
 
-        $r = ErrorListening::throwHTTPError(501, "custom reason phrase");
+        $r = HttpRawMessage::throwHttpError(501, "custom reason phrase");
         if ($expected === null) {
             $expected = str_replace(["\r", "\n"], "", $r);
             file_put_contents($tgtPathToExpected, $expected);
@@ -279,7 +297,7 @@ class ErrorListeningTest extends TestCase
 
 
 
-        $tgtPathToExpected  = $dirResources . "/errorlistening/throwhttperror.php";
+        $tgtPathToExpected  = $dirResources . "/httprawmessage/throwhttperror.php";
         $expected = null;
         if (file_exists($tgtPathToExpected) === true) {
             $expected = file_get_contents($tgtPathToExpected);
@@ -287,11 +305,52 @@ class ErrorListeningTest extends TestCase
         }
 
 
-        $r = ErrorListening::throwHTTPError(501);
+        $r = HttpRawMessage::throwHttpError(501);
         if ($expected === null) {
             $expected = str_replace(["\r", "\n"], "", $r);
             file_put_contents($tgtPathToExpected, $expected);
         }
         $this->assertSame($expected, str_replace(["\r", "\n"], "", $r));
     }
+
+
+
+    public function test_method_throwhttpmessage()
+    {
+        global $dirResources;
+        $this->configureHttpRawMessage();
+
+        $tgtPathToExpected  = $dirResources . "/httprawmessage/throwhttpmessage-custom.php";
+        $expected = null;
+        if (file_exists($tgtPathToExpected) === true) {
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
+        }
+
+
+        $r = HttpRawMessage::throwHttpMessage(501, "custom reason phrase");
+        if ($expected === null) {
+            $expected = str_replace(["\r", "\n"], "", $r);
+            file_put_contents($tgtPathToExpected, $expected);
+        }
+        $this->assertSame($expected, str_replace(["\r", "\n"], "", $r));
+
+
+
+        $tgtPathToExpected  = $dirResources . "/httprawmessage/throwhttpmessage.php";
+        $expected = null;
+        if (file_exists($tgtPathToExpected) === true) {
+            $expected = file_get_contents($tgtPathToExpected);
+            $expected = str_replace(["\r", "\n"], "", $expected);
+        }
+
+
+        $r = HttpRawMessage::throwHttpMessage(501);
+        if ($expected === null) {
+            $expected = str_replace(["\r", "\n"], "", $r);
+            file_put_contents($tgtPathToExpected, $expected);
+        }
+        $this->assertSame($expected, str_replace(["\r", "\n"], "", $r));
+    }
+
 }

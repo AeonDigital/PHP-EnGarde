@@ -8,7 +8,7 @@ use AeonDigital\EnGarde\Interfaces\Engine\iApplication as iApplication;
 use AeonDigital\EnGarde\Interfaces\Config\iServer as iServerConfig;
 use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 use AeonDigital\Interfaces\Http\Message\iResponse as iResponse;
-
+use AeonDigital\EnGarde\Handler\HttpRawMessage as HttpRawMessage;
 
 
 
@@ -147,19 +147,15 @@ abstract class MainApplication implements iApplication
                     // SE
                     //  a configuração indica que trata-se mesmo de uma rota protegida.
                     if ($this->routeConfig->getIsSecure() === true) {
-                        $permission = $securitySession->checkRoutePermission(
-                            $this->routeConfig->getMethod(),
-                            $this->routeConfig->getActiveRoute(true),
+                        $permission = (
+                            $securityConfig->getRouteToStart() === $this->routeConfig->getActiveRoute() ||$securitySession->checkRoutePermission(
+                                $this->routeConfig->getMethod(),
+                                $this->routeConfig->getActiveRoute(true),
+                            )
                         );
+                        // Se o usuário não possui permissão, mostra para ele a mensagem Http 403.
                         if ($permission === false) {
-                            $redirectTo = (
-                                ($securitySession->getRouteRedirect() === "") ?
-                                $securityConfig->getRouteToStart() :
-                                $securitySession->getRouteRedirect()
-                            );
-                            $this->serverConfig->redirectTo(
-                                $redirectTo, 403
-                            );
+                            HttpRawMessage::throwHttpMessage(403);
                         }
                     }
                 }
@@ -172,7 +168,6 @@ abstract class MainApplication implements iApplication
                 if (isset($this->routeConfig) === true) {
                     $freeRoutes = [
                         $securityConfig->getRouteToLogin(),
-                        $securityConfig->getRouteToStart(),
                         $securityConfig->getRouteToResetPassword(),
                     ];
                     $freePass = (\in_array($this->routeConfig->getActiveRoute(true), $freeRoutes));

@@ -204,13 +204,13 @@ final class Route extends BObject implements iRoute
 
 
     /**
-     * Métodos ``HTTP`` que podem ser usados para esta mesma rota.
+     * Métodos ``Http`` que podem ser usados para esta mesma rota.
      *
      * @var         array
      */
     private array $allowedMethods = [];
     /**
-     * Retorna os métodos ``HTTP`` que podem ser usados para esta mesma rota.
+     * Retorna os métodos ``Http`` que podem ser usados para esta mesma rota.
      *
      * @return      array
      */
@@ -219,10 +219,10 @@ final class Route extends BObject implements iRoute
         return $this->allowedMethods;
     }
     /**
-     * Define os métodos ``HTTP`` que podem ser usados para esta mesma rota.
+     * Define os métodos ``Http`` que podem ser usados para esta mesma rota.
      *
      * @param       array $allowedMethods
-     *              Métodos ``HTTP``.
+     *              Métodos ``Http``.
      *
      * @return      void
      *
@@ -347,13 +347,13 @@ final class Route extends BObject implements iRoute
 
 
     /**
-     * Método ``HTTP`` que está sendo usado para evocar esta rota.
+     * Método ``Http`` que está sendo usado para evocar esta rota.
      *
      * @var         string
      */
     private string $method = "";
     /**
-     * Retorna o método ``HTTP`` que está sendo usado para evocar esta rota.
+     * Retorna o método ``Http`` que está sendo usado para evocar esta rota.
      *
      * @return      string
      */
@@ -362,10 +362,10 @@ final class Route extends BObject implements iRoute
         return $this->method;
     }
     /**
-     * Define o método ``HTTP`` que está sendo usado para evocar esta rota.
+     * Define o método ``Http`` que está sendo usado para evocar esta rota.
      *
      * @param       string $method
-     *              Método HTTP.
+     *              Método Http.
      *
      * @return      void
      *
@@ -1661,14 +1661,14 @@ final class Route extends BObject implements iRoute
      *              Obrigatório. Nome da action que resolve a rota.
      *
      * @param       array $allowedMethods
-     *              Obrigatório. Métodos ``HTTP`` que podem ser usados para esta mesma rota.
+     *              Obrigatório. Métodos ``Http`` que podem ser usados para esta mesma rota.
      *
      * @param       array $allowedMimeTypes
      *              Obrigatório. Array contendo a coleção de mimetypes que esta rota é capaz de
      *              devolver como resposta.
      *
      * @param       string $method
-     *              Obrigatório. Método ``HTTP`` que está sendo usado para evocar esta rota.
+     *              Obrigatório. Método ``Http`` que está sendo usado para evocar esta rota.
      *
      * @param       array $routes
      *              Obrigatório. Coleção de rotas que correspondem a esta mesma configuração.

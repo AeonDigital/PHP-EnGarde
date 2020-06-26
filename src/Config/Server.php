@@ -23,7 +23,7 @@ use AeonDigital\EnGarde\Interfaces\Config\iRoute as iRoute;
 final class Server extends BObject implements iServer
 {
     use \AeonDigital\Traits\MainCheckArgumentException;
-    use \AeonDigital\Http\Traits\HTTPRawStatusCode;
+    use \AeonDigital\Http\Traits\HttpRawStatusCode;
 
 
 
@@ -77,7 +77,7 @@ final class Server extends BObject implements iServer
      */
     private array $FILES = [];
     /**
-     * Coleção de headers ``HTTP`` recebidas pela requisição.
+     * Coleção de headers ``Http`` recebidas pela requisição.
      *
      * @var         array[string => mixed]
      */
@@ -98,7 +98,7 @@ final class Server extends BObject implements iServer
 
     /**
      * Baseado nos dados da requisição que está sendo executada.
-     * Retorna uma coleção de headers ``HTTP`` definidos.
+     * Retorna uma coleção de headers ``Http`` definidos.
      *
      * @return      array
      *              Retornará ``[]`` caso nenhum seja encontrado.
@@ -109,12 +109,12 @@ final class Server extends BObject implements iServer
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
-     * Retorna a versão do protocolo ``HTTP``.
+     * Retorna a versão do protocolo ``Http``.
      *
      * @return      string
      *              Caso não seja possível identificar a versão deve ser retornado o valor ``1.1``.
      */
-    public function getRequestHTTPVersion() : string
+    public function getRequestHttpVersion() : string
     {
         return $this->SERVER["SERVER_PROTOCOL"];
     }
@@ -154,17 +154,17 @@ final class Server extends BObject implements iServer
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
-     * Indica se a requisição está exigindo o uso de ``HTTPS``.
+     * Indica se a requisição está exigindo o uso de ``Https``.
      *
      * @return      bool
      */
-    public function getRequestIsUseHTTPS() : bool
+    public function getRequestIsUseHttps() : bool
     {
         return (($this->SERVER["HTTPS"] === "on") || ($this->SERVER["SERVER_PORT"] == 443));
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
-     * Retorna o método ``HTTP`` que está sendo usado.
+     * Retorna o método ``Http`` que está sendo usado.
      *
      * @return      string
      */
@@ -185,7 +185,7 @@ final class Server extends BObject implements iServer
      */
     public function getRequestProtocol() : string
     {
-        return (($this->getRequestIsUseHTTPS() === true) ? "https" : "http");
+        return (($this->getRequestIsUseHttps() === true) ? "https" : "http");
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
@@ -209,7 +209,7 @@ final class Server extends BObject implements iServer
     }
     /**
      * Baseado nos dados da requisição que está sendo executada.
-     * Retorna a porta ``HTTP`` que está sendo evocada.
+     * Retorna a porta ``Http`` que está sendo evocada.
      *
      * @return      int
      */
@@ -360,29 +360,29 @@ final class Server extends BObject implements iServer
 
 
 
-    private bool $forceHTTPS = false;
+    private bool $forceHttps = false;
     /**
      * Indica que as requisições feitas para o domínio devem ser realizadas sob o protocolo
-     * HTTPS.
+     * ``Https``.
      *
      * @return      bool
      */
-    public function getForceHTTPS() : bool
+    public function getForceHttps() : bool
     {
-        return $this->forceHTTPS;
+        return $this->forceHttps;
     }
     /**
      * Define se as requisições feitas para o domínio devem ser realizadas sob o protocolo
-     * HTTPS.
+     * ``Https``.
      *
-     * @param       bool $forceHTTPS
-     *              Indica se deve forçar o protocolo HTTPS
+     * @param       bool $forceHttps
+     *              Indica se deve forçar o protocolo ``Https``
      *
      * @return      void
      */
-    private function setForceHTTPS(bool $forceHTTPS) : void
+    private function setForceHttps(bool $forceHttps) : void
     {
-        $this->forceHTTPS = $forceHTTPS;
+        $this->forceHttps = $forceHttps;
     }
 
 
@@ -811,6 +811,60 @@ final class Server extends BObject implements iServer
 
 
     /**
+     * Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     * de envio de uma simples mensagem ``Http``.
+     *
+     * @var         string
+     */
+    private string $pathToHttpMessageView = "";
+    /**
+     * Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     * de envio de uma simples mensagem ``Http``.
+     *
+     * @param       bool $fullPath
+     *              Se ``false`` retornará o caminho relativo.
+     *              Quando ``true`` deverá retornar o caminho completo.
+     *
+     * @return      string
+     */
+    public function getPathToHttpMessageView(bool $fullPath = false) : string
+    {
+        return (
+            ($fullPath === false) ?
+            $this->pathToHttpMessageView :
+            $this->rootPath . $this->pathToHttpMessageView
+        );
+    }
+    /**
+     * Define o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+     * de envio de uma simples mensagem ``Http``.
+     *
+     * O caminho deve ser definido a partir do diretório raiz da aplicação.
+     *
+     * @param       ?string $pathToHttpMessageView
+     *              Caminho até a view de mensagem padrão.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso o arquivo alvo seja inexistente.
+     */
+    private function setPathToHttpMessageView(string $pathToHttpMessageView) : void
+    {
+        $this->pathToHttpMessageView = \to_system_path($pathToHttpMessageView);
+        $this->mainCheckForInvalidArgumentException(
+            "pathToHttpMessageView", $this->getPathToHttpMessageView(true), [
+                [
+                    "conditions" => "is string not empty",
+                    "validate" => "is file exists",
+                ]
+            ]
+        );
+    }
+
+
+
+    /**
      * Nome da classe responsável por iniciar a aplicação.
      *
      * @var         string
@@ -869,7 +923,7 @@ final class Server extends BObject implements iServer
      */
     private string $newLocationPath = "";
     /**
-     * Retorna o nome da aplicação que deve responder a requisição ``HTTP`` atual.
+     * Retorna o nome da aplicação que deve responder a requisição ``Http`` atual.
      *
      * @return      string
      */
@@ -945,14 +999,14 @@ final class Server extends BObject implements iServer
 
 
     /**
-     * Coleção de Métodos HTTP que podem ser usados pelos desenvolvedores ao
+     * Coleção de Métodos ``Http`` que podem ser usados pelos desenvolvedores ao
      * criar suas actions dentro da aplicação.
      *
      * @var         array
      */
-    private array $developerHTTPMethods = [];
+    private array $developerHttpMethods = [];
     /**
-     * Retorna a coleção de métodos HTTP que devem poder ser usados pelas actions.
+     * Retorna a coleção de métodos ``Http`` que devem poder ser usados pelas actions.
      * Ou seja, aqueles que os desenvolvedores terão acesso de configurar.
      *
      * Originalmente estes:
@@ -960,35 +1014,35 @@ final class Server extends BObject implements iServer
      *
      * @return      array
      */
-    public function getDeveloperHTTPMethods() : array
+    public function getDeveloperHttpMethods() : array
     {
-        return $this->developerHTTPMethods;
+        return $this->developerHttpMethods;
     }
     /**
-     * Define a coleção de métodos HTTP que os desenvolvedores devem ter acesso
+     * Define a coleção de métodos ``Http`` que os desenvolvedores devem ter acesso
      * de configurar.
      *
-     * @param       array $developerHTTPMethods
-     *              Coleção de métodos HTTP.
+     * @param       array $developerHttpMethods
+     *              Coleção de métodos ``Http``.
      *
      * @return      void
      */
-    private function setDeveloperHTTPMethods(array $developerHTTPMethods) : void
+    private function setDeveloperHttpMethods(array $developerHttpMethods) : void
     {
-        $this->developerHTTPMethods = $developerHTTPMethods;
+        $this->developerHttpMethods = $developerHttpMethods;
     }
 
 
 
     /**
-     * Coleção de Métodos HTTP que devem ser usados exclusivamente pelo próprio
+     * Coleção de Métodos ``Http`` que devem ser usados exclusivamente pelo próprio
      * framework.
      *
      * @var         array
      */
-    private array $frameworkHTTPMethods = [];
+    private array $frameworkHttpMethods = [];
     /**
-     * Retorna a coleção de métodos HTTP que devem poder ser controlados exclusivamente
+     * Retorna a coleção de métodos ``Http`` que devem poder ser controlados exclusivamente
      * pelo próprio framework.
      *
      * Originalmente estes:
@@ -996,22 +1050,22 @@ final class Server extends BObject implements iServer
      *
      * @return      array
      */
-    public function getFrameworkHTTPMethods() : array
+    public function getFrameworkHttpMethods() : array
     {
-        return $this->frameworkHTTPMethods;
+        return $this->frameworkHttpMethods;
     }
     /**
-     * Define a coleção de métodos HTTP que o framework devem ter acesso exclusivo
+     * Define a coleção de métodos ``Http`` que o framework devem ter acesso exclusivo
      * para resolver.
      *
-     * @param       array $frameworkHTTPMethods
-     *              Coleção de métodos HTTP.
+     * @param       array $frameworkHttpMethods
+     *              Coleção de métodos ``Http``.
      *
      * @return      void
      */
-    private function setFrameworkHTTPMethods(array $frameworkHTTPMethods) : void
+    private function setFrameworkHttpMethods(array $frameworkHttpMethods) : void
     {
-        $this->frameworkHTTPMethods = $frameworkHTTPMethods;
+        $this->frameworkHttpMethods = $frameworkHttpMethods;
     }
 
 
@@ -1023,7 +1077,7 @@ final class Server extends BObject implements iServer
 
 
     /**
-     * Inicia uma instância com os dados de configuração atual para o servidor ``HTTP``.
+     * Inicia uma instância com os dados de configuração atual para o servidor ``Http``.
      *
      * @param       array $serverVariables
      *              Array associativo contendo todas as variáveis definidas para o servidor no
@@ -1039,8 +1093,8 @@ final class Server extends BObject implements iServer
      *              motor de aplicações que está sendo iniciado.
      *              São esperados, obrigatoriamente os seguintes valores:
      *
-     *              - bool forceHTTPS
-     *              Indica se as requisições deste domínio devem ser feitos sob HTTPS.
+     *              - bool forceHttps
+     *              Indica se as requisições deste domínio devem ser feitos sob ``Https``.
      *
      *              - string rootPath
      *              Caminho completo até o diretório onde o domínio está sendo executado.
@@ -1075,6 +1129,9 @@ final class Server extends BObject implements iServer
      *
      *              - string pathToErrorView
      *              Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no domínio.
+     *
+     *              - string pathToHttpMessageView
+     *              Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de uma msg ``Http`` simples.
      *
      *              - string applicationClassName
      *              Nome da classe responsável por iniciar a aplicação.
@@ -1156,7 +1213,7 @@ final class Server extends BObject implements iServer
 
 
 
-        // Identifica os headers HTTP para ficarem disponíveis de forma
+        // Identifica os headers Http para ficarem disponíveis de forma
         // separada dos demais valores enviados pelo server.
         $sHeaders = [
             "CONTENT_TYPE", "CONTENT_LENGTH", "PHP_AUTH_USER",
@@ -1179,7 +1236,7 @@ final class Server extends BObject implements iServer
 
         // Define as demais variáveis relativas a configuração atual
         // do servidor.
-        $this->setForceHTTPS($forceHTTPS);
+        $this->setForceHttps($forceHttps);
         $this->setEnvironmentType($environmentType);
         $this->setIsDebugMode($isDebugMode);
         $this->setIsUpdateRoutes($isUpdateRoutes);
@@ -1190,9 +1247,10 @@ final class Server extends BObject implements iServer
         $this->setMaxFileSize($maxFileSize);
         $this->setMaxPostSize($maxPostSize);
         $this->setPathToErrorView($pathToErrorView);
+        $this->setPathToHttpMessageView($pathToHttpMessageView);
         $this->setApplicationClassName($applicationClassName);
-        $this->setDeveloperHTTPMethods($developerHTTPMethods);
-        $this->setFrameworkHTTPMethods($frameworkHTTPMethods);
+        $this->setDeveloperHttpMethods($developerHttpMethods);
+        $this->setFrameworkHttpMethods($frameworkHttpMethods);
 
 
 
@@ -1248,26 +1306,26 @@ final class Server extends BObject implements iServer
      */
     private bool $isSetPHPConfig = false;
     /**
-     * Efetua as configurações necessárias para os manipuladores de exceptions e errors
-     * para as aplicações do domínio.
+     * Efetua as configurações necessárias para o manipulador básico de mensagens Http.
      *
      * @codeCoverageIgnore
      *
      * @return      void
      */
-    public function setErrorListening() : void
+    public function setHttpRawMessage() : void
     {
         // Define o contexto a ser usado para o ``listening`` de falhas..
-        \AeonDigital\EnGarde\Handler\ErrorListening::setContext(
+        \AeonDigital\EnGarde\Handler\HttpRawMessage::setContext(
             $this->getRootPath(),
             $this->getEnvironmentType(),
             $this->getIsDebugMode(),
             $this->getRequestProtocol(),
             $this->getRequestMethod(),
-            $this->getPathToErrorView(true)
+            $this->getPathToErrorView(true),
+            $this->getPathToHttpMessageView(true)
         );
-        set_exception_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,   "onException"]);
-        set_error_handler([\AeonDigital\EnGarde\Handler\ErrorListening::class,       "onError"], E_ALL);
+        set_exception_handler([\AeonDigital\EnGarde\Handler\HttpRawMessage::class,   "onException"]);
+        set_error_handler([\AeonDigital\EnGarde\Handler\HttpRawMessage::class,       "onError"], E_ALL);
     }
     /**
      * Efetua configurações para o ``PHP`` conforme as propriedades definidas para esta classe.
@@ -1384,7 +1442,7 @@ final class Server extends BObject implements iServer
                 ->createServerRequest(
                     $this->getRequestMethod(),
                     $this->getCurrentURI(),
-                    $this->getRequestHTTPVersion(),
+                    $this->getRequestHttpVersion(),
                     $this->getHttpFactory()->createHeaderCollection($this->getRequestHeaders()),
                     $this->getHttpFactory()->createStreamFromBodyRequest(),
                     $this->getHttpFactory()->createCookieCollection($this->getRequestCookies()),
@@ -1480,7 +1538,7 @@ final class Server extends BObject implements iServer
                 $this->getSecurityConfig()->getSecurityCookieName(),
                 $useCookieValue, null,
                 $this->getRequestDomainName(), "/",
-                $this->getForceHTTPS(), true
+                $this->getForceHttps(), true
             );
 
 
@@ -1563,7 +1621,7 @@ final class Server extends BObject implements iServer
 
                 // Em caso de uma configuração em modo 'raw',
                 // é preciso identificar se a rota atualmente selecionada possui ou não
-                // uma configuração específica para o método HTTP que está sendo usado.
+                // uma configuração específica para o método Http que está sendo usado.
                 $httpMethod = $this->getServerRequest()->getMethod();
                 if ($config !== null && isset($this->rawRouteConfig["config"][$httpMethod]) === true) {
                     $this->requestRouteParans   = $config["parans"] ?? [];
@@ -1619,7 +1677,7 @@ final class Server extends BObject implements iServer
                     if ($isOk === false) {
                         $forceLocale = $this->getServerRequest()->getParam("_locale");
                         $err = "Locale \"$forceLocale\" is not supported by this Application.";
-                        \AeonDigital\EnGarde\Handler\ErrorListening::throwHTTPError(415, $err);
+                        \AeonDigital\EnGarde\Handler\HttpRawMessage::throwHttpError(415, $err);
                     }
 
 
@@ -1639,7 +1697,7 @@ final class Server extends BObject implements iServer
                         $mime = $this->getServerRequest()->getParam("_mime");
                         if ($mime === null) { $err = "Unsupported media type."; }
                         else { $err = "Media type \"$mime\" is not supported by this URL."; }
-                        \AeonDigital\EnGarde\Handler\ErrorListening::throwHTTPError(415, $err);
+                        \AeonDigital\EnGarde\Handler\HttpRawMessage::throwHttpError(415, $err);
                     }
                 }
             }
@@ -1672,12 +1730,12 @@ final class Server extends BObject implements iServer
      *              URL para onde o ``UA`` será redirecionado.
      *
      * @param       int $code
-     *              Código HTTP.
+     *              Código ``Http``.
      *
      * @param       string $message
-     *              Mensagem HTTP.
+     *              Mensagem ``Http``.
      *              Se nenhuma for informada irá usar a mensagem padrão que corresponda
-     *              ao código HTTP indicado.
+     *              ao código ``Http`` indicado.
      *
      * @return      void
      */
@@ -1686,7 +1744,7 @@ final class Server extends BObject implements iServer
         if (isset(self::$rawStatusCode[$code]) === true && $message === "") {
             $message = self::$rawStatusCode[$code];
         }
-        $httpStatusCode = $this->getRequestHTTPVersion() . " $code $message";
+        $httpStatusCode = $this->getRequestHttpVersion() . " $code $message";
         \redirect($url, $httpStatusCode);
     }
 
@@ -1701,7 +1759,7 @@ final class Server extends BObject implements iServer
 
     /**
      * Verifica a os dados da rota identificada são válidos.
-     * - Se ela foi encontrada e se o método HTTP indicado é compatível.
+     * - Se ela foi encontrada e se o método ``Http`` indicado é compatível.
      *
      * @codeCoverageIgnore
      *
@@ -1722,8 +1780,8 @@ final class Server extends BObject implements iServer
         $httpErrorMessage   = null;
 
         // SE
-        // o método HTTP que está sendo evocado deve ser executado pelo desenvolvedor...
-        if (\in_array($httpMethod, $this->getDeveloperHTTPMethods()) === true)
+        // o método Http que está sendo evocado deve ser executado pelo desenvolvedor...
+        if (\in_array($httpMethod, $this->getDeveloperHttpMethods()) === true)
         {
             // Se a rota acessada não foi encontrada...
             if ($config === null) {
@@ -1748,7 +1806,7 @@ final class Server extends BObject implements iServer
             // resolvida e precisa entregar ao UA uma mensagem
             // do que ocorreu...
             if ($httpErrorCode !== null) {
-                \AeonDigital\EnGarde\Handler\ErrorListening::throwHTTPError($httpErrorCode, $httpErrorMessage);
+                \AeonDigital\EnGarde\Handler\HttpRawMessage::throwHttpError($httpErrorCode, $httpErrorMessage);
             }
         }
     }
@@ -1785,8 +1843,8 @@ final class Server extends BObject implements iServer
             $config["ENGINE"]
         );
 
-        // Configura o gerenciador de erros do domínio.
-        $serverConfig->setErrorListening();
+        // Configura o gerenciador de mensagens Http do domínio.
+        $serverConfig->setHttpRawMessage();
         // Ativa as configurações do PHP
         $serverConfig->setPHPConfiguration();
         // Inicia as demais instâncias necessárias para compor o contexto
