@@ -4,16 +4,9 @@
     'description' => 'Define um perfil de segurança para um conjunto de usuários',
     'executeAfterCreateTable' => [
         'ALTER TABLE DomainUserProfile ADD CONSTRAINT uc_col_Name_DomainApplication_Id UNIQUE (Name, DomainApplication_Id);',
-        'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/site", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));',
-        'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Administrador", "Usuários administradores do sistema.", 0, "/site", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));',
-        'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Publicador", "Usuários publicadores de conteúdo.", 0, "/site", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));',
+        'ALTER TABLE secdup_to_secdu ADD CONSTRAINT uc_DomainUser_Id_DomainUserProfile_Id UNIQUE (DomainUser_Id, DomainUserProfile_Id);',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileDefault INT(1) DEFAULT 0 NOT NULL;',
         'ALTER TABLE secdup_to_secdu ADD COLUMN ProfileSelected INT(1) DEFAULT 0 NOT NULL;',
-        'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;',
-        'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Administrador") FROM DomainUser;',
-        'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Publicador") FROM DomainUser;',
-        'UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=1;',
-        'UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;'
     ],
     'columns' => [
         [
@@ -65,15 +58,16 @@
             'name' => 'DomainUsers',
             'description' => 'Coleção de usuários para este perfil.',
             'fkTableName' => 'DomainUser[]',
-            'fkDescription' => 'Perfil em Usuários',
+            'fkDescription' => 'DomainUserProfile em DomainUser',
             'fkLinkTable' => true,
             'fkAllowNull' => false,
         ],
         [
             'name' => 'RoutesPermissions',
-            'description' => 'Coleção de configurações para as rotas relacionadas a este perfil.',
-            'fkTableName' => 'DomainUserProfileRoute[]',
-            'fkDescription' => 'Perfil relacionado a esta rota',
+            'description' => 'Coleção de rotas relacionadas a este perfil.',
+            'fkTableName' => 'DomainRoute[]',
+            'fkDescription' => 'DomainUserProfile em DomainRoute',
+            'fkLinkTable' => true,
             'fkAllowNull' => false,
             'fkOnDelete' => 'CASCADE'
         ]

@@ -24,6 +24,12 @@ class AppStart extends Application
     }
 
 
+    protected function checkCatchAll(iServerConfig $serverConfig) : ?array
+    {
+        return null;
+    }
+
+
 
 
 

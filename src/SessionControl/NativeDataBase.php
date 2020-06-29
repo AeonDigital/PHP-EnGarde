@@ -560,16 +560,15 @@ class NativeDataBase extends MainSession
         }
 
         $this->getDAL();
-        $this->routeRedirect = "";
-
         $strSQL = " SELECT
-                        Allow, RedirectTo
+                        dupdr.Allow
                     FROM
-                        DomainUserProfileRoute
+                        DomainRoute secdr
+                        INNER JOIN secdup_to_secdr dupdr ON dupdr.DomainRoute_Id=secdr.Id
                     WHERE
-                        MethodHttp=:MethodHttp AND
-                        RawRoute=:RawRoute AND
-                        DomainUserProfile_Id=:DomainUserProfile_Id;";
+                        secdr.MethodHttp=:MethodHttp AND
+                        secdr.RawRoute=:RawRoute AND
+                        dupdr.DomainUserProfile_Id=:DomainUserProfile_Id;";
 
         $parans = [
             "MethodHttp"            => $methodHttp,
@@ -580,9 +579,6 @@ class NativeDataBase extends MainSession
         $routePermission = $this->DAL->getDataRow($strSQL, $parans);
         if ($routePermission !== null) {
             $r = (bool)$routePermission["Allow"];
-            if ($r === false) {
-                $this->routeRedirect = $routePermission["RedirectTo"];
-            }
         }
 
         return $r;

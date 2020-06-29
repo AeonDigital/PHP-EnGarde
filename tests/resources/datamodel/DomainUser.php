@@ -2,13 +2,6 @@
     'tableName' => 'DomainUser',
     'alias' => 'secdu',
     'description' => 'Conta de um usuário que pode efetuar login em aplicações do domínio',
-    'executeAfterCreateTable' => [
-        'INSERT INTO DomainUser (Active, Name, Gender, Login, ShortLogin, Password) VALUES (0, "Anonimo", "-", "anonimo@anonimo", "anonimo", "anonimo");',
-        'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Adriano Santos", "Masculino", "adriano@dna.com.br", "adriano", SHA1("senhateste"));',
-        'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Eliane Somavilla", "Feminino", "eliane@dna.com.br", "eliane", SHA1("senhateste"));',
-        'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Geraldo Bilefete", "Masculino", "geraldo@dna.com.br", "geraldo", SHA1("senhateste"));',
-        'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Rianna Cantarelli", "Feminino", "rianna@dna.com.br", "rianna", SHA1("senhateste"));',
-    ],
     'columns' => [
         [
             'name' => 'Active',
@@ -81,7 +74,7 @@
             'name' => 'Profiles',
             'description' => 'Coleção de Perfis deste usuário.',
             'fkTableName' => 'DomainUserProfile[]',
-            'fkDescription' => 'Usuários em Perfis.',
+            'fkDescription' => 'DomainUser em DomainUserProfile.',
             'fkLinkTable' => true,
             'fkAllowNull' => false,
             'fkOnDelete' => 'CASCADE'

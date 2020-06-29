@@ -41,6 +41,84 @@
       ),
     ),
   ),
+  'DomainRoute' => 
+  array (
+    'modelFilePath' => 'DomainRoute.php',
+    'ormInstructions' => 
+    array (
+      'select' => 'SELECT Id, ControllerName, ActionName, MethodHttp, RawRoute, Description FROM DomainRoute WHERE Id=:Id;',
+      'selectChild' => 
+      array (
+        'Profiles' => 
+        array (
+          'select' => 'SELECT DomainUserProfile_Id as fkId FROM secdup_to_secdr WHERE DomainRoute_Id=:Id;',
+          'oColumnFK' => NULL,
+          'linkTableName' => 'secdup_to_secdr',
+          'linkTableColumns' => 
+          array (
+            0 => 'DomainRoute_Id',
+            1 => 'DomainUserProfile_Id',
+          ),
+        ),
+      ),
+      'selectParentId' => 
+      array (
+      ),
+      'attatchWith' => 
+      array (
+        'DomainUserProfile' => 'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id) VALUES (:thisId, :tgtId);',
+      ),
+      'detachWith' => 
+      array (
+        'DomainUserProfile' => 'DELETE FROM secdup_to_secdr WHERE DomainRoute_Id=:thisId AND DomainUserProfile_Id=:tgtId;',
+      ),
+      'detachWithAll' => 
+      array (
+        'DomainUserProfile' => 'DELETE FROM secdup_to_secdr WHERE DomainRoute_Id=:thisId;',
+      ),
+      'oColumn' => 
+      array (
+      ),
+      'singleFK' => 
+      array (
+      ),
+      'collectionFK' => 
+      array (
+      ),
+    ),
+  ),
+  'DomainRouteRedirect' => 
+  array (
+    'modelFilePath' => 'DomainRouteRedirect.php',
+    'ormInstructions' => 
+    array (
+      'select' => 'SELECT Id, OriginURL, DestinyURL, IsPregReplace, KeepQuerystrings, HTTPCode, HTTPMessage FROM DomainRouteRedirect WHERE Id=:Id;',
+      'selectChild' => 
+      array (
+      ),
+      'selectParentId' => 
+      array (
+      ),
+      'attatchWith' => 
+      array (
+      ),
+      'detachWith' => 
+      array (
+      ),
+      'detachWithAll' => 
+      array (
+      ),
+      'oColumn' => 
+      array (
+      ),
+      'singleFK' => 
+      array (
+      ),
+      'collectionFK' => 
+      array (
+      ),
+    ),
+  ),
   'DomainUser' => 
   array (
     'modelFilePath' => 'DomainUser.php',
@@ -174,10 +252,14 @@
         ),
         'RoutesPermissions' => 
         array (
-          'select' => 'SELECT Id as fkId FROM DomainUserProfileRoute WHERE DomainUserProfile_Id=:Id;',
+          'select' => 'SELECT DomainRoute_Id as fkId FROM secdup_to_secdr WHERE DomainUserProfile_Id=:Id;',
           'oColumnFK' => NULL,
-          'linkTableName' => NULL,
-          'linkTableColumns' => NULL,
+          'linkTableName' => 'secdup_to_secdr',
+          'linkTableColumns' => 
+          array (
+            0 => 'DomainUserProfile_Id',
+            1 => 'DomainRoute_Id',
+          ),
         ),
       ),
       'selectParentId' => 
@@ -188,55 +270,19 @@
       array (
         'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=:tgtId WHERE Id=:thisId;',
         'DomainUser' => 'INSERT INTO secdup_to_secdu (DomainUserProfile_Id, DomainUser_Id) VALUES (:thisId, :tgtId);',
-        'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=:thisId WHERE Id=:tgtId;',
+        'DomainRoute' => 'INSERT INTO secdup_to_secdr (DomainUserProfile_Id, DomainRoute_Id) VALUES (:thisId, :tgtId);',
       ),
       'detachWith' => 
       array (
         'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=null WHERE Id=:thisId;',
         'DomainUser' => 'DELETE FROM secdup_to_secdu WHERE DomainUserProfile_Id=:thisId AND DomainUser_Id=:tgtId;',
-        'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:tgtId;',
+        'DomainRoute' => 'DELETE FROM secdup_to_secdr WHERE DomainUserProfile_Id=:thisId AND DomainRoute_Id=:tgtId;',
       ),
       'detachWithAll' => 
       array (
         'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=null WHERE Id=:thisId;',
         'DomainUser' => 'DELETE FROM secdup_to_secdu WHERE DomainUserProfile_Id=:thisId;',
-        'DomainUserProfileRoute' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE DomainUserProfile_Id=:thisId;',
-      ),
-      'oColumn' => 
-      array (
-      ),
-      'singleFK' => 
-      array (
-      ),
-      'collectionFK' => 
-      array (
-      ),
-    ),
-  ),
-  'DomainUserProfileRoute' => 
-  array (
-    'modelFilePath' => 'DomainUserProfileRoute.php',
-    'ormInstructions' => 
-    array (
-      'select' => 'SELECT Id, ControllerName, ActionName, MethodHttp, RawRoute, Allow, RedirectTo, Description FROM DomainUserProfileRoute WHERE Id=:Id;',
-      'selectChild' => 
-      array (
-      ),
-      'selectParentId' => 
-      array (
-        'DomainUserProfile' => 'SELECT DomainUserProfile_Id FROM DomainUserProfileRoute WHERE Id=:thisId;',
-      ),
-      'attatchWith' => 
-      array (
-        'DomainUserProfile' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=:tgtId WHERE Id=:thisId;',
-      ),
-      'detachWith' => 
-      array (
-        'DomainUserProfile' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:thisId;',
-      ),
-      'detachWithAll' => 
-      array (
-        'DomainUserProfile' => 'UPDATE DomainUserProfileRoute SET DomainUserProfile_Id=null WHERE Id=:thisId;',
+        'DomainRoute' => 'DELETE FROM secdup_to_secdr WHERE DomainUserProfile_Id=:thisId;',
       ),
       'oColumn' => 
       array (

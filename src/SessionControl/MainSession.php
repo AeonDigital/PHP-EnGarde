@@ -269,28 +269,6 @@ abstract class MainSession extends BObject implements iSession
 
 
 
-    /**
-     * URI para a qual o usuário deve ser direcionado em caso de falha
-     * na verificação de permissão da rota atual.
-     *
-     * @var         string
-     */
-    protected string $routeRedirect = "";
-    /**
-     * Retorna uma URI para a qual o usuário deve ser direcionado em caso de falha
-     * na verificação de permissão da rota atual.
-     *
-     * @return      string
-     */
-    public function getRouteRedirect() : string
-    {
-        return $this->routeRedirect;
-    }
-
-
-
-
-
 
 
 

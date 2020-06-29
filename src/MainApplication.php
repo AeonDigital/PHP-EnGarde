@@ -100,10 +100,17 @@ abstract class MainApplication implements iApplication
         }
 
 
-        // Identifica a rota e inicia o objeto de configuração da mesma
+        // Identifica as configurações compatíveis com a rota que está sendo iniciada
         // baseado na URI que a aplicação deseja.
-        if ($serverConfig->getRouteConfig(
-                $router->selectTargetRawRoute($serverConfig->getApplicationRequestUri()), true) !== null) {
+        $rawRoute = $router->selectTargetRawRoute($serverConfig->getApplicationRequestUri());
+        if ($rawRoute === null) {
+            // Se a URI não corresponde a nenhuma configuração definida,
+            // identifica se a URL é compatível com alguma regra geral de identificação de rotas.
+            //preg_replace('/\/site\/section\/([^\/]+)\/ignore\/([^\/]+)/', '$0 --> /site/sectionnn/$2/$1', $input_lines);
+            $rawRoute = $this->checkCatchAll($serverConfig);
+        }
+
+        if ($serverConfig->getRouteConfig($rawRoute, true) !== null) {
             $this->routeConfig = $serverConfig->getRouteConfig();
         }
 
@@ -113,6 +120,22 @@ abstract class MainApplication implements iApplication
         // Executa o protocolo de segurança da aplicação.
         $this->applySecuritySettings();
     }
+
+
+
+
+
+    /**
+     * Tenta identificar qual rota deve ser utilizada com base em regras específicas
+     * da aplicação concreta.
+     *
+     * @param       iServerConfig $serverConfig
+     *              Objeto ``iServerConfig``.
+     *
+     * @return      ?array
+     *              O retorno deve ser uma versão ``array`` de um objeto ``iRoute``.
+     */
+    abstract protected function checkCatchAll(iServerConfig $serverConfig) : ?array;
 
 
 

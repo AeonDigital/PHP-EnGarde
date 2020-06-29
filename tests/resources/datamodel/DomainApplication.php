@@ -2,9 +2,6 @@
     'tableName' => 'DomainApplication',
     'alias' => 'secdapp',
     'description' => 'Aplicação disponível para este domínio',
-    'executeAfterCreateTable' => [
-        'INSERT INTO DomainApplication (Active, CommercialName, ApplicationName, Description) VALUES (1, "Site", "site", "Website");'
-    ],
     'columns' => [
         [
             'name' => 'Active',

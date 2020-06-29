@@ -429,6 +429,5 @@ class SessionNativeLocalTest extends TestCase
 
         $r = $obj->checkRoutePermission("POST", "http://aeondigital.com.br/test");
         $this->assertTrue($r);
-        $this->assertEquals("", $obj->getRouteRedirect());
     }
 }

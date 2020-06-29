@@ -49,6 +49,49 @@ class SessionNativeDataBaseTest extends TestCase
     }
 
 
+    protected function providerRestartDataBase()
+    {
+        providerNDB_executeCreateSchema();
+        $DAL = providerNDB_DAL();
+
+        $sql = [
+            'INSERT INTO DomainApplication (Active, CommercialName, ApplicationName, Description) VALUES (1, "Site", "site", "Website");',
+
+            'INSERT INTO DomainUser (Active, Name, Gender, Login, ShortLogin, Password) VALUES (0, "Anonimo", "-", "anonimo@anonimo", "anonimo", "anonimo");',
+            'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Adriano Santos", "Masculino", "adriano@dna.com.br", "adriano", SHA1("senhateste"));',
+            'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Eliane Somavilla", "Feminino", "eliane@dna.com.br", "eliane", SHA1("senhateste"));',
+            'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Geraldo Bilefete", "Masculino", "geraldo@dna.com.br", "geraldo", SHA1("senhateste"));',
+            'INSERT INTO DomainUser (Name, Gender, Login, ShortLogin, Password) VALUES ("Rianna Cantarelli", "Feminino", "rianna@dna.com.br", "rianna", SHA1("senhateste"));',
+
+
+            'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Desenvolvedor", "Usuários desenvolvedores do sistema.", 1, "/site", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));',
+            'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Administrador", "Usuários administradores do sistema.", 0, "/site", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));',
+            'INSERT INTO DomainUserProfile (Name, Description, AllowAll, HomeURL, DomainApplication_Id) VALUES ("Publicador", "Usuários publicadores de conteúdo.", 0, "/site", (SELECT Id FROM DomainApplication WHERE ApplicationName="site"));',
+
+
+            'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor") FROM DomainUser;',
+            'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Administrador") FROM DomainUser;',
+            'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) SELECT Id, (SELECT Id FROM DomainUserProfile WHERE Name="Publicador") FROM DomainUser;',
+
+            'UPDATE secdup_to_secdu SET ProfileDefault=1 WHERE DomainUserProfile_Id=1;',
+            'UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;',
+
+
+            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "index", "GET", "/site/levelthree");',
+            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "dashboard", "GET", "/site/dashboard");',
+            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "levelone", "GET", "/site/levelone");',
+
+            'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelthree"), (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor"), 0);',
+            'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/dashboard"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);',
+            'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelone"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);',
+        ];
+
+        foreach ($sql as $strSQL) {
+            $DAL->executeInstruction($strSQL);
+        }
+    }
+
+
     protected function providerSessionObject()
     {
         return [
@@ -136,7 +179,7 @@ class SessionNativeDataBaseTest extends TestCase
 
     public function test_constructor_ok()
     {
-        //providerNDB_executeCreateSchema();
+        //$this->providerRestartDataBase();
         global $defaultServerVariables;
         global $defaultEngineVariables;
         global $defaultApplication;
