@@ -104,12 +104,21 @@ abstract class MainApplication implements iApplication
         // baseado na URI que a aplicação deseja.
         $rawRoute = $router->selectTargetRawRoute($serverConfig->getApplicationRequestUri());
         if ($rawRoute === null) {
+
             // Se a URI não corresponde a nenhuma configuração definida,
-            // identifica se a URL é compatível com alguma regra geral de identificação de rotas.
-            //preg_replace('/\/site\/section\/([^\/]+)\/ignore\/([^\/]+)/', '$0 --> /site/sectionnn/$2/$1', $input_lines);
+            // executa a regra "catchAll" da aplicação.
             $rawRoute = $this->checkCatchAll($serverConfig);
+
+            // Caso ainda não tenha sido possível identificar a rota a ser executada
+            // verifica se há alguma regra de redirecionamento indicado para a mesma.
+            if ($rawRoute === null) {
+                $this->checkRedirectRules();
+            }
         }
 
+        // Se a rota for identificada, inicia-a.
+        // Caso ocorra alguma falha neste ponto ou se a rota não foi identificada será
+        // apresentado ao UA uma mensagem de erro correspondente (404, 501 ...).
         if ($serverConfig->getRouteConfig($rawRoute, true) !== null) {
             $this->routeConfig = $serverConfig->getRouteConfig();
         }
@@ -125,17 +134,6 @@ abstract class MainApplication implements iApplication
 
 
 
-    /**
-     * Tenta identificar qual rota deve ser utilizada com base em regras específicas
-     * da aplicação concreta.
-     *
-     * @param       iServerConfig $serverConfig
-     *              Objeto ``iServerConfig``.
-     *
-     * @return      ?array
-     *              O retorno deve ser uma versão ``array`` de um objeto ``iRoute``.
-     */
-    abstract protected function checkCatchAll(iServerConfig $serverConfig) : ?array;
 
 
 
@@ -152,9 +150,10 @@ abstract class MainApplication implements iApplication
      */
     private function applySecuritySettings() : void
     {
-        // Inicia os objetos de configurações de segurança.
+        // Inicia e retorna os objetos de configurações de segurança.
         $securityConfig = $this->serverConfig->getSecurityConfig($this->defaultSecurityConfig);
         $securitySession = $this->serverConfig->getSecuritySession();
+
 
         // Apenas se a aplicação possui alguma configuração de segurança
         if ($securityConfig->getIsActive() === true) {
@@ -211,6 +210,11 @@ abstract class MainApplication implements iApplication
             }
         }
     }
+
+
+
+
+
 
 
 
@@ -341,6 +345,7 @@ abstract class MainApplication implements iApplication
 
 
 
+
     /**
      * Efetivamente envia os dados para o ``UA``.
      *
@@ -383,6 +388,149 @@ abstract class MainApplication implements iApplication
             }
         }
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * Tenta identificar qual rota deve ser utilizada com base em regras específicas
+     * da aplicação concreta.
+     *
+     * @param       iServerConfig $serverConfig
+     *              Objeto ``iServerConfig``.
+     *
+     * @return      ?array
+     *              O retorno deve ser uma versão ``array`` de um objeto ``iRoute``.
+     */
+    abstract protected function checkCatchAll(iServerConfig $serverConfig) : ?array;
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Verifica se existe alguma regra de redirecionamento preparada para a URL requisitada.
+     *
+     * @return      void
+     */
+    private function checkRedirectRules() : void
+    {
+        // Inicia e retorna os objetos de configurações de segurança.
+        $securityConfig = $this->serverConfig->getSecurityConfig($this->defaultSecurityConfig);
+        $securitySession = $this->serverConfig->getSecuritySession();
+
+        if ($securitySession->hasDataBase() === true) {
+            $requestURL = $this->serverConfig->getApplicationRequestUri();
+            $requestFullURL = $this->serverConfig->getApplicationRequestFullUri();
+
+
+            // Verifica se a URL de requisição completa combina perfeitamente com alguma regra definida.
+            $this->checkRedirectAbsolute($requestFullURL);
+            if ($requestFullURL !== $requestURL) {
+                // Verifica se a URL completa combina perfeitamente com alguma regra definida.
+                $this->checkRedirectAbsolute($requestURL);
+            }
+
+
+            // Resgata todas as regras dinamicas definidas.
+            $strSQL = " SELECT
+                            OriginURL, DestinyURL, KeepQuerystrings, HTTPCode, HTTPMessage
+                        FROM
+                            DomainRouteRedirect
+                        WHERE
+                            IsPregReplace=1
+                        ORDER BY
+                            LENGTH(OriginURL) DESC;";
+            $dinamicRedirectRules = $DAL->getDataTable($strSQL);
+            if ($dinamicRedirectRules !== null) {
+                $this->checkRedirectDinamics($requestFullURL, $dinamicRedirectRules);
+                if ($requestFullURL !== $requestURL) {
+                    $this->checkRedirectDinamics($requestURL, $dinamicRedirectRules);
+                }
+            }
+        }
+    }
+    /**
+     * Verifica o redirecionamento de uma rota de forma absoluta, ou seja, identifica se existe
+     * uma regra de redirecionamento cujo campo "OriginURL" case perfeitamente com a URL requisitada.
+     *
+     * @param       string $requestURL
+     *              URL requisitada.
+     *
+     * @return      void
+     */
+    private function checkRedirectAbsolute(string $requestURL) : void
+    {
+        $DAL = $this->serverConfig->getSecuritySession()->getDAL();
+
+        $strSQL = " SELECT
+                        DestinyURL, HTTPCode, HTTPMessage
+                    FROM
+                        DomainRouteRedirect
+                    WHERE
+                        OriginURL=:OriginURL AND
+                        IsPregReplace=0;";
+        $parans = [
+            "OriginURL" => $requestURL
+        ];
+
+        $redirectRule = $DAL->getDataRow($strSQL, $parans);
+        if ($redirectRule !== null) {
+            $this->serverConfig->redirectTo(
+                $redirectRule["DestinyURL"],
+                (int)$redirectRule["HTTPCode"],
+                $redirectRule["HTTPMessage"]
+            );
+        }
+    }
+    /**
+     * Verifica se há alguma regra de redirecionamento dinâmico que case com a URL requisitada.
+     *
+     * @param       string $requestURL
+     *              URL requisitada.
+     *
+     * @param       array $dinamicRedirectRules
+     *              Coleção de regras de redirecionamentos dinamicos.
+     *
+     * @return      void
+     */
+    private function checkRedirectDinamics(string $requestURL, array $dinamicRedirectRules) : void
+    {
+        foreach ($dinamicRedirectRules as $row) {
+            if (\mb_str_pattern_match($requestURL, $row["OriginURL"]) === true) {
+                $redirectTo         = \preg_replace($row["OriginURL"], $row["DestinyURL"], $requestURL);
+                $parsedRedirectURL  = \parse_url($redirectTo);
+                $parsedRequestURL   = \parse_url($requestURL);
+
+                // Sendo para manter as querystrings da origem na URL de redirecionamento
+                if ((bool)$row["KeepQuerystrings"] === true && $parsedRequestURL["query"] !== null) {
+                    if ($parsedRedirectURL["query"] !== null) {
+                        $parsedRedirectURL["query"] .= "&";
+                    }
+                    $parsedRedirectURL["query"] .= $parsedRequestURL["query"];
+                    $redirectTo = \http_build_url($parsedRedirectURL);
+                }
+
+
+                $this->serverConfig->redirectTo(
+                    $redirectTo,
+                    (int)$row["HTTPCode"],
+                    $row["HTTPMessage"]
+                );
+            }
+        }
+    }
+
 
 
 
