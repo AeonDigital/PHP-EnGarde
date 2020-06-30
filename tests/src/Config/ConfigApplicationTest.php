@@ -38,6 +38,7 @@ class ConfigApplicationTest extends TestCase
             $defaultApplication["defaultLocale"],
             $defaultApplication["isUseLabels"],
             $defaultApplication["defaultRouteConfig"],
+            $defaultApplication["checkRouteOrder"],
             $defaultApplication["pathToErrorView"],
             $defaultApplication["pathToHttpMessageView"],
             $defaultApplication["httpSubSystemNamespaces"]
@@ -634,6 +635,26 @@ class ConfigApplicationTest extends TestCase
 
         $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
         $this->assertSame($expected, $nMock->getDefaultRouteConfig());
+    }
+
+
+    public function test_method_getset_check_route_order()
+    {
+        global $defaultApplication;
+        $testApplication = array_merge([], $defaultApplication);
+        $testApplication["checkRouteOrder"] = [];
+        $expected = [];
+
+
+        $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        $this->assertSame($expected, $nMock->getCheckRouteOrder());
+
+
+        $testApplication["checkRouteOrder"] = ["native", "catch-all"];
+        $expected = ["native", "catch-all"];
+
+        $nMock = prov_instanceOf_EnGarde_Config_Application($testApplication);
+        $this->assertSame($expected, $nMock->getCheckRouteOrder());
     }
 
 

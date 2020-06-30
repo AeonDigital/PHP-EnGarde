@@ -795,6 +795,46 @@ final class Application extends BObject implements iApplication
 
 
 
+    /**
+     * Array de strings contendo em cada posição uma das diferentes formas de obter
+     * a rota a ser executada segundo a requisição atual.
+     *
+     * @var         array
+     */
+    private array $checkRouteOrder = [];
+    /**
+     * Retorna um array de strings contendo em cada posição um dos diferentes métodos de obter
+     * a rota a ser executada segundo a requisição atual.
+     *
+     * Ao iniciar a aplicação, a ordem dos métodos aqui definidos será usado para identificar qual
+     * processo deve ser realizado a cada requisição.
+     *
+     * Nesta implementação, são esperados os valores :
+     * - "native"   : Verificação baseada na lista de rotas definidas nos controllers.
+     * - "catch-all": Regra especial "catchAll" que pode ser definida pelo desenvolvedor de cada aplicação.
+     * - "redirect" : Regras de redirecionamentos.
+     *
+     * @return      array
+     */
+    public function getCheckRouteOrder() : array
+    {
+        return $this->checkRouteOrder;
+    }
+    /**
+     * Define um array de strings contendo em cada posição uma das diferentes formas de obter
+     * a rota a ser executada segundo a requisição atual.
+     *
+     * @param       array $checkRouteOrder
+     *              Array.
+     *
+     * @return      void
+     */
+    private function setCheckRouteOrder(array $checkRouteOrder) : void
+    {
+        $this->checkRouteOrder = \array_map("strtolower", \array_unique($checkRouteOrder));
+    }
+
+
 
 
 
@@ -1048,6 +1088,9 @@ final class Application extends BObject implements iApplication
      * @param       array $defaultRouteConfig
      *              Array associativo contendo os valores padrões para as rotas da aplicação.
      *
+     * @param       array $checkRouteOrder
+     *              Array de métodos de identificação de processamento de rotas.
+     *
      * @param       string $pathToErrorView
      *              Caminho relativo até a view que deve ser enviada ao UA em caso de erros
      *              na aplicação.
@@ -1081,6 +1124,7 @@ final class Application extends BObject implements iApplication
         string $defaultLocale,
         bool $isUseLabels,
         array $defaultRouteConfig,
+        array $checkRouteOrder,
         string $pathToErrorView,
         string $pathToHttpMessageView,
         array $httpSubSystemNamespaces
@@ -1100,6 +1144,7 @@ final class Application extends BObject implements iApplication
         $this->setDefaultLocale($defaultLocale);
         $this->setIsUseLabels($isUseLabels);
         $this->setDefaultRouteConfig($defaultRouteConfig);
+        $this->setCheckRouteOrder($checkRouteOrder);
         $this->setPathToErrorView($pathToErrorView);
         $this->setPathToHttpMessageView($pathToHttpMessageView);
         $this->setHttpSubSystemNamespaces($httpSubSystemNamespaces);
@@ -1154,6 +1199,7 @@ final class Application extends BObject implements iApplication
                 "defaultLocale"             => "",
                 "isUseLabels"               => false,
                 "defaultRouteConfig"        => [],
+                "checkRouteOrder"           => ["native", "catch-all", "redirect"],
                 "pathToErrorView"           => "",
                 "pathToHttpMessageView"     => "",
                 "httpSubSystemNamespaces"   => []
@@ -1180,6 +1226,7 @@ final class Application extends BObject implements iApplication
             $useValues["defaultLocale"],
             $useValues["isUseLabels"],
             $useValues["defaultRouteConfig"],
+            $useValues["checkRouteOrder"],
             $useValues["pathToErrorView"],
             $useValues["pathToHttpMessageView"],
             $useValues["httpSubSystemNamespaces"]

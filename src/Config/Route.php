@@ -248,7 +248,7 @@ final class Route extends BObject implements iRoute
                 ]
             ]
         );
-        $this->allowedMethods= \array_map("strtoupper", $allowedMethods);
+        $this->allowedMethods = \array_map("strtoupper", $allowedMethods);
     }
 
 

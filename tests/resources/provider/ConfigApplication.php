@@ -17,6 +17,7 @@ $defaultApplication = [
     "defaultLocale"             => "pt-BR",
     "isUseLabels"               => true,
     "defaultRouteConfig"        => [],
+    "checkRouteOrder"           => ["native"],
     "pathToErrorView"           => "/errorView.phtml",
     "pathToHttpMessageView"     => "/httpMessage.phtml",
     "httpSubSystemNamespaces"   => [
@@ -50,6 +51,7 @@ function prov_instanceOf_EnGarde_Config_Application(
         $defaultApplication["defaultLocale"],
         $defaultApplication["isUseLabels"],
         $defaultApplication["defaultRouteConfig"],
+        $defaultApplication["checkRouteOrder"],
         $defaultApplication["pathToErrorView"],
         $defaultApplication["pathToHttpMessageView"],
         $defaultApplication["httpSubSystemNamespaces"]

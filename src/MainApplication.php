@@ -100,21 +100,36 @@ abstract class MainApplication implements iApplication
         }
 
 
-        // Identifica as configurações compatíveis com a rota que está sendo iniciada
-        // baseado na URI que a aplicação deseja.
-        $rawRoute = $router->selectTargetRawRoute($serverConfig->getApplicationRequestUri());
-        if ($rawRoute === null) {
 
-            // Se a URI não corresponde a nenhuma configuração definida,
-            // executa a regra "catchAll" da aplicação.
-            $rawRoute = $this->checkCatchAll($serverConfig);
-
-            // Caso ainda não tenha sido possível identificar a rota a ser executada
-            // verifica se há alguma regra de redirecionamento indicado para a mesma.
+        // Verifica de que forma a rota deve ser processada conforme a ordem
+        // de precedencia dos métodos de tratamento.
+        $rawRoute = null;
+        foreach ($this->serverConfig->getApplicationConfig()->getCheckRouteOrder() as $routeMethod) {
             if ($rawRoute === null) {
-                $this->checkRedirectRules();
+                switch ($routeMethod) {
+                    // Identifica, a partir das configurações definidas nos controllers da aplicação
+                    // a qual rota exatamente esta requisição deve corresponder.
+                    case "native":
+                        $rawRoute = $router->selectTargetRawRoute(
+                            $serverConfig->getApplicationRequestUri()
+                        );
+                        break;
+
+                    // Executa a regra "catchAll" definida pela aplicação, se ela existir.
+                    case "catch-all":
+                        $rawRoute = $this->checkCatchAll($serverConfig);
+                        break;
+
+                    // Verifica se a requisição atual deve causar um redirecionamento do UA para um outro
+                    // local. Neste caso o redirecionamento deve interromper este fluxo.
+                    case "redirect":
+                        $this->checkRedirectRules();
+                        break;
+                }
             }
         }
+
+
 
         // Se a rota for identificada, inicia-a.
         // Caso ocorra alguma falha neste ponto ou se a rota não foi identificada será
