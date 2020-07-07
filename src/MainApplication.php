@@ -104,7 +104,7 @@ abstract class MainApplication implements iApplication
         // Verifica de que forma a rota deve ser processada conforme a ordem
         // de precedencia dos métodos de tratamento.
         $rawRoute = null;
-        foreach ($this->serverConfig->getApplicationConfig()->getCheckRouteOrder() as $routeMethod) {
+        foreach ($serverConfig->getApplicationConfig()->getCheckRouteOrder() as $routeMethod) {
             if ($rawRoute === null) {
                 switch ($routeMethod) {
                     // Identifica, a partir das configurações definidas nos controllers da aplicação
@@ -422,7 +422,10 @@ abstract class MainApplication implements iApplication
      * @return      ?array
      *              O retorno deve ser uma versão ``array`` de um objeto ``iRoute``.
      */
-    abstract protected function checkCatchAll(iServerConfig $serverConfig) : ?array;
+    protected function checkCatchAll(iServerConfig $serverConfig) : ?array
+    {
+        return null;
+    }
 
 
 
