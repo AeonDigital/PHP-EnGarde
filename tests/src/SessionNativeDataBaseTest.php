@@ -509,16 +509,64 @@ class SessionNativeDataBaseTest extends TestCase
     public function test_method_processRoutesPermissions()
     {
         global $dirResources;
+        $pathToAppRoutes = $dirResources . DS . "apps" . DS . "site" . DS . "AppRoutes.php";
 
+
+        // Prepara o ambiente para estes testes
         $DAL = providerNDB_DAL();
         $strSQL = "DELETE FROM DomainRoute;";
         $DAL->executeInstruction($strSQL);
+        $this->assertEquals(0, $DAL->countRowsFrom("DomainRoute", "Id"));
 
+
+        // Executa a varredura e registro de rotas da aplicação.
         $obj = $this->provideObject();
-        $pathToAppRoutes = $dirResources . DS . "apps" . DS . "site" . DS . "AppRoutes.php";
         $obj->processRoutesPermissions($pathToAppRoutes);
 
-        $this->assertTrue(true);
+        $countRoutes = $DAL->countRowsFrom("DomainRoute", "Id");
+        $this->assertTrue(($countRoutes > 0));
+
+
+        // Exclui uma coleção arbitrária de rotas para verificar se as mesmas
+        // serão realocadas ao rodar novamente o mesmo método
+        $strSQL = "DELETE FROM DomainRoute WHERE Description='Página home da aplicação';";
+        $DAL->executeInstruction($strSQL);
+        $remainingRoutes = $DAL->countRowsFrom("DomainRoute", "Id");
+        $this->assertTrue(($remainingRoutes < $countRoutes));
+
+
+        // Executa novamente a varredura das rotas.
+        // As que foram excluídas devem ser readicionadas.
+        $obj->processRoutesPermissions($pathToAppRoutes);
+        $newCountRoutes = $DAL->countRowsFrom("DomainRoute", "Id");
+        $this->assertEquals($countRoutes, $newCountRoutes);
+
+
+
+        // Conta quantas rotas são permitidas para o perfil de usuário de Id 2;
+        $strSQLCountAllowed = " SELECT
+                        COUNT(DomainRoute_Id) as count
+                    FROM
+                        secdup_to_secdr
+                    WHERE
+                        DomainUserProfile_Id=2 AND Allow=1;";
+        $initialAllowed = $DAL->getCountOf($strSQLCountAllowed);
+
+        // Converte todas as relações entre o perfil de Id 2 e suas respectivas
+        // rotas para dar permissão a todos.
+        $strSQL = "UPDATE secdup_to_secdr SET Allow=1 WHERE DomainUserProfile_Id=2;";
+        $DAL->executeInstruction($strSQL);
+
+        // Verifica se o número de rotas atualmente permitidas é maior que o inicial
+        $currentAllowed = $DAL->getCountOf($strSQLCountAllowed);
+        $this->assertTrue(($currentAllowed > $initialAllowed));
+
+        // Roda o processamento das rotas e verifica que nenhuma definição previamente
+        // realizada sofreu qualquer alteração.
+        $obj->processRoutesPermissions($pathToAppRoutes);
+        $finalAllowed = $DAL->getCountOf($strSQLCountAllowed);
+        $this->assertTrue(($currentAllowed === $finalAllowed));
+
 
 
 
