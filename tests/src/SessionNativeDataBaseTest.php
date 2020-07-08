@@ -501,4 +501,40 @@ class SessionNativeDataBaseTest extends TestCase
 
         $this->assertTrue($obj->changeUserProfile("Desenvolvedor"));
     }
+
+
+
+
+
+    public function test_method_processRoutesPermissions()
+    {
+        global $dirResources;
+
+        $DAL = providerNDB_DAL();
+        $strSQL = "DELETE FROM DomainRoute;";
+        $DAL->executeInstruction($strSQL);
+
+        $obj = $this->provideObject();
+        $pathToAppRoutes = $dirResources . DS . "apps" . DS . "site" . DS . "AppRoutes.php";
+        $obj->processRoutesPermissions($pathToAppRoutes);
+
+        $this->assertTrue(true);
+
+
+
+
+        // Redefine dados que permitem que os testes acima funcionem adequadamente.
+        $sql = [
+            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "index", "GET", "/site/levelthree");',
+            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "dashboard", "GET", "/site/dashboard");',
+            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "levelone", "GET", "/site/levelone");',
+            'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelthree"), (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor"), 0);',
+            'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/dashboard"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);',
+            'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelone"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);'
+        ];
+
+        foreach ($sql as $strSQL) {
+            $DAL->executeInstruction($strSQL);
+        }
+    }
 }

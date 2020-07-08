@@ -92,11 +92,23 @@ abstract class MainApplication implements iApplication
         ));
 
 
+        // Inicia os objetos de configurações de segurança e controle de sessão
+        $serverConfig->getSecurityConfig($this->defaultSecurityConfig);
+        $serverConfig->getSecuritySession();
+
+
         // Inicia o objeto roteador para que seja possível
         // identificar qual rota está sendo requisitada.
         $router = new \AeonDigital\EnGarde\Engine\Router($serverConfig);
         if ($router->isToProcessApplicationRoutes() === true) {
             $router->processApplicationRoutes();
+
+            // Atualiza, se necessário, o controle de permissões para as rotas.
+            if ($serverConfig->getSecuritySession()->hasDataBase() === true) {
+                $serverConfig->getSecuritySession()->processRoutesPermissions(
+                    $serverConfig->getApplicationConfig()->getPathToAppRoutes(true)
+                );
+            }
         }
 
 
@@ -165,8 +177,8 @@ abstract class MainApplication implements iApplication
      */
     private function applySecuritySettings() : void
     {
-        // Inicia e retorna os objetos de configurações de segurança.
-        $securityConfig = $this->serverConfig->getSecurityConfig($this->defaultSecurityConfig);
+        // Retorna os objetos de configurações de segurança.
+        $securityConfig = $this->serverConfig->getSecurityConfig();
         $securitySession = $this->serverConfig->getSecuritySession();
 
 
@@ -443,11 +455,7 @@ abstract class MainApplication implements iApplication
      */
     private function checkRedirectRules() : void
     {
-        // Inicia e retorna os objetos de configurações de segurança.
-        $securityConfig = $this->serverConfig->getSecurityConfig($this->defaultSecurityConfig);
-        $securitySession = $this->serverConfig->getSecuritySession();
-
-        if ($securitySession->hasDataBase() === true) {
+        if ($this->serverConfig->getSecuritySession()->hasDataBase() === true) {
             $requestURL = $this->serverConfig->getApplicationRequestUri();
             $requestFullURL = $this->serverConfig->getApplicationRequestFullUri();
 

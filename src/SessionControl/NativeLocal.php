@@ -562,12 +562,24 @@ class NativeLocal extends MainSession
      *
      * @return      bool
      */
-    function checkRoutePermission(
+    public function checkRoutePermission(
         string $methodHttp,
         string $rawRoute
     ) : bool
     {
         return true;
+    }
+    /**
+     * Efetua o pré-processamento das rotas e suas respectivas permissões de acesso.
+     *
+     * @param       string $pathToAppRoutes
+     *              Caminho completo até o arquivo de rotas pré-configuradas.
+     *
+     * @return      void
+     */
+    public function processRoutesPermissions(string $pathToAppRoutes) : void
+    {
+        // Não implementa neste tipo de sessão
     }
 
 

@@ -547,7 +547,7 @@ class NativeDataBase extends MainSession
      *
      * @return      bool
      */
-    function checkRoutePermission(
+    public function checkRoutePermission(
         string $methodHttp,
         string $rawRoute
     ) : bool {
@@ -583,6 +583,117 @@ class NativeDataBase extends MainSession
 
         return $r;
     }
+    /**
+     * Efetua o pré-processamento das rotas e suas respectivas permissões de acesso.
+     *
+     * @param       string $pathToAppRoutes
+     *              Caminho completo até o arquivo de rotas pré-configuradas.
+     *
+     * @return      void
+     */
+    public function processRoutesPermissions(string $pathToAppRoutes) : void
+    {
+        if (\file_exists($pathToAppRoutes) === true) {
+            $this->getDAL();
+            $this->registerNewRoutesInDataBase($pathToAppRoutes);
+            $this->registerNewRoutesWithProfiles();
+        }
+    }
+    /**
+     * Transcorre o arquivo de rotas de uma aplicação e registra no banco de dados cada
+     * uma das rotas que ainda não foi cadastrada.
+     * Uma rota é identificada usando a conjunção de colunas "MethodHttp" e "RawRoute".
+     * Rotas identificadas como existentes terão seus demais dados atualizados.
+     *
+     * @param       string $pathToAppRoutes
+     *              Caminho completo até o arquivo de rotas pré-configuradas.
+     *
+     * @return      void
+     */
+    protected function registerNewRoutesInDataBase(string $pathToAppRoutes) : void
+    {
+        $appRoutes = include($pathToAppRoutes);
+
+        $collectionRoutes = [];
+        foreach ($appRoutes["simple"] as $rawRoute => $routeMethods) {
+            foreach ($routeMethods as $methodHTTP => $routeConfig) {
+                $collectionRoutes[] = [
+                    "ControllerName"    => $routeConfig["controller"],
+                    "ActionName"        => $routeConfig["action"],
+                    "MethodHttp"        => $methodHTTP,
+                    "RawRoute"          => $rawRoute,
+                    "Description"       => $routeConfig["description"],
+                ];
+            }
+        }
+
+
+        foreach ($appRoutes["complex"] as $rawRoute => $routeMethods) {
+            foreach ($routeMethods as $methodHTTP => $routeConfig) {
+                $collectionRoutes[] = [
+                    "ControllerName"    => $routeConfig["controller"],
+                    "ActionName"        => $routeConfig["action"],
+                    "MethodHttp"        => $methodHTTP,
+                    "RawRoute"          => $rawRoute,
+                    "Description"       => $routeConfig["description"],
+                ];
+            }
+        }
+
+
+        // Resgata todos os dados de rotas já adicionados.
+        $strSQL = "SELECT * FROM DomainRoute;";
+        $dtDomainRoute = $this->DAL->getDataTable($strSQL);
+        if ($dtDomainRoute === null) { $dtDomainRoute = []; }
+
+
+        // Adiciona cada um dos itens que ainda não foram adicionados.
+        foreach ($collectionRoutes as $routeData) {
+            foreach ($dtDomainRoute as $row) {
+                if ($row["MethodHttp"] === $routeData["MethodHttp"] && $row["RawRoute"] === $routeData["RawRoute"])
+                {
+                    $routeData["Id"] = $row["Id"];
+                    break;
+                }
+            }
+
+            $this->DAL->insertOrUpdate("DomainRoute", $routeData, "Id");
+        }
+    }
+    /**
+     * Registra no banco de dados a regra básica de permissão de acesso para cada rota e perfil
+     * que ainda não foi adicionado.
+     * Regras já existentes não serão redefinidas.
+     *
+     * @return      void
+     */
+    protected function registerNewRoutesWithProfiles() : void
+    {
+        // Seleciona todos os perfis da aplicação e sua política básica de permissão de acesso
+        $strSQL = "SELECT Id, AllowAll FROM DomainUserProfile;";
+        $dtDomainUserProfile = $this->DAL->getDataTable($strSQL);
+
+        // Resgata todos os dados de rotas já adicionados.
+        $strSQL = "SELECT Id FROM DomainRoute;";
+        $dtDomainRoute = $this->DAL->getDataTable($strSQL);
+
+
+        // Apenas se há perfis de usuários e rotas definidos.
+        if ($dtDomainUserProfile !== null && $dtDomainRoute !== null) {
+            $strSQL = "INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ";
+
+            $insertValues = [];
+            foreach ($dtDomainUserProfile as $dupRow) {
+                foreach ($dtDomainRoute as $drRow) {
+                    $insertValues[] = "(" . $drRow["Id"] . ", " . $dupRow["Id"] . ", " . $dupRow["AllowAll"] . ")";
+                }
+            }
+
+            $strSQL .= implode(", ", $insertValues);
+            $this->DAL->executeInstruction($strSQL);
+        }
+    }
+
 
 
 
