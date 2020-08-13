@@ -628,15 +628,17 @@ class NativeDataBase extends MainSession
         }
 
 
-        foreach ($appRoutes["complex"] as $rawRoute => $routeMethods) {
-            foreach ($routeMethods as $methodHTTP => $routeConfig) {
-                $collectionRoutes[] = [
-                    "ControllerName"    => $routeConfig["controller"],
-                    "ActionName"        => $routeConfig["action"],
-                    "MethodHttp"        => $methodHTTP,
-                    "RawRoute"          => $rawRoute,
-                    "Description"       => $routeConfig["description"],
-                ];
+        if (\key_exists("complex", $appRoutes) === true) {
+            foreach ($appRoutes["complex"] as $rawRoute => $routeMethods) {
+                foreach ($routeMethods as $methodHTTP => $routeConfig) {
+                    $collectionRoutes[] = [
+                        "ControllerName"    => $routeConfig["controller"],
+                        "ActionName"        => $routeConfig["action"],
+                        "MethodHttp"        => $methodHTTP,
+                        "RawRoute"          => $rawRoute,
+                        "Description"       => $routeConfig["description"],
+                    ];
+                }
             }
         }
 
