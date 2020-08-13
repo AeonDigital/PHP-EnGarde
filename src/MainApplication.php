@@ -135,7 +135,7 @@ abstract class MainApplication implements iApplication
                     // Verifica se a requisição atual deve causar um redirecionamento do UA para um outro
                     // local. Neste caso o redirecionamento deve interromper este fluxo.
                     case "redirect":
-                        $this->checkRedirectRules();
+                        $this->checkRedirectRules($serverConfig);
                         break;
                 }
             }
@@ -451,20 +451,25 @@ abstract class MainApplication implements iApplication
     /**
      * Verifica se existe alguma regra de redirecionamento preparada para a URL requisitada.
      *
+     * @param       iServerConfig $serverConfig
+     *              Objeto de configuração de servidor a ser usado.
+     *
      * @return      void
      */
-    private function checkRedirectRules() : void
+    private function checkRedirectRules(iServerConfig $serverConfig) : void
     {
-        if ($this->serverConfig->getSecuritySession()->hasDataBase() === true) {
-            $requestURL = $this->serverConfig->getApplicationRequestUri();
-            $requestFullURL = $this->serverConfig->getApplicationRequestFullUri();
+        if ($serverConfig->getSecuritySession()->hasDataBase() === true) {
+            $DAL = $serverConfig->getSecuritySession()->getDAL();
+
+            $requestURL = $serverConfig->getApplicationRequestUri();
+            $requestFullURL = $serverConfig->getApplicationRequestFullUri();
 
 
             // Verifica se a URL de requisição completa combina perfeitamente com alguma regra definida.
-            $this->checkRedirectAbsolute($requestFullURL);
+            $this->checkRedirectAbsolute($serverConfig, $requestFullURL);
             if ($requestFullURL !== $requestURL) {
                 // Verifica se a URL completa combina perfeitamente com alguma regra definida.
-                $this->checkRedirectAbsolute($requestURL);
+                $this->checkRedirectAbsolute($serverConfig, $requestURL);
             }
 
 
@@ -490,14 +495,17 @@ abstract class MainApplication implements iApplication
      * Verifica o redirecionamento de uma rota de forma absoluta, ou seja, identifica se existe
      * uma regra de redirecionamento cujo campo "OriginURL" case perfeitamente com a URL requisitada.
      *
+     * @param       iServerConfig $serverConfig
+     *              Objeto de configuração de servidor a ser usado.
+     *
      * @param       string $requestURL
      *              URL requisitada.
      *
      * @return      void
      */
-    private function checkRedirectAbsolute(string $requestURL) : void
+    private function checkRedirectAbsolute(iServerConfig $serverConfig, string $requestURL) : void
     {
-        $DAL = $this->serverConfig->getSecuritySession()->getDAL();
+        $DAL = $serverConfig->getSecuritySession()->getDAL();
 
         $strSQL = " SELECT
                         DestinyURL, HTTPCode, HTTPMessage
@@ -512,7 +520,7 @@ abstract class MainApplication implements iApplication
 
         $redirectRule = $DAL->getDataRow($strSQL, $parans);
         if ($redirectRule !== null) {
-            $this->serverConfig->redirectTo(
+            $serverConfig->redirectTo(
                 $redirectRule["DestinyURL"],
                 (int)$redirectRule["HTTPCode"],
                 $redirectRule["HTTPMessage"]
