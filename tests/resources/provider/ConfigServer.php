@@ -47,6 +47,7 @@ $defaultEngineVariables = [
     "isUpdateRoutes"        => true,
     "hostedApps"            => ["site", "blog"],
     "defaultApp"            => "site",
+    "rootSubPath"           => "",
     "dateTimeLocal"         => "America/Sao_Paulo",
     "timeout"               => 1200,
     "maxFileSize"           => 100,

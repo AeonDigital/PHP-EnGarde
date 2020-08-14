@@ -70,6 +70,7 @@ final class EnGarde extends BObject
                     "isUpdateRoutes"        => UPDATE_ROUTES,
                     "hostedApps"            => HOSTED_APPS,
                     "defaultApp"            => DEFAULT_APP,
+                    "rootSubPath"           => ROOT_SUBPATH,
                     "dateTimeLocal"         => DATETIME_LOCAL,
                     "timeout"               => REQUEST_TIMEOUT,
                     "maxFileSize"           => REQUEST_MAX_FILESIZE,

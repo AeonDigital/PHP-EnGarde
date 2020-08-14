@@ -67,7 +67,8 @@ abstract class aMime implements iMimeHandler
             [$this->serverConfig->getRootPath(), "\\"], ["", "/"],
             $this->serverConfig->getApplicationConfig()->getPathToViewsResources(true)
         );
-        $this->resourcesBasePath = "/" . \trim($resourcesBasePath, "/") . "/";
+        $subPath = $this->serverConfig->getRootSubPath();
+        $this->resourcesBasePath = $subPath . "/" . \trim($resourcesBasePath, "/") . "/";
 
 
         if ($this->serverConfig->hasDefinedSecuritySettings() === true &&

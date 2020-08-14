@@ -350,6 +350,7 @@ final class Server extends BObject implements iServer
     private string $rootPath = "";
     /**
      * Retorna o endereço completo do diretório onde o domínio está sendo executado.
+     * Se for definido um ``rootSubPath``, este virá concatenado com este valor.
      *
      * @return      string
      */
@@ -357,6 +358,43 @@ final class Server extends BObject implements iServer
     {
         return $this->rootPath;
     }
+
+
+
+
+
+    /**
+     * Caminho (a partir da raiz do domínio) até o diretório onde a o framework
+     * está rodando.
+     *
+     * @var         string
+     */
+    private string $rootSubPath = "";
+    /**
+     * Retorna o caminho (a partir da raiz do domínio) até o diretório onde a o framework
+     * está rodando.
+     *
+     * @return      string
+     */
+    public function getRootSubPath() : string
+    {
+        return $this->rootSubPath;
+    }
+    /**
+     * Define o caminho (a partir da raiz do domínio) até o diretório onde a o framework
+     * está rodando.
+     *
+     * @param       string $rootSubPath
+     *              Caminho a ser usado.
+     *
+     * @return      void
+     */
+    private function setRootSubPath(string $rootSubPath) : void
+    {
+        $this->rootSubPath = $rootSubPath;
+    }
+
+
 
 
 
@@ -614,6 +652,7 @@ final class Server extends BObject implements iServer
         }
         $this->defaultApp = $defaultApp;
     }
+
 
 
 
@@ -1179,8 +1218,8 @@ final class Server extends BObject implements iServer
         // Define o diretório padrão até a raiz do domínio
         $this->rootPath = (
             (\key_exists("rootPath", $engineVariables) === false || $rootPath === "") ?
-            $this->SERVER["DOCUMENT_ROOT"] :
-            $rootPath
+            $this->SERVER["DOCUMENT_ROOT"] . $rootSubPath :
+            $rootPath . $rootSubPath
         );
         $this->rootPath = \to_system_path($this->rootPath);
 
@@ -1242,6 +1281,7 @@ final class Server extends BObject implements iServer
         $this->setIsUpdateRoutes($isUpdateRoutes);
         $this->setHostedApps($hostedApps);
         $this->setDefaultApp($defaultApp);
+        $this->setRootSubPath($rootSubPath);
         $this->setDateTimeLocal($dateTimeLocal);
         $this->setTimeout($timeout);
         $this->setMaxFileSize($maxFileSize);

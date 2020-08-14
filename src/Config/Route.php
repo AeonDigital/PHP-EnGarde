@@ -490,10 +490,10 @@ final class Route extends BObject implements iRoute
                 [
                     "validate" => "is string not empty"
                 ],
-                [
-                    "validate" => "is allowed value",
-                    "allowedValues" => $this->routes,
-                ]
+                //[
+                //    "validate" => "is allowed value",
+                //    "allowedValues" => $this->routes,
+                //]
 
             ]
         );

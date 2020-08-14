@@ -284,8 +284,16 @@ class Router extends BObject implements iRouter
 
 
                 // Para cada rota que executa esta mesma ação
+                $baseRoute = "/" . $appName;
+                $activeBase = "";
+                $rootSubPath = "/" . trim($this->serverConfig->getRootSubPath(), "/");
+                if ($rootSubPath !== "/") {
+                    $baseRoute = "/" . $appName . $rootSubPath;
+                    $activeBase = $rootSubPath;
+                }
+
                 foreach ($routes as $route) {
-                    $regexRoute = $this->normalizeRouteRegEx("/" . $appName . "/" . \ltrim($route, "/"));
+                    $regexRoute = $this->normalizeRouteRegEx($baseRoute . "/" . \ltrim($route, "/"));
                     $routeType = ((\mb_strpos($regexRoute, "<") === false) ? "simple" : "complex");
 
                     if (isset($this->appRoutes[$routeType][$regexRoute]) === false) {
@@ -294,7 +302,7 @@ class Router extends BObject implements iRouter
 
                     // Registra a rota com o método indicado
                     $this->appRoutes[$routeType][$regexRoute][$method] = $cfg->toArray();
-                    $this->appRoutes[$routeType][$regexRoute][$method]["activeRoute"] = $route;
+                    $this->appRoutes[$routeType][$regexRoute][$method]["activeRoute"] = $activeBase . $route;
                 }
             }
         }
