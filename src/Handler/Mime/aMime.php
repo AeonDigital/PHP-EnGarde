@@ -169,8 +169,13 @@ abstract class aMime implements iMimeHandler
         $recs   = $this->serverConfig->getRouteConfig()->getStyleSheets();
 
         foreach ($recs as $rec) {
-            $rPath = $this->resourcesBasePath . \trim($rec, "/\\");
-            $str[] = "<link rel=\"stylesheet\" href=\"$rPath\" />";
+            if (\mb_str_starts_with($rec, "http") === true) {
+                $str[] = "<link rel=\"stylesheet\" href=\"$rec\" />";
+            }
+            else {
+                $rPath = $this->resourcesBasePath . \trim($rec, "/\\");
+                $str[] = "<link rel=\"stylesheet\" href=\"$rPath\" />";
+            }
         }
 
         return ((\count($str) > 0) ? "\n" . \implode("\n", $str) : "");
@@ -187,8 +192,13 @@ abstract class aMime implements iMimeHandler
         $recs   = $this->serverConfig->getRouteConfig()->getJavaScripts();
 
         foreach ($recs as $rec) {
-            $rPath = $this->resourcesBasePath . \trim($rec, "/\\");
-            $str[] = "<script src=\"$rPath\"></script>";
+            if (\mb_str_starts_with($rec, "http") === true) {
+                $str[] = "<script src=\"$rec\"></script>";
+            }
+            else {
+                $rPath = $this->resourcesBasePath . \trim($rec, "/\\");
+                $str[] = "<script src=\"$rPath\"></script>";
+            }
         }
 
         return ((\count($str) > 0) ? "\n" . \implode("\n", $str) : "");
