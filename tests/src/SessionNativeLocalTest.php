@@ -159,6 +159,7 @@ class SessionNativeLocalTest extends TestCase
         $this->assertEquals($authenticatedUser, $obj->retrieveUser());
         $this->assertEquals("Desenvolvedor", $obj->retrieveUserProfileName());
         $this->assertTrue(is_array($obj->retrieveUserProfiles()));
+        $this->assertSame($obj->retrieveUserProfiles(), $obj->retrieveUserProfiles("site"));
         $this->assertEquals("UserSessionAuthenticated", $obj->retrieveSecurityStatus());
         $this->assertTrue($r);
 

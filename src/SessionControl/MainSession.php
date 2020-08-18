@@ -181,11 +181,31 @@ abstract class MainSession extends BObject implements iSession
     /**
      * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
      *
+     * @param       string $applicationName
+     *              Se definido, retornará apenas os profiles que correspondem ao nome da
+     *              aplicação indicada.
+     *
      * @return      ?array
      */
-    public function retrieveUserProfiles() : ?array
+    public function retrieveUserProfiles(string $applicationName = "") : ?array
     {
-        return ($this->authenticatedUser === null) ? null : $this->authenticatedUser["Profiles"];
+        $r = null;
+
+        if ($this->authenticatedUser !== null) {
+            if ($applicationName === "") {
+                $r = $this->authenticatedUser["Profiles"];
+            }
+            else {
+                $r = [];
+                foreach ($this->authenticatedUser["Profiles"] as $i => $profileData) {
+                    if ($profileData["ApplicationName"] === $applicationName) {
+                        $r[] = $profileData;
+                    }
+                }
+            }
+        }
+
+        return $r;
     }
 
 
