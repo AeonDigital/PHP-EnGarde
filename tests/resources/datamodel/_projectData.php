@@ -124,7 +124,7 @@
     'modelFilePath' => 'DomainUser.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, Active, RegisterDate, Name, Gender, Login, ShortLogin, Password FROM DomainUser WHERE Id=:Id;',
+      'select' => 'SELECT Id, Active, RegisterDate, Name, Gender, Login, ShortLogin, Password, Photo FROM DomainUser WHERE Id=:Id;',
       'selectChild' => 
       array (
         'Session' => 

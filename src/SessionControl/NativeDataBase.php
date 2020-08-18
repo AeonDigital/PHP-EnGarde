@@ -173,6 +173,7 @@ class NativeDataBase extends MainSession
                     "Login"         => $dtDomainUser[0]["Login"],
                     "ShortLogin"    => $dtDomainUser[0]["ShortLogin"],
                     "Password"      => $dtDomainUser[0]["Password"],
+                    "Photo"         => ((\key_exists("Photo", $dtDomainUser[0]) === true) ? $dtDomainUser[0]["Photo"] : null),
                     "Profiles"      => []
                 ];
 

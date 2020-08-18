@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-08-17-22-07-22
+ * Generated in 2020-08-18-01-03-36
 */
 
 /*--INI CREATE TABLE--*/
@@ -56,6 +56,7 @@ CREATE TABLE DomainUser (
     Login VARCHAR(64) NOT NULL COMMENT 'Login do usuário (email).', 
     ShortLogin VARCHAR(32) NOT NULL COMMENT 'Login curto.', 
     Password VARCHAR(40) NOT NULL COMMENT 'Senha de acesso.', 
+    Photo VARCHAR(255) COMMENT 'Caminho até uma fotografia do usuário armazenada no sistema de arquivos.', 
     PRIMARY KEY (Id)
 ) COMMENT 'Conta de um usuário que pode efetuar login em aplicações do domínio';
 /*--END CREATE TABLE--*/
@@ -187,5 +188,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-08-17-22-07-22
+ * Generated in 2020-08-18-01-03-36
 */

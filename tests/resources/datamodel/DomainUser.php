@@ -63,6 +63,14 @@
             'allowNull' => false,
         ],
         [
+            'name' => 'Photo',
+            'description' => 'Caminho até uma fotografia do usuário armazenada no sistema de arquivos.',
+            'type' => 'String',
+            'length' => 255,
+            'allowNull' => true,
+            'allowEmpty' => false,
+        ],
+        [
             'name' => 'Session',
             'description' => 'Sessão do usuário que está autenticada para o domínio atual.',
             'fkTableName' => 'DomainUserSession[]',

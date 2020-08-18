@@ -119,6 +119,7 @@ class SessionNativeDataBaseTest extends TestCase
             "Login"         => "rianna@dna.com.br",
             "ShortLogin"    => "rianna",
             "Password"      => "31f88741c850331188d23e6e0067730e13c92809",
+            "Photo"         => null,
             "Profiles"      => [
                 [
                     "Id"                => 1,
