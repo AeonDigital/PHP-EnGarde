@@ -333,6 +333,10 @@ abstract class MainSession extends BObject implements iSession
             $this->dbCredentials = [];
         }
 
+        if (\substr_count($userAgentIP, ":") === 1) {
+            $this->userAgentIP = \strtok($userAgentIP, ":");
+        }
+
 
         $this->mainCheckForInvalidArgumentException(
             "pathToLocalData", $pathToLocalData, [

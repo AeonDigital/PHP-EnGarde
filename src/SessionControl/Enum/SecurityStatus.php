@@ -113,7 +113,7 @@ class SecurityStatus
      */
 	const UserAccountDisabledForApplication = "UserAccountDisabledForApplication";
     /**
-     * Conta do usuário está desabilitada dentro deste domínio.
+     * Conta do usuário foi reconhecida e está ativa.
      *
      * @var         string
      */
@@ -137,7 +137,7 @@ class SecurityStatus
      */
 	const UserAccountIsBlocked = "UserAccountIsBlocked";
     /**
-     * Conta desabilitada por excesso de falhas ao tentar login.
+     * Conta bloqueada por excesso de falhas ao tentar login.
      *
      * @var         string
      */
