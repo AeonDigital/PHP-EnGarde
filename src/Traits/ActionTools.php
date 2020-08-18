@@ -263,12 +263,16 @@ trait ActionTools
     /**
      * Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
      *
+     * @param       string $applicationName
+     *              Se definido, retornará apenas os profiles que correspondem ao nome da
+     *              aplicação indicada.
+     *
      * @return      ?array
      */
-    protected function retrieveUserProfiles() : ?array
+    protected function retrieveUserProfiles(string $applicationName = "") : ?array
     {
         return (($this->serverConfig->hasDefinedSecuritySettings() === true) ?
-            $this->serverConfig->getSecuritySession()->retrieveUserProfiles() : null);
+            $this->serverConfig->getSecuritySession()->retrieveUserProfiles($applicationName) : null);
     }
     /**
      * Efetua a troca do perfil de segurança atualmente em uso por outro que deve estar
