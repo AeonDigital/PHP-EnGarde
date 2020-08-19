@@ -120,9 +120,12 @@ trait ActionTools
      * @param       string $prefix
      *              Prefixo que identifica os campos que devem ser retornados.
      *
+     * @param       bool $onlyNotEmpty
+     *              Quando ``true`` irá retornar apenas os dados que não sejam ``""``.
+     *
      * @return      array
      */
-    protected function retrieveFormFieldset(string $prefix) : array
+    protected function retrieveFormFieldset(string $prefix, bool $onlyNotEmpty = false) : array
     {
         $r = [];
         $postedFields = $this->getPostedFields();
@@ -131,8 +134,16 @@ trait ActionTools
 
         foreach ($postedFields as $key => $value) {
             if (\mb_str_starts_with($key, $prefix) === true) {
-                $k      = \str_replace($prefix, "", $key);
-                $r[$k]  = (($value === "") ? null : $value);
+                $k = \str_replace($prefix, "", $key);
+
+                if ($onlyNotEmpty === false) {
+                    $r[$k] = (($value === "") ? null : $value);
+                }
+                else {
+                    if ($value !== "") {
+                        $r[$k] = $value;
+                    }
+                }
             }
         }
 
