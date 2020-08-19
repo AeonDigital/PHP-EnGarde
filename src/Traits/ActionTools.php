@@ -79,6 +79,7 @@ trait ActionTools
 
 
 
+
     /**
      * Retorna um array contendo todos os campos recebidos no corpo da requisição.
      *
@@ -106,7 +107,9 @@ trait ActionTools
         return $this->serverConfig->getServerRequest()->getPost($name);
     }
     /**
-     * Retorna um array associativo referente a uma coleção de campos postados pelo UA.
+     * Retorna um array associativo referente a uma coleção de campos postados pelo UA
+     * incluindo também aqueles passados via querystrings.
+     *
      * A identificação dos campos que fazem parte desta coleção se dá pelo prefixo
      * em comum que eles tenham em seus "name".
      *
@@ -123,18 +126,18 @@ trait ActionTools
     {
         $r = [];
         $postedFields = $this->getPostedFields();
+        if ($postedFields === null) { $postedFields = []; }
+        $postedFields = \array_merge($postedFields, $this->getQueryParams());
 
-        if ($postedFields !== null) {
-            foreach ($postedFields as $key => $value) {
-                if (\mb_str_starts_with($key, $prefix) === true) {
-                    $k      = \str_replace($prefix, "", $key);
-                    $r[$k]  = (($value === "") ? null : $value);
-                }
+        foreach ($postedFields as $key => $value) {
+            if (\mb_str_starts_with($key, $prefix) === true) {
+                $k      = \str_replace($prefix, "", $key);
+                $r[$k]  = (($value === "") ? null : $value);
             }
+        }
 
-            if (\key_exists("Id", $r) === true && $r["Id"] === null) {
-                unset($r["Id"]);
-            }
+        if (\key_exists("Id", $r) === true && $r["Id"] === null) {
+            unset($r["Id"]);
         }
 
         return $r;
@@ -221,6 +224,7 @@ trait ActionTools
             return $this->serverConfig->getServerRequest()->getParam($name);
         }
     }
+
 
 
 
