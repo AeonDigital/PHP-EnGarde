@@ -79,7 +79,6 @@ trait ActionTools
 
 
 
-
     /**
      * Retorna um array contendo todos os campos recebidos no corpo da requisição.
      *
@@ -196,12 +195,16 @@ trait ActionTools
     }
     /**
      * Retorna o valor do parametro da requisição de nome indicado.
-     * A chave é procurada entre Cookies, Attributes, QueryStrings e Post Data respectivamente e
-     * será retornada a primeira entre as coleções avaliadas.
+     *
+     * A chave é procurada entre RouteParans, Cookies, Attributes, QueryStrings e
+     * Post Data respectivamente e será retornada a primeira entre as coleções
+     * avaliadas.
      *
      * Retornará ``null`` caso o nome da chave não seja encontrado.
      *
-     * Mesmo que ``$this->serverConfig->getServerRequest()->getParam()``.
+     * Mesmo que ``$this->serverConfig->getPostedData()``
+     * OU
+     * que ``$this->serverConfig->getServerRequest()->getParam()``.
      *
      * @param       string $name
      *              Nome do campo que está sendo requerido.
@@ -210,7 +213,13 @@ trait ActionTools
      */
     protected function getParam(string $name)
     {
-        return $this->serverConfig->getServerRequest()->getParam($name);
+        $requestRoutes = $this->serverConfig->getPostedData();
+        if (\key_exists($name, $requestRoutes) === true) {
+            return $requestRoutes[$name];
+        }
+        else {
+            return $this->serverConfig->getServerRequest()->getParam($name);
+        }
     }
 
 
