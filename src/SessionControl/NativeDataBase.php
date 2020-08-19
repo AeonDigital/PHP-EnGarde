@@ -147,6 +147,7 @@ class NativeDataBase extends MainSession
                         secdup.HomeURL as secdup_HomeURL,
                         dupdu.ProfileDefault as secdup_ProfileDefault,
                         dupdu.ProfileSelected as secdup_ProfileSelected,
+                        secdapp.Id as secdapp_Id,
                         secdapp.ApplicationName as secdapp_ApplicationName
                     FROM
                         DomainUser secdu
@@ -184,6 +185,7 @@ class NativeDataBase extends MainSession
                     $user["Profiles"][] = [
                         "Id"                => (int)$row["secdup_Id"],
                         "Active"            => (bool)$row["secdup_Active"],
+                        "ApplicationId"     => (int)$row["secdapp_Id"],
                         "ApplicationName"   => $row["secdapp_ApplicationName"],
                         "Name"              => $row["secdup_Name"],
                         "Description"       => $row["secdup_Description"],
