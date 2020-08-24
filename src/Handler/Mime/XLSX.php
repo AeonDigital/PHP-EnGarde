@@ -272,7 +272,7 @@ final class XLSX extends aMime
                 $xmlCells[] = \sprintf(
                     '<c r="%s" t="%s"><v>%d</v></c>',
                     $celName,
-                    $valueType,
+                    "s", // tipo "n" possui algum tratamento que precisa ser diferente.
                     $valuePosition
                 );
             }
