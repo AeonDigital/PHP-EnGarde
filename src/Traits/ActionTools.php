@@ -119,6 +119,8 @@ trait ActionTools
      *
      * @param       string $prefix
      *              Prefixo que identifica os campos que devem ser retornados.
+     *              Internamente adiciona um "_" ao final desta string caso ela seja
+     *              diferente de ``""``
      *
      * @param       bool $onlyNotEmpty
      *              Quando ``true`` irá retornar apenas os dados que não sejam ``""``.
@@ -131,6 +133,7 @@ trait ActionTools
         $postedFields = $this->getPostedFields();
         if ($postedFields === null) { $postedFields = []; }
         $postedFields = \array_merge($postedFields, $this->getQueryParams());
+        if ($prefix !== "") { $prefix .= "_"; }
 
         foreach ($postedFields as $key => $value) {
             if (\mb_str_starts_with($key, $prefix) === true) {
