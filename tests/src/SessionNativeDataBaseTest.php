@@ -124,6 +124,7 @@ class SessionNativeDataBaseTest extends TestCase
                 [
                     "Id"                => 1,
                     "Active"            => true,
+                    "ApplicationId"     => 1,
                     "ApplicationName"   => "site",
                     "Name"              => "Desenvolvedor",
                     "Description"       => "Usuários desenvolvedores do sistema.",
@@ -135,6 +136,7 @@ class SessionNativeDataBaseTest extends TestCase
                 [
                     "Id"                => 2,
                     "Active"            => true,
+                    "ApplicationId"     => 1,
                     "ApplicationName"   => "site",
                     "Name"              => "Administrador",
                     "Description"       => "Usuários administradores do sistema.",
@@ -146,6 +148,7 @@ class SessionNativeDataBaseTest extends TestCase
                 [
                     "Id"                => 3,
                     "Active"            => true,
+                    "ApplicationId"     => 1,
                     "ApplicationName"   => "site",
                     "Name"              => "Publicador",
                     "Description"       => "Usuários publicadores de conteúdo.",
@@ -180,7 +183,7 @@ class SessionNativeDataBaseTest extends TestCase
 
     public function test_constructor_ok()
     {
-        //$this->providerRestartDataBase();
+        $this->providerRestartDataBase();
         global $defaultServerVariables;
         global $defaultEngineVariables;
         global $defaultApplication;

@@ -180,6 +180,7 @@ class NativeDataBase extends MainSession
 
 
                 $profileInUse = null;
+                $hasMatchProfileInUse = false;
                 $hasProfileForThisApplication = false;
                 foreach ($dtDomainUser as $row) {
                     $user["Profiles"][] = [
@@ -192,15 +193,21 @@ class NativeDataBase extends MainSession
                         "AllowAll"          => (bool)$row["secdup_AllowAll"],
                         "HomeURL"           => $row["secdup_HomeURL"],
                         "Default"           => (bool)$row["secdup_ProfileDefault"],
-                        "Selected"          => (bool)$row["secdup_ProfileSelected"],
+                        "Selected"          => false,
                     ];
+
                     if ($this->applicationName === $row["secdapp_ApplicationName"]) {
                         $hasProfileForThisApplication = true;
 
-                        if ((bool)$row["secdup_ProfileSelected"] === true ||
-                            ($profileInUse === null && (bool)$row["secdup_ProfileDefault"] === true))
+                        if ($profileInUse === null ||
+                            ($hasMatchProfileInUse === false && (bool)$row["secdup_ProfileDefault"] === true) ||
+                            (bool)$row["secdup_ProfileSelected"] === true)
                         {
                             $profileInUse = $user["Profiles"][count($user["Profiles"]) - 1];
+
+                            if ((bool)$row["secdup_ProfileDefault"] === true || (bool)$row["secdup_ProfileSelected"] === true) {
+                                $hasMatchProfileInUse = true;
+                            }
                         }
                     }
                 }
@@ -210,6 +217,13 @@ class NativeDataBase extends MainSession
                     $this->securityStatus = SecurityStatus::UserAccountDisabledForApplication;
                 }
                 else {
+                    foreach ($user["Profiles"] as $i => $row) {
+                        if ($row["Id"] === $profileInUse["Id"]) {
+                            $user["Profiles"][$i]["Selected"] = true;
+                            $profileInUse["Selected"] = true;
+                        }
+                    }
+
                     $this->securityStatus = SecurityStatus::UserAccountRecognizedAndActive;
                     $this->profileInUse = $profileInUse;
                     $this->authenticatedUser = $user;
@@ -474,6 +488,9 @@ class NativeDataBase extends MainSession
             $this->profileInUse = null;
             $this->authenticatedUser = null;
             $this->authenticatedSession = null;
+        }
+        else {
+            $this->changeUserProfile($this->profileInUse["Name"]);
         }
 
         return $r;
@@ -845,6 +862,7 @@ class NativeDataBase extends MainSession
         if ($this->securityStatus === SecurityStatus::UserSessionAuthenticated) {
             $profilesObjects = [];
             $selectedProfile = null;
+
             foreach ($this->authenticatedUser["Profiles"] as $row) {
                 if ($row["ApplicationName"] === $this->applicationName) {
                     $row["Selected"] = false;
