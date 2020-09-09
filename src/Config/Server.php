@@ -684,6 +684,7 @@ final class Server extends BObject implements iServer
     private function setDateTimeLocal(string $dateTimeLocal) : void
     {
         $this->dateTimeLocal = $dateTimeLocal;
+        $this->now->setTimezone(new \DateTimeZone($dateTimeLocal));
     }
 
 
@@ -1182,6 +1183,7 @@ final class Server extends BObject implements iServer
         array $engineVariables
     ) {
         $this->now = new \DateTime();
+
 
 
 
