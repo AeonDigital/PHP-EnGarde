@@ -18,7 +18,7 @@
       'selectParentId' => 
       array (
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainUserProfile' => 'UPDATE DomainUserProfile SET DomainApplication_Id=:thisId WHERE Id=:tgtId;',
       ),
@@ -64,7 +64,7 @@
       'selectParentId' => 
       array (
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainUserProfile' => 'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id) VALUES (:thisId, :tgtId);',
       ),
@@ -99,7 +99,7 @@
       'selectParentId' => 
       array (
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
       ),
       'detachWith' => 
@@ -163,7 +163,7 @@
       'selectParentId' => 
       array (
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainUserSession' => 'UPDATE DomainUserSession SET DomainUser_Id=:thisId WHERE Id=:tgtId;',
         'DomainUserProfile' => 'INSERT INTO secdup_to_secdu (DomainUser_Id, DomainUserProfile_Id) VALUES (:thisId, :tgtId);',
@@ -208,7 +208,7 @@
       array (
         'DomainUser' => 'SELECT DomainUser_Id FROM DomainUserBlockedAccess WHERE Id=:thisId;',
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainUser' => 'UPDATE DomainUserBlockedAccess SET DomainUser_Id=:tgtId WHERE Id=:thisId;',
       ),
@@ -266,7 +266,7 @@
       array (
         'DomainApplication' => 'SELECT DomainApplication_Id FROM DomainUserProfile WHERE Id=:thisId;',
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainApplication' => 'UPDATE DomainUserProfile SET DomainApplication_Id=:tgtId WHERE Id=:thisId;',
         'DomainUser' => 'INSERT INTO secdup_to_secdu (DomainUserProfile_Id, DomainUser_Id) VALUES (:thisId, :tgtId);',
@@ -308,7 +308,7 @@
       array (
         'DomainUser' => 'SELECT DomainUser_Id FROM DomainUserRequestLog WHERE Id=:thisId;',
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainUser' => 'UPDATE DomainUserRequestLog SET DomainUser_Id=:tgtId WHERE Id=:thisId;',
       ),
@@ -344,7 +344,7 @@
       array (
         'DomainUser' => 'SELECT DomainUser_Id FROM DomainUserSession WHERE Id=:thisId;',
       ),
-      'attatchWith' => 
+      'attachWith' => 
       array (
         'DomainUser' => 'UPDATE DomainUserSession SET DomainUser_Id=:tgtId WHERE Id=:thisId;',
       ),
