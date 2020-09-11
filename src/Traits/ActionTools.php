@@ -81,34 +81,9 @@ trait ActionTools
 
 
     /**
-     * Retorna um array contendo todos os campos recebidos no corpo da requisição.
-     *
-     * Mesmo que ``$this->serverConfig->getServerRequest()->getPostedFields()``.
-     *
-     * @return      ?array
-     */
-    protected function getPostedFields() : ?array
-    {
-        return $this->serverConfig->getServerRequest()->getPostedFields();
-    }
-    /**
-     * Retorna o valor do campo de nome indicado.
-     * Retornará ``null`` caso ele não exista.
-     *
-     * Mesmo que ``$this->serverConfig->getServerRequest()->getPost()``.
-     *
-     * @param       string $name
-     *              Nome do campo alvo.
-     *
-     * @return      ?string
-     */
-    protected function getPost(string $name)
-    {
-        return $this->serverConfig->getServerRequest()->getPost($name);
-    }
-    /**
      * Retorna um array associativo referente a uma coleção de campos postados pelo UA
-     * incluindo também aqueles passados via querystrings.
+     * incluindo também aqueles passados via querystrings e os parametros identificados
+     * na construção da rota.
      *
      * A identificação dos campos que fazem parte desta coleção se dá pelo prefixo
      * em comum que eles tenham em seus "name".
@@ -116,6 +91,11 @@ trait ActionTools
      * Há um tratamento especial para todo campo definido com o nome "Id".
      * Para estes, sempre que seus valores forem vazios, tal chave será omitida no corpo
      * do array retornado.
+     *
+     * Todos os valores retornados estarão também tratados com o método ``\htmlspecialchars``
+     * visando assim inibir ataques usando injeção xss. Portanto, é necessário que, naqueles
+     * campos que se planeja permitir que sejam usadas marcações HTML, o valor seja
+     * retratado com o método ``\htmlspecialchars_decode``.
      *
      * @param       string $prefix
      *              Prefixo que identifica os campos que devem ser retornados.
@@ -125,14 +105,20 @@ trait ActionTools
      * @param       bool $onlyNotEmpty
      *              Quando ``true`` irá retornar apenas os dados que não sejam ``""``.
      *
+     * @param       bool $prepareForXSS
+     *              Quando ``true`` irá fazer todos os valores passados serem submetidos
+     *              ao método ``\htmlspecialchars``.
+     *
      * @return      array
      */
-    protected function retrieveFormFieldset(string $prefix, bool $onlyNotEmpty = false) : array
-    {
+    protected function retrieveFormFieldset(
+        string $prefix,
+        bool $onlyNotEmpty = false,
+        bool $prepareForXSS = true
+    ) : array {
+
         $r = [];
-        $postedFields = $this->getPostedFields();
-        if ($postedFields === null) { $postedFields = []; }
-        $postedFields = \array_merge($postedFields, $this->getQueryParams());
+        $postedFields = $this->serverConfig->getPostedData();
         if ($prefix !== "") { $prefix .= "_"; }
 
         foreach ($postedFields as $key => $value) {
@@ -140,11 +126,15 @@ trait ActionTools
                 $k = \str_replace($prefix, "", $key);
 
                 if ($onlyNotEmpty === false) {
-                    $r[$k] = (($value === "") ? null : $value);
+                    $r[$k] = (
+                        ($value === "") ? null : (
+                            ($prepareForXSS === true) ? \htmlspecialchars($value) : $value
+                        )
+                    );
                 }
                 else {
                     if ($value !== "") {
-                        $r[$k] = $value;
+                        $r[$k] = (($prepareForXSS === true) ? \htmlspecialchars($value) : $value);
                     }
                 }
             }
@@ -157,32 +147,41 @@ trait ActionTools
         return $r;
     }
     /**
-     * Retorna os querystrings enviados pelo ``UA``.
+     * Retorna o valor do parametro da requisição de nome indicado.
      *
-     * Será retornado um array associativo contendo chave/valor de cada querystring recebido.
+     * A chave é procurada entre RouteParans, Cookies, Attributes, QueryStrings e
+     * Post Data respectivamente e será retornada a primeira entre as coleções
+     * avaliadas.
      *
-     * Mesmo que ``$this->serverConfig->getServerRequest()->getQueryParams()``.
+     * Retornará ``null`` caso o nome da chave não seja encontrado.
      *
-     * @return      array
-     */
-    protected function getQueryParams() : array
-    {
-        return $this->serverConfig->getServerRequest()->getQueryParams();
-    }
-    /**
-     * Retorna o valor da querystring de nome indicado.
-     * Retornará ``null`` caso ela não exista.
-     *
-     * Mesmo que ``$this->serverConfig->getServerRequest()->getQueryString()``.
+     * Mesmo que ``$this->serverConfig->getPostedData()``
+     * OU
+     * que ``$this->serverConfig->getServerRequest()->getParam()``.
      *
      * @param       string $name
-     *              Nome da querystring alvo.
+     *              Nome do campo que está sendo requerido.
+     *
+     * @param       bool $prepareForXSS
+     *              Quando ``true`` irá fazer o valor retornado ser submetido
+     *              ao método ``\htmlspecialchars``.
      *
      * @return      ?string
      */
-    protected function getQueryString(string $name) : ?string
+    protected function getParam(string $name, bool $prepareForXSS = true)
     {
-        return $this->serverConfig->getServerRequest()->getQueryString($name);
+        $str = null;
+        $requestRoutes = $this->serverConfig->getPostedData();
+        if (\key_exists($name, $requestRoutes) === true) {
+            $str = $requestRoutes[$name];
+        }
+        else {
+            $str = $this->serverConfig->getServerRequest()->getParam($name);
+        }
+
+        return (
+            ($str === null) ? null : (($prepareForXSS === true) ? \htmlspecialchars($str) : $str)
+        );
     }
     /**
      * Retorna os arquivos enviados pelo ``UA``.
@@ -208,37 +207,8 @@ trait ActionTools
      */
     protected function getCookie(string $name) : ?iCookie
     {
-        return $this->serverConfig->getServerRequest()->getCookie($name);
+       return $this->serverConfig->getServerRequest()->getCookie($name);
     }
-    /**
-     * Retorna o valor do parametro da requisição de nome indicado.
-     *
-     * A chave é procurada entre RouteParans, Cookies, Attributes, QueryStrings e
-     * Post Data respectivamente e será retornada a primeira entre as coleções
-     * avaliadas.
-     *
-     * Retornará ``null`` caso o nome da chave não seja encontrado.
-     *
-     * Mesmo que ``$this->serverConfig->getPostedData()``
-     * OU
-     * que ``$this->serverConfig->getServerRequest()->getParam()``.
-     *
-     * @param       string $name
-     *              Nome do campo que está sendo requerido.
-     *
-     * @return      ?string
-     */
-    protected function getParam(string $name)
-    {
-        $requestRoutes = $this->serverConfig->getPostedData();
-        if (\key_exists($name, $requestRoutes) === true) {
-            return $requestRoutes[$name];
-        }
-        else {
-            return $this->serverConfig->getServerRequest()->getParam($name);
-        }
-    }
-
 
 
 
