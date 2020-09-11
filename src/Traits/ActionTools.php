@@ -170,18 +170,26 @@ trait ActionTools
      */
     protected function getParam(string $name, bool $prepareForXSS = true)
     {
-        $str = null;
+        $r = null;
         $requestRoutes = $this->serverConfig->getPostedData();
         if (\key_exists($name, $requestRoutes) === true) {
-            $str = $requestRoutes[$name];
+            $r = $requestRoutes[$name];
         }
         else {
-            $str = $this->serverConfig->getServerRequest()->getParam($name);
+            $r = $this->serverConfig->getServerRequest()->getParam($name);
         }
 
-        return (
-            ($str === null) ? null : (($prepareForXSS === true) ? \htmlspecialchars($str) : $str)
-        );
+
+        if ($prepareForXSS === true && $r !== null) {
+            if (\is_string($r) === true) {
+                $r = \htmlspecialchars($r);
+            }
+            elseif (\is_array($r) === true) {
+                $r = \array_map("htmlspecialchars", $r);
+            }
+        }
+
+        return $r;
     }
     /**
      * Retorna os arquivos enviados pelo ``UA``.
