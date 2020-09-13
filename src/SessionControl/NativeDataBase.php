@@ -664,7 +664,7 @@ class NativeDataBase extends MainSession
 
 
         // Resgata todos os dados de rotas já adicionados.
-        $strSQL = "SELECT * FROM DomainRoute;";
+        $strSQL = "SELECT Id, MethodHttp, RawRoute FROM DomainRoute;";
         $dtDomainRoute = $this->DAL->getDataTable($strSQL);
         if ($dtDomainRoute === null) { $dtDomainRoute = []; }
 
