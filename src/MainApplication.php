@@ -197,9 +197,10 @@ abstract class MainApplication implements iApplication
                     //  a configuração indica que trata-se mesmo de uma rota protegida.
                     if ($this->routeConfig->getIsSecure() === true) {
                         $permission = (
-                            $securityConfig->getRouteToStart() === $this->routeConfig->getActiveRoute() ||$securitySession->checkRoutePermission(
+                            $securityConfig->getRouteToStart() === $this->routeConfig->getActiveRoute() ||
+                            $securitySession->checkRoutePermission(
                                 $this->routeConfig->getMethod(),
-                                $this->routeConfig->getActiveRoute(true),
+                                $this->serverConfig->getRawRouteConfig()["route"],
                             )
                         );
                         // Se o usuário não possui permissão, mostra para ele a mensagem Http 403.
