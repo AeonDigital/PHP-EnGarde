@@ -126,15 +126,12 @@ trait ActionTools
                 $k = \str_replace($prefix, "", $key);
 
                 if ($onlyNotEmpty === false) {
-                    $r[$k] = (
-                        ($value === "") ? null : (
-                            ($prepareForXSS === true) ? \htmlspecialchars($value) : $value
-                        )
-                    );
+                    if ($value === "") { $r[$k] = null; }
+                    else { $r[$k] = $this->prepareRawPostedValue($value, $prepareForXSS); }
                 }
                 else {
                     if ($value !== "") {
-                        $r[$k] = (($prepareForXSS === true) ? \htmlspecialchars($value) : $value);
+                        $r[$k] = $this->prepareRawPostedValue($value, $prepareForXSS);
                     }
                 }
             }
@@ -145,6 +142,33 @@ trait ActionTools
         }
 
         return $r;
+    }
+    /**
+     * Prepara o valor recebido do UA e trata o mesmo conforme a necessidade de proteção
+     * ou não contra ataques XSS.
+     *
+     * @param       array|string $value
+     *              Array ou string do valor que foi recebido.
+     *
+     * @param       bool $prepareForXSS
+     *              Indica se deve ou não tratar o valor para proteção contra ataques
+     *              do tipo XSS.
+     *
+     * @return      array|string
+     */
+    private function prepareRawPostedValue($value, bool $prepareForXSS = true) {
+        if (\is_array($value) === true) {
+            $newValues = [];
+            foreach ($value as $v) {
+                $newValues[] = $this->prepareRawPostedValue($v, $prepareForXSS);
+            }
+            $value = $newValues;
+        }
+        else {
+            $value = (($prepareForXSS === true) ? \htmlspecialchars($value) : $value);
+        }
+
+        return $value;
     }
     /**
      * Retorna o valor do parametro da requisição de nome indicado.
