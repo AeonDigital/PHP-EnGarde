@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2020-09-13-18-12-28
+ * Generated in 2020-09-20-23-08-16
 */
 
 /*--INI CREATE TABLE--*/
@@ -188,5 +188,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2020-09-13-18-12-28
+ * Generated in 2020-09-20-23-08-16
 */
