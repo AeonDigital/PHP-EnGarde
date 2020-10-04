@@ -33,6 +33,19 @@ class Router extends BObject implements iRouter
      * @var         iServer
      */
     protected iServer $serverConfig;
+    /**
+     * Array associativo contendo em ``key`` o nome de cada um dos controllers
+     * existentes na aplicação e em ``value`` o caminho completo até o mesmo.
+     *
+     * @var         array
+     */
+    protected array $controllersInfo = [];
+    /**
+     * Timestamp da última modificação registrada em um arquivo de controller.
+     *
+     * @var         int
+     */
+    protected int $lastControllerMod = 0;
 
 
 
@@ -56,6 +69,43 @@ class Router extends BObject implements iRouter
 
 
 
+    /**
+     * Escaneia recursivamente o diretório de controllers em busca de todos os
+     * arquivos .php e registra-os em ``$this->controllersInfo``.
+     * Também identifica o timestamp do último controller modificado e registra
+     * tal informação em ``$this->lastControllerMod``.
+     *
+     * @param       string $directory
+     *              Caminho completo até o diretório de controllers que será
+     *              varrido.
+     *
+     * @return      array
+     */
+    protected function retrieveApplicationControllers(string $controllersDirectory) : array
+    {
+        $controllersFiles = \scandir($controllersDirectory);
+
+        foreach ($controllersFiles as $key => $fileName) {
+            $fullPath = $controllersDirectory . DS . $fileName;
+
+            if (\in_array($fileName, [".", ".."]) === false) {
+                if (\is_dir($fullPath) === true) {
+                    $this->retrieveApplicationControllers($fullPath);
+                }
+                else {
+                    if (\mb_str_ends_with($fileName, ".php") === true) {
+                        $fileMod = \filemtime($fullPath);
+                        $controllerName = \str_replace(".php", "", $fileName);
+
+                        $this->controllersInfo[$controllerName] = $fullPath;
+                        $this->lastControllerMod = ($fileMod > $this->lastControllerMod) ? $fileMod : $this->lastControllerMod;
+                    }
+                }
+            }
+        }
+
+        return $this->controllersInfo;
+    }
 
 
 
@@ -110,27 +160,12 @@ class Router extends BObject implements iRouter
                     $appRoutesFileLastMod = \filemtime($appRoutes);
                     $controllersLastMod = 0;
 
-                    // Verifica cada um dos arquivos da pasta de controller
-                    // para identificar seus timestamps e selecionar aquele que foi
-                    // mais recentemente alterado/criado.
-                    $controllersFiles = \scandir($appControllersPath);
-
-                    foreach ($controllersFiles as $key => $fileName) {
-                        if (\in_array($fileName, [".", ".."]) === false &&
-                            \is_dir($fileName) === false &&
-                            \mb_str_ends_with($fileName, ".php") === true)
-                        {
-                            $fileMod = \filemtime($appControllersPath . DS . $fileName);
-
-                            // Mantém o maior valor
-                            $controllersLastMod = ($fileMod > $controllersLastMod) ? $fileMod : $controllersLastMod;
-                        }
-                    }
+                    $this->retrieveApplicationControllers($appControllersPath);
 
                     // Se há algum controller adicionado/alterado após a data de criação
                     // do arquivo de pré-processamento das rotas, então deverá ser feito um
                     // novo reprocessamento.
-                    if ($controllersLastMod > $appRoutesFileLastMod) {
+                    if ($this->lastControllerMod > $appRoutesFileLastMod) {
                         $r = true;
                     }
                 }
@@ -170,15 +205,9 @@ class Router extends BObject implements iRouter
 
 
         // Verifica os arquivos da pasta de controller
-        $controllersFiles = \scandir($appControllersPath);
-        foreach ($controllersFiles as $key => $fileName) {
-            if (\in_array($fileName, [".", ".."]) === false &&
-                \is_dir($fileName) === false &&
-                \mb_str_ends_with($fileName, ".php") === true)
-            {
-                $controllerName = \str_replace(".php", "", $fileName);
-                $this->registerControllerRoutes($controllerName);
-            }
+        $applicationControllers = $this->retrieveApplicationControllers($appControllersPath);
+        foreach ($applicationControllers as $controllerName => $controllerPath) {
+            $this->registerControllerRoutes($controllerName);
         }
 
         \file_put_contents(
