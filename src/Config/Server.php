@@ -328,7 +328,16 @@ final class Server extends BObject implements iServer
     {
         $rawData = [];
         \parse_str(\file_get_contents("php://input"), $rawData);
-        $parans = \array_merge($rawData, $_GET, $_POST, $this->requestRouteParans);
+        $serverRequest = [];
+        if (isset($this->serverRequest) === true && $this->serverRequest->getPostedFields() !== null) {
+            $serverRequest = $this->serverRequest->getPostedFields();
+        }
+
+        $parans = \array_merge(
+            $rawData, $_GET, $_POST,
+            $serverRequest,
+            $this->requestRouteParans
+        );
 
         return $parans;
     }
