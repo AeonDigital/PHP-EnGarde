@@ -65,9 +65,12 @@ final class JSON extends aMime
                             JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
         }
 
-        return \json_encode(
+        $json = \json_encode(
             $this->response->getViewData(),
             $jsonOptions
         );
+        $json = \str_replace(":\"@(str)", ":\"", $json);
+
+        return $json;
     }
 }
