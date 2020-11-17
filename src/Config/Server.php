@@ -1251,11 +1251,13 @@ final class Server extends BObject implements iServer
                     $this->FILES[$fieldName] = [];
 
                     foreach ($fieldData["name"] as $i => $v) {
-                        $this->FILES[$fieldName][] = new \AeonDigital\Http\Data\File(
-                            new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"][$i]),
-                            $fieldData["name"][$i],
-                            $fieldData["error"][$i]
-                        );
+                        if ($fieldData["tmp_name"][$i] !== "") {
+                            $this->FILES[$fieldName][] = new \AeonDigital\Http\Data\File(
+                                new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"][$i]),
+                                $fieldData["name"][$i],
+                                $fieldData["error"][$i]
+                            );
+                        }
                     }
                 }
             }
