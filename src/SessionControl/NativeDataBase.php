@@ -398,7 +398,10 @@ class NativeDataBase extends MainSession
                 "Id" => $this->authenticatedSession["Id"]
             ];
 
-            $this->DAL->updateSet("DomainUserSession", $paran, "Id");
+            $this->securityCookie->setExpires($renewUntil);
+            if ($this->securityCookie->defineCookie() === true) {
+                $this->DAL->updateSet("DomainUserSession", $paran, "Id");
+            }
         }
     }
 
