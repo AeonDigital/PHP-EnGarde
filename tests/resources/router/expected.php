@@ -9,6 +9,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => 'c218eb7b4096de45ec538f0629c76b6404aef1e5',
         'action' => 'test',
         'allowedMethods' => 
         array (
@@ -80,6 +81,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => 'd820d1481d5953a474296d74fd092a6f902f9010',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -158,6 +160,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => 'd820d1481d5953a474296d74fd092a6f902f9010',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -239,6 +242,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => 'd820d1481d5953a474296d74fd092a6f902f9010',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -317,6 +321,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => 'd820d1481d5953a474296d74fd092a6f902f9010',
         'action' => 'default',
         'allowedMethods' => 
         array (
@@ -398,6 +403,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => '8930789d150ec560e2df2d6a5207c75f3492751a',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -471,6 +477,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => '712ba545c011c4ecee568feba5a9da2ace0366c2',
         'action' => 'contact',
         'allowedMethods' => 
         array (
@@ -538,6 +545,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => 'f11e2a56058f363e612072a069fd031c7da44214',
         'action' => 'contact',
         'allowedMethods' => 
         array (
@@ -612,6 +620,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => '8930789d150ec560e2df2d6a5207c75f3492751a',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -685,6 +694,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => '8930789d150ec560e2df2d6a5207c75f3492751a',
         'action' => 'list',
         'allowedMethods' => 
         array (
@@ -758,6 +768,7 @@ array (
         'namespace' => '\\site\\controllers',
         'controller' => 'home',
         'controllerNamespace' => '\\site\\controllers\\home',
+        'resourceId' => '8930789d150ec560e2df2d6a5207c75f3492751a',
         'action' => 'list',
         'allowedMethods' => 
         array (

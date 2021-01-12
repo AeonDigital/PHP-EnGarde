@@ -251,7 +251,7 @@ class Router extends BObject implements iRouter
 
 
         // Apenas se houverem propriedades estáticas definidas...
-        $staticProperties   = $controllerReflection->getStaticProperties();
+        $staticProperties = $controllerReflection->getStaticProperties();
         if (\is_array($staticProperties) === true && \count($staticProperties) > 0) {
             foreach ($staticProperties as $propName => $value) {
                 // sendo uma propriedade de registro de rotas.
@@ -282,8 +282,18 @@ class Router extends BObject implements iRouter
                         throw new \RuntimeException($err);
                     }
                     else {
+
+                        // Define o nome do recurso caso este não tenha sido definido antes.
+                        if (\key_exists("resourceId", $actionRouteConfig) === false) {
+                            $actionRouteConfig["resourceId"] = \sha1(
+                                \implode("-", $actionRouteConfig["allowedMethods"]) .
+                                \implode("-", $actionRouteConfig["routes"]) .
+                                $actionRouteConfig["action"]
+                            );
+                        }
+
                         foreach ($actionRouteConfig["allowedMethods"] as $method) {
-                            $cloneRouteConfig   = \array_merge([], $actionRouteConfig);
+                            $cloneRouteConfig = \array_merge([], $actionRouteConfig);
                             $cloneRouteConfig["method"] = $method;
                             $cloneRouteConfig["activeRoute"] = $cloneRouteConfig["routes"][0];
                             $controllerRoutes[] = \AeonDigital\EnGarde\Config\Route::fromArray($cloneRouteConfig);
@@ -397,6 +407,7 @@ class Router extends BObject implements iRouter
             // Remove das propriedades os itens que NÃO podem ser definidos pelas
             // regras gerais dos controllers.
             if ($isController === true) {
+                unset($allowedProperties[\array_search("resourceId", $allowedProperties)]);
                 unset($allowedProperties[\array_search("action", $allowedProperties)]);
                 unset($allowedProperties[\array_search("routes", $allowedProperties)]);
                 unset($allowedProperties[\array_search("activeRoute", $allowedProperties)]);

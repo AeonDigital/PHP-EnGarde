@@ -33,6 +33,7 @@ class XHTMLTest extends TestCase
             "application"               => "site",
             "namespace"                 => "\\site\\controller",
             "controller"                => "home",
+            "resourceId"                => "rId",
             "action"                    => "index",
             "allowedMethods"            => ["GET", "POST"],
             "allowedMimeTypes"          => ["HTML", "JSON", "TXT"],

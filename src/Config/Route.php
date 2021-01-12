@@ -166,6 +166,44 @@ final class Route extends BObject implements iRoute
 
 
     /**
+     * Id do recurso que a rota representa.
+     *
+     * @var         string
+     */
+    private string $resourceId = "";
+    /**
+     * Retorna o Id do recurso que esta rota representa.
+     *
+     * @return string
+     */
+    public function getResourceId() : string
+    {
+        return $this->resourceId;
+    }
+    /**
+     * Define o Id do recurso que a rota representa.
+     *
+     * @param       string $resourceId
+     *              Id do recurso.
+     *
+     * @return      void
+     *
+     * @throws      \InvalidArgumentException
+     *              Caso seja definido um valor inválido.
+     */
+    private function setResourceId(string $resourceId) : void
+    {
+        $this->mainCheckForInvalidArgumentException(
+            "resourceId", $resourceId, ["is string not empty"]
+        );
+        $this->resourceId = $resourceId;
+    }
+
+
+
+
+
+    /**
      * Nome da action que resolve a rota.
      *
      * @var         string
@@ -1657,6 +1695,9 @@ final class Route extends BObject implements iRoute
      * @param       string $controller
      *              Obrigatório. Nome do controller que possui a action que deve resolver a rota.
      *
+     * @param       string $resourceId
+     *              Obrigatório. Id do recurso que a rota representa.
+     *
      * @param       string $action
      *              Obrigatório. Nome da action que resolve a rota.
      *
@@ -1747,6 +1788,7 @@ final class Route extends BObject implements iRoute
         string $application,
         string $namespace,
         string $controller,
+        string $resourceId,
         string $action,
         array $allowedMethods,
         array $allowedMimeTypes,
@@ -1778,6 +1820,7 @@ final class Route extends BObject implements iRoute
         $this->setApplication($application);
         $this->setNamespace($namespace);
         $this->setController($controller);
+        $this->setResourceId($resourceId);
         $this->setAction($action);
         $this->setAllowedMethods($allowedMethods);
         $this->setAllowedMimeTypes($allowedMimeTypes);
@@ -1841,6 +1884,7 @@ final class Route extends BObject implements iRoute
                 "application"               => "",
                 "namespace"                 => "",
                 "controller"                => "",
+                "resourceId"                => "",
                 "action"                    => "",
                 "allowedMethods"            => [],
                 "allowedMimeTypes"          => [],
@@ -1877,6 +1921,7 @@ final class Route extends BObject implements iRoute
             $useConfig["application"],
             $useConfig["namespace"],
             $useConfig["controller"],
+            $useConfig["resourceId"],
             $useConfig["action"],
             $useConfig["allowedMethods"],
             $useConfig["allowedMimeTypes"],
@@ -1920,6 +1965,7 @@ final class Route extends BObject implements iRoute
             "namespace"                 => $this->getNamespace(),
             "controller"                => $this->getController(),
             "controllerNamespace"       => $this->getControllerNamespace(),
+            "resourceId"                => $this->getResourceId(),
             "action"                    => $this->getAction(),
             "allowedMethods"            => $this->getAllowedMethods(),
             "allowedMimeTypes"          => $this->getAllowedMimeTypes(),

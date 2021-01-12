@@ -26,6 +26,7 @@ class ConfigRouteTest extends TestCase
             $defaultRoute["application"],
             $defaultRoute["namespace"],
             $defaultRoute["controller"],
+            $defaultRoute["resourceId"],
             $defaultRoute["action"],
             $defaultRoute["allowedMethods"],
             $defaultRoute["allowedMimeTypes"],
@@ -61,6 +62,7 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("\\site\\controller", $nMock->getNamespace());
         $this->assertSame("home", $nMock->getController());
         $this->assertSame("\\site\\controller\\home", $nMock->getControllerNamespace());
+        $this->assertSame("rId", $nMock->getResourceId());
         $this->assertSame("index", $nMock->getAction());
         $this->assertSame(["GET", "POST"], $nMock->getAllowedMethods());
         $this->assertSame(
@@ -159,6 +161,26 @@ class ConfigRouteTest extends TestCase
             $fail = true;
             $this->assertSame(
                 "Invalid value defined for \"controller\". Expected non empty string.",
+                $ex->getMessage()
+            );
+        }
+        $this->assertTrue($fail, "Test must fail");
+    }
+
+
+    public function test_method_set_resourceid_fails()
+    {
+        global $defaultRoute;
+        $testRoute = array_merge([], $defaultRoute);
+        $testRoute["resourceId"] = "";
+
+        $fail = false;
+        try {
+            $nMock = prov_instanceOf_EnGarde_Config_Route($testRoute);
+        } catch (\Exception $ex) {
+            $fail = true;
+            $this->assertSame(
+                "Invalid value defined for \"resourceId\". Expected non empty string.",
                 $ex->getMessage()
             );
         }
@@ -413,7 +435,7 @@ class ConfigRouteTest extends TestCase
             [ "mime" => "html",     "mimetype" => "text/html" ],
             [ "mime" => "xhtml",    "mimetype" => "application/xhtml+xml" ],
             [ "mime" => "xml",      "mimetype" => "application/xml" ],
-            [ "mime" => "* /*",      "mimetype" => "* /*" ]
+            [ "mime" => "*/*",      "mimetype" => "*/*" ]
         ];
         $forceMime = "xml";
 
