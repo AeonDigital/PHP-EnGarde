@@ -377,6 +377,7 @@ class Router extends BObject implements iRouter
             // Coleção de propriedades que PODEM ser sobrescritas
             // em nível de action.
             $allowedProperties = [
+                "resourceId",
                 "action",
                 "allowedMethods",
                 "allowedMimeTypes",
