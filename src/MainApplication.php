@@ -154,7 +154,7 @@ abstract class MainApplication implements iApplication
         // Define a propriedade de configuração que está sendo usada.
         $this->serverConfig = $serverConfig;
         // Executa o protocolo de segurança da aplicação.
-        $this->applySecuritySettings();
+        $this->applyRouteSecuritySettings();
     }
 
 
@@ -175,7 +175,7 @@ abstract class MainApplication implements iApplication
      *
      * @return      void
      */
-    private function applySecuritySettings() : void
+    private function applyRouteSecuritySettings() : void
     {
         // Retorna os objetos de configurações de segurança.
         $securityConfig = $this->serverConfig->getSecurityConfig();
@@ -361,12 +361,118 @@ abstract class MainApplication implements iApplication
                 if ($hideAllOutputs === true) { \ob_end_clean(); }
 
 
+                // Aplica a camada de ajustes de segurança na view antes de enviá-la ao UA.
+                $this->applyViewSecuritySettings();
+
                 // Efetua o envio dos dados obtidos e processados para o UA.
                 $this->sendResponse();
 
                 // Cria o arquivo de cache, se for necessário.
                 $this->saveOrUpdateResponseCache();
             }
+        }
+    }
+
+
+
+
+
+    /**
+     * Para qualquer view baseada ou compatível com XML aplica a camada de proteção que
+     * irá excluir da mesma qualquer elemento/componente que não deva ser mostrado para
+     * o perfil de usuário que o UA está usando.
+     *
+     * @return      void
+     */
+    private function applyViewSecuritySettings() : void
+    {
+        $useMime        = $this->serverConfig->getRouteConfig()->getResponseMime();
+        $userProfile    = $this->serverConfig->getSecuritySession()->retrieveUserProfile();
+
+        // Apenas se o sistema de segurança está ativo
+        // E
+        // trata-se de um mime compatível com este tipo de set de segurança
+        if ($this->serverConfig->getSecurityConfig()->getIsActive() === true &&
+            \in_array($useMime, ["html", "xhtml", "xml"]) === true && $userProfile !== null)
+        {
+            // Identifica o perfil do usuário logado.
+            $profileId      = $userProfile["Id"];
+            $profileName    = $userProfile["Name"];
+            $allowAll       = $userProfile["AllowAll"];
+
+
+            // Prepara o HTML ou XHTML com o "meta utf-8" para que os caracteres não ascii não sejam
+            // convertidos para entities.
+            $useMeta = "<meta charset=\"utf-8\"/>";
+            $tmpMeta = $useMeta . "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>";
+            $domBody = \str_replace($useMeta, $tmpMeta, (string)$this->response->getBody());
+
+
+
+            // Inibe a mostragem de erros para evitar que tags HTML5 disparem erros.
+            libxml_use_internal_errors(true);
+
+            $dom = new \DOMDocument();
+            $isXML = ($useMime === "xhtml" || $useMime === "xml");
+
+            if ($isXML === true) { $dom->loadXML($domBody); }
+            else { $dom->loadHTML($domBody); }
+            $xPath = new \DOMXPath($dom);
+
+            // Habilita a mostragem de erros.
+            libxml_use_internal_errors(false);
+
+
+
+            // Identifica todos os recursos que o usuário atual NÃO tem acesso.
+            $strSQL = " SELECT
+                            secdr.ResourceId
+                        FROM
+                            DomainRoute secdr
+                            INNER JOIN secdup_to_secdr sec ON sec.DomainRoute_Id=secdr.Id
+                        WHERE
+                            sec.DomainUserProfile_Id=$profileId AND
+                            sec.Allow=0;";
+            $dtDeniedResources = $this->serverConfig->getSecuritySession()->getDAL()->getDataTable($strSQL);
+
+            // Apenas se houver algum recurso que seja negado para o tipo de usuário atualmente logado...
+            if ($dtDeniedResources !== null) {
+                // Varre a arvore do DOM procurando por elementos que contenham o recurso a ser excluído
+                foreach ($dtDeniedResources as $row) {
+                    $targetNodes = $xPath->query("//*[@data-resource-id=\"" . $row["ResourceId"] . "\"]");
+                    foreach ($targetNodes as $tgtNode) {
+                        $tgtNode->parentNode->removeChild($tgtNode);
+                    }
+                }
+            }
+
+
+            // Varre a arvore do DOM procurando elementos que sejam donominados como específicos para
+            // um ou outro tipo de perfil de usuário
+            $targetNodes = $xPath->query("//*[@data-resource-profiles]");
+            foreach ($targetNodes as $tgtNode) {
+                $allowedProfiles = \array_map(
+                    "trim",
+                    \explode(",", $tgtNode->getAttribute("data-resource-profiles"))
+                );
+
+                if (\in_array($profileId, $allowedProfiles) === false &&
+                    \in_array($profileName, $allowedProfiles) === false) {
+                    $tgtNode->parentNode->removeChild($tgtNode);
+                }
+            }
+
+
+
+
+            $finalDOMBody = "";
+            if ($isXML === true) { $finalDOMBody = (string)$dom->saveXML(); }
+            else { $finalDOMBody = (string)$dom->saveHTML(); }
+            $finalDOMBody = \str_replace($tmpMeta, $useMeta, $finalDOMBody);
+
+            $body = $this->serverConfig->getHttpFactory()->createStream();
+            $body->write($finalDOMBody);
+            $this->response = $this->response->withBody($body);
         }
     }
 
