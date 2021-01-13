@@ -399,7 +399,7 @@ class NativeDataBase extends MainSession
             ];
 
             $this->securityCookie->setExpires($renewUntil);
-            if ($this->securityCookie->defineCookie() === true) {
+            if ($this->environment === "UTEST" || $this->securityCookie->defineCookie() === true) {
                 $this->DAL->updateSet("DomainUserSession", $paran, "Id");
             }
         }
@@ -642,6 +642,7 @@ class NativeDataBase extends MainSession
             foreach ($routeMethods as $methodHTTP => $routeConfig) {
                 $collectionRoutes[] = [
                     "ControllerName"    => $routeConfig["controller"],
+                    "ResourceId"        => $routeConfig["resourceId"],
                     "ActionName"        => $routeConfig["action"],
                     "MethodHttp"        => $methodHTTP,
                     "RawRoute"          => $rawRoute,
@@ -656,6 +657,7 @@ class NativeDataBase extends MainSession
                 foreach ($routeMethods as $methodHTTP => $routeConfig) {
                     $collectionRoutes[] = [
                         "ControllerName"    => $routeConfig["controller"],
+                        "ResourceId"        => $routeConfig["resourceId"],
                         "ActionName"        => $routeConfig["action"],
                         "MethodHttp"        => $methodHTTP,
                         "RawRoute"          => $rawRoute,

@@ -1,6 +1,6 @@
 /*
  * Main Schema definition
- * Generated in 2021-01-12-20-12-57
+ * Generated in 2021-01-12-22-10-58
 */
 
 /*--INI CREATE TABLE--*/
@@ -21,6 +21,7 @@ CREATE TABLE DomainApplication (
 CREATE TABLE DomainRoute (
     Id BIGINT NOT NULL AUTO_INCREMENT, 
     ControllerName VARCHAR(128) NOT NULL COMMENT 'Nome do controller que resolve esta rota.', 
+    ResourceId VARCHAR(128) NOT NULL COMMENT 'Id do recurso que a rota representa.', 
     ActionName VARCHAR(128) NOT NULL COMMENT 'Nome da action que resolve esta rota.', 
     MethodHttp VARCHAR(8) NOT NULL COMMENT 'Método Http evocado na execução da requisição.', 
     RawRoute VARCHAR(255) NOT NULL COMMENT 'Versão bruta da rota a qual esta regra corresponde (contendo o nome da aplicação e sem querystrings).', 
@@ -188,5 +189,5 @@ ALTER TABLE secdup_to_secdu ADD CONSTRAINT fk_secdup_secdu_to_secdup_DomainUserP
 
 /*
  * End of Main Schema definition
- * Generated in 2021-01-12-20-12-57
+ * Generated in 2021-01-12-22-10-58
 */

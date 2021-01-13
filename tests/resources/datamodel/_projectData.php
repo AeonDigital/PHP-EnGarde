@@ -46,7 +46,7 @@
     'modelFilePath' => 'DomainRoute.php',
     'ormInstructions' => 
     array (
-      'select' => 'SELECT Id, ControllerName, ActionName, MethodHttp, RawRoute, Description FROM DomainRoute WHERE Id=:Id;',
+      'select' => 'SELECT Id, ControllerName, ResourceId, ActionName, MethodHttp, RawRoute, Description FROM DomainRoute WHERE Id=:Id;',
       'selectChild' => 
       array (
         'Profiles' => 

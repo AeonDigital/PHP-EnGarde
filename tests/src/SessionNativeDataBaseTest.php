@@ -77,9 +77,9 @@ class SessionNativeDataBaseTest extends TestCase
             'UPDATE secdup_to_secdu SET ProfileSelected=1 WHERE DomainUserProfile_Id=1 AND DomainUser_Id=5;',
 
 
-            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "index", "GET", "/site/levelthree");',
-            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "dashboard", "GET", "/site/dashboard");',
-            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "levelone", "GET", "/site/levelone");',
+            'INSERT INTO DomainRoute (ControllerName, ResourceId, ActionName, MethodHttp, RawRoute) VALUES ("home", "GET leveltree", "index", "GET", "/site/levelthree");',
+            'INSERT INTO DomainRoute (ControllerName, ResourceId, ActionName, MethodHttp, RawRoute) VALUES ("home", "GET dashboard", "dashboard", "GET", "/site/dashboard");',
+            'INSERT INTO DomainRoute (ControllerName, ResourceId, ActionName, MethodHttp, RawRoute) VALUES ("home", "GET levelone", "levelone", "GET", "/site/levelone");',
 
             'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelthree"), (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor"), 0);',
             'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/dashboard"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);',
@@ -577,9 +577,10 @@ class SessionNativeDataBaseTest extends TestCase
 
         // Redefine dados que permitem que os testes acima funcionem adequadamente.
         $sql = [
-            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "index", "GET", "/site/levelthree");',
-            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "dashboard", "GET", "/site/dashboard");',
-            'INSERT INTO DomainRoute (ControllerName, ActionName, MethodHttp, RawRoute) VALUES ("home", "levelone", "GET", "/site/levelone");',
+            'INSERT INTO DomainRoute (ControllerName, ResourceId, ActionName, MethodHttp, RawRoute) VALUES ("home", "GET leveltree", "index", "GET", "/site/levelthree");',
+            'INSERT INTO DomainRoute (ControllerName, ResourceId, ActionName, MethodHttp, RawRoute) VALUES ("home", "GET dashboard", "dashboard", "GET", "/site/dashboard");',
+            'INSERT INTO DomainRoute (ControllerName, ResourceId, ActionName, MethodHttp, RawRoute) VALUES ("home", "GET levelone", "levelone", "GET", "/site/levelone");',
+
             'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelthree"), (SELECT Id FROM DomainUserProfile WHERE Name="Desenvolvedor"), 0);',
             'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/dashboard"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);',
             'INSERT INTO secdup_to_secdr (DomainRoute_Id, DomainUserProfile_Id, Allow) VALUES ((SELECT Id FROM DomainRoute WHERE RawRoute="/site/levelone"), (SELECT Id FROM DomainUserProfile WHERE Name="Administrador"), 1);'
