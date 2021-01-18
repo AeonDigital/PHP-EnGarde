@@ -470,6 +470,13 @@ abstract class MainApplication implements iApplication
             else { $finalDOMBody = (string)$dom->saveHTML(); }
             $finalDOMBody = \str_replace($tmpMeta, $useMeta, $finalDOMBody);
 
+            // Corrige dados especiais de atributos HTML que não devem ser encodados usando
+            // o formato "percent-encode"
+            $pattern = "/%5B%5B(\w+)%5D%5D/";
+            $replacement = "[[$1]]";
+            $finalDOMBody = preg_replace($pattern, $replacement, $finalDOMBody);
+
+
             $body = $this->serverConfig->getHttpFactory()->createStream();
             $body->write($finalDOMBody);
             $this->response = $this->response->withBody($body);
