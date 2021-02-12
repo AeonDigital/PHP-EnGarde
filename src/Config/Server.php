@@ -71,9 +71,10 @@ final class Server extends BObject implements iServer
      */
     private array $SERVER = [];
     /**
-     * Array associativo contendo todas as variáveis definidas para o servidor no momento atual.
+     * Array associativo contendo objetos '\AeonDigital\Http\Data\File' representando os campos
+     * de arquivo submetidos. Campos vazios serão representados como ``null``.
      *
-     * @var         array[string => string|int]
+     * @var         array[string => ?\AeonDigital\Http\Data\File]
      */
     private array $FILES = [];
     /**
@@ -1240,18 +1241,28 @@ final class Server extends BObject implements iServer
         // submetidos nesta requisição.
         if (\count($uploadedFiles) > 0) {
             foreach ($uploadedFiles as $fieldName => $fieldData) {
+                // Sendo um campo simples
                 if (\is_array($fieldData["error"]) === false) {
-                    $this->FILES[$fieldName] = new \AeonDigital\Http\Data\File(
-                        new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"]),
-                        $fieldData["name"],
-                        $fieldData["error"]
-                    );
+                    if ($fieldData["tmp_name"] === "") {
+                        $this->FILES[$fieldName] = null;
+                    }
+                    else {
+                        $this->FILES[$fieldName] = new \AeonDigital\Http\Data\File(
+                            new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"]),
+                            $fieldData["name"],
+                            $fieldData["error"]
+                        );
+                    }
                 }
+                // Sendo um campo múltiplo
                 else {
                     $this->FILES[$fieldName] = [];
 
                     foreach ($fieldData["name"] as $i => $v) {
-                        if ($fieldData["tmp_name"][$i] !== "") {
+                        if ($fieldData["tmp_name"][$i] === "") {
+                            $this->FILES[$fieldName][] = null;
+                        }
+                        else {
                             $this->FILES[$fieldName][] = new \AeonDigital\Http\Data\File(
                                 new \AeonDigital\Http\Stream\FileStream($fieldData["tmp_name"][$i]),
                                 $fieldData["name"][$i],
@@ -1262,6 +1273,7 @@ final class Server extends BObject implements iServer
                 }
             }
         }
+
 
 
 
