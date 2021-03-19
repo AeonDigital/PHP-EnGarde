@@ -29,7 +29,6 @@ array (
         'activeRoute' => '/test',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -71,6 +70,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -108,7 +108,6 @@ array (
         'activeRoute' => '/',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -154,6 +153,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
       'POST' => 
@@ -188,7 +188,6 @@ array (
         'activeRoute' => '/',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -234,6 +233,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -271,7 +271,6 @@ array (
         'activeRoute' => '/home',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -317,6 +316,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
       'POST' => 
@@ -351,7 +351,6 @@ array (
         'activeRoute' => '/home',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -397,6 +396,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -430,7 +430,6 @@ array (
         'activeRoute' => '/list',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -472,6 +471,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -502,7 +502,6 @@ array (
         'activeRoute' => '/contact',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -544,6 +543,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
       'POST' => 
@@ -572,7 +572,6 @@ array (
         'activeRoute' => '/contact',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -614,6 +613,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -650,7 +650,6 @@ array (
         'activeRoute' => '/list/orderby:[a-zA-Z]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -692,6 +691,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -725,7 +725,6 @@ array (
         'activeRoute' => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -767,6 +766,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),
@@ -800,7 +800,6 @@ array (
         'activeRoute' => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
-        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -842,6 +841,7 @@ array (
           'CopyRight' => '20xx Aeon Digital',
           'FrameWork' => 'PHP-AeonDigital\\EnGarde 0.9.0 [alpha]',
         ),
+        'appStage' => '',
         'localeDictionary' => '',
       ),
     ),

@@ -610,40 +610,6 @@ final class Route extends BObject implements iRoute
 
 
     /**
-     * Etapa em que a aplicação se encontra.
-     *
-     * @var         string
-     */
-    private string $appStage = "";
-    /**
-     * Retorna a etapa em que a aplicação se encontra.
-     *
-     * @return string
-     */
-    public function getAppStage() : string
-    {
-        return $this->appStage;
-    }
-    /**
-     * Define a etapa em que a aplicação se encontra.
-     * Esta propriedade permite configurar elementos X/HTML para apresentar ou não na tela
-     * apenas aqueles que pertencem a etapa definida para esta rota.
-     *
-     * @param       string $appStage
-     *              etapa atual da aplicação.
-     *
-     * @return      void
-     */
-    private function setAppStage(string $appStage) : void
-    {
-        $this->appStage = $appStage;
-    }
-
-
-
-
-
-    /**
      * Coleção de propriedades customizadas da rota.
      *
      * @var         array
@@ -1678,6 +1644,40 @@ final class Route extends BObject implements iRoute
 
 
     /**
+     * Etapa em que a aplicação se encontra.
+     *
+     * @var         string
+     */
+    private string $appStage = "";
+    /**
+     * Retorna a etapa em que a aplicação se encontra.
+     *
+     * @return string
+     */
+    public function getAppStage() : string
+    {
+        return $this->appStage;
+    }
+    /**
+     * Define a etapa em que a aplicação se encontra.
+     * Esta propriedade permite configurar elementos X/HTML para apresentar ou não na tela
+     * apenas aqueles que pertencem a etapa definida para esta rota.
+     *
+     * @param       string $appStage
+     *              etapa atual da aplicação.
+     *
+     * @return      void
+     */
+    public function setAppStage(string $appStage) : void
+    {
+        $this->appStage = $appStage;
+    }
+
+
+
+
+
+    /**
      * Caminho relativo (a partir de ``appRootPath``) até o arquivo de legendas do locale
      * que será usado para responder a requisição.
      *
@@ -1757,9 +1757,6 @@ final class Route extends BObject implements iRoute
      * @param       string $runMethodName
      *              Nome do método que deve ser executado na classe da Aplicação para resolver a rota.
      *
-     * @param       string $appStage
-     *              Nome da etapa em que a aplicação se encontra no momento.
-     *
      * @param       array $customProperties
      *              Coleção de propriedades customizadas da rota.
      *
@@ -1816,6 +1813,9 @@ final class Route extends BObject implements iRoute
      * @param       array $metaData
      *              Coleção de metadados a serem incorporados na view X/HTML.
      *
+     * @param       string $appStage
+     *              Nome da etapa em que a aplicação se encontra no momento.
+     *
      * @param       string $localeDictionary
      *              Caminho relativo (a partir de ``appRootPath``) até o arquivo de legendas do locale
      *              que será usado para responder a requisição.
@@ -1834,7 +1834,6 @@ final class Route extends BObject implements iRoute
         string $activeRoute,
         bool $isUseXHTML,
         string $runMethodName,
-        string $appStage,
         array $customProperties,
         bool $isAutoLog,
         string $description,
@@ -1853,6 +1852,7 @@ final class Route extends BObject implements iRoute
         array $styleSheets = [],
         array $javaScripts = [],
         array $metaData = [],
+        string $appStage,
         string $localeDictionary = ""
     ) {
         $this->setApplication($application);
@@ -1867,7 +1867,6 @@ final class Route extends BObject implements iRoute
         $this->setActiveRoute($activeRoute);
         $this->setIsUseXHTML($isUseXHTML);
         $this->setRunMethodName($runMethodName);
-        $this->setAppStage($appStage);
         $this->setCustomProperties($customProperties);
         $this->setIsAutoLog($isAutoLog);
         $this->setDescription($description);
@@ -1887,6 +1886,7 @@ final class Route extends BObject implements iRoute
         $this->setStyleSheets($styleSheets);
         $this->setJavaScripts($javaScripts);
         $this->setMetaData($metaData);
+        $this->setAppStage($appStage);
         $this->setLocaleDictionary($localeDictionary);
     }
 
@@ -1932,7 +1932,6 @@ final class Route extends BObject implements iRoute
                 "activeRoute"               => "",
                 "isUseXHTML"                => false,
                 "runMethodName"             => "",
-                "appStage"                  => "",
                 "customProperties"          => [],
                 "isAutoLog"                 => false,
                 "description"               => "",
@@ -1951,6 +1950,7 @@ final class Route extends BObject implements iRoute
                 "styleSheets"               => [],
                 "javaScripts"               => [],
                 "metaData"                  => [],
+                "appStage"                  => "",
                 "localeDictionary"          => ""
             ],
             $config
@@ -1969,7 +1969,6 @@ final class Route extends BObject implements iRoute
             $useConfig["routes"],
             $useConfig["activeRoute"],
             $useConfig["isUseXHTML"],
-            $useConfig["appStage"],
             $useConfig["runMethodName"],
             $useConfig["customProperties"],
             $useConfig["isAutoLog"],
@@ -1989,6 +1988,7 @@ final class Route extends BObject implements iRoute
             $useConfig["styleSheets"],
             $useConfig["javaScripts"],
             $useConfig["metaData"],
+            $useConfig["appStage"],
             $useConfig["localeDictionary"]
         );
     }
@@ -2015,7 +2015,6 @@ final class Route extends BObject implements iRoute
             "activeRoute"               => $this->getActiveRoute(),
             "isUseXHTML"                => $this->getIsUseXHTML(),
             "runMethodName"             => $this->getRunMethodName(),
-            "appStage"                  => $this->getAppStage(),
             "customProperties"          => $this->getCustomProperties(),
             "isAutoLog"                 => $this->getIsAutoLog(),
             "description"               => $this->getDescription(),
@@ -2037,6 +2036,7 @@ final class Route extends BObject implements iRoute
             "styleSheets"               => $this->getStyleSheets(),
             "javaScripts"               => $this->getJavaScripts(),
             "metaData"                  => $this->getMetaData(),
+            "appStage"                  => $this->getAppStage(),
             "localeDictionary"          => $this->getLocaleDictionary()
         ];
     }

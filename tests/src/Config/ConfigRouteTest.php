@@ -35,7 +35,6 @@ class ConfigRouteTest extends TestCase
             $defaultRoute["activeRoute"],
             $defaultRoute["isUseXHTML"],
             $defaultRoute["runMethodName"],
-            $defaultRoute["appStage"],
             $defaultRoute["customProperties"],
             $defaultRoute["isAutoLog"],
             $defaultRoute["description"],
@@ -54,6 +53,7 @@ class ConfigRouteTest extends TestCase
             $defaultRoute["styleSheets"],
             $defaultRoute["javaScripts"],
             $defaultRoute["metaData"],
+            $defaultRoute["appStage"],
             $defaultRoute["localeDictionary"]
         );
         $this->assertTrue(is_a($nMock, Route::class));
@@ -79,7 +79,6 @@ class ConfigRouteTest extends TestCase
         $this->assertSame("/site", $nMock->getActiveRoute(true));
         $this->assertSame(true, $nMock->getIsUseXHTML());
         $this->assertSame("run", $nMock->getRunMethodName());
-        $this->assertSame("Teste", $nMock->getAppStage());
         $this->assertSame([], $nMock->getCustomProperties());
         $this->assertSame(true, $nMock->getIsAutoLog());
         $this->assertSame("Teste", $nMock->getDescription());
@@ -103,6 +102,7 @@ class ConfigRouteTest extends TestCase
             ],
             $nMock->getMetaData()
         );
+        $this->assertSame("Teste", $nMock->getAppStage());
         $this->assertSame("/locales/pt-br", $nMock->getLocaleDictionary());
     }
 

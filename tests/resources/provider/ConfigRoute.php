@@ -48,7 +48,6 @@ $defaultRoute = [
     "activeRoute"               => "/",
     "isUseXHTML"                => true,
     "runMethodName"             => "",
-    "appStage"                  => "Teste",
     "customProperties"          => [],
     "isAutoLog"                 => true,
     "description"               => "Teste",
@@ -78,6 +77,7 @@ $defaultRoute = [
         "Framework" => "EnGarde!",
         "Copyright" => "Aeon Digital"
     ],
+    "appStage"                  => "Teste",
     "localeDictionary"          => "/locales/pt-br"
 ];
 
@@ -103,7 +103,6 @@ function prov_instanceOf_EnGarde_Config_Route($defaultRoute)
         $defaultRoute["activeRoute"],
         $defaultRoute["isUseXHTML"],
         $defaultRoute["runMethodName"],
-        $defaultRoute["appStage"],
         $defaultRoute["customProperties"],
         $defaultRoute["isAutoLog"],
         $defaultRoute["description"],
@@ -122,6 +121,7 @@ function prov_instanceOf_EnGarde_Config_Route($defaultRoute)
         $defaultRoute["styleSheets"],
         $defaultRoute["javaScripts"],
         $defaultRoute["metaData"],
+        $defaultRoute["appStage"],
         $defaultRoute["localeDictionary"]
     );
 }
