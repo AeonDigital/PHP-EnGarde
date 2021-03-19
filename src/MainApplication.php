@@ -469,17 +469,20 @@ abstract class MainApplication implements iApplication
             // Caso exista uma definição de estágio para a aplicação...
             // Varre a árvore do DOM procurando elementos que NÃO estejam denominados como específicos para
             // o estágio atual e remove-os da marcação.
-            if ($appStage !== "") {
-                $targetNodes = $xPath->query("//*[@data-resource-stages]");
-                foreach ($targetNodes as $tgtNode) {
-                    $allowedStages = \array_map(
-                        "trim",
-                        \explode(",", $tgtNode->getAttribute("data-resource-stages"))
-                    );
+            $targetNodes = $xPath->query("//*[@data-resource-stages]");
+            foreach ($targetNodes as $tgtNode) {
+                $allowedStages = \array_map(
+                    "trim",
+                    \explode(",", $tgtNode->getAttribute("data-resource-stages"))
+                );
 
-                    if (\in_array($appStage, $allowedStages) === false) {
-                        $tgtNode->parentNode->removeChild($tgtNode);
-                    }
+                $useStage = $appStage;
+                if ($tgtNode->getAttribute("data-resource-stage") !== "") {
+                    $useStage = $tgtNode->getAttribute("data-resource-stage");
+                }
+
+                if ($useStage !== "" && \in_array($useStage, $allowedStages) === false) {
+                    $tgtNode->parentNode->removeChild($tgtNode);
                 }
             }
 
