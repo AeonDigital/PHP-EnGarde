@@ -388,6 +388,7 @@ abstract class MainApplication implements iApplication
     {
         $useMime        = $this->serverConfig->getRouteConfig()->getResponseMime();
         $userProfile    = $this->serverConfig->getSecuritySession()->retrieveUserProfile();
+        $appStage       = $this->serverConfig->getRouteConfig()->getAppStage();
 
         // Apenas se o sistema de segurança está ativo
         // E
@@ -447,7 +448,7 @@ abstract class MainApplication implements iApplication
             }
 
 
-            // Varre a arvore do DOM procurando elementos que sejam donominados como específicos para
+            // Varre a arvore do DOM procurando elementos que sejam denominados como específicos para
             // um ou outro tipo de perfil de usuário
             $targetNodes = $xPath->query("//*[@data-resource-profiles]");
             foreach ($targetNodes as $tgtNode) {
@@ -459,6 +460,26 @@ abstract class MainApplication implements iApplication
                 if (\in_array($profileId, $allowedProfiles) === false &&
                     \in_array($profileName, $allowedProfiles) === false) {
                     $tgtNode->parentNode->removeChild($tgtNode);
+                }
+            }
+
+
+
+            //
+            // Caso exista uma definição de estágio para a aplicação...
+            // Varre a árvore do DOM procurando elementos que NÃO estejam denominados como específicos para
+            // o estágio atual e remove-os da marcação.
+            if ($appStage !== "") {
+                $targetNodes = $xPath->query("//*[@data-resource-stages]");
+                foreach ($targetNodes as $tgtNode) {
+                    $allowedStages = \array_map(
+                        "trim",
+                        \explode(",", $tgtNode->getAttribute("data-resource-stages"))
+                    );
+
+                    if (\in_array($appStage, $allowedStages) === false) {
+                        $tgtNode->parentNode->removeChild($tgtNode);
+                    }
                 }
             }
 
