@@ -29,6 +29,7 @@
         'activeRoute' => '/test',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -107,6 +108,7 @@
         'activeRoute' => '/',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -186,6 +188,7 @@
         'activeRoute' => '/',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -268,6 +271,7 @@
         'activeRoute' => '/home',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -347,6 +351,7 @@
         'activeRoute' => '/home',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -425,6 +430,7 @@
         'activeRoute' => '/list',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -496,6 +502,7 @@
         'activeRoute' => '/contact',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -565,6 +572,7 @@
         'activeRoute' => '/contact',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -642,6 +650,7 @@
         'activeRoute' => '/list/orderby:[a-zA-Z]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -716,6 +725,7 @@
         'activeRoute' => '/list/orderby:[a-zA-Z]+/page:[0-9]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
@@ -790,6 +800,7 @@
         'activeRoute' => '/configurando-uma-rota/propriedades/propertie:[a-zA-Z]+',
         'isUseXHTML' => true,
         'runMethodName' => 'run',
+        'appStage' => '',
         'customProperties' => 
         array (
         ),
