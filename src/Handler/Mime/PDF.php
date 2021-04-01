@@ -103,6 +103,12 @@ final class PDF extends aMime
         else {
             $dompdf = new \Dompdf\Dompdf();
             $dompdf->loadHtml($body);
+
+            $options = $dompdf->getOptions();
+            $options->setIsHtml5ParserEnabled(true);
+            $options->setIsRemoteEnabled(true);
+
+            $dompdf->setOptions($options);
             $dompdf->setPaper("A4", "portrait");
 
             $dompdf->add_info("Author", $this->companyName . " | " . $this->authorName);
