@@ -97,6 +97,9 @@ trait ActionTools
      * campos que se planeja permitir que sejam usadas marcações HTML, o valor seja
      * retratado com o método ``\htmlspecialchars_decode``.
      *
+     * @param       \AeonDigital\EnGarde\Interfaces\Config\iServer $serverConfig
+     *              Objeto "serverConfig" para uso.
+     *
      * @param       string $prefix
      *              Prefixo que identifica os campos que devem ser retornados.
      *              Internamente adiciona um "_" ao final desta string caso ela seja
@@ -111,14 +114,14 @@ trait ActionTools
      *
      * @return      array
      */
-    protected function retrieveFormFieldset(
+    public static function sttRetrieveFormFieldset(
+        \AeonDigital\EnGarde\Interfaces\Config\iServer $serverConfig,
         string $prefix,
         bool $onlyNotEmpty = false,
         bool $prepareForXSS = true
     ) : array {
-
         $r = [];
-        $postedFields = $this->serverConfig->getPostedData();
+        $postedFields = $serverConfig->getPostedData();
         if ($prefix !== "") { $prefix .= "_"; }
 
         foreach ($postedFields as $key => $value) {
@@ -127,11 +130,11 @@ trait ActionTools
 
                 if ($onlyNotEmpty === false) {
                     if ($value === "") { $r[$k] = null; }
-                    else { $r[$k] = $this->prepareRawPostedValue($value, $prepareForXSS); }
+                    else { $r[$k] = self::prepareRawPostedValue($value, $prepareForXSS); }
                 }
                 else {
                     if ($value !== "") {
-                        $r[$k] = $this->prepareRawPostedValue($value, $prepareForXSS);
+                        $r[$k] = self::prepareRawPostedValue($value, $prepareForXSS);
                     }
                 }
             }
@@ -156,11 +159,11 @@ trait ActionTools
      *
      * @return      array|string
      */
-    private function prepareRawPostedValue($value, bool $prepareForXSS = true) {
+    private static function prepareRawPostedValue($value, bool $prepareForXSS = true) {
         if (\is_array($value) === true) {
             $newValues = [];
             foreach ($value as $v) {
-                $newValues[] = $this->prepareRawPostedValue($v, $prepareForXSS);
+                $newValues[] = self::prepareRawPostedValue($v, $prepareForXSS);
             }
             $value = $newValues;
         }
@@ -169,6 +172,49 @@ trait ActionTools
         }
 
         return $value;
+    }
+    /**
+     * Retorna um array associativo referente a uma coleção de campos postados pelo UA
+     * incluindo também aqueles passados via querystrings e os parametros identificados
+     * na construção da rota.
+     *
+     * A identificação dos campos que fazem parte desta coleção se dá pelo prefixo
+     * em comum que eles tenham em seus "name".
+     *
+     * Há um tratamento especial para todo campo definido com o nome "Id".
+     * Para estes, sempre que seus valores forem vazios, tal chave será omitida no corpo
+     * do array retornado.
+     *
+     * Todos os valores retornados estarão também tratados com o método ``\htmlspecialchars``
+     * visando assim inibir ataques usando injeção xss. Portanto, é necessário que, naqueles
+     * campos que se planeja permitir que sejam usadas marcações HTML, o valor seja
+     * retratado com o método ``\htmlspecialchars_decode``.
+     *
+     * @param       string $prefix
+     *              Prefixo que identifica os campos que devem ser retornados.
+     *              Internamente adiciona um "_" ao final desta string caso ela seja
+     *              diferente de ``""``
+     *
+     * @param       bool $onlyNotEmpty
+     *              Quando ``true`` irá retornar apenas os dados que não sejam ``""``.
+     *
+     * @param       bool $prepareForXSS
+     *              Quando ``true`` irá fazer todos os valores passados serem submetidos
+     *              ao método ``\htmlspecialchars``.
+     *
+     * @return      array
+     */
+    protected function retrieveFormFieldset(
+        string $prefix,
+        bool $onlyNotEmpty = false,
+        bool $prepareForXSS = true
+    ) : array {
+        return self::sttRetrieveFormFieldset(
+            $this->serverConfig,
+            $prefix,
+            $onlyNotEmpty,
+            $prepareForXSS
+        );
     }
     /**
      * Retorna o valor do parametro da requisição de nome indicado.
