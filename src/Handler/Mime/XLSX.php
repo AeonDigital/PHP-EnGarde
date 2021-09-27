@@ -265,9 +265,12 @@ final class XLSX extends aMime
             $xmlCells = [];
             foreach ($rowData as $columnNumber => $value)
             {
+                // Converte os valores em strings e remove qualquer 'newline' existente.
+                $useValue       = $this->convertValueToString($value, "", "", false, true);
+
                 $celName        = $this->generateCellName($rowNumber, $columnNumber);
-                $valueType      = ((\is_numeric($value) === true) ? "n" : "s");
-                $valuePosition  = $this->setUsedStringsAndRetrieveItPosition($value);
+                $valueType      = ((\is_numeric($useValue) === true) ? "n" : "s");
+                $valuePosition  = $this->setUsedStringsAndRetrieveItPosition($useValue);
 
                 $xmlCells[] = \sprintf(
                     '<c r="%s" t="%s"><v>%d</v></c>',
@@ -280,7 +283,7 @@ final class XLSX extends aMime
             $xmlRows[] = \sprintf(
                 '<row r="%s">%s</row>',
                 $rowNumber,
-                \implode( "\n", $xmlCells)
+                \implode("\n", $xmlCells)
             );
         }
 

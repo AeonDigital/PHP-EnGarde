@@ -87,14 +87,16 @@ final class XLS extends aMime
 
         $rowNumber = 0;
         foreach ($dataTable as $rowData) {
-
             $columnNumber = 0;
             foreach($rowData as $value) {
-                if (\is_numeric($value) === true) {
-                    $str .= $this->numberCell($rowNumber, $columnNumber, $value);
+                // Converte os valores em strings e remove qualquer 'newline' existente.
+                $useValue = $this->convertValueToString($value, "", "", false, true);
+
+                if (\is_numeric($useValue) === true) {
+                    $str .= $this->numberCell($rowNumber, $columnNumber, $useValue);
                 }
                 else {
-                    $str .= $this->textCell($rowNumber, $columnNumber, $value);
+                    $str .= $this->textCell($rowNumber, $columnNumber, $useValue);
                 }
 
                 $columnNumber++;

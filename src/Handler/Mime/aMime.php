@@ -294,13 +294,18 @@ abstract class aMime implements iMimeHandler
      * @param       bool $forceQuote
      *              Quando ``true`` forçará o uso de aspas para qualquer tipo de valor.
      *
+     * @param       bool $removeNewLines
+     *              Quando ``true`` removerá todos caracteres de nova linha existentes nas
+     *              strings tratadas.
+     *
      * @return      string
      */
     protected function convertValueToString(
         $oData,
         string $quote = "",
         string $escapeQuote = "",
-        bool $forceQuote = false
+        bool $forceQuote = false,
+        bool $removeNewLines = false
     ) : string {
         $str = "";
         $useQuote = ($forceQuote === true);
@@ -311,6 +316,9 @@ abstract class aMime implements iMimeHandler
             $str = (string)$oData;
         } elseif (\is_string($oData) === true) {
             $str = \str_replace($quote, $escapeQuote, $oData);
+            if ($removeNewLines === true) {
+                $str = \str_replace(["\n", "\r"], "", $str);
+            }
             $useQuote = true;
         } elseif (\is_a($oData, "\DateTime") === true) {
             $str = $oData->format("Y-m-d H:i:s");
@@ -486,6 +494,10 @@ abstract class aMime implements iMimeHandler
      * @param       bool $forceQuote
      *              Quando ``true`` forçará o uso de aspas para qualquer tipo de valor.
      *
+     * @param       bool $removeNewLines
+     *              Quando ``true`` removerá todos caracteres de nova linha existentes nas
+     *              strings tratadas.
+     *
      * @return      array
      *
      * @throws      \Exception
@@ -496,7 +508,8 @@ abstract class aMime implements iMimeHandler
         array $oData,
         string $quote = "",
         string $escapeQuote = "",
-        bool $forceQuote = false
+        bool $forceQuote = false,
+        bool $removeNewLines = false
     ) : array {
         $msgError           = null;
         $finalArray         = [];
@@ -535,7 +548,9 @@ abstract class aMime implements iMimeHandler
 
                     // Verifica os valores da linha
                     foreach ($dataRow as $value) {
-                        $finalRow[] = $this->convertValueToString($value, $quote, $escapeQuote, $forceQuote);
+                        $finalRow[] = $this->convertValueToString(
+                            $value, $quote, $escapeQuote, $forceQuote, $removeNewLines
+                        );
                     }
 
 

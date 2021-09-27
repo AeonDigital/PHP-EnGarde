@@ -63,7 +63,7 @@ final class CSV extends aMime
         $dataTable = ((isset($this->viewData->dataTable) === true) ? $this->viewData->dataTable : []);
 
         $finalArray = $this->prepareArrayToCreateSpreadSheet(
-            $dataTable, '"', '""', true
+            $dataTable, '"', '""', true, true
         );
 
         $tmpData    = [];
