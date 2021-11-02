@@ -75,6 +75,7 @@ final class XLSX extends aMime
 
     private $usedStrings = [];
     private $usedStringsPositions = [];
+    private $usedStringIndex = 0;
     /**
      * A partir do array que representa a planilha a ser criada, gera uma string compatível com
      * o formato ``XLS``.
@@ -256,6 +257,9 @@ final class XLSX extends aMime
     private function retrieveSheetXML(array $dataTable) : string
     {
         $str = "";
+        $this->usedStrings = [];
+        $this->usedStringsPositions = [];
+        $this->usedStringIndex = 0;
 
         $xmlRows = [];
         $rowNumber = 0;
@@ -325,13 +329,13 @@ final class XLSX extends aMime
         } else {
             // Inicia a contagem de uso da string
             $this->usedStrings[$value] = 1;
+
+            // Registra a posição dela no índice geral.
+            $this->usedStringsPositions[$value] = $this->usedStringIndex;
+            $this->usedStringIndex++;
         }
 
-        if (isset($usedStringsPositions[$value]) === false) {
-            $usedStringsPositions[$value] = \array_search($value, \array_keys($this->usedStrings));
-        }
-
-        return $usedStringsPositions[$value];
+        return $this->usedStringsPositions[$value];
     }
     /**
      * Gera um nome para ser usado por uma célula em uma planilha ``XLSX``.
