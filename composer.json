@@ -1,8 +1,8 @@
 {
     "name": "aeondigital/phpengarde",
     "description": "Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo domínio.",
-    "version": "v0.5.91-beta",
-    "time": "2021-09-27",
+    "version": "v0.5.92-beta",
+    "time": "2021-11-02",
     "type": "library",
     "authors": [
         {
