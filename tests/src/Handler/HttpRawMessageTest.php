@@ -46,7 +46,7 @@ class HttpRawMessageTest extends TestCase
     public function test_getsetclear_context()
     {
         $val = [
-            "rootPath"              => "\\",
+            "rootPath"              => DS,
             "environmentType"       => "UTEST",
             "isDebugMode"           => true,
             "protocol"              => "http",
@@ -81,7 +81,7 @@ class HttpRawMessageTest extends TestCase
 
 
         $val = [
-            "rootPath"              => "\\",
+            "rootPath"              => DS,
             "environmentType"       => "UTEST",
             "isDebugMode"           => true,
             "protocol"              => "http",

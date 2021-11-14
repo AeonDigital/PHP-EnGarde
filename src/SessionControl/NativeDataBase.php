@@ -466,7 +466,7 @@ class NativeDataBase extends MainSession
                                 $this->authenticatedUser["Id"],
                                 $this->securityConfig->getAllowedFaultByLogin(),
                                 $this->securityConfig->getLoginBlockTimeout(),
-                                "UserName"
+                                "User"
                             );
                         }
                         else {

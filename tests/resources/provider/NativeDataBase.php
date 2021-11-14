@@ -10,25 +10,25 @@ function provider_connection_credentials()
         "UTEST" => [
             "site" => [
                 "Anonymous" => [
-                    "dbType"            => "mysql",
-                    "dbHost"            => "localhost",
-                    "dbName"            => "test",
-                    "dbUserName"        => "root",
-                    "dbUserPassword"    => "admin"
+                    "dbType"            => getenv("DATABASE_TYPE"), // export DATABASE_TYPE=mysql       | $Env:DATABASE_TYPE="mysql"
+                    "dbHost"            => getenv("DATABASE_HOST"), // export DATABASE_HOST=localhost   | $ENV:DATABASE_HOST="localhost"
+                    "dbName"            => getenv("DATABASE_NAME"), // export DATABASE_NAME=test        | $Env:DATABASE_NAME="test"
+                    "dbUserName"        => getenv("DATABASE_USER"), // export DATABASE_USER=root        | $Env:DATABASE_USER="root"
+                    "dbUserPassword"    => getenv("DATABASE_PASS"), // export DATABASE_PASS=root        | $Env:DATABASE_PASS="root"
                 ],
                 "Desenvolvedor" => [
-                    "dbType"            => "mysql",
-                    "dbHost"            => "localhost",
-                    "dbName"            => "test",
-                    "dbUserName"        => "root",
-                    "dbUserPassword"    => "admin"
+                    "dbType"            => getenv("DATABASE_TYPE"), // export DATABASE_TYPE=mysql
+                    "dbHost"            => getenv("DATABASE_HOST"), // export DATABASE_HOST=localhost
+                    "dbName"            => getenv("DATABASE_NAME"), // export DATABASE_NAME=test
+                    "dbUserName"        => getenv("DATABASE_USER"), // export DATABASE_USER=root
+                    "dbUserPassword"    => getenv("DATABASE_PASS"), // export DATABASE_PASS=root
                 ],
                 "Administrador" => [
-                    "dbType"            => "mysql",
-                    "dbHost"            => "localhost",
-                    "dbName"            => "test",
-                    "dbUserName"        => "root",
-                    "dbUserPassword"    => "admin"
+                    "dbType"            => getenv("DATABASE_TYPE"), // export DATABASE_TYPE=mysql
+                    "dbHost"            => getenv("DATABASE_HOST"), // export DATABASE_HOST=localhost
+                    "dbName"            => getenv("DATABASE_NAME"), // export DATABASE_NAME=test
+                    "dbUserName"        => getenv("DATABASE_USER"), // export DATABASE_USER=root
+                    "dbUserPassword"    => getenv("DATABASE_PASS"), // export DATABASE_PASS=root
                 ]
             ]
         ]
