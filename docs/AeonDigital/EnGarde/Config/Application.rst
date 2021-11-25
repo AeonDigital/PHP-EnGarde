@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -333,6 +333,31 @@ Methods
 
 .. rst-class:: public
 
+	.. php:method:: public getCheckRouteOrder()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Retorna um array de strings contendo em cada posição um dos diferentes métodos de obter
+			| a rota a ser executada segundo a requisição atual.
+			
+			| Ao iniciar a aplicação, a ordem dos métodos aqui definidos será usado para identificar qual
+			| processo deve ser realizado a cada requisição.
+			| 
+			| Nesta implementação, são esperados os valores :
+			| - &#34;native&#34;   : Verificação baseada na lista de rotas definidas nos controllers.
+			| - &#34;catch-all&#34;: Regra especial &#34;catchAll&#34; que pode ser definida pelo desenvolvedor de cada aplicação.
+			| - &#34;redirect&#34; : Regras de redirecionamentos.
+			
+		
+		
+		:Returns: ‹ array ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
 	.. php:method:: public getPathToErrorView( $fullPath=false)
 	
 		.. rst-class:: phpdoc-description
@@ -356,14 +381,37 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public getHTTPSubSystemNamespaces()
+	.. php:method:: public getPathToHttpMessageView( $fullPath=false)
 	
 		.. rst-class:: phpdoc-description
 		
-			| Resgata um array associativo contendo a correlação entre os métodos HTTP
+			| Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+			| de envio de uma simples mensagem ``Http``.
+			
+		
+		
+		:Parameters:
+			- ‹ bool › **$fullPath** |br|
+			  Se ``false`` retornará o caminho relativo.
+			  Quando ``true`` deverá retornar o caminho completo.
+
+		
+		:Returns: ‹ string ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
+	.. php:method:: public getHttpSubSystemNamespaces()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Resgata um array associativo contendo a correlação entre os métodos ``Http``
 			| e suas respectivas classes de resolução.
 			
-			| Tais classes serão usadas exclusivamente para resolver os métodos HTTP que
+			| Tais classes serão usadas exclusivamente para resolver os métodos ``Http`` que
 			| originalmente devem ser processados pelo framework.
 			| 
 			| Originalmente estes:
@@ -387,7 +435,7 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public __construct( $appName, $appRootPath, $pathToAppRoutes, $pathToControllers, $pathToViews, $pathToViewsResources, $pathToLocales, $pathToCacheFiles, $pathToLocalData, $startRoute, $controllersNamespace, $locales, $defaultLocale, $isUseLabels, $defaultRouteConfig, $pathToErrorView, $httpSubSystemNamespaces)
+	.. php:method:: public __construct( $appName, $appRootPath, $pathToAppRoutes, $pathToControllers, $pathToViews, $pathToViewsResources, $pathToLocales, $pathToCacheFiles, $pathToLocalData, $startRoute, $controllersNamespace, $locales, $defaultLocale, $isUseLabels, $defaultRouteConfig, $checkRouteOrder, $pathToErrorView, $pathToHttpMessageView, $httpSubSystemNamespaces)
 	
 		.. rst-class:: phpdoc-description
 		
@@ -397,47 +445,52 @@ Methods
 		
 		:Parameters:
 			- ‹ string › **$appName** |br|
-			  Nome da aplicação.
+			  Nome da aplicação.
 			- ‹ string › **$appRootPath** |br|
-			  Caminho completo até o diretório raiz da aplicação.
+			  Caminho completo até o diretório raiz da aplicação.
 			- ‹ string › **$pathToAppRoutes** |br|
 			  Caminho relativo (a partir de &#34;appRootPath&#34;) até o arquivo de rotas da
-			  aplicação.
+			  aplicação.
 			- ‹ string › **$pathToControllers** |br|
 			  Caminho relativo (a partir de &#34;appRootPath&#34;) até o diretório de controllers
-			  da aplicação.
+			  da aplicação.
 			- ‹ string › **$pathToViews** |br|
 			  Caminho relativo (a partir de &#34;appRootPath&#34;) até o diretório das views da
-			  aplicação.
+			  aplicação.
 			- ‹ string › **$pathToViewsResources** |br|
 			  Caminho relativo (a partir de ``appRootPath``) até o diretório de recursos
-			  para as views (imagens, JS, CSS ...).
+			  para as views (imagens, JS, CSS ...).
 			- ‹ string › **$pathToLocales** |br|
 			  Caminho relativo (a partir de &#34;appRootPath&#34;) até o diretório que estarão
-			  armazenados os documentos de configuração das legendas.
+			  armazenados os documentos de configuração das legendas.
 			- ‹ string › **$pathToCacheFiles** |br|
 			  Caminho relativo (a partir de &#34;appRootPath&#34;) até o diretório de armazenamento
-			  para os arquivos de cache.
+			  para os arquivos de cache.
 			- ‹ string › **$pathToLocalData** |br|
 			  Caminho relativo (a partir de ``appRootPath``) até o diretório de armazenamento
-			  para os arquivos de dados locais.
+			  para os arquivos de dados locais.
 			- ‹ string › **$startRoute** |br|
-			  Rota inicial da aplicação.
+			  Rota inicial da aplicação.
 			- ‹ string › **$controllersNamespace** |br|
-			  Namespace para os controllers da aplicação.
+			  Namespace para os controllers da aplicação.
 			- ‹ array › **$locales** |br|
-			  Coleção de locales suportada pela aplicação.
+			  Coleção de locales suportada pela aplicação.
 			- ‹ string › **$defaultLocale** |br|
-			  Locale padrão para a aplicação corrente.
+			  Locale padrão para a aplicação corrente.
 			- ‹ bool › **$isUseLabels** |br|
-			  Indica se deve ser usado o sistema de legendas.
+			  Indica se deve ser usado o sistema de legendas.
 			- ‹ array › **$defaultRouteConfig** |br|
-			  Array associativo contendo os valores padrões para as rotas da aplicação.
+			  Array associativo contendo os valores padrões para as rotas da aplicação.
+			- ‹ array › **$checkRouteOrder** |br|
+			  Array de métodos de identificação de processamento de rotas.
 			- ‹ string › **$pathToErrorView** |br|
 			  Caminho relativo até a view que deve ser enviada ao UA em caso de erros
-			  na aplicação.
+			  na aplicação.
+			- ‹ string › **$pathToHttpMessageView** |br|
+			  Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+			  de envio de uma simples mensagem ``Http``.
 			- ‹ array › **$httpSubSystemNamespaces** |br|
-			  Coleção de métodos HTTP que devem ser resolvidos pelo framework e as
+			  Coleção de métodos ``Http`` que devem ser resolvidos pelo framework e as
 			  respectivas classes que devem resolver cada qual.
 
 		

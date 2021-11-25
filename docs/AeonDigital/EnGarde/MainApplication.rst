@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 

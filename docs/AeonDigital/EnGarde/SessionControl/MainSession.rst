@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -112,6 +112,22 @@ Methods
 	
 		.. rst-class:: phpdoc-description
 		
+			| Retorna o objeto completo do perfil de usuário atualmente em uso.
+			
+		
+		
+		:Returns: ‹ ?array ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
+	.. php:method:: public retrieveUserProfileName()
+	
+		.. rst-class:: phpdoc-description
+		
 			| Retorna o perfil de segurança do usuário atualmente em uso.
 			
 		
@@ -124,13 +140,19 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public retrieveUserProfiles()
+	.. php:method:: public retrieveUserProfiles( $applicationName=&#34;&#34;)
 	
 		.. rst-class:: phpdoc-description
 		
 			| Retorna uma coleção de perfis de segurança que o usuário tem autorização de utilizar.
 			
 		
+		
+		:Parameters:
+			- ‹ string › **$applicationName** |br|
+			  Se definido, retornará apenas os profiles que correspondem ao nome da
+			  aplicação indicada.
+
 		
 		:Returns: ‹ ?array ›|br|
 			  
@@ -157,6 +179,23 @@ Methods
 
 .. rst-class:: public
 
+	.. php:method:: public hasDataBase()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Informará ``true`` caso a implementação esteja apta a utilizar um
+			| banco de dados.
+			
+		
+		
+		:Returns: ‹ bool ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
 	.. php:method:: public getDAL()
 	
 		.. rst-class:: phpdoc-description
@@ -167,23 +206,6 @@ Methods
 		
 		
 		:Returns: ‹ \\AeonDigital\\Interfaces\\DAL\\iDAL ›|br|
-			  
-		
-	
-	
-
-.. rst-class:: public
-
-	.. php:method:: public getRouteRedirect()
-	
-		.. rst-class:: phpdoc-description
-		
-			| Retorna uma URI para a qual o usuário deve ser direcionado em caso de falha
-			| na verificação de permissão da rota atual.
-			
-		
-		
-		:Returns: ‹ string ›|br|
 			  
 		
 	
@@ -202,21 +224,21 @@ Methods
 		:Parameters:
 			- ‹ DateTime › **$now** |br|
 			  Data e hora do momento em que a requisição que ativou a aplicação
-			  chegou ao domínio.
+			  chegou ao domínio.
 			- ‹ string › **$environment** |br|
-			  Tipo de ambiente que o domínio está rodando no momento.
+			  Tipo de ambiente que o domínio está rodando no momento.
 			- ‹ string › **$applicationName** |br|
-			  Nome da aplicação que deve responder a requisição ``HTTP`` atual.
+			  Nome da aplicação que deve responder a requisição ``Http`` atual.
 			- ‹ string › **$userAgent** |br|
-			  Identificação do user agent que efetuou a requisição.
+			  Identificação do user agent que efetuou a requisição.
 			- ‹ string › **$userAgentIP** |br|
-			  IP do user agent que efetuou a requisição.
+			  IP do user agent que efetuou a requisição.
 			- ‹ AeonDigital\\EnGarde\\Interfaces\\Config\\iSecurity › **$securityConfig** |br|
-			  Configurações de segurança para a aplicação corrente.
+			  Configurações de segurança para a aplicação corrente.
 			- ‹ AeonDigital\\Interfaces\\Http\\Data\\iCookie › **$securityCookie** |br|
-			  Cookie de segurança que armazena a identificação desta sessão.
+			  Cookie de segurança que armazena a identificação desta sessão.
 			- ‹ string › **$pathToLocalData** |br|
-			  Caminho completo até o diretório de dados da aplicação.
+			  Caminho completo até o diretório de dados da aplicação.
 			- ‹ array › **$dbCredentials** |br|
 			  Coleção de credenciais de acesso ao banco de dados.
 

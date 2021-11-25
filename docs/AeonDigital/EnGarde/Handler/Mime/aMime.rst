@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -23,6 +23,9 @@ aMime
 	:Implements:
 		:php:interface:`AeonDigital\\Interfaces\\Http\\Server\\iMimeHandler` 
 	
+	:Used traits:
+		:php:trait:`AeonDigital\EnGarde\Traits\ActionTools` 
+	
 
 Properties
 ----------
@@ -42,7 +45,7 @@ Methods
 		
 		:Parameters:
 			- ‹ AeonDigital\\EnGarde\\Interfaces\\Config\\iServer › **$serverConfig** |br|
-			  Instância ``iServerConfig``.
+			  Instância ``iServerConfig``.
 			- ‹ AeonDigital\\Interfaces\\Http\\Message\\iResponse › **$response** |br|
 			  Instância ``iResponse``.
 

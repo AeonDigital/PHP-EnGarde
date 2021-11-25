@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -42,7 +42,7 @@ Methods
 		
 		:Parameters:
 			- ‹ AeonDigital\\EnGarde\\Interfaces\\Config\\iServer › **$serverConfig** |br|
-			  Instância ``iServerConfig``.
+			  Instância ``iServerConfig``.
 			- ‹ AeonDigital\\Interfaces\\Http\\Message\\iResponse › **$response** |br|
 			  Instância ``iResponse``.
 

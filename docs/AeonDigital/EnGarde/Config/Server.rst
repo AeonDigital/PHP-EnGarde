@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -27,7 +27,7 @@ Server
 		:php:interface:`AeonDigital\\EnGarde\\Interfaces\\Config\\iServer` 
 	
 	:Used traits:
-		:php:trait:`AeonDigital\Traits\MainCheckArgumentException` :php:trait:`AeonDigital\Http\Traits\HTTPRawStatusCode` 
+		:php:trait:`AeonDigital\Traits\MainCheckArgumentException` :php:trait:`AeonDigital\Http\Traits\HttpRawStatusCode` 
 	
 
 Properties
@@ -94,7 +94,7 @@ Methods
 		
 			| Baseado nos dados da requisição que está sendo executada.
 			
-			| Retorna uma coleção de headers ``HTTP`` definidos.
+			| Retorna uma coleção de headers ``Http`` definidos.
 			
 		
 		
@@ -106,13 +106,13 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public getRequestHTTPVersion()
+	.. php:method:: public getRequestHttpVersion()
 	
 		.. rst-class:: phpdoc-description
 		
 			| Baseado nos dados da requisição que está sendo executada.
 			
-			| Retorna a versão do protocolo ``HTTP``.
+			| Retorna a versão do protocolo ``Http``.
 			
 		
 		
@@ -156,13 +156,13 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public getRequestIsUseHTTPS()
+	.. php:method:: public getRequestIsUseHttps()
 	
 		.. rst-class:: phpdoc-description
 		
 			| Baseado nos dados da requisição que está sendo executada.
 			
-			| Indica se a requisição está exigindo o uso de ``HTTPS``.
+			| Indica se a requisição está exigindo o uso de ``Https``.
 			
 		
 		
@@ -180,7 +180,7 @@ Methods
 		
 			| Baseado nos dados da requisição que está sendo executada.
 			
-			| Retorna o método ``HTTP`` que está sendo usado.
+			| Retorna o método ``Http`` que está sendo usado.
 			
 		
 		
@@ -253,7 +253,7 @@ Methods
 		
 			| Baseado nos dados da requisição que está sendo executada.
 			
-			| Retorna a porta ``HTTP`` que está sendo evocada.
+			| Retorna a porta ``Http`` que está sendo evocada.
 			
 		
 		
@@ -382,6 +382,8 @@ Methods
 		
 			| Retorna o endereço completo do diretório onde o domínio está sendo executado.
 			
+			| Se for definido um ``rootSubPath``, este virá concatenado com este valor.
+			
 		
 		
 		:Returns: ‹ string ›|br|
@@ -392,12 +394,29 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public getForceHTTPS()
+	.. php:method:: public getRootSubPath()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Retorna o caminho (a partir da raiz do domínio) até o diretório onde a o framework
+			| está rodando.
+			
+		
+		
+		:Returns: ‹ string ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
+	.. php:method:: public getForceHttps()
 	
 		.. rst-class:: phpdoc-description
 		
 			| Indica que as requisições feitas para o domínio devem ser realizadas sob o protocolo
-			| HTTPS.
+			| ``Https``.
 			
 		
 		
@@ -586,6 +605,29 @@ Methods
 
 .. rst-class:: public
 
+	.. php:method:: public getPathToHttpMessageView( $fullPath=false)
+	
+		.. rst-class:: phpdoc-description
+		
+			| Resgata o caminho relativo até a view que deve ser enviada ao ``UA`` em caso de necessidade
+			| de envio de uma simples mensagem ``Http``.
+			
+		
+		
+		:Parameters:
+			- ‹ bool › **$fullPath** |br|
+			  Se ``false`` retornará o caminho relativo.
+			  Quando ``true`` deverá retornar o caminho completo.
+
+		
+		:Returns: ‹ string ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
 	.. php:method:: public getApplicationClassName()
 	
 		.. rst-class:: phpdoc-description
@@ -606,7 +648,7 @@ Methods
 	
 		.. rst-class:: phpdoc-description
 		
-			| Retorna o nome da aplicação que deve responder a requisição ``HTTP`` atual.
+			| Retorna o nome da aplicação que deve responder a requisição ``Http`` atual.
 			
 		
 		
@@ -672,6 +714,25 @@ Methods
 
 .. rst-class:: public
 
+	.. php:method:: public getApplicationRequestFullUri()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Retorna a URI que está sendo requisitada em ``nível de aplicação``, ou seja, irá SEMPRE
+			| adicionar o nome da aplicação que está sendo chamada na primeira partícula da URI caso
+			| ela esteja omitida e em adição, trará qualquer querystring definida originalmente na
+			| requisição.
+			
+		
+		
+		:Returns: ‹ string ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
 	.. php:method:: public getNewLocationPath()
 	
 		.. rst-class:: phpdoc-description
@@ -692,11 +753,11 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public getDeveloperHTTPMethods()
+	.. php:method:: public getDeveloperHttpMethods()
 	
 		.. rst-class:: phpdoc-description
 		
-			| Retorna a coleção de métodos HTTP que devem poder ser usados pelas actions.
+			| Retorna a coleção de métodos ``Http`` que devem poder ser usados pelas actions.
 			
 			| Ou seja, aqueles que os desenvolvedores terão acesso de configurar.
 			| 
@@ -713,11 +774,11 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public getFrameworkHTTPMethods()
+	.. php:method:: public getFrameworkHttpMethods()
 	
 		.. rst-class:: phpdoc-description
 		
-			| Retorna a coleção de métodos HTTP que devem poder ser controlados exclusivamente
+			| Retorna a coleção de métodos ``Http`` que devem poder ser controlados exclusivamente
 			| pelo próprio framework.
 			
 			| Originalmente estes:
@@ -737,25 +798,25 @@ Methods
 	
 		.. rst-class:: phpdoc-description
 		
-			| Inicia uma instância com os dados de configuração atual para o servidor ``HTTP``.
+			| Inicia uma instância com os dados de configuração atual para o servidor ``Http``.
 			
 		
 		
 		:Parameters:
 			- ‹ array › **$serverVariables** |br|
 			  Array associativo contendo todas as variáveis definidas para o servidor no
-			  momento atual. Normalmente será o conteúdo de ``$_SERVER``.
+			  momento atual. Normalmente será o conteúdo de ``$_SERVER``.
 			- ‹ array › **$uploadedFiles** |br|
 			  Coleção de arquivos que estão sendo submetidos na requisição.
 			  Deve ser um array compatível com a estrutura esperada do objeto $_FILES
-			  padrão.
+			  padrão.
 			- ‹ array › **$engineVariables** |br|
 			  Array associativo contendo todas as variáveis de configuração para o
 			  motor de aplicações que está sendo iniciado.
 			  São esperados, obrigatoriamente os seguintes valores:
 			  
-			  - bool forceHTTPS
-			  Indica se as requisições deste domínio devem ser feitos sob HTTPS.
+			  - bool forceHttps
+			  Indica se as requisições deste domínio devem ser feitos sob ``Https``.
 			  
 			  - string rootPath
 			  Caminho completo até o diretório onde o domínio está sendo executado.
@@ -791,6 +852,9 @@ Methods
 			  - string pathToErrorView
 			  Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de erros no domínio.
 			  
+			  - string pathToHttpMessageView
+			  Caminho relativo até a view que deve ser enviada ao ``UA`` em caso de uma msg ``Http`` simples.
+			  
 			  - string applicationClassName
 			  Nome da classe responsável por iniciar a aplicação.
 
@@ -800,12 +864,11 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public setErrorListening()
+	.. php:method:: public setHttpRawMessage()
 	
 		.. rst-class:: phpdoc-description
 		
-			| Efetua as configurações necessárias para os manipuladores de exceptions e errors
-			| para as aplicações do domínio.
+			| Efetua as configurações necessárias para o manipulador básico de mensagens Http.
 			
 		
 		
@@ -927,6 +990,26 @@ Methods
 
 .. rst-class:: public
 
+	.. php:method:: public hasDefinedSecuritySettings()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Identifica se existem definições de seguranças.
+			
+			| Normalmente isto significa verificar se os métodos ``getSecurityConfig`` e
+			| ``getSecuritySession`` estão, ambos, aptos a retornarem instâncias de suas respectivas
+			| classes com as configurações correspondentes.
+			
+		
+		
+		:Returns: ‹ bool ›|br|
+			  Retornará ``true`` caso as instâncias de segurança estejam definidas.
+		
+	
+	
+
+.. rst-class:: public
+
 	.. php:method:: public getRouteConfig( $config=null, $isRaw=false)
 	
 		.. rst-class:: phpdoc-description
@@ -937,7 +1020,7 @@ Methods
 		
 		:Parameters:
 			- ‹ array › **$config** |br|
-			  Array associativo contendo as configurações para esta instância.
+			  Array associativo contendo as configurações para esta instância.
 			- ‹ bool › **$isRaw** |br|
 			  Quando ``true`` indica que o parametro passado em ``$config`` possui as
 			  informações necessárias para a criação do objeto ``iRoute``, no entanto
@@ -980,13 +1063,13 @@ Methods
 		
 		:Parameters:
 			- ‹ string › **$url** |br|
-			  URL para onde o ``UA`` será redirecionado.
+			  URL para onde o ``UA`` será redirecionado.
 			- ‹ int › **$code** |br|
-			  Código HTTP.
+			  Código ``Http``.
 			- ‹ string › **$message** |br|
-			  Mensagem HTTP.
+			  Mensagem ``Http``.
 			  Se nenhuma for informada irá usar a mensagem padrão que corresponda
-			  ao código HTTP indicado.
+			  ao código ``Http`` indicado.
 
 		
 		:Returns: ‹ void ›|br|

@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -15,7 +15,7 @@ Router
 
 	.. rst-class:: phpdoc-description
 	
-		| Roteador para as requisições ``HTTP`` de uma Aplicação.
+		| Roteador para as requisições ``Http`` de uma Aplicação.
 		
 	
 	:Parent:

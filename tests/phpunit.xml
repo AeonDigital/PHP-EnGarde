@@ -1,52 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-<phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
-    colors="true" verbose="true" stopOnFailure="false"
-    bootstrap="phpunit.php">
-
-    <!--
-        Todos os endereços de arquivos e diretórios são relativos ao
-        diretório no qual o PHP unit foi iniciado, ou aquele onde está
-        o arquivo de configuração "phpunit.xml".
-    -->
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+        bootstrap="phpunit.php"
+        cacheResultFile=".phpunit.cache/test-results"
+        executionOrder="default"
+        forceCoversAnnotation="false"
+        beStrictAboutCoversAnnotation="true"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutTodoAnnotatedTests="true"
+        convertDeprecationsToExceptions="true"
+        failOnRisky="true"
+        failOnWarning="true"
+        verbose="true">
 
     <testsuites>
-        <testsuite name="AeonDigital-PHP-EnGarde">
-            <!--
-                Defina aqui cada arquivo de testes que será utilizado.
-            -->
-            <file>src/Config/ConfigServerTest.php</file>
-            <file>src/Config/ConfigApplicationTest.php</file>
-            <file>src/Config/ConfigSecurityTest.php</file>
-            <file>src/Config/ConfigRouteTest.php</file>
-
-
-            <file>src/Handler/Mime/HTMLTest.php</file>
-            <file>src/Handler/Mime/XHTMLTest.php</file>
-            <file>src/Handler/Mime/XMLTest.php</file>
-            <file>src/Handler/Mime/CSVTest.php</file>
-            <file>src/Handler/Mime/JSONTest.php</file>
-            <file>src/Handler/Mime/TXTTest.php</file>
-            <file>src/Handler/Mime/PDFTest.php</file>
-            <file>src/Handler/Mime/XLSTest.php</file>
-            <file>src/Handler/Mime/XLSXTest.php</file>
-
-            <file>src/Handler/HttpRawMessageTest.php</file>
-
-            <file>src/RouterTest.php</file>
-
-            <file>src/SessionNativeLocalTest.php</file>
-            <file>src/SessionNativeDataBaseTest.php</file>
+        <testsuite name="default">
+            <directory>src/Config/*</directory>
+            <directory>src/Handler/Mime/*</directory>
+            <directory>src/Handler/*</directory>
+            <directory>src/*</directory>
         </testsuite>
     </testsuites>
-    <filter>
-       <whitelist processUncoveredFilesFromWhitelist="true">
-            <!--
-                Defina aqui cada diretório de projeto que será
-                avaliado em um teste de cobertura.
-            -->
-            <directory>../src</directory>
-        </whitelist>
-    </filter>
+
+    <coverage cacheDirectory=".phpunit.cache/code-coverage"
+            includeUncoveredFiles="false"
+            processUncoveredFiles="false">
+        <include>
+            <directory suffix=".php">../src</directory>
+        </include>
+    </coverage>
 </phpunit>

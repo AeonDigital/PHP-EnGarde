@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -206,7 +206,7 @@ Constants
 
 	.. rst-class:: phpdoc-description
 	
-		| Conta do usuário está desabilitada dentro deste domínio.
+		| Conta do usuário foi reconhecida e está ativa.
 		
 	
 	:Type: ‹ string ›|br|
@@ -254,7 +254,7 @@ Constants
 
 	.. rst-class:: phpdoc-description
 	
-		| Conta desabilitada por excesso de falhas ao tentar login.
+		| Conta bloqueada por excesso de falhas ao tentar login.
 		
 	
 	:Type: ‹ string ›|br|

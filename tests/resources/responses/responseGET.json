@@ -7,7 +7,7 @@
     "prop5": {
         "date": "2000-01-01 00:00:00.000000",
         "timezone_type": 3,
-        "timezone": "America/Sao_Paulo"
+        "timezone": "UTC"
     },
     "prop6": [
         1,

@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -27,7 +27,7 @@ Classes
 .. toctree::
 	:maxdepth: 6
 	
-	ErrorListening <ErrorListening>
+	HttpRawMessage <HttpRawMessage>
 	ResponseHandler <ResponseHandler>
 	RouteResolver <RouteResolver>
 

@@ -1,6 +1,6 @@
 .. rst-class:: phpdoctorst
 
-.. role:: php(code)
+.. role:: php(code)
 	:language: php
 
 
@@ -129,6 +129,23 @@ Methods
 		
 		
 		:Returns: ‹ string ›|br|
+			  
+		
+	
+	
+
+.. rst-class:: public
+
+	.. php:method:: public getLoginKeyNames()
+	
+		.. rst-class:: phpdoc-description
+		
+			| Retorna uma coleção de nomes de campos que servem como chaves identificadoras
+			| para os usuários do sistema.
+			
+		
+		
+		:Returns: ‹ array ›|br|
 			  
 		
 	
@@ -345,7 +362,7 @@ Methods
 
 .. rst-class:: public
 
-	.. php:method:: public __construct( $isActive, $dataCookieName, $securityCookieName, $routeToLogin, $routeToStart, $routeToResetPassword, $anonymousId, $sessionNamespace, $isSessionRenew, $sessionTimeout, $allowedFaultByIP, $ipBlockTimeout, $allowedFaultByLogin, $loginBlockTimeout, $allowedIPRanges, $deniedIPRanges)
+	.. php:method:: public __construct( $isActive, $dataCookieName, $securityCookieName, $routeToLogin, $routeToStart, $routeToResetPassword, $loginKeyNames, $anonymousId, $sessionNamespace, $isSessionRenew, $sessionTimeout, $allowedFaultByIP, $ipBlockTimeout, $allowedFaultByLogin, $loginBlockTimeout, $allowedIPRanges, $deniedIPRanges)
 	
 		.. rst-class:: phpdoc-description
 		
@@ -356,35 +373,38 @@ Methods
 		:Parameters:
 			- ‹ bool › **$isActive** |br|
 			  Indica quando as configurações de segurança devem ou não serem usadas para
-			  a aplicação.
+			  a aplicação.
 			- ‹ string › **$dataCookieName** |br|
-			  Nome do cookie que carrega informações da sessão atual do usuário.
+			  Nome do cookie que carrega informações da sessão atual do usuário.
 			- ‹ string › **$securityCookieName** |br|
-			  Nome do cookie de autenticação.
+			  Nome do cookie de autenticação.
 			- ‹ string › **$routeToLogin** |br|
-			  Rota para o local onde o usuário faz login.
+			  Rota para o local onde o usuário faz login.
 			- ‹ string › **$routeToStart** |br|
-			  Rota para o local onde o usuário deve ser direcionado quando efetua o login.
+			  Rota para o local onde o usuário deve ser direcionado quando efetua o login.
 			- ‹ string › **$routeToResetPassword** |br|
-			  Rota para o local onde o usuário pode ir para efetuar o reset de sua senha.
+			  Rota para o local onde o usuário pode ir para efetuar o reset de sua senha.
+			- ‹ array › **$loginKeyNames** |br|
+			  Coleção de nomes de campos que servem como chaves identificadoras
+			  para os usuários do sistema.
 			- ‹ int › **$anonymousId** |br|
-			  Id do usuário anonimo da aplicação.
+			  Id do usuário anonimo da aplicação.
 			- ‹ string › **$sessionNamespace** |br|
-			  Namespace da classe de controle de sessão.
+			  Namespace da classe de controle de sessão.
 			- ‹ bool › **$isSessionRenew** |br|
-			  Define se as sessões devem ser renovadas a cada iteração do usuário.
+			  Define se as sessões devem ser renovadas a cada iteração do usuário.
 			- ‹ int › **$sessionTimeout** |br|
-			  Tempo (em minutos) que cada sessão deve suportar de inatividade.
+			  Tempo (em minutos) que cada sessão deve suportar de inatividade.
 			- ‹ int › **$allowedFaultByIP** |br|
-			  Limite de falhas de login permitidas para um mesmo IP em um determinado periodo.
+			  Limite de falhas de login permitidas para um mesmo IP em um determinado periodo.
 			- ‹ int › **$ipBlockTimeout** |br|
-			  Tempo de bloqueio para um IP [em minutos].
+			  Tempo de bloqueio para um IP [em minutos].
 			- ‹ int › **$allowedFaultByLogin** |br|
-			  Limite de falhas permitidas para erros sucessivos de senha para um mesmo login.
+			  Limite de falhas permitidas para erros sucessivos de senha para um mesmo login.
 			- ‹ int › **$loginBlockTimeout** |br|
-			  Tempo de bloqueio para um Login [em minutos].
+			  Tempo de bloqueio para um Login [em minutos].
 			- ‹ array › **$allowedIPRanges** |br|
-			  Coleção de intervalos de Ips que tem acesso a aplicação.
+			  Coleção de intervalos de Ips que tem acesso a aplicação.
 			- ‹ array › **$deniedIPRanges** |br|
 			  Coleção de intervalos de Ips que devem ser bloqueados de acesso.
 
