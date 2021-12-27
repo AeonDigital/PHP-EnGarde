@@ -14,11 +14,11 @@
     "require": {
         "php": ">=7.4",
         "psr/http-server-middleware": "v1.0.1",
-        "aeondigital/phpinterfaces": ">=v0.6.0-beta",
-        "aeondigital/phpengardeinterfaces": ">=v0.6.0-beta",
-        "aeondigital/phpcore": ">=v0.6.0-beta",
-        "aeondigital/phphttp": ">=v0.6.0-beta",
-        "aeondigital/phpdal": ">=v0.6.0-beta",
+        "aeondigital/phpinterfaces": ">=v0.6.2-beta",
+        "aeondigital/phpengardeinterfaces": ">=v0.6.2-beta",
+        "aeondigital/phpcore": ">=v0.6.2-beta",
+        "aeondigital/phphttp": ">=v0.6.2-beta",
+        "aeondigital/phpdal": ">=v0.6.2-beta",
         "dompdf/dompdf": "dev-master"
     },
     "require-dev": {
