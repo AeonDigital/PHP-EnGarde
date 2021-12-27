@@ -5,7 +5,7 @@
 > rianna@aeondigital.com.br
 
 Micro framework para criar/gerenciar multiplas aplicações/APIs em um mesmo
-domínio.
+domínio .
 
 
 &nbsp;
