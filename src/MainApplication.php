@@ -220,7 +220,10 @@ abstract class MainApplication implements iApplication
                         $securityConfig->getRouteToLogin(),
                         $securityConfig->getRouteToResetPassword(),
                     ];
-                    $freePass = (\in_array($this->routeConfig->getActiveRoute(), $freeRoutes));
+                    $freePass = (
+                        \in_array($this->routeConfig->getActiveRoute(), $freeRoutes) ||
+                        \in_array($this->routeConfig->getActiveRoute(true), $freeRoutes)
+                    );
                 }
 
                 // SE
