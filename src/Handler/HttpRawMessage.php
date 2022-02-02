@@ -365,6 +365,7 @@ class HttpRawMessage
         ];
 
 
+        \error_log("PHP Exception $errorCode: $errorMessage in $errorFile:$errorLine");
         return self::sendToUA($viewData, self::$pathToErrorView);
     }
     /**
@@ -445,6 +446,7 @@ class HttpRawMessage
         ];
 
 
+        \error_log("PHP Error $errorCode: $errorMessage in $errorFile:$errorLine");
         return self::sendToUA($viewData, self::$pathToErrorView);
     }
 
