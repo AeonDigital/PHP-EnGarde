@@ -1413,16 +1413,18 @@ final class Server extends BObject implements iServer
             //
             // Por padrão irá ocultar quaisquer erros, alertas e
             // notificações sempre que ocorrerem.
+            // No entanto, o log dos mesmos será sempre efetuado.
+            //
             // Caberá ao manipulador de erros e exceções mostrar ou não
             // detalhes sobre o que ocorre quando a aplicação falhar.
             //
             //
-            // Para que os erros sejam mostrados é preciso alterar os
-            // valores abaixo alem do arquivo "php.ini" para setar os
-            // seguintes atributos :
+            // Para que os erros sejam mostrados e logados é preciso
+            // alterar os valores abaixo alem do arquivo "php.ini" para
+            // setar os seguintes atributos :
             //      display_errors = 1
             //      error_reporting = E_ALL
-            \error_reporting(0);
+            \error_reporting(E_ALL);
             \ini_set("display_errors", "0");
             if (\function_exists("xdebug_disable")) {
                 \xdebug_disable();
