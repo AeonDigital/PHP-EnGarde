@@ -42,15 +42,5 @@ Este e outros projetos **Aeon Digital** utilizam o sistema de [Versionamento
 Semântico](https://semver.org/) proposto por Tom Preston-Werner.
 
 A documentação completa pode ser vista em
-[ReadTheDocs](https://aeondigital-php-engarde.readthedocs.io/).
+[ReadTheDocs](https://readthedocs.org/projects/php-engarde/).
 
-
-&nbsp;
-&nbsp;
-
-
-_______________________________________________________________________________
-
-## Licença
-
-Este software está licenciado sob a [Licença ADPL-v1.0](LICENSE).
